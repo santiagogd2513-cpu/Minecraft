@@ -1,6 +1,5 @@
 package com.amatista.arsenal.client;
 
-import com.amatista.arsenal.item.OrbitalDesignatorItem;
 import com.amatista.arsenal.registry.ModItems;
 import com.mojang.blaze3d.platform.GlStateManager;
 import com.mojang.blaze3d.systems.RenderSystem;
@@ -80,23 +79,13 @@ public final class WorldEffects {
                 }
             }
         }
-        // pitidos de la mira mientras se apunta
-        LocalPlayer p = mc.player;
-        if (p != null && isAiming(p)) {
-            int used = p.getTicksUsingItem();
-            if (used == OrbitalDesignatorItem.LOCK_TICKS) {
-                Cinematic.play(SoundEvents.BEACON_POWER_SELECT, 1.6f, 0.9f);
-            } else if (used < OrbitalDesignatorItem.LOCK_TICKS) {
-                int every = Math.max(2, 10 - used / 5);
-                if (used % every == 0) Cinematic.play(SoundEvents.EXPERIENCE_ORB_PICKUP, 1.2f + used / 60f, 0.35f);
-            } else if (used % 20 == 0) {
-                Cinematic.play(SoundEvents.EXPERIENCE_ORB_PICKUP, 2f, 0.25f);
-            }
-        }
     }
 
+    /** Con el designador en la mano (y el satélite listo) se muestra la mira. */
     private static boolean isAiming(LocalPlayer p) {
-        return p.isUsingItem() && p.getUseItem().is(ModItems.ORBITAL_DESIGNATOR.get());
+        boolean holding = p.getMainHandItem().is(ModItems.ORBITAL_DESIGNATOR.get())
+                || p.getOffhandItem().is(ModItems.ORBITAL_DESIGNATOR.get());
+        return holding && !p.getCooldowns().isOnCooldown(ModItems.ORBITAL_DESIGNATOR.get());
     }
 
     public static void render(PoseStack poseStack, Vec3 cam, float partialTick) {
@@ -172,10 +161,9 @@ public final class WorldEffects {
         HitResult hit = player.pick(AIM_RANGE, partialTick, false);
         if (hit.getType() != HitResult.Type.BLOCK) return;
         BlockPos pos = ((BlockHitResult) hit).getBlockPos();
-        int used = player.getTicksUsingItem();
-        float lock = Mth.clamp(used / (float) OrbitalDesignatorItem.LOCK_TICKS, 0f, 1f);
-        boolean locked = lock >= 1f;
-        float pulse = 0.6f + 0.4f * (float) Math.sin(now * (locked ? 1.6f : 0.6f + lock));
+        float pulse = 0.6f + 0.4f * (float) Math.sin(now * 0.5f);
+        float lock = 0.5f + 0.5f * (float) Math.sin(now * 0.12f);
+        boolean locked = true;
         Matrix4f mm = new Matrix4f(m).translate(pos.getX() + 0.5f, pos.getY() + 1.02f, pos.getZ() + 0.5f);
         float r = Mth.lerp(lock, 9f, 2.5f);
         RenderUtil.ring(bb, mm, r, r + 0.35f, 0, 48, 1f, 0.1f, 0.08f, 0.9f * pulse);

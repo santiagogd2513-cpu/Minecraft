@@ -6,58 +6,37 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResultHolder;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
 /**
- * Designador orbital: mantén pulsado (2 s) apuntando a un bloque y suelta para llamar
- * al satélite ÉGIDA-7.
+ * Designador orbital: clic derecho (o un toque) apuntando a un bloque para llamar al
+ * satélite ÉGIDA-7. Con el designador en la mano se ve la mira roja en el suelo.
  */
 public class OrbitalDesignatorItem extends Item {
-    /** Ticks que hay que mantener pulsado para fijar el objetivo. */
-    public static final int LOCK_TICKS = 40;
-
     public OrbitalDesignatorItem(Properties properties) {
         super(properties);
     }
 
     @Override
     public InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand hand) {
+        // Un solo clic derecho (o un toque en el celular) llama al satélite
         ItemStack stack = player.getItemInHand(hand);
         if (player.getCooldowns().isOnCooldown(this)) return InteractionResultHolder.fail(stack);
-        if (!level.isClientSide && OrbitalStrikeManager.isBusy(player)) {
-            player.displayClientMessage(Component.translatable("message.arsenalorbital.busy").withStyle(ChatFormatting.RED), true);
-            return InteractionResultHolder.fail(stack);
+        if (!level.isClientSide && player instanceof ServerPlayer serverPlayer) {
+            if (OrbitalStrikeManager.isBusy(player)) {
+                player.displayClientMessage(Component.translatable("message.arsenalorbital.busy").withStyle(ChatFormatting.RED), true);
+                return InteractionResultHolder.fail(stack);
+            }
+            OrbitalStrikeManager.tryStart(serverPlayer);
         }
-        player.startUsingItem(hand);
-        return InteractionResultHolder.consume(stack);
-    }
-
-    @Override
-    public int getUseDuration(ItemStack stack) {
-        return 72000;
-    }
-
-    @Override
-    public UseAnim getUseAnimation(ItemStack stack) {
-        return UseAnim.SPYGLASS;
-    }
-
-    @Override
-    public void releaseUsing(ItemStack stack, Level level, LivingEntity entity, int timeLeft) {
-        int used = getUseDuration(stack) - timeLeft;
-        if (used < LOCK_TICKS) return;
-        if (!level.isClientSide && entity instanceof ServerPlayer player) {
-            OrbitalStrikeManager.tryStart(player);
-        }
+        return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
     }
 
     @Override
