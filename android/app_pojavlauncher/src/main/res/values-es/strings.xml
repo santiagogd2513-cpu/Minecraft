@@ -494,4 +494,11 @@
     <string name="amatista_deps_required">Dependencias necesarias:</string>
     <string name="amatista_deps_optional">Opcionales:</string>
     <string name="amatista_deps_error">No se pudieron cargar las dependencias.</string>
+    <string name="amatista_detail_version">Versión</string>
+    <string name="amatista_detail_gallery">Imágenes</string>
+    <string name="amatista_detail_by">por %s</string>
+    <string name="amatista_type_mod">Mod</string>
+    <string name="amatista_type_modpack">Modpack</string>
+    <string name="amatista_type_resourcepack">Paquete de recursos</string>
+    <string name="amatista_type_shader">Shader</string>
 </resources>

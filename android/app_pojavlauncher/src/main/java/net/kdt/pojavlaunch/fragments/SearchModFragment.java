@@ -142,6 +142,7 @@ public class SearchModFragment extends Fragment implements ModItemAdapter.Search
         ArrayAdapter<String> typeAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_dropdown_item,
                 getResources().getStringArray(R.array.amatista_content_types));
         typeSpinner.setAdapter(typeAdapter);
+        for (int i = 0; i < TYPES.length; i++) if (TYPES[i] == mSearchFilters.contentType) typeSpinner.setSelection(i, false);
         typeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View v, int position, long id) {
@@ -154,7 +155,8 @@ public class SearchModFragment extends Fragment implements ModItemAdapter.Search
             @Override public void onNothingSelected(AdapterView<?> parent) {}
         });
 
-        searchMods(null);
+        // Al volver de una ficha se conserva la búsqueda
+        searchMods(mSearchFilters.name);
     }
 
     @Override

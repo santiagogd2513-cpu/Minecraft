@@ -8,6 +8,9 @@ public class ModItem extends ModSource {
     public String title;
     public String description;
     public String imageUrl;
+    /* Amatista: creador y fotos (pueden ser null) */
+    public String author;
+    public String[] gallery;
 
     public ModItem(int apiSource, boolean isModpack, String id, String title, String description, String imageUrl) {
         this.apiSource = apiSource;

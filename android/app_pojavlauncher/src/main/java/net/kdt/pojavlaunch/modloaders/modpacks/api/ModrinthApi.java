@@ -90,6 +90,12 @@ public class ModrinthApi implements ModpackApi{
                     hit.get("icon_url").isJsonNull() ? null : hit.get("icon_url").getAsString()
             );
             items[i].contentType = searchFilters.contentType;
+            if(hit.has("author") && !hit.get("author").isJsonNull()) items[i].author = hit.get("author").getAsString();
+            JsonArray gallery = hit.has("gallery") && hit.get("gallery").isJsonArray() ? hit.getAsJsonArray("gallery") : null;
+            if(gallery != null) {
+                items[i].gallery = new String[gallery.size()];
+                for(int g = 0; g < gallery.size(); g++) items[i].gallery[g] = gallery.get(g).getAsString();
+            }
         }
         if(modrinthSearchResult == null) modrinthSearchResult = new ModrinthSearchResult();
         modrinthSearchResult.previousOffset += responseHits.size();

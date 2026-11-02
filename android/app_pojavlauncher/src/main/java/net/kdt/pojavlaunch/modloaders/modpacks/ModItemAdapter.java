@@ -172,74 +172,15 @@ public class ModItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         public ViewHolder(View view) {
             super(view);
             mViewHolderSet.add(this);
+            // Amatista: tocar cualquier elemento abre su ficha grande
             view.setOnClickListener(v -> {
-                if(!hasExtended()){
-                    // Inflate the ViewStub
-                    mExtendedLayout = ((ViewStub)v.findViewById(R.id.mod_limited_state_stub)).inflate();
-                    mExtendedButton = mExtendedLayout.findViewById(R.id.mod_extended_select_version_button);
-                    mExtendedSpinner = mExtendedLayout.findViewById(R.id.mod_extended_version_spinner);
-                    mExtendedErrorTextView = mExtendedLayout.findViewById(R.id.mod_extended_error_textview);
-                    mDepsTextView = mExtendedLayout.findViewById(R.id.mod_extended_dependencies_textview);
-                    mExtendedSpinner.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
-                        @Override
-                        public void onItemSelected(android.widget.AdapterView<?> parent, View v, int position, long id) {
-                            loadDependencies(position);
-                        }
-                        @Override public void onNothingSelected(android.widget.AdapterView<?> parent) {}
-                    });
-
-                    mExtendedButton.setOnClickListener(v1 -> {
-                        if (mModDetail == null) return;
-                        if (mModDetail.contentType != Constants.TYPE_MODPACK) {
-                            // Amatista: mods, paquetes de recursos y shaders van a un perfil existente
-                            ContentInstaller.pickProfileAndInstall(mExtendedButton.getContext(),
-                                    mModDetail, mExtendedSpinner.getSelectedItemPosition());
-                        } else {
-                            mModpackApi.handleInstallation(
-                                    mExtendedButton.getContext().getApplicationContext(),
-                                    mModDetail,
-                                    mExtendedSpinner.getSelectedItemPosition());
-                        }
-                    });
-                    mExtendedSpinner.setAdapter(mLoadingAdapter);
-                } else {
-                    if(isExtended()) closeDetailedView();
-                    else openDetailedView();
+                if (mModItem == null) return;
+                android.content.Context c = v.getContext();
+                while (c instanceof android.content.ContextWrapper && !(c instanceof androidx.fragment.app.FragmentActivity)) {
+                    c = ((android.content.ContextWrapper) c).getBaseContext();
                 }
-
-                if(isExtended() && mModDetail == null && mExtensionFuture == null) { // only reload if no reloads are in progress
-                    setDetailedStateDefault();
-                    /*
-                     * Why do we do this?
-                     * The reason is simple: multithreading is difficult as hell to manage
-                     * Let me explain:
-                     */
-                    mExtensionFuture = new SelfReferencingFuture(myFuture -> {
-                        /*
-                         * While we are sitting in the function below doing networking, the view might have already gotten recycled.
-                         * If we didn't use a Future, we would have extended a ViewHolder with completely unrelated content
-                         * or with an error that has never actually happened
-                         */
-                        mModDetail = mModpackApi.getModDetails(mModItem);
-                        System.out.println(mModDetail);
-                        Tools.runOnUiThread(() -> {
-                            /*
-                             * Once we enter here, the state we're in is already defined - no view shuffling can happen on the UI
-                             * thread while we are on the UI thread ourselves. If we were cancelled, this means that the future
-                             * we were supposed to have no longer makes sense, so we return and do not alter the state (since we might
-                             * alter the state of an unrelated item otherwise)
-                             */
-                            if(myFuture.isCancelled()) return;
-                            /*
-                             * We do not null the future before returning since this field might already belong to a different item with its
-                             * own Future, which we don't want to interfere with.
-                             * But if the future is not cancelled, it is the right one for this ViewHolder, and we don't need it anymore, so
-                             * let's help GC clean it up once we exit!
-                             */
-                            mExtensionFuture = null;
-                            setStateDetailed(mModDetail);
-                        });
-                    }).startOnExecutor(PojavApplication.sExecutorService);
+                if (c instanceof androidx.fragment.app.FragmentActivity) {
+                    net.kdt.pojavlaunch.fragments.ModDetailFragment.open((androidx.fragment.app.FragmentActivity) c, mModItem, mModpackApi);
                 }
             });
 
