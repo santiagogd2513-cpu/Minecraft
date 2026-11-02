@@ -1,0 +1,76 @@
+name: Amatista Launcher Android
+
+on:
+  push:
+    branches: [ "**" ]
+    paths: [ "android/**", ".github/workflows/android.yml", ".gitmodules" ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  apk:
+    name: APK de Android
+    runs-on: ubuntu-22.04
+    timeout-minutes: 120
+    defaults:
+      run:
+        working-directory: android
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      # Java 8 para Android (las versiones 17/21 la app las descarga cuando hacen falta).
+      - name: Java 8 para Android
+        uses: dawidd6/action-download-artifact@v9
+        with:
+          workflow: build.yml
+          path: android/app_pojavlauncher/src/main/assets/components/jre
+          workflow_conclusion: completed
+          repo: AngelAuraMC/angelauramc-openjdk-build
+          branch: buildjre8
+          name: jre8-pojav
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          validate-wrappers: false
+          gradle-version: "9.6.1"
+
+      - name: Preparar
+        run: ./scripts/languagelist_updater.sh
+
+      - name: Compilar APK
+        run: gradle :app_pojavlauncher:assembleRelease --stacktrace
+
+      - name: Renombrar
+        run: |
+          mkdir -p ../dist
+          cp app_pojavlauncher/build/outputs/apk/release/app_pojavlauncher-release.apk ../dist/AmatistaLauncher.apk
+          ls -lh ../dist
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: AmatistaLauncher-apk
+          path: dist/AmatistaLauncher.apk
+
+      - name: Publicar
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: android-${{ github.run_number }}
+          name: "Amatista Launcher Android #${{ github.run_number }}"
+          target_commitish: ${{ github.sha }}
+          make_latest: true
+          body: |
+            **Android:** descarga `AmatistaLauncher.apk`, ábrelo y permite *instalar apps de origen desconocido*.
+          files: dist/AmatistaLauncher.apk

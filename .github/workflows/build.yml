@@ -3,6 +3,8 @@ name: Amatista Launcher
 on:
   push:
     branches: [ "**" ]
+    # El launcher de Android tiene su propio workflow.
+    paths-ignore: [ "android/**", ".github/workflows/android.yml", ".gitmodules" ]
   workflow_dispatch:
 
 permissions:
