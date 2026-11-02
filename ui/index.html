@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Amatista Launcher</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="i-play" viewBox="0 0 24 24"><path fill="currentColor" d="M8 5.14v13.72a1 1 0 0 0 1.5.86l11-6.86a1 1 0 0 0 0-1.72l-11-6.86A1 1 0 0 0 8 5.14z"/></symbol>
+  <symbol id="i-download" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 3v12m0 0 5-5m-5 5-5-5M4 19h16"/></symbol>
+  <symbol id="i-box" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M21 8 12 3 3 8v8l9 5 9-5zM3 8l9 5 9-5M12 13v8"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M20 21a8 8 0 0 0-16 0M12 13a5 5 0 1 0 0-10 5 5 0 0 0 0 10z"/></symbol>
+  <symbol id="i-gear" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></symbol>
+  <symbol id="i-trash" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="M3 6h18M8 6V4h8v2m-9 0 1 14h8l1-14"/></symbol>
+  <symbol id="i-search" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" d="m21 21-4.3-4.3M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14z"/></symbol>
+  <symbol id="i-ext" viewBox="0 0 24 24"><path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M14 4h6v6M20 4l-9 9M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></symbol>
+</svg>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <img src="img/logo.png" alt="">
+      <div><b>Amatista</b><small>Launcher de Minecraft</small></div>
+    </div>
+    <nav class="nav" id="nav">
+      <button data-page="play" class="active"><svg><use href="#i-play"/></svg>Jugar</button>
+      <button data-page="install"><svg><use href="#i-download"/></svg>Instalar</button>
+      <button data-page="content"><svg><use href="#i-box"/></svg>Contenido</button>
+      <button data-page="accounts"><svg><use href="#i-user"/></svg>Cuentas</button>
+      <button data-page="settings"><svg><use href="#i-gear"/></svg>Ajustes</button>
+    </nav>
+    <div class="side-bottom">
+      <div class="account-chip" id="account-chip" title="Cambiar de cuenta">
+        <img id="chip-avatar" src="img/logo.png" alt="">
+        <div><b id="chip-name">Sin cuenta</b><small id="chip-kind">Inicia sesión</small></div>
+      </div>
+    </div>
+  </aside>
+
+  <main class="main">
+    <!-- ================= JUGAR ================= -->
+    <section class="page active" id="page-play">
+      <div class="hero">
+        <div class="hero-info">
+          <small id="hero-kind">Sin instancias</small>
+          <h3 id="hero-title">Instala tu primer juego</h3>
+          <p id="hero-sub">Ve a Instalar y elige Vanilla, OptiFine o Forge.</p>
+        </div>
+        <button class="btn primary play-btn" id="play-btn"><svg><use href="#i-play"/></svg>JUGAR</button>
+      </div>
+
+      <h2>Tus instancias</h2>
+      <div class="grid" id="instances"></div>
+
+      <div class="row" style="margin-top:18px">
+        <button class="btn small ghost" id="toggle-console">Mostrar registro del juego</button>
+      </div>
+      <div class="console" id="console" hidden></div>
+    </section>
+
+    <!-- ================= INSTALAR ================= -->
+    <section class="page" id="page-install">
+      <h1>Instalar</h1>
+      <p class="subtitle">Elige cómo quieres jugar. Cada instalación crea una instancia con su propia carpeta.</p>
+      <div class="loader-cards">
+        <div class="loader-card active" data-loader="vanilla">
+          <div class="big">🌱</div><h3>Vanilla</h3><p>Minecraft tal cual, sin modificaciones.</p>
+        </div>
+        <div class="loader-card" data-loader="optifine">
+          <div class="big">✨</div><h3>OptiFine</h3><p>Más FPS, shaders y opciones gráficas.</p>
+        </div>
+        <div class="loader-card" data-loader="forge">
+          <div class="big">⚒️</div><h3>Forge</h3><p>El cargador de mods más usado. Instalación oficial completa.</p>
+        </div>
+      </div>
+
+      <div class="card install-panel" id="install-panel">
+        <div class="row">
+          <div class="field grow">
+            <label>Versión de Minecraft</label>
+            <select class="input" id="mc-version"></select>
+          </div>
+          <div class="field" id="snap-field" style="justify-content:flex-end">
+            <label style="display:flex;align-items:center;gap:8px">
+              <span class="switch"><input type="checkbox" id="show-snapshots"><span></span></span> Snapshots
+            </label>
+          </div>
+        </div>
+
+        <div id="forge-fields" hidden>
+          <div class="field">
+            <label>Versión de Forge</label>
+            <select class="input" id="forge-version"></select>
+            <div class="hint">Se usa el instalador oficial de Forge: todas las librerías y parches, igual que el launcher oficial.</div>
+          </div>
+        </div>
+
+        <div id="optifine-fields" hidden>
+          <div class="steps">
+            <div class="step"><span class="n">1</span><div>
+              <b>Descarga OptiFine para tu versión</b>
+              <div class="hint">OptiFine no permite descargas automáticas: se abrirá su página oficial. Elige la versión y pulsa “Download”.</div>
+              <button class="btn small" id="optifine-open" style="margin-top:8px"><svg><use href="#i-ext"/></svg>Abrir optifine.net</button>
+            </div></div>
+            <div class="step"><span class="n">2</span><div>
+              <b>Selecciona el archivo descargado</b>
+              <div class="hint">Algo como <code>OptiFine_1.20.1_HD_U_I6.jar</code>. El launcher instala Minecraft y OptiFine solo.</div>
+              <button class="btn small primary" id="optifine-pick" style="margin-top:8px"><svg><use href="#i-folder"/></svg>Elegir archivo e instalar</button>
+            </div></div>
+          </div>
+        </div>
+
+        <div class="row" style="justify-content:flex-end" id="install-actions">
+          <button class="btn primary" id="install-btn"><svg><use href="#i-download"/></svg>Instalar</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= CONTENIDO ================= -->
+    <section class="page" id="page-content">
+      <h1>Contenido</h1>
+      <p class="subtitle">Mods, paquetes de recursos, modpacks y shaders de Modrinth y CurseForge.</p>
+      <div class="row">
+        <div class="tabs" id="content-tabs">
+          <button data-kind="mod" class="active">Mods</button>
+          <button data-kind="resourcepack">Paquetes de recursos</button>
+          <button data-kind="modpack">Modpacks</button>
+          <button data-kind="shader">Shaders</button>
+        </div>
+        <div class="tabs source-toggle" id="source-tabs" style="margin-left:auto">
+          <button data-source="modrinth" class="active">Modrinth</button>
+          <button data-source="curseforge">CurseForge</button>
+        </div>
+      </div>
+      <div class="filters" id="filters">
+        <div style="position:relative">
+          <input class="input" id="search" placeholder="Buscar…" style="padding-left:36px">
+          <svg style="position:absolute;left:11px;top:11px;width:16px;height:16px;color:var(--faint)"><use href="#i-search"/></svg>
+        </div>
+        <select class="input" id="filter-version"><option value="">Todas las versiones</option></select>
+        <select class="input" id="filter-loader">
+          <option value="forge">Forge</option>
+          <option value="">Todos los cargadores</option>
+        </select>
+        <select class="input" id="target-instance" title="Instancia donde se instalará"></select>
+      </div>
+      <div class="results" id="results"></div>
+      <div class="row" style="justify-content:center;margin-top:16px">
+        <button class="btn" id="load-more" hidden>Cargar más</button>
+      </div>
+    </section>
+
+    <!-- ================= CUENTAS ================= -->
+    <section class="page" id="page-accounts">
+      <h1>Cuentas</h1>
+      <p class="subtitle">Elige con qué cuenta juegas.</p>
+      <div class="login-box">
+        <button class="btn primary ms-btn" id="ms-login">
+          <span class="ms-logo"><i style="background:#f25022"></i><i style="background:#7fba00"></i><i style="background:#00a4ef"></i><i style="background:#ffb900"></i></span>
+          Iniciar sesión con Microsoft
+        </button>
+        <div class="divider">o</div>
+        <div class="card">
+          <b>Crear cuenta local</b>
+          <p class="hint" id="local-hint">Se activa después de iniciar sesión con una cuenta de Microsoft que tenga Minecraft Java.</p>
+          <div class="row">
+            <input class="input grow" id="local-name" maxlength="16" placeholder="Nombre de jugador (3-16 caracteres)">
+            <button class="btn" id="local-create">Crear</button>
+          </div>
+        </div>
+      </div>
+      <h2>Tus cuentas</h2>
+      <div class="accounts" id="accounts"></div>
+    </section>
+
+    <!-- ================= AJUSTES ================= -->
+    <section class="page" id="page-settings">
+      <h1>Ajustes</h1>
+      <p class="subtitle">Los cambios se guardan automáticamente.</p>
+      <div class="settings">
+        <div class="card">
+          <h3>📁 Carpeta del juego</h3>
+          <div class="field">
+            <label>Aquí se guardan versiones, librerías, Java e instancias</label>
+            <div class="row">
+              <input class="input grow" id="s-game-dir">
+              <button class="btn small" id="s-pick-dir">Cambiar</button>
+              <button class="btn small" id="s-open-dir"><svg><use href="#i-folder"/></svg></button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>🧠 Memoria</h3>
+          <div class="field">
+            <label>Memoria máxima: <span class="mem-value" id="s-max-mem-v"></span> <span class="hint" id="s-ram"></span></label>
+            <input type="range" id="s-max-mem" min="1024" max="16384" step="256">
+          </div>
+          <div class="field">
+            <label>Memoria inicial: <span class="mem-value" id="s-min-mem-v"></span></label>
+            <input type="range" id="s-min-mem" min="512" max="8192" step="256">
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>☕ Java</h3>
+          <div class="field">
+            <label>Ruta de Java (vacío = automático: el launcher descarga el Java oficial que necesita cada versión)</label>
+            <div class="row">
+              <input class="input grow" id="s-java" placeholder="Automático">
+              <button class="btn small" id="s-pick-java">Elegir</button>
+            </div>
+          </div>
+          <div class="setting-line">
+            <span>Optimización de memoria (G1GC)<small>Argumentos de recolección de basura que reducen tirones</small></span>
+            <label class="switch"><input type="checkbox" id="s-gc"><span></span></label>
+          </div>
+          <div class="field" style="margin-top:8px">
+            <label>Argumentos extra de la JVM</label>
+            <input class="input" id="s-jvm" placeholder="-Dejemplo=1">
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>🖥️ Ventana del juego</h3>
+          <div class="row">
+            <div class="field grow"><label>Ancho</label><input class="input" type="number" id="s-width" min="640"></div>
+            <div class="field grow"><label>Alto</label><input class="input" type="number" id="s-height" min="480"></div>
+          </div>
+          <div class="setting-line">
+            <span>Pantalla completa</span>
+            <label class="switch"><input type="checkbox" id="s-fullscreen"><span></span></label>
+          </div>
+          <div class="field" style="margin-top:8px">
+            <label>Al iniciar el juego</label>
+            <select class="input" id="s-on-launch">
+              <option value="nada">No hacer nada</option>
+              <option value="minimizar">Minimizar el launcher</option>
+              <option value="cerrar">Cerrar el launcher</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>⚡ Descargas</h3>
+          <div class="field">
+            <label>Descargas simultáneas: <span class="mem-value" id="s-conc-v"></span></label>
+            <input type="range" id="s-conc" min="4" max="64" step="4">
+            <div class="hint">Más es más rápido con buena conexión. 32 es un buen valor.</div>
+          </div>
+          <div class="setting-line">
+            <span>Mostrar snapshots<small>Versiones de prueba de Minecraft</small></span>
+            <label class="switch"><input type="checkbox" id="s-snapshots"><span></span></label>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>🔥 CurseForge</h3>
+          <div class="field">
+            <label>Clave de API (gratuita)</label>
+            <input class="input" id="s-cf-key" type="password" placeholder="Pega aquí tu clave">
+            <div class="hint">Créala gratis en <a href="#" data-url="https://console.curseforge.com/">console.curseforge.com</a> → API Keys. Modrinth no necesita clave.</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>🟦 Cuenta de Microsoft</h3>
+          <div class="field">
+            <label>ID de cliente (aplicación de Azure)</label>
+            <input class="input" id="s-client-id" placeholder="00000000-0000-0000-0000-000000000000">
+            <div class="hint">
+              1. Crea una aplicación en <a href="#" data-url="https://portal.azure.com/#view/Microsoft_AAD_RegisteredApps/ApplicationsListBlade">Azure (Registros de aplicaciones)</a>: tipo “Cuentas personales de Microsoft”, y activa “Permitir flujos de clientes públicos”.<br>
+              2. Pide a Mojang que la apruebe en <a href="#" data-url="https://aka.ms/mce-reviewappid">aka.ms/mce-reviewappid</a> (puede tardar unos días).<br>
+              3. Pega aquí el “Id. de aplicación (cliente)”.
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3>💜 Acerca de</h3>
+          <p class="hint" id="about"></p>
+          <p class="hint">No es un producto oficial de Minecraft. No está aprobado ni asociado con Mojang ni Microsoft.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="tasks" id="tasks"></div>
+
+<div class="modal-back" id="modal">
+  <div class="modal" id="modal-body"></div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
