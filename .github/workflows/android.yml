@@ -78,6 +78,31 @@ jobs:
           branch: Build_JRE_25
           name: jre25-multiarch
 
+      # Segunda fuente para Java 17 y 21 si la primera no tenía archivos
+      - name: Java 17 para Android (respaldo)
+        if: hashFiles('android/app_pojavlauncher/src/main/assets/components/jre-new/universal.tar.xz') == ''
+        continue-on-error: true
+        uses: dawidd6/action-download-artifact@v9
+        with:
+          workflow: build.yml
+          path: android/app_pojavlauncher/src/main/assets/components/jre-new
+          workflow_conclusion: completed
+          repo: FCL-Team/Android-OpenJDK-Build
+          branch: Build_JRE_17
+          name: jre17-multiarch
+
+      - name: Java 21 para Android (respaldo)
+        if: hashFiles('android/app_pojavlauncher/src/main/assets/components/jre-21/universal.tar.xz') == ''
+        continue-on-error: true
+        uses: dawidd6/action-download-artifact@v9
+        with:
+          workflow: build.yml
+          path: android/app_pojavlauncher/src/main/assets/components/jre-21
+          workflow_conclusion: completed
+          repo: FCL-Team/Android-OpenJDK-Build
+          branch: Build_JRE_21
+          name: jre21-multiarch
+
       # Solo se incluye un Java si tiene el formato que espera el launcher; si no, la app lo descarga sola.
       - name: Comprobar los Java incluidos
         run: |
