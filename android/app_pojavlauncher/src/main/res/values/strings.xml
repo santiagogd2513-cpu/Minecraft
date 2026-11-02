@@ -540,4 +540,11 @@
         <item>Fabric</item>
         <item>Quilt</item>
     </string-array>
+    <string name="amatista_search_hint">Search mods, shaders, packs…</string>
+    <string name="amatista_search_clear">Clear</string>
+    <string name="amatista_deps_loading">Looking for dependencies…</string>
+    <string name="amatista_deps_none">No dependencies needed ✓</string>
+    <string name="amatista_deps_required">Required dependencies:</string>
+    <string name="amatista_deps_optional">Optional:</string>
+    <string name="amatista_deps_error">Could not load dependencies.</string>
 </resources>

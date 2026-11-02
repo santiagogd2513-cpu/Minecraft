@@ -32,19 +32,38 @@
         <EditText
             android:id="@+id/search_mod_edittext"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:background="@drawable/background_line"
+            android:layout_height="48dp"
+            android:background="@drawable/bg_amatista_search"
             android:textSize="@dimen/_13ssp"
+            android:textColor="@color/primary_text"
+            android:textColorHint="@color/secondary_text"
             android:translationZ="2dp"
-
-            android:ems="10"
-            android:hint="@string/hint_search_modpack"
-            android:inputType="textPersonName"
-            android:paddingHorizontal="@dimen/padding_heavy"
+            android:drawableStart="@drawable/ic_amatista_search"
+            android:drawablePadding="10dp"
+            android:paddingStart="16dp"
+            android:paddingEnd="44dp"
+            android:singleLine="true"
+            android:imeOptions="actionSearch"
+            android:hint="@string/amatista_search_hint"
+            android:inputType="text"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/search_mod_filter"
             />
+
+        <ImageButton
+            android:id="@+id/search_mod_clear"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="4dp"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/ic_amatista_clear"
+            android:contentDescription="@string/amatista_search_clear"
+            android:translationZ="3dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="@id/search_mod_edittext"
+            app:layout_constraintTop_toTopOf="@id/search_mod_edittext"
+            app:layout_constraintBottom_toBottomOf="@id/search_mod_edittext" />
 
         <ImageButton
             android:id="@+id/search_mod_filter"

@@ -4,6 +4,12 @@ import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -100,10 +106,27 @@ public class SearchModFragment extends Fragment implements ModItemAdapter.Search
 
         mRecyclerview.addOnScrollListener(mOverlayPositionListener);
 
+        // Amatista: buscador que busca mientras escribes (con una pequeña pausa) y botón para borrar
+        View clearButton = view.findViewById(R.id.search_mod_clear);
+        Handler handler = new Handler(Looper.getMainLooper());
+        Runnable delayedSearch = () -> { if (isAdded() && getView() != null) searchMods(mSearchEditText.getText().toString()); };
+        mSearchEditText.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
+            @Override public void afterTextChanged(Editable s) {
+                clearButton.setVisibility(s.length() > 0 ? View.VISIBLE : View.GONE);
+                handler.removeCallbacks(delayedSearch);
+                handler.postDelayed(delayedSearch, 450);
+            }
+        });
+        clearButton.setOnClickListener(v -> mSearchEditText.setText(""));
         mSearchEditText.setOnEditorActionListener((v, actionId, event) -> {
+            handler.removeCallbacks(delayedSearch);
             searchMods(mSearchEditText.getText().toString());
             mSearchEditText.clearFocus();
-            return false;
+            InputMethodManager imm = (InputMethodManager) v.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+            if (imm != null) imm.hideSoftInputFromWindow(v.getWindowToken(), 0);
+            return actionId == EditorInfo.IME_ACTION_SEARCH;
         });
 
         mOverlay.post(()->{

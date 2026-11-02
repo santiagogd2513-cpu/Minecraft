@@ -35,6 +35,21 @@
         android:layout_marginBottom="@dimen/padding_large"
 
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/mod_extended_dependencies_textview" />
+
+    <!-- Amatista: dependencias de la versión elegida -->
+    <TextView
+        android:id="@+id/mod_extended_dependencies_textview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/padding_large"
+        android:layout_marginTop="@dimen/padding_moderate"
+        android:background="@drawable/bg_amatista_deps"
+        android:padding="12dp"
+        android:lineSpacingExtra="3dp"
+        android:textColor="@color/primary_text"
+        android:textSize="@dimen/_11ssp"
+        android:visibility="gone"
         app:layout_constraintTop_toBottomOf="@id/mod_extended_version_spinner" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

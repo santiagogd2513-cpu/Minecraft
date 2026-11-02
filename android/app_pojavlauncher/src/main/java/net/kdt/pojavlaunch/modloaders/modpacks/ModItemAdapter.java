@@ -25,6 +25,7 @@ import net.kdt.pojavlaunch.R;
 import net.kdt.pojavlaunch.Tools;
 import net.kdt.pojavlaunch.modloaders.modpacks.api.ModpackApi;
 import net.kdt.pojavlaunch.modloaders.modpacks.api.ContentInstaller;
+import net.kdt.pojavlaunch.modloaders.modpacks.api.DependencyResolver;
 import net.kdt.pojavlaunch.modloaders.modpacks.imagecache.ImageReceiver;
 import net.kdt.pojavlaunch.modloaders.modpacks.imagecache.ModIconCache;
 import net.kdt.pojavlaunch.modloaders.modpacks.models.Constants;
@@ -161,6 +162,9 @@ public class ModItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         private Bitmap mThumbnailBitmap;
         private ImageReceiver mImageReceiver;
         private boolean mInstallEnabled;
+        /* Amatista: caja de dependencias */
+        private android.widget.TextView mDepsTextView;
+        private int mDepsToken = 0;
 
         /* Used to display available versions of the mod(pack) */
         private final SimpleArrayAdapter<String> mVersionAdapter = new SimpleArrayAdapter<>(null);
@@ -175,6 +179,14 @@ public class ModItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     mExtendedButton = mExtendedLayout.findViewById(R.id.mod_extended_select_version_button);
                     mExtendedSpinner = mExtendedLayout.findViewById(R.id.mod_extended_version_spinner);
                     mExtendedErrorTextView = mExtendedLayout.findViewById(R.id.mod_extended_error_textview);
+                    mDepsTextView = mExtendedLayout.findViewById(R.id.mod_extended_dependencies_textview);
+                    mExtendedSpinner.setOnItemSelectedListener(new android.widget.AdapterView.OnItemSelectedListener() {
+                        @Override
+                        public void onItemSelected(android.widget.AdapterView<?> parent, View v, int position, long id) {
+                            loadDependencies(position);
+                        }
+                        @Override public void onNothingSelected(android.widget.AdapterView<?> parent) {}
+                    });
 
                     mExtendedButton.setOnClickListener(v1 -> {
                         if (mModDetail == null) return;
@@ -283,6 +295,7 @@ public class ModItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 mExtendedErrorTextView.setVisibility(View.GONE);
                 mVersionAdapter.setObjects(Arrays.asList(detailedItem.versionNames));
                 mExtendedSpinner.setAdapter(mVersionAdapter);
+                loadDependencies(mExtendedSpinner.getSelectedItemPosition());
             } else {
                 closeDetailedView();
                 setInstallEnabled(false);
@@ -290,6 +303,46 @@ public class ModItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 mExtendedSpinner.setAdapter(null);
                 mVersionAdapter.setObjects(null);
             }
+        }
+
+        /** Amatista: muestra las dependencias de la versión elegida. */
+        private void loadDependencies(int versionIndex) {
+            if (mDepsTextView == null) return;
+            final ModDetail detail = mModDetail;
+            if (detail == null || detail.isModpack || versionIndex < 0) {
+                mDepsTextView.setVisibility(View.GONE);
+                return;
+            }
+            final int token = ++mDepsToken;
+            final android.content.Context ctx = mDepsTextView.getContext().getApplicationContext();
+            mDepsTextView.setVisibility(View.VISIBLE);
+            mDepsTextView.setText(R.string.amatista_deps_loading);
+            PojavApplication.sExecutorService.execute(() -> {
+                DependencyResolver.Result result = DependencyResolver.resolve(ctx, detail, versionIndex);
+                Tools.runOnUiThread(() -> {
+                    if (token != mDepsToken || detail != mModDetail) return; // la vista cambió mientras cargaba
+                    if (result == null) {
+                        mDepsTextView.setText(R.string.amatista_deps_error);
+                        return;
+                    }
+                    if (result.required.isEmpty() && result.optional.isEmpty()) {
+                        mDepsTextView.setText(R.string.amatista_deps_none);
+                        return;
+                    }
+                    StringBuilder sb = new StringBuilder();
+                    if (!result.required.isEmpty()) {
+                        sb.append(ctx.getString(R.string.amatista_deps_required));
+                        for (String n : result.required) sb.append("\n  •  ").append(n);
+                    } else {
+                        sb.append(ctx.getString(R.string.amatista_deps_none));
+                    }
+                    if (!result.optional.isEmpty()) {
+                        sb.append("\n\n").append(ctx.getString(R.string.amatista_deps_optional));
+                        for (String n : result.optional) sb.append("\n  ◦  ").append(n);
+                    }
+                    mDepsTextView.setText(sb.toString());
+                });
+            });
         }
 
         private void openDetailedView() {
@@ -310,6 +363,7 @@ public class ModItemAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
         private void setDetailedStateDefault() {
             setInstallEnabled(false);
+            if (mDepsTextView != null) { mDepsToken++; mDepsTextView.setVisibility(View.GONE); }
             mExtendedSpinner.setAdapter(mLoadingAdapter);
             mExtendedErrorTextView.setVisibility(View.GONE);
             openDetailedView();

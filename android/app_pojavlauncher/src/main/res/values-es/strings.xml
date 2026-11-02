@@ -487,4 +487,11 @@
         <item>Fabric</item>
         <item>Quilt</item>
     </string-array>
+    <string name="amatista_search_hint">Busca mods, shaders, paquetes…</string>
+    <string name="amatista_search_clear">Borrar</string>
+    <string name="amatista_deps_loading">Buscando dependencias…</string>
+    <string name="amatista_deps_none">No necesita dependencias ✓</string>
+    <string name="amatista_deps_required">Dependencias necesarias:</string>
+    <string name="amatista_deps_optional">Opcionales:</string>
+    <string name="amatista_deps_error">No se pudieron cargar las dependencias.</string>
 </resources>
