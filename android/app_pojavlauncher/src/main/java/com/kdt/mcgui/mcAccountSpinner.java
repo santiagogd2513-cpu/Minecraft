@@ -334,34 +334,15 @@ public class mcAccountSpinner extends AppCompatSpinner implements AdapterView.On
         setImageFromSelectedAccount();
     }
 
-    @Deprecated()
-    /* Legacy behavior, update the head image manually for the selected account */
+    /* Amatista: refresca la bolita con el avatar de la cuenta seleccionada */
     private void setImageFromSelectedAccount(){
-        BitmapDrawable oldBitmapDrawable = mHeadDrawable;
-
-        if(mSelectecAccount != null){
-            View layout = getSelectedView();
-            if(layout != null){
-                ExtendedTextView view = layout.findViewById(R.id.account_item);
-                Bitmap bitmap = mSelectecAccount.getSkinFace();
-                if(bitmap != null) {
-                    mHeadDrawable = new BitmapDrawable(getResources(), bitmap);
-                    view.setCompoundDrawables(mHeadDrawable, null, null, null);
-                }else{
-                    view.setCompoundDrawables(null, null, null, null);
-                }
-                view.postProcessDrawables();
-            }
-        }
-
-        if(oldBitmapDrawable != null){
-            oldBitmapDrawable.getBitmap().recycle();
-        }
+        if(getAdapter() instanceof AccountAdapter) ((AccountAdapter) getAdapter()).notifyDataSetChanged();
     }
 
     private class AccountAdapter extends ArrayAdapter<String> {
 
         private final HashMap<String, Drawable> mImageCache = new HashMap<>();
+        @Override public void notifyDataSetChanged() { mImageCache.clear(); super.notifyDataSetChanged(); }
         public AccountAdapter(@NonNull Context context, int resource, @NonNull String[] objects) {
             super(context, resource, objects);
         }
@@ -375,17 +356,18 @@ public class mcAccountSpinner extends AppCompatSpinner implements AdapterView.On
             ExtendedTextView textview = convertView.findViewById(R.id.account_item);
             ImageView deleteButton = convertView.findViewById(R.id.delete_account_button);
             textview.setText(super.getItem(position));
+            textview.postProcessDrawables();
 
             // Handle the "Add account section"
             if(position == 0) {
-                textview.setCompoundDrawables(ResourcesCompat.getDrawable(parent.getResources(), R.drawable.ic_add, null), null, null, null);
+                textview.setCompoundDrawables(new BitmapDrawable(parent.getResources(), AccountAvatar.plus(avatarSize(parent))), null, null, null);
                 deleteButton.setVisibility(View.GONE);
             }
             else {
                 String username = super.getItem(position);
                 Drawable accountHead = mImageCache.get(username);
                 if (accountHead == null){
-                    accountHead = new BitmapDrawable(parent.getResources(), MinecraftAccount.getSkinFace(username));
+                    accountHead = new BitmapDrawable(parent.getResources(), AccountAvatar.forAccount(null, username, avatarSize(parent)));
                     mImageCache.put(username, accountHead);
                 }
                 textview.setCompoundDrawables(accountHead, null, null, null);
@@ -403,9 +385,23 @@ public class mcAccountSpinner extends AppCompatSpinner implements AdapterView.On
         @NonNull
         @Override
         public View getView(int position, View convertView, @NonNull ViewGroup parent) {
-            View view = getDropDownView(position, convertView, parent);
-            view.findViewById(R.id.delete_account_button).setVisibility(View.GONE);
-            return view;
+            // Amatista: en la barra solo se ve una bolita (foto de la skin, inicial o avatar por defecto)
+            ImageView avatar = convertView instanceof ImageView ? (ImageView) convertView : new ImageView(parent.getContext());
+            int size = avatarSize(parent);
+            int pad = parent.getResources().getDimensionPixelSize(R.dimen._8sdp);
+            avatar.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+            avatar.setPadding(pad, pad, pad, pad);
+            avatar.setScaleType(ImageView.ScaleType.FIT_CENTER);
+            Bitmap bitmap = position == 0
+                    ? AccountAvatar.plus(size)
+                    : AccountAvatar.forAccount(position == getSelectedItemPosition() ? mSelectecAccount : null, super.getItem(position), size);
+            avatar.setImageBitmap(bitmap);
+            avatar.setContentDescription(super.getItem(position));
+            return avatar;
+        }
+
+        private int avatarSize(ViewGroup parent) {
+            return parent.getResources().getDimensionPixelSize(R.dimen.amatista_avatar_size);
         }
 
         private void showDeleteDialog(Context context, int position) {

@@ -6,15 +6,40 @@
     android:layout_height="match_parent"
     android:background="@android:color/transparent">
 
+    <!-- Amatista: barra superior con la bolita de la cuenta, el nombre y los ajustes -->
+    <View
+        android:id="@+id/amatista_header"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/_52sdp"
+        android:background="@color/background_status_bar"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <com.kdt.mcgui.mcAccountSpinner
         android:id="@+id/account_spinner"
-        android:layout_width="match_parent"
+        android:layout_width="@dimen/_52sdp"
         android:layout_height="@dimen/_52sdp"
 
         android:dropDownWidth="@dimen/_250sdp"
         android:dropDownVerticalOffset="@dimen/_52sdp"
 
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/amatista_title"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:gravity="center_vertical"
+        android:paddingStart="@dimen/padding_medium"
+        android:text="Amatista"
+        android:textColor="@color/primary_text"
+        android:textSize="@dimen/_16ssp"
+        android:textStyle="bold"
+        android:maxLines="1"
+        app:layout_constraintTop_toTopOf="@id/amatista_header"
+        app:layout_constraintBottom_toBottomOf="@id/amatista_header"
+        app:layout_constraintStart_toEndOf="@id/account_spinner"
+        app:layout_constraintEnd_toStartOf="@id/setting_button" />
 
     <ImageButton
         android:id="@+id/setting_button"
@@ -35,7 +60,7 @@
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintBottom_toTopOf="@+id/progress_layout"
-        app:layout_constraintTop_toBottomOf="@+id/account_spinner" />
+        app:layout_constraintTop_toBottomOf="@+id/amatista_header" />
 
 
     <com.kdt.mcgui.ProgressLayout

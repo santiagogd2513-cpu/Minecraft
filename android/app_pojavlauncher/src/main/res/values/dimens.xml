@@ -31,4 +31,5 @@
     <dimen name="fragment_padding_medium">@dimen/_10sdp</dimen>
     <!-- Misc paddings -->
     <dimen name="profile_editor_image_padding">@dimen/padding_small</dimen>
+    <dimen name="amatista_avatar_size">40dp</dimen>
 </resources>
