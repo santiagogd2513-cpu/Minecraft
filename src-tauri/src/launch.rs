@@ -72,7 +72,31 @@ fn extract_natives(version: &Value, dir: &Path) -> Result<(), String> {
     Ok(())
 }
 
-fn classpath(version: &Value) -> String {
+/// Jar del juego que va en el classpath. Si la versión hereda de otra (Forge, OptiFine)
+/// se usa una copia con el nombre de la versión, como hace el launcher oficial: Forge
+/// 1.17+ ignora `${version_name}.jar` (ignoreList) y no lo carga dos veces.
+fn launch_jar(version: &Value) -> Result<PathBuf, String> {
+    let base = mojang::client_jar(version);
+    let id = version["id"].as_str().unwrap_or_default();
+    let jar_id = version["jar"].as_str().unwrap_or(id);
+    if id.is_empty() || id == jar_id {
+        return Ok(base);
+    }
+    let own = versions_dir().join(id).join(format!("{id}.jar"));
+    let same = match (std::fs::metadata(&base), std::fs::metadata(&own)) {
+        (Ok(a), Ok(b)) => a.len() == b.len(),
+        _ => false,
+    };
+    if !same {
+        if let Some(p) = own.parent() {
+            std::fs::create_dir_all(p).map_err(|e| e.to_string())?;
+        }
+        std::fs::copy(&base, &own).map_err(|e| format!("No se pudo preparar el jar del juego: {e}"))?;
+    }
+    Ok(own)
+}
+
+fn classpath(version: &Value, jar: &Path) -> String {
     let mut seen = std::collections::HashSet::new();
     let mut parts: Vec<String> = Vec::new();
     for lib in mojang::resolve_libraries(version).into_iter().filter(|l| !l.is_native) {
@@ -81,7 +105,7 @@ fn classpath(version: &Value) -> String {
             parts.push(p);
         }
     }
-    parts.push(mojang::client_jar(version).display().to_string());
+    parts.push(jar.display().to_string());
     parts.join(config::classpath_separator())
 }
 
@@ -183,7 +207,8 @@ pub async fn prepare(inst: &Instance, account: &Account, task: &str) -> Result<G
     vars.insert("natives_directory", natives_dir.display().to_string());
     vars.insert("launcher_name", "AmatistaLauncher".into());
     vars.insert("launcher_version", env!("CARGO_PKG_VERSION").into());
-    vars.insert("classpath", classpath(&version));
+    let jar = launch_jar(&version)?;
+    vars.insert("classpath", classpath(&version, &jar));
     vars.insert("library_directory", libraries_dir().display().to_string());
     vars.insert("classpath_separator", config::classpath_separator().into());
     vars.insert("resolution_width", settings.width.to_string());
