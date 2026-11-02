@@ -1,0 +1,10 @@
+{
+  "item.arsenalorbital.orbital_designator": "Designador orbital",
+  "item.arsenalorbital.orbital_designator.tip1": "Mantén pulsado 2 s apuntando a un bloque y suelta.",
+  "item.arsenalorbital.orbital_designator.tip2": "Llama al satélite ÉGIDA-7. Durante la cinemática eres invulnerable.",
+  "message.arsenalorbital.no_target": "Sin objetivo: apunta a un bloque (fuera de alcance)",
+  "message.arsenalorbital.busy": "ÉGIDA-7 ya está en una misión",
+  "message.arsenalorbital.locked": "Objetivo fijado: %s %s %s. ÉGIDA-7 en camino…",
+  "key.arsenalorbital.skip": "Omitir cinemática orbital",
+  "key.categories.arsenalorbital": "Arsenal Orbital"
+}

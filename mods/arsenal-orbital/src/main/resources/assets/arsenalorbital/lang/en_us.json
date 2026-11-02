@@ -1,0 +1,10 @@
+{
+  "item.arsenalorbital.orbital_designator": "Orbital Designator",
+  "item.arsenalorbital.orbital_designator.tip1": "Hold for 2 s aiming at a block, then release.",
+  "item.arsenalorbital.orbital_designator.tip2": "Calls the AEGIS-7 satellite. You are invulnerable during the cinematic.",
+  "message.arsenalorbital.no_target": "No target: aim at a block (out of range)",
+  "message.arsenalorbital.busy": "AEGIS-7 is already on a mission",
+  "message.arsenalorbital.locked": "Target locked: %s %s %s. AEGIS-7 inbound…",
+  "key.arsenalorbital.skip": "Skip orbital cinematic",
+  "key.categories.arsenalorbital": "Orbital Arsenal"
+}

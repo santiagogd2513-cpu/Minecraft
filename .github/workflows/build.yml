@@ -4,7 +4,7 @@ on:
   push:
     branches: [ "**" ]
     # El launcher de Android tiene su propio workflow.
-    paths-ignore: [ "android/**", ".github/workflows/android.yml", ".gitmodules" ]
+    paths-ignore: [ "android/**", ".github/workflows/android.yml", ".gitmodules", "mods/**", ".github/workflows/mod-arsenal.yml" ]
   workflow_dispatch:
 
 permissions:
