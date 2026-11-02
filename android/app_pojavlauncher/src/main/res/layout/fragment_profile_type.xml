@@ -81,6 +81,7 @@
 
         <com.kdt.mcgui.MineButton
             android:id="@+id/modded_profile_fabric"
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/padding_large"
@@ -89,6 +90,7 @@
 
         <com.kdt.mcgui.MineButton
             android:id="@+id/modded_profile_quilt"
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/padding_large"
@@ -105,6 +107,7 @@
 
         <com.kdt.mcgui.MineButton
             android:id="@+id/modded_profile_neoforge"
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/padding_large"
@@ -113,6 +116,7 @@
 
         <com.kdt.mcgui.MineButton
             android:id="@+id/modded_profile_modpack"
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/padding_large"
@@ -121,6 +125,7 @@
 
         <com.kdt.mcgui.MineButton
             android:id="@+id/modded_profile_lwjgl3ify"
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/padding_large"
@@ -129,6 +134,7 @@
 
         <com.kdt.mcgui.MineButton
             android:id="@+id/modded_profile_bta"
+            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="@dimen/padding_large"
