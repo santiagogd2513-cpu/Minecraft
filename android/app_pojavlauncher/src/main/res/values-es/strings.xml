@@ -353,4 +353,138 @@
     <string name="modloader_dl_install_neoforge">Crear perfil de Neoforge</string>
     <string name="neoforge_dl_select_version">Seleccionar versión de NeoForge</string>
     <string name="neoforge_dl_no_installer">Lo sentimos, pero esta versión de NeoForge no tiene un instalador, lo cual aún no está soportado.</string>
+    <!-- Amatista: traducciones añadidas -->
+    <string name="hint_control_mapping">"Toca el engranaje de arriba al centro para abrir el menú ⚙\nToca un botón para personalizarlo: editar, cambiar tamaño, quitar o cambiar sus teclas."</string>
+    <string name="mcl_setting_title_renderer_settings">Ajustes extra del renderizador</string>
+    <string name="mcl_setting_title_renderer_subtitle">Ajustes específicos de cada renderizador</string>
+    <string name="mcl_setting_renderer_gles2_4">Holy GL4ES - (solo &lt;1.21.4, rápido)</string>
+    <string name="mcl_setting_renderer_ng_gl4es">Krypton Wrapper - (todas las versiones, rápido)</string>
+    <string name="mcl_setting_renderer_vulkan_kopper_zink">Kopper Zink (Vulkan) - (todas las versiones, medio)</string>
+    <string name="mcl_setting_renderer_mobileglues">SFPEW/MobileGlues (OpenGL ES) - (todas las versiones, rápido)</string>
+    <string name="global_off">Desactivado</string>
+    <string name="control_primary">Pri</string>
+    <string name="control_shift">◇</string>
+    <string name="control_inventory">Inv</string>
+    <string name="mcl_gamepad_SDL">Activar controles SDL</string>
+    <string name="mcl_gamepad_SDL_subtitle">Usa SDL para los mandos. Mejor compatibilidad con mods. Si no se usa, se vuelve a GLFW.</string>
+    <string name="mcl_setting_subtitle_grab_mouse">Mantiene el cursor dentro del juego. Evita que el ratón toque los controles táctiles.</string>
+    <string name="mcl_setting_title_keyboard_panning">Desplazar con el teclado</string>
+    <string name="mcl_setting_subtitle_keyboard_panning">Sube la pantalla cuando el teclado está abierto.</string>
+    <string name="customctrl_forward_lock">Bloqueo de avance</string>
+    <string name="pedit_java_runtime">Versión de Java</string>
+    <string name="preference_gyro_sensitivity_title">Sensibilidad del giroscopio</string>
+    <string name="neoforge_dl_searching">Buscando la versión de NeoForge</string>
+    <string name="newdl_downloading_jre_runtime">Descargando Java %s (%.2f/%.2f MB)</string>
+    <string name="cropper_lock_vertical">Bloq. V</string>
+    <string name="cropper_lock_horizontal">Bloq. H</string>
+    <string name="controller_button_start">Start</string>
+    <string name="controller_button_shoulder_left">Gatillo superior izquierdo</string>
+    <string name="controller_button_shoulder_right">Gatillo superior derecho</string>
+    <string name="controller_direction_forward">Palanca arriba</string>
+    <string name="controller_direction_backward">Palanca abajo</string>
+    <string name="controller_direction_left">Palanca izquierda</string>
+    <string name="controller_direction_right">Palanca derecha</string>
+    <string name="controller_stick_press_l">Palanca izquierda (clic)</string>
+    <string name="controller_stick_press_r">Palanca derecha (clic)</string>
+    <string name="controller_dpad_up">Cruceta arriba</string>
+    <string name="controller_dpad_down">Cruceta abajo</string>
+    <string name="controller_dpad_left">Cruceta izquierda</string>
+    <string name="controller_dpad_right">Cruceta derecha</string>
+    <string name="customctrl_visibility_ingame">En el juego</string>
+    <string name="customctrl_visibility_in_menus">En los menús</string>
+    <string name="controller_remapper_expand_entry">Expande para cambiar las teclas</string>
+    <string name="create_bta_profile">Crear perfil \"Better than Adventure!\"</string>
+    <string name="select_bta_version">Elige la versión de \"Better than Adventure!\"</string>
+    <string name="bta_installer_available_versions">Versiones de BTA compatibles</string>
+    <string name="bta_installer_untested_versions">Versiones de BTA sin probar</string>
+    <string name="bta_installer_nightly_versions">Versiones nightly de BTA</string>
+    <string name="newdl_extracting_native_libraries">Extrayendo librerías nativas (%d/%d)</string>
+    <string name="toast_not_available_demo">No disponible en modo demo</string>
+    <string name="preference_renderer_mobileglues_settings">Ajustes del renderizador MobileGlues</string>
+    <string name="mg_renderer_glsl_cache">Tamaño máximo de la caché GLSL</string>
+    <string name="mg_renderer_angle">Usar ANGLE como controlador</string>
+    <string name="mg_renderer_title_errorSetting">Filtrado de errores</string>
+    <string name="mg_renderer_title_timerQueryExt">Ocultar uso de GPU en el menú F3</string>
+    <string name="mg_renderer_summary_timerQueryExt">Evita cierres al abrir F3 en algunos dispositivos Mali</string>
+    <string name="preference_ANGLE_only">Opciones solo para ANGLE</string>
+    <string name="mg_renderer_title_angleDepthClearFixMode">Evitar que la mano y los objetos atraviesen bloques</string>
+    <string name="mg_renderer_summary_angleDepthClearFixMode">Solo afecta a ANGLE, puede bajar el rendimiento.</string>
+    <string name="mg_renderer_title_gl43exts">Anunciar extensiones experimentales de OpenGL 4.3</string>
+    <string name="mg_renderer_summary_gl43exts">Puede ayudar con cierres de mods. Desactívalo si no lo necesitas, puede causar cierres.</string>
+    <string name="mg_renderer_title_computeShaderext">Anunciar extensión experimental de compute shaders</string>
+    <string name="mg_renderer_summary_computeShaderext">Puede ayudar con fallos de shaders. Desactívalo si no lo necesitas, puede causar cierres.</string>
+    <string name="demo_versions_supported">En cuentas demo solo se admite Vanilla 1.3.1 o superior</string>
+    <string name="demo_unsupported">El perfil demo no es compatible</string>
+    <string name="change_account">Cambia de cuenta para usar esta función</string>
+    <string name="no_minecraft_account_found">No se encontró una cuenta de Minecraft</string>
+    <string name="feature_requires_java_account">Esta función necesita una cuenta de Microsoft que tenga Minecraft Java Edition.</string>
+    <string name="delete_account_and_login">Eliminar la cuenta e iniciar sesión</string>
+    <string name="login_again">Vuelve a iniciar sesión</string>
+    <string name="account_corrupted">La cuenta seleccionada está dañada</string>
+    <string name="preference_category_touchcontroller_settings">Ajustes de TouchController</string>
+    <string name="preference_force_enable_touchcontroller_title">Forzar TouchController</string>
+    <string name="preference_force_enable_touchcontroller_description">Activa la integración con TouchController aunque no se encuentre el mod.</string>
+    <string name="preference_touchcontroller_vibrate_length_title">Duración de la vibración de TouchController</string>
+    <string name="preference_touchcontroller_vibrate_length_description">Duración de la vibración al usar TouchController.</string>
+    <string name="error_vanilla_json_corrupt">El JSON de la versión vanilla parece dañado. Bórrala y vuelve a instalarla.</string>
+    <string name="preference_ask_for_microphone_title">Permitir micrófono</string>
+    <string name="preference_ask_for_microphone_description">Toca para volver a pedir el permiso del micrófono, necesario para mods de chat de voz como Simple Voice Chat.</string>
+    <string name="mcl_gamepad_forcedSDL_subtitle">Si en 26.3-snapshot-4 o superior los mandos o sus mods no funcionan bien, esto puede arreglarlo.</string>
+    <string name="mcl_gamepad_forcedSDL">Forzar el uso de SDL para los mandos</string>
+    <string name="preference_category_SDL_settings">Ajustes de SDL</string>
+    <string name="oldL4JFound">Usas una versión de Legacy4J sin los arreglos para Android. Activa SDL a mano en los ajustes de mando para una mejor experiencia.</string>
+    <string name="global_warning">¡Atención!</string>
+    <string name="controllableFound">Controllable a veces se cierra al iniciar. Vuelve a intentarlo o usa otro mod como Controlify.</string>
+    <string name="mg_renderer_title_dsaExt">Anunciar extensión experimental Direct State Access</string>
+    <string name="mg_renderer_summary_dsaExt">Puede ayudar con shaders de Iris; necesaria para el mod AcceleratedRendering</string>
+    <string name="mg_renderer_title_fsr">Escalado AMD FSR 1</string>
+    <string name="autorendererselectfailed">No se pudo elegir el renderizador automáticamente; se usa HolyGL4ES</string>
+    <string name="sodium_warning_title">¡Sodium detectado!</string>
+    <string name="sodium_warning_message">Parece que usas Sodium. No es compatible y puede causar fallos gráficos o cierres. Quítalo junto con los mods que dependan de él.</string>
+    <string name="delete_sodium">Eliminar Sodium y jugar</string>
+    <string name="sodium_override_title">Usar Sodium de todas formas</string>
+    <string name="sodium_override_summaryOff">Usar Sodium puede causar fallos visuales y cierres. Quedas avisado.</string>
+    <string name="sodium_override_summaryOn">Sodium no es compatible. No habrá ayuda si tienes problemas.</string>
+    <string name="not_modpack_file">¡No es un archivo de modpack!</string>
+    <string name="global_not_installed">No instalado</string>
+    <string name="global_download">Descargar</string>
+    <string name="multirt_no_internet">Error al descargar, revisa tu conexión a internet.</string>
+    <string name="global_installing">Instalando…</string>
+    <string name="error_key_unsupported">¡Error! La tecla de este botón no es válida. ¿Actualizaste el launcher?</string>
+    <string name="error_invalid_value">¡Error! Valor no válido.</string>
+    <string name="minecraft_no_username_set">No has elegido tu nombre de Minecraft. Elígelo en la web de Minecraft antes de iniciar sesión.</string>
+    <string name="create_lwjgl3ify_profile">Crear perfil LWJGL3ify</string>
+    <string name="select_lwjgl3ify_version">Elige la versión de LWJGL3ify</string>
+    <string name="lwjgl3ify_installer_available_versions">Versiones de LWJGL3ify compatibles</string>
+    <string name="lwjgl3ify_installer_broken_versions">Versiones de LWJGL3ify con fallos (SDL)</string>
+    <string name="new_default_controls">Se crearon nuevos controles por defecto en new_default.json. ¡Pruébalos!</string>
+    <string name="import_modpack_start">Importando modpack…</string>
+    <string name="import_modpack_hash">Comprobando el modpack… (%s MB / %s MB)</string>
+    <string name="import_modpack_json">Leyendo la información del modpack…</string>
+    <string name="import_modpack_copy">Copiando el modpack a la caché… (%s MB / %s MB)</string>
+    <string name="angelica_found_sfpew_notice">Se encontró el mod Angelica; Simple FPE Wrapper no hace falta</string>
+    <string name="use_angle_checkbox">Usar ANGLE (puede subir los FPS)</string>
+    <string name="amatista_content_title">Mods, paquetes y shaders</string>
+    <string name="amatista_content_loader">Cargador de mods</string>
+    <string name="amatista_content_any_version">Cualquier versión (mantén pulsado para borrar)</string>
+    <string name="amatista_content_pick_profile">¿En qué perfil instalar?</string>
+    <string name="amatista_content_no_profiles">Primero crea un perfil (Vanilla, OptiFine o Forge).</string>
+    <string name="amatista_content_no_download">El autor no permite descargar este archivo desde otras apps.</string>
+    <string name="amatista_content_installed">%1$s instalado (+%2$d dependencias)</string>
+    <string name="amatista_content_downloading">Descargando %s</string>
+    <string name="amatista_cf_key_title">Clave de API de CurseForge</string>
+    <string name="amatista_cf_key_summary">Clave gratuita de console.curseforge.com. Modrinth no necesita clave.</string>
+    <string-array name="amatista_content_types">
+        <item>Mods</item>
+        <item>Modpacks</item>
+        <item>Paquetes de recursos</item>
+        <item>Shaders</item>
+    </string-array>
+    <string-array name="amatista_content_loaders">
+        <item>Cualquiera</item>
+        <item>Forge</item>
+        <item>NeoForge</item>
+        <item>Fabric</item>
+        <item>Quilt</item>
+    </string-array>
 </resources>

@@ -12,6 +12,7 @@ public class ModItem extends ModSource {
     public ModItem(int apiSource, boolean isModpack, String id, String title, String description, String imageUrl) {
         this.apiSource = apiSource;
         this.isModpack = isModpack;
+        this.contentType = isModpack ? Constants.TYPE_MODPACK : Constants.TYPE_MOD;
         this.id = id;
         this.title = title;
         this.description = description;

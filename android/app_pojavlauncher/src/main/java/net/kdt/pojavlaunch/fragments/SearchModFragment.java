@@ -5,7 +5,10 @@ import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
@@ -23,6 +26,7 @@ import net.kdt.pojavlaunch.R;
 import net.kdt.pojavlaunch.modloaders.modpacks.ModItemAdapter;
 import net.kdt.pojavlaunch.modloaders.modpacks.api.CommonApi;
 import net.kdt.pojavlaunch.modloaders.modpacks.api.ModpackApi;
+import net.kdt.pojavlaunch.modloaders.modpacks.models.Constants;
 import net.kdt.pojavlaunch.modloaders.modpacks.models.SearchFilters;
 import net.kdt.pojavlaunch.profiles.VersionSelectorDialog;
 import net.kdt.pojavlaunch.progresskeeper.ProgressKeeper;
@@ -55,13 +59,24 @@ public class SearchModFragment extends Fragment implements ModItemAdapter.Search
     public SearchModFragment(){
         super(R.layout.fragment_mod_search);
         mSearchFilters = new SearchFilters();
-        mSearchFilters.isModpack = true;
+        // Amatista: la sección de contenido empieza en mods
+        mSearchFilters.contentType = Constants.TYPE_MOD;
+        mSearchFilters.isModpack = false;
     }
+
+    /* Orden del selector de tipo */
+    private static final int[] TYPES = {Constants.TYPE_MOD, Constants.TYPE_MODPACK, Constants.TYPE_RESOURCEPACK, Constants.TYPE_SHADER};
+    /* Valores del selector de cargador (el primero = cualquiera) */
+    private static final String[] LOADERS = {null, "forge", "neoforge", "fabric", "quilt"};
 
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
-        modpackApi = new CommonApi(context.getString(R.string.curseforge_api_key));
+        // Amatista: la clave de CurseForge se puede poner en Ajustes > Varios
+        String cfKey = androidx.preference.PreferenceManager.getDefaultSharedPreferences(context)
+                .getString("amatista_curseforge_key", "").trim();
+        if (cfKey.isEmpty()) cfKey = context.getString(R.string.curseforge_api_key);
+        modpackApi = new CommonApi(cfKey);
     }
 
     @Override
@@ -99,6 +114,22 @@ public class SearchModFragment extends Fragment implements ModItemAdapter.Search
                    mRecyclerview.getPaddingBottom());
         });
         mFilterButton.setOnClickListener(v -> displayFilterDialog());
+
+        Spinner typeSpinner = view.findViewById(R.id.search_mod_type_spinner);
+        ArrayAdapter<String> typeAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_dropdown_item,
+                getResources().getStringArray(R.array.amatista_content_types));
+        typeSpinner.setAdapter(typeAdapter);
+        typeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View v, int position, long id) {
+                int type = TYPES[position];
+                if (type == mSearchFilters.contentType) return;
+                mSearchFilters.contentType = type;
+                mSearchFilters.isModpack = type == Constants.TYPE_MODPACK;
+                searchMods(mSearchEditText.getText().toString());
+            }
+            @Override public void onNothingSelected(AdapterView<?> parent) {}
+        });
 
         searchMods(null);
     }
@@ -159,9 +190,26 @@ public class SearchModFragment extends Fragment implements ModItemAdapter.Search
             // Apply visually all the current settings
             mSelectedVersion.setText(mSearchFilters.mcVersion);
 
+            // Cargador: solo para mods y modpacks
+            Spinner loaderSpinner = dialog.findViewById(R.id.search_mod_loader_spinner);
+            View loaderLabel = dialog.findViewById(R.id.search_mod_loader_textview);
+            boolean loaderVisible = mSearchFilters.contentType == Constants.TYPE_MOD || mSearchFilters.contentType == Constants.TYPE_MODPACK;
+            assert loaderSpinner != null && loaderLabel != null;
+            loaderSpinner.setVisibility(loaderVisible ? View.VISIBLE : View.GONE);
+            loaderLabel.setVisibility(loaderVisible ? View.VISIBLE : View.GONE);
+            loaderSpinner.setAdapter(new ArrayAdapter<>(requireContext(), android.R.layout.simple_spinner_dropdown_item,
+                    getResources().getStringArray(R.array.amatista_content_loaders)));
+            for (int i = 0; i < LOADERS.length; i++) {
+                if (LOADERS[i] == null ? mSearchFilters.loader == null : LOADERS[i].equals(mSearchFilters.loader)) {
+                    loaderSpinner.setSelection(i);
+                }
+            }
+            mSelectedVersion.setOnLongClickListener(v -> { mSelectedVersion.setText(""); return true; });
+
             // Apply the new settings
             mApplyButton.setOnClickListener(v -> {
                 mSearchFilters.mcVersion = mSelectedVersion.getText().toString();
+                mSearchFilters.loader = LOADERS[Math.max(0, loaderSpinner.getSelectedItemPosition())];
                 searchMods(mSearchEditText.getText().toString());
                 dialogInterface.dismiss();
             });

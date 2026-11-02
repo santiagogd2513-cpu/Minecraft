@@ -69,8 +69,17 @@
             android:layout_height="wrap_content"
             android:indeterminate="true"
             android:visibility="gone"
-            app:layout_constraintTop_toBottomOf="@+id/search_mod_edittext"
+            app:layout_constraintTop_toBottomOf="@+id/search_mod_type_spinner"
             tools:layout_editor_absoluteX="13dp" />
+
+        <!-- Amatista: tipo de contenido (mods, modpacks, paquetes de recursos, shaders) -->
+        <Spinner
+            android:id="@+id/search_mod_type_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/padding_medium"
+            android:minHeight="@dimen/_30sdp"
+            app:layout_constraintTop_toBottomOf="@+id/search_mod_edittext" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

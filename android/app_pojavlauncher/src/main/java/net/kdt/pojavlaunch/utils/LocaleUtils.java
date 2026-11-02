@@ -27,15 +27,17 @@ public class LocaleUtils extends ContextWrapper {
             PREF_FORCE_ENGLISH = DEFAULT_PREF.getBoolean("force_english", false);
         }
 
-        if(PREF_FORCE_ENGLISH){
+        // Amatista Launcher: todo en español salvo que se active "forzar inglés".
+        {
+            Locale target = PREF_FORCE_ENGLISH ? Locale.ENGLISH : new Locale("es");
             Resources resources = context.getResources();
             Configuration configuration = resources.getConfiguration();
 
-            configuration.setLocale(Locale.ENGLISH);
-            Locale.setDefault(Locale.ENGLISH);
+            configuration.setLocale(target);
+            if (PREF_FORCE_ENGLISH) Locale.setDefault(target); // no tocar formatos numéricos de la JVM
             if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
-                LocaleList localeList = new LocaleList(Locale.ENGLISH);
-                LocaleList.setDefault(localeList);
+                LocaleList localeList = new LocaleList(target);
+                if (PREF_FORCE_ENGLISH) LocaleList.setDefault(localeList);
                 configuration.setLocales(localeList);
             }
 

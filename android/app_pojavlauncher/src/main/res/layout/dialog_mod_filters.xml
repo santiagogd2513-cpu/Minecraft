@@ -27,7 +27,7 @@
         android:layout_marginEnd="@dimen/padding_medium"
 
         android:background="@drawable/background_line"
-        android:hint="@string/version_select_hint"
+        android:hint="@string/amatista_content_any_version"
         android:paddingHorizontal="@dimen/padding_heavy"
         android:textSize="@dimen/_13ssp"
 
@@ -55,7 +55,24 @@
         android:text="@string/generic_apply"
         android:layout_marginVertical="@dimen/padding_large"
 
-        app:layout_constraintTop_toBottomOf="@id/search_mod_selected_mc_version_textview"
+        app:layout_constraintTop_toBottomOf="@id/search_mod_loader_spinner"
         />
+
+    <!-- Amatista: cargador de mods (solo mods y modpacks) -->
+    <TextView
+        android:id="@+id/search_mod_loader_textview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/padding_large"
+        android:text="@string/amatista_content_loader"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/search_mod_selected_mc_version_textview" />
+
+    <Spinner
+        android:id="@+id/search_mod_loader_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:minHeight="@dimen/_30sdp"
+        app:layout_constraintTop_toBottomOf="@id/search_mod_loader_textview" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

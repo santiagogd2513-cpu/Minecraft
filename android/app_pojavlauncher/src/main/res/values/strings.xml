@@ -517,4 +517,27 @@
     <string name="angelica_found_sfpew_notice">Angelica mod found, Simple FPE Wrapper not needed</string>
     <string name="use_angle_checkbox">Use ANGLE (might help FPS)</string>
 
+    <string name="amatista_content_title">Mods, packs and shaders</string>
+    <string name="amatista_content_loader">Mod loader</string>
+    <string name="amatista_content_any_version">Any version (long-press to clear)</string>
+    <string name="amatista_content_pick_profile">Install into which profile?</string>
+    <string name="amatista_content_no_profiles">Create a profile first (Vanilla, OptiFine or Forge).</string>
+    <string name="amatista_content_no_download">The author does not allow third-party downloads for this file.</string>
+    <string name="amatista_content_installed">%1$s installed (+%2$d dependencies)</string>
+    <string name="amatista_content_downloading">Downloading %s</string>
+    <string name="amatista_cf_key_title">CurseForge API key</string>
+    <string name="amatista_cf_key_summary">Free key from console.curseforge.com. Modrinth works without a key.</string>
+    <string-array name="amatista_content_types">
+        <item>Mods</item>
+        <item>Modpacks</item>
+        <item>Resource packs</item>
+        <item>Shader packs</item>
+    </string-array>
+    <string-array name="amatista_content_loaders">
+        <item>Any</item>
+        <item>Forge</item>
+        <item>NeoForge</item>
+        <item>Fabric</item>
+        <item>Quilt</item>
+    </string-array>
 </resources>

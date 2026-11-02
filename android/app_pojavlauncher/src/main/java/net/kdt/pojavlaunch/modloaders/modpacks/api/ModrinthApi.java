@@ -53,7 +53,16 @@ public class ModrinthApi implements ModpackApi{
         HashMap<String, Object> params = new HashMap<>();
         StringBuilder facetString = new StringBuilder();
         facetString.append("[");
-        facetString.append(String.format("[\"project_type:%s\"]", searchFilters.isModpack ? "modpack" : "mod"));
+        String projectType;
+        switch (searchFilters.contentType) {
+            case Constants.TYPE_MODPACK: projectType = "modpack"; break;
+            case Constants.TYPE_RESOURCEPACK: projectType = "resourcepack"; break;
+            case Constants.TYPE_SHADER: projectType = "shader"; break;
+            default: projectType = "mod";
+        }
+        facetString.append(String.format("[\"project_type:%s\"]", projectType));
+        if(searchFilters.loaderApplies())
+            facetString.append(String.format(",[\"categories:%s\"]", searchFilters.loader));
         if(searchFilters.mcVersion != null && !searchFilters.mcVersion.isEmpty())
             facetString.append(String.format(",[\"versions:%s\"]", searchFilters.mcVersion));
         facetString.append("]");
@@ -78,8 +87,9 @@ public class ModrinthApi implements ModpackApi{
                     hit.get("project_id").getAsString(),
                     hit.get("title").getAsString(),
                     hit.get("description").getAsString(),
-                    hit.get("icon_url").getAsString()
+                    hit.get("icon_url").isJsonNull() ? null : hit.get("icon_url").getAsString()
             );
+            items[i].contentType = searchFilters.contentType;
         }
         if(modrinthSearchResult == null) modrinthSearchResult = new ModrinthSearchResult();
         modrinthSearchResult.previousOffset += responseHits.size();
@@ -104,6 +114,14 @@ public class ModrinthApi implements ModpackApi{
         for (int i=0; i<response.size(); ++i) {
             JsonObject version = response.get(i).getAsJsonObject();
             names[i] = version.get("name").getAsString();
+            if(!item.isModpack && item.contentType == Constants.TYPE_MOD) {
+                JsonArray loaders = version.getAsJsonArray("loaders");
+                if(loaders != null && loaders.size() > 0) {
+                    StringBuilder sb = new StringBuilder();
+                    for(JsonElement l : loaders) { if(sb.length() > 0) sb.append(", "); sb.append(l.getAsString()); }
+                    names[i] += " [" + sb + "]";
+                }
+            }
             ids[i] = version.get("id").getAsString();
             try {
                 JsonArray dependenciesJsonArray = version.getAsJsonArray("dependencies");

@@ -60,7 +60,11 @@ public class MainMenuFragment extends Fragment {
         mVersionSpinner = view.findViewById(R.id.mc_version_spinner);
 
         mNewsButton.setOnClickListener(v -> Tools.openURL(requireActivity(), Tools.URL_HOME));
-        mDiscordButton.setOnClickListener(v -> Tools.openURL(requireActivity(), getString(R.string.discord_invite)));
+        // Amatista: el botón de Discord abre la sección de contenido (Modrinth / CurseForge)
+        mDiscordButton.setOnClickListener(v -> {
+            if (!hasOnlineProfile()) Tools.hasNoOnlineProfileDialog(requireActivity());
+            else Tools.swapFragment(requireActivity(), SearchModFragment.class, SearchModFragment.TAG, null);
+        });
         mCustomControlButton.setOnClickListener(v -> startActivity(new Intent(requireContext(), CustomControlsActivity.class)));
         if (hasOnlineProfile()) {
             mInstallJarButton.setOnClickListener(v -> runInstallerWithConfirmation(false));

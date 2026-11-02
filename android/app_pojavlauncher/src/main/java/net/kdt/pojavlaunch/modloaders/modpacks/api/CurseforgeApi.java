@@ -58,7 +58,24 @@ public class CurseforgeApi implements ModpackApi{
 
         HashMap<String, Object> params = new HashMap<>();
         params.put("gameId", CURSEFORGE_MINECRAFT_GAME_ID);
-        params.put("classId", searchFilters.isModpack ? CURSEFORGE_MODPACK_CLASS_ID : CURSEFORGE_MOD_CLASS_ID);
+        int classId;
+        switch (searchFilters.contentType) {
+            case Constants.TYPE_MODPACK: classId = CURSEFORGE_MODPACK_CLASS_ID; break;
+            case Constants.TYPE_RESOURCEPACK: classId = 12; break;
+            case Constants.TYPE_SHADER: classId = 6552; break;
+            default: classId = CURSEFORGE_MOD_CLASS_ID;
+        }
+        params.put("classId", classId);
+        if(searchFilters.loaderApplies()) {
+            int loaderType = 0;
+            switch (searchFilters.loader) {
+                case "forge": loaderType = 1; break;
+                case "fabric": loaderType = 4; break;
+                case "quilt": loaderType = 5; break;
+                case "neoforge": loaderType = 6; break;
+            }
+            if(loaderType != 0) params.put("modLoaderType", loaderType);
+        }
         params.put("searchFilter", searchFilters.name);
         params.put("sortField", CURSEFORGE_SORT_RELEVANCY);
         params.put("sortOrder", "desc");
@@ -87,7 +104,8 @@ public class CurseforgeApi implements ModpackApi{
                     dataElement.get("id").getAsString(),
                     dataElement.get("name").getAsString(),
                     dataElement.get("summary").getAsString(),
-                    dataElement.getAsJsonObject("logo").get("thumbnailUrl").getAsString());
+                    dataElement.get("logo").isJsonNull() ? null : dataElement.getAsJsonObject("logo").get("thumbnailUrl").getAsString());
+            modItem.contentType = searchFilters.contentType;
             modItemList.add(modItem);
         }
         if(curseforgeSearchResult == null) curseforgeSearchResult = new CurseforgeSearchResult();
@@ -120,9 +138,20 @@ public class CurseforgeApi implements ModpackApi{
             versionNames[i] = modDetail.get("displayName").getAsString();
             versionIds[i] = modDetail.get("id").getAsString();
             JsonElement downloadUrl = modDetail.get("downloadUrl");
-            versionUrls[i] = downloadUrl.getAsString();
+            versionUrls[i] = (downloadUrl == null || downloadUrl.isJsonNull()) ? null : downloadUrl.getAsString();
 
             JsonArray gameVersions = modDetail.getAsJsonArray("gameVersions");
+            if(item.contentType == Constants.TYPE_MOD) {
+                StringBuilder loaders = new StringBuilder();
+                for(JsonElement gv : gameVersions) {
+                    String g = gv.getAsString();
+                    if(g.equals("Forge") || g.equals("Fabric") || g.equals("NeoForge") || g.equals("Quilt")) {
+                        if(loaders.length() > 0) loaders.append(", ");
+                        loaders.append(g);
+                    }
+                }
+                if(loaders.length() > 0) versionNames[i] += " [" + loaders + "]";
+            }
             try {
                 JsonArray dependenciesJsonArray = modDetail.getAsJsonArray("dependencies");
                 dependencies[i] = new ModDetail.Dependencies[dependenciesJsonArray.size()];
