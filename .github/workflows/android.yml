@@ -82,11 +82,17 @@ jobs:
       - name: Comprobar los Java incluidos
         run: |
           cd app_pojavlauncher/src/main/assets/components
+          notes="$GITHUB_WORKSPACE/dist-notes.md"
+          echo "**Android:** descarga \`AmatistaLauncher.apk\`, ábrelo y permite *instalar apps de origen desconocido*." > "$notes"
+          echo "" >> "$notes"; echo "Java incluido en el APK:" >> "$notes"
           for d in jre jre-new jre-21 jre-25; do
+            case $d in jre) n=8;; jre-new) n=17;; jre-21) n=21;; jre-25) n=25;; esac
             if [ -f "$d/version" ] && [ -f "$d/universal.tar.xz" ] && ls "$d"/bin-*.tar.xz >/dev/null 2>&1; then
               echo "OK  $d ($(cat $d/version)) $(du -sh $d | cut -f1)"; ls "$d"
+              echo "- Java $n ✅ ($(du -sh $d | cut -f1))" >> "$notes"
             else
-              echo "SIN $d -> se descargará en el celular cuando haga falta"; ls -la "$d" 2>/dev/null || true; rm -rf "$d"
+              echo "SIN $d -> se descargará en el celular cuando haga falta"; ls -laR "$d" 2>/dev/null | head -20 || true; rm -rf "$d"
+              echo "- Java $n: se descarga en el celular cuando haga falta" >> "$notes"
             fi
           done
           test -d jre || { echo "Falta Java 8"; exit 1; }
@@ -120,6 +126,5 @@ jobs:
           name: "Amatista Launcher Android #${{ github.run_number }}"
           target_commitish: ${{ github.sha }}
           make_latest: true
-          body: |
-            **Android:** descarga `AmatistaLauncher.apk`, ábrelo y permite *instalar apps de origen desconocido*.
+          body_path: dist-notes.md
           files: dist/AmatistaLauncher.apk
