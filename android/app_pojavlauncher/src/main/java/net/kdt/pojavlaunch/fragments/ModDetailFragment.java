@@ -126,7 +126,14 @@ public class ModDetailFragment extends Fragment {
             Tools.runOnUiThread(() -> {
                 if (!isAdded() || getView() == null) return;
                 mDetail = result;
-                if (result == null || result.versionNames == null || result.versionNames.length == 0) {
+                if (result != null && result.versionNames != null && result.versionNames.length == 0) {
+                    // Amatista: no hay versiones con los filtros elegidos
+                    mErrorView.setText(getString(R.string.amatista_detail_no_versions, filterLabel()));
+                    mErrorView.setVisibility(View.VISIBLE);
+                    mVersionSpinner.setAdapter(null);
+                    return;
+                }
+                if (result == null || result.versionNames == null) {
                     mErrorView.setVisibility(View.VISIBLE);
                     mVersionSpinner.setAdapter(null);
                     return;
@@ -139,6 +146,17 @@ public class ModDetailFragment extends Fragment {
         });
     }
 
+    private String filterLabel() {
+        StringBuilder sb = new StringBuilder();
+        if (mItem.filterMcVersion != null) sb.append("Minecraft ").append(mItem.filterMcVersion);
+        if (mItem.filterLoader != null) {
+            if (sb.length() > 0) sb.append(" · ");
+            String l = mItem.filterLoader;
+            sb.append(l.equals("neoforge") ? "NeoForge" : Character.toUpperCase(l.charAt(0)) + l.substring(1));
+        }
+        return sb.length() == 0 ? "—" : sb.toString();
+    }
+
     private String sourceLabel() {
         String type;
         switch (mItem.contentType) {
@@ -148,7 +166,9 @@ public class ModDetailFragment extends Fragment {
             default: type = getString(R.string.amatista_type_mod);
         }
         String src = mItem.apiSource == Constants.SOURCE_CURSEFORGE ? "CurseForge" : "Modrinth";
-        return type + "  ·  " + src;
+        String label = type + "  ·  " + src;
+        if (mItem.filterMcVersion != null || mItem.filterLoader != null) label += "\n" + getString(R.string.amatista_detail_filtered, filterLabel());
+        return label;
     }
 
     private void install() {

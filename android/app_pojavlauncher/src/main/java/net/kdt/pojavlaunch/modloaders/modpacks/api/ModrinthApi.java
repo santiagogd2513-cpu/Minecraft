@@ -90,6 +90,7 @@ public class ModrinthApi implements ModpackApi{
                     hit.get("icon_url").isJsonNull() ? null : hit.get("icon_url").getAsString()
             );
             items[i].contentType = searchFilters.contentType;
+            items[i].applyFilters(searchFilters);
             if(hit.has("author") && !hit.get("author").isJsonNull()) items[i].author = hit.get("author").getAsString();
             JsonArray gallery = hit.has("gallery") && hit.get("gallery").isJsonArray() ? hit.getAsJsonArray("gallery") : null;
             if(gallery != null) {
@@ -107,7 +108,11 @@ public class ModrinthApi implements ModpackApi{
     @Override
     public ModDetail getModDetails(ModItem item) {
         fillInMissingModItemData(item);
-        JsonArray response = mApiHandler.get(String.format("project/%s/version", item.id), JsonArray.class);
+        // Amatista: solo las versiones que cumplen los filtros de la búsqueda (versión de MC y cargador)
+        HashMap<String, Object> versionQuery = new HashMap<>();
+        if(item.filterMcVersion != null) versionQuery.put("game_versions", "[\"" + item.filterMcVersion + "\"]");
+        if(item.filterLoader != null) versionQuery.put("loaders", "[\"" + item.filterLoader + "\"]");
+        JsonArray response = mApiHandler.get(String.format("project/%s/version", item.id), versionQuery, JsonArray.class);
         if(response == null) return null;
         System.out.println(response);
         String[] names = new String[response.size()];
@@ -143,7 +148,8 @@ public class ModrinthApi implements ModpackApi{
                 }
             } catch (Exception ignored) {}
 
-            mcNames[i] = version.get("game_versions").getAsJsonArray().get(0).getAsString();
+            mcNames[i] = item.filterMcVersion != null ? item.filterMcVersion
+                    : version.get("game_versions").getAsJsonArray().get(0).getAsString();
             urls[i] = version.get("files").getAsJsonArray().get(0).getAsJsonObject().get("url").getAsString();
             // Assume there may not be hashes, in case the API changes
             JsonObject hashesMap = version.getAsJsonArray("files").get(0).getAsJsonObject()

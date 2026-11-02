@@ -505,4 +505,6 @@
     <string name="amatista_storage_message">Amatista Launcher guarda todo (versiones, mundos, mods, controles…) en la carpeta \"AmatistaLauncher\" de tu almacenamiento, junto a Download y DCIM.\n\nPara eso, Android te pide activar \"Permitir acceso para administrar todos los archivos\" para Amatista en la siguiente pantalla.</string>
     <string name="amatista_storage_allow">Permitir</string>
     <string name="amatista_storage_skip">Usar carpeta oculta</string>
+    <string name="amatista_detail_no_versions">No hay versiones para %s. Cambia los filtros en la búsqueda.</string>
+    <string name="amatista_detail_filtered">Versiones para: %s</string>
 </resources>

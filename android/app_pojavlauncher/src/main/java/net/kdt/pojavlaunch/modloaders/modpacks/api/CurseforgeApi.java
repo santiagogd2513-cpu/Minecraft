@@ -106,6 +106,7 @@ public class CurseforgeApi implements ModpackApi{
                     dataElement.get("summary").getAsString(),
                     dataElement.get("logo").isJsonNull() ? null : dataElement.getAsJsonObject("logo").get("thumbnailUrl").getAsString());
             modItem.contentType = searchFilters.contentType;
+            modItem.applyFilters(searchFilters);
             JsonArray authors = dataElement.has("authors") && dataElement.get("authors").isJsonArray() ? dataElement.getAsJsonArray("authors") : null;
             if(authors != null && authors.size() > 0) modItem.author = authors.get(0).getAsJsonObject().get("name").getAsString();
             JsonArray shots = dataElement.has("screenshots") && dataElement.get("screenshots").isJsonArray() ? dataElement.getAsJsonArray("screenshots") : null;
@@ -130,7 +131,7 @@ public class CurseforgeApi implements ModpackApi{
         int index = 0;
         while(index != CURSEFORGE_PAGINATION_END_REACHED &&
                 index != CURSEFORGE_PAGINATION_ERROR) {
-            index = getPaginatedDetails(allModDetails, index, item.id);
+            index = getPaginatedDetails(allModDetails, index, item);
         }
         if(index == CURSEFORGE_PAGINATION_ERROR) return null;
         int length = allModDetails.size();
@@ -180,6 +181,8 @@ public class CurseforgeApi implements ModpackApi{
                 mcVersionNames[i] = gameVersion;
                 break;
             }
+            if(item.filterMcVersion != null) mcVersionNames[i] = item.filterMcVersion;
+            if(mcVersionNames[i] == null) mcVersionNames[i] = "?";
 
             hashes[i] = getSha1FromModData(modDetail);
         }
@@ -217,8 +220,21 @@ public class CurseforgeApi implements ModpackApi{
     }
 
 
-    private int getPaginatedDetails(ArrayList<JsonObject> objectList, int index, String modId) {
+    private int getPaginatedDetails(ArrayList<JsonObject> objectList, int index, ModItem item) {
+        String modId = item.id;
         HashMap<String, Object> params = new HashMap<>();
+        // Amatista: solo los archivos que cumplen los filtros de la búsqueda
+        if(item.filterMcVersion != null) params.put("gameVersion", item.filterMcVersion);
+        if(item.filterLoader != null) {
+            int loaderType = 0;
+            switch (item.filterLoader) {
+                case "forge": loaderType = 1; break;
+                case "fabric": loaderType = 4; break;
+                case "quilt": loaderType = 5; break;
+                case "neoforge": loaderType = 6; break;
+            }
+            if(loaderType != 0) params.put("modLoaderType", loaderType);
+        }
         params.put("index", index);
         params.put("pageSize", CURSEFORGE_PAGINATION_SIZE);
 

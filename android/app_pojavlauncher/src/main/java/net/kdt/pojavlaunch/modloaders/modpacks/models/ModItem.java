@@ -11,6 +11,15 @@ public class ModItem extends ModSource {
     /* Amatista: creador y fotos (pueden ser null) */
     public String author;
     public String[] gallery;
+    /* Amatista: filtros con los que se encontró (las versiones se limitan a ellos) */
+    public String filterMcVersion;
+    public String filterLoader;
+
+    /** Copia los filtros de la búsqueda al elemento. */
+    public void applyFilters(SearchFilters filters) {
+        filterMcVersion = (filters.mcVersion == null || filters.mcVersion.isEmpty()) ? null : filters.mcVersion;
+        filterLoader = filters.loaderApplies() ? filters.loader : null;
+    }
 
     public ModItem(int apiSource, boolean isModpack, String id, String title, String description, String imageUrl) {
         this.apiSource = apiSource;

@@ -558,4 +558,6 @@
     <string name="amatista_storage_message">Amatista Launcher saves everything (versions, worlds, mods, controls…) in the \"AmatistaLauncher\" folder of your internal storage, next to Download and DCIM.\n\nTo do that, Android needs you to turn on \"Allow access to manage all files\" for Amatista on the next screen.</string>
     <string name="amatista_storage_allow">Allow</string>
     <string name="amatista_storage_skip">Use hidden folder</string>
+    <string name="amatista_detail_no_versions">No versions for %s. Change the filters in the search.</string>
+    <string name="amatista_detail_filtered">Showing versions for: %s</string>
 </resources>
