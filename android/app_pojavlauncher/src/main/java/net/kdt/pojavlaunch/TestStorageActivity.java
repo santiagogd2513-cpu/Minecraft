@@ -22,8 +22,46 @@ public class TestStorageActivity extends Activity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if(Build.VERSION.SDK_INT >= 23 && Build.VERSION.SDK_INT < 29 && !isStorageAllowed(this)) requestStoragePermission();
+        if(Build.VERSION.SDK_INT >= 30) {
+            // Amatista: para guardar todo en /AmatistaLauncher hace falta "Acceso a todos los archivos"
+            if(android.os.Environment.isExternalStorageManager() || getSharedPreferences("amatista", MODE_PRIVATE).getBoolean("skip_all_files", false)) exit();
+            else askAllFilesAccess();
+            return;
+        }
+        if(Build.VERSION.SDK_INT >= 23 && !isStorageAllowed(this)) requestStoragePermission();
         else exit();
+    }
+
+    private boolean mWaitingAllFiles = false;
+
+    private void askAllFilesAccess() {
+        new android.app.AlertDialog.Builder(this)
+                .setTitle(R.string.amatista_storage_title)
+                .setMessage(R.string.amatista_storage_message)
+                .setCancelable(false)
+                .setPositiveButton(R.string.amatista_storage_allow, (d, w) -> {
+                    mWaitingAllFiles = true;
+                    try {
+                        startActivity(new Intent(android.provider.Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION,
+                                android.net.Uri.parse("package:" + getPackageName())));
+                    } catch (Exception e) {
+                        startActivity(new Intent(android.provider.Settings.ACTION_MANAGE_ALL_FILES_ACCESS_PERMISSION));
+                    }
+                })
+                .setNegativeButton(R.string.amatista_storage_skip, (d, w) -> {
+                    getSharedPreferences("amatista", MODE_PRIVATE).edit().putBoolean("skip_all_files", true).apply();
+                    exit();
+                })
+                .show();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(!mWaitingAllFiles || Build.VERSION.SDK_INT < 30) return;
+        mWaitingAllFiles = false;
+        if(android.os.Environment.isExternalStorageManager()) exit();
+        else askAllFilesAccess();
     }
 
     @Override
@@ -62,6 +100,7 @@ public class TestStorageActivity extends Activity {
             return;
         }
         //Initialize constants (implicitly) and preferences after we confirm that we have storage.
+        Tools.initStorageConstants(this);
         LauncherPreferences.loadPreferences(this);
         AsyncAssetManager.unpackComponents(this);
         AsyncAssetManager.unpackSingleFiles(this);

@@ -155,12 +155,45 @@ public final class Tools {
     public static String[] sAsmVersion = null;
 
 
+    /** Amatista: nombre de la carpeta en la raíz del almacenamiento (junto a Download, Documents, DCIM…). */
+    public static final String AMATISTA_FOLDER = "AmatistaLauncher";
+
+    /** Amatista: ¿podemos escribir en la raíz del almacenamiento compartido? */
+    public static boolean canUseSharedRoot(Context ctx) {
+        if (SDK_INT >= 30) return Environment.isExternalStorageManager();
+        return SDK_INT < 23 || ctx.checkSelfPermission(android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                == android.content.pm.PackageManager.PERMISSION_GRANTED;
+    }
+
     private static File getPojavStorageRoot(Context ctx) {
+        if (canUseSharedRoot(ctx)) {
+            File root = new File(Environment.getExternalStorageDirectory(), AMATISTA_FOLDER);
+            if (root.isDirectory() || root.mkdirs()) {
+                migrateFromAppFolder(ctx, root);
+                return root;
+            }
+        }
+        // Sin permiso: carpeta privada de la app (Android/data) como respaldo
         if(SDK_INT >= 29) {
             return ctx.getExternalFilesDir(null);
         }else{
             return new File(Environment.getExternalStorageDirectory(),"games/Amethyst");
         }
+    }
+
+    /** Amatista: si había datos en Android/data de una versión anterior, se mueven a la carpeta nueva. */
+    private static void migrateFromAppFolder(Context ctx, File newRoot) {
+        try {
+            File old = ctx.getExternalFilesDir(null);
+            if (old == null || !old.isDirectory()) return;
+            File[] children = old.listFiles();
+            if (children == null) return;
+            for (File child : children) {
+                File target = new File(newRoot, child.getName());
+                if (!target.exists()) //noinspection ResultOfMethodCallIgnored
+                    child.renameTo(target);
+            }
+        } catch (Throwable ignored) {}
     }
 
     /**

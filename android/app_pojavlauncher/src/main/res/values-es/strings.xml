@@ -501,4 +501,8 @@
     <string name="amatista_type_modpack">Modpack</string>
     <string name="amatista_type_resourcepack">Paquete de recursos</string>
     <string name="amatista_type_shader">Shader</string>
+    <string name="amatista_storage_title">Carpeta del juego</string>
+    <string name="amatista_storage_message">Amatista Launcher guarda todo (versiones, mundos, mods, controles…) en la carpeta \"AmatistaLauncher\" de tu almacenamiento, junto a Download y DCIM.\n\nPara eso, Android te pide activar \"Permitir acceso para administrar todos los archivos\" para Amatista en la siguiente pantalla.</string>
+    <string name="amatista_storage_allow">Permitir</string>
+    <string name="amatista_storage_skip">Usar carpeta oculta</string>
 </resources>

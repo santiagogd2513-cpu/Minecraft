@@ -554,4 +554,8 @@
     <string name="amatista_type_modpack">Modpack</string>
     <string name="amatista_type_resourcepack">Resource pack</string>
     <string name="amatista_type_shader">Shader</string>
+    <string name="amatista_storage_title">Game folder</string>
+    <string name="amatista_storage_message">Amatista Launcher saves everything (versions, worlds, mods, controls…) in the \"AmatistaLauncher\" folder of your internal storage, next to Download and DCIM.\n\nTo do that, Android needs you to turn on \"Allow access to manage all files\" for Amatista on the next screen.</string>
+    <string name="amatista_storage_allow">Allow</string>
+    <string name="amatista_storage_skip">Use hidden folder</string>
 </resources>
