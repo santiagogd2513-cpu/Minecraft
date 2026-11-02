@@ -31,7 +31,7 @@ jobs:
           distribution: temurin
           java-version: 21
 
-      # Java 8 para Android (las versiones 17/21 la app las descarga cuando hacen falta).
+      # Java 8 para Android (Minecraft hasta 1.16 y Forge antiguo).
       - name: Java 8 para Android
         uses: dawidd6/action-download-artifact@v9
         with:
@@ -41,6 +41,55 @@ jobs:
           repo: AngelAuraMC/angelauramc-openjdk-build
           branch: buildjre8
           name: jre8-pojav
+
+      # Java 17, 21 y 25 incluidos dentro del APK: así Forge de cualquier época
+      # (1.7.10 → 1.16 con Java 8, 1.17 → 1.20.4 con 17, 1.20.5+ con 21, lo más nuevo con 25)
+      # funciona sin descargar Java aparte.
+      - name: Java 17 para Android
+        continue-on-error: true
+        uses: dawidd6/action-download-artifact@v9
+        with:
+          workflow: build.yml
+          path: android/app_pojavlauncher/src/main/assets/components/jre-new
+          workflow_conclusion: completed
+          repo: AngelAuraMC/angelauramc-openjdk-build
+          branch: buildjre17-21
+          name: jre17-pojav
+
+      - name: Java 21 para Android
+        continue-on-error: true
+        uses: dawidd6/action-download-artifact@v9
+        with:
+          workflow: build.yml
+          path: android/app_pojavlauncher/src/main/assets/components/jre-21
+          workflow_conclusion: completed
+          repo: AngelAuraMC/angelauramc-openjdk-build
+          branch: buildjre17-21
+          name: jre21-pojav
+
+      - name: Java 25 para Android
+        continue-on-error: true
+        uses: dawidd6/action-download-artifact@v9
+        with:
+          workflow: build.yml
+          path: android/app_pojavlauncher/src/main/assets/components/jre-25
+          workflow_conclusion: completed
+          repo: FCL-Team/Android-OpenJDK-Build
+          branch: Build_JRE_25
+          name: jre25-multiarch
+
+      # Solo se incluye un Java si tiene el formato que espera el launcher; si no, la app lo descarga sola.
+      - name: Comprobar los Java incluidos
+        run: |
+          cd app_pojavlauncher/src/main/assets/components
+          for d in jre jre-new jre-21 jre-25; do
+            if [ -f "$d/version" ] && [ -f "$d/universal.tar.xz" ] && ls "$d"/bin-*.tar.xz >/dev/null 2>&1; then
+              echo "OK  $d ($(cat $d/version)) $(du -sh $d | cut -f1)"; ls "$d"
+            else
+              echo "SIN $d -> se descargará en el celular cuando haga falta"; ls -la "$d" 2>/dev/null || true; rm -rf "$d"
+            fi
+          done
+          test -d jre || { echo "Falta Java 8"; exit 1; }
 
       - uses: gradle/actions/setup-gradle@v4
         with:
