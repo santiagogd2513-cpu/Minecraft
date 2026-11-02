@@ -61,10 +61,9 @@ public class MainMenuFragment extends Fragment {
 
         mNewsButton.setOnClickListener(v -> Tools.openURL(requireActivity(), Tools.URL_HOME));
         // Amatista: el botón de Discord abre la sección de contenido (Modrinth / CurseForge)
-        mDiscordButton.setOnClickListener(v -> {
-            if (!hasOnlineProfile()) Tools.hasNoOnlineProfileDialog(requireActivity());
-            else Tools.swapFragment(requireActivity(), SearchModFragment.class, SearchModFragment.TAG, null);
-        });
+        // Se puede entrar sin cuenta para explorar el contenido
+        mDiscordButton.setOnClickListener(v ->
+                Tools.swapFragment(requireActivity(), SearchModFragment.class, SearchModFragment.TAG, null));
         mCustomControlButton.setOnClickListener(v -> startActivity(new Intent(requireContext(), CustomControlsActivity.class)));
         if (hasOnlineProfile()) {
             mInstallJarButton.setOnClickListener(v -> runInstallerWithConfirmation(false));
