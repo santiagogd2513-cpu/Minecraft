@@ -8,7 +8,6 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.FormattedCharSequence;
 
 import java.util.List;
@@ -81,7 +80,7 @@ public class WeaponSelectScreen extends Screen {
             if (mouseX >= x && mouseX < x + w && mouseY >= y && mouseY < y + ENTRY_H) {
                 ClientState.selected = types[i];
                 Network.CHANNEL.sendToServer(new SelectWeaponPacket(types[i]));
-                Cinematic.play(SoundEvents.BEACON_POWER_SELECT, 1.4f, 0.8f);
+                Cinematic.play(com.amatista.arsenal.registry.ModSounds.UI_CONFIRM.get(), 1.4f, 0.8f);
                 onClose();
                 return true;
             }

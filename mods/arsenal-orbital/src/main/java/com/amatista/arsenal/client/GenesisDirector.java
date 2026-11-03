@@ -1,7 +1,6 @@
 package com.amatista.arsenal.client;
 
 import com.amatista.arsenal.Timeline;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
@@ -218,59 +217,59 @@ final class GenesisDirector {
     }
 
     static void buildCues() {
-        Cinematic.cue(0.0f, SoundEvents.AMETHYST_BLOCK_RESONATE, 0.8f, 1.0f);
+        Cinematic.cue(0.0f, com.amatista.arsenal.registry.ModSounds.CRYSTAL_RESONANCE.get(), 0.8f, 1.0f);
         for (int i = 0; i < HudRenderer.CONSOLE_LINES; i++) {
-            Cinematic.cue(consoleLineStart(i), SoundEvents.AMETHYST_BLOCK_CHIME, 0.8f + i * 0.1f, 1.0f);
+            Cinematic.cue(consoleLineStart(i), com.amatista.arsenal.registry.ModSounds.CRYSTAL_CHIME.get(), 0.8f + i * 0.1f, 1.0f);
         }
-        Cinematic.cue(G1_END - 0.004f, SoundEvents.BEACON_ACTIVATE, 0.8f, 1.0f);
-        Cinematic.cue(G1_END, SoundEvents.ELYTRA_FLYING, 0.6f, 0.9f);
-        Cinematic.cue(SPACE_START - 0.002f, SoundEvents.BEACON_DEACTIVATE, 0.5f, 1.0f);
-        Cinematic.cue(SOLAR_END, SoundEvents.ELYTRA_FLYING, 1.6f, 1.0f);
-        Cinematic.cue(HOME_END, SoundEvents.END_PORTAL_SPAWN, 0.6f, 0.6f);
-        Cinematic.cue(HOME_END + 0.01f, SoundEvents.AMETHYST_BLOCK_RESONATE, 0.5f, 1.0f);
-        Cinematic.cue(WEB_END, SoundEvents.ELYTRA_FLYING, 1.8f, 1.0f);
-        Cinematic.cue(EDGE_END - 0.01f, SoundEvents.PORTAL_TRAVEL, 0.5f, 0.4f);
-        Cinematic.cue(EDGE_END, SoundEvents.END_PORTAL_SPAWN, 0.4f, 1.0f);
-        Cinematic.cue(EDGE_END + 0.02f, SoundEvents.AMETHYST_BLOCK_RESONATE, 0.4f, 1.0f);
-        Cinematic.cue(BEYOND_END, SoundEvents.BEACON_ACTIVATE, 0.4f, 1.0f);
-        Cinematic.cue(BEYOND_END + 0.01f, SoundEvents.CONDUIT_ACTIVATE, 0.4f, 1.0f);
-        for (int k = 0; k < 6; k++) Cinematic.cue(BEYOND_END + 0.015f + k * 0.01f, SoundEvents.BELL_RESONATE, 0.5f + k * 0.15f, 0.7f);
-        Cinematic.cue(AWAKEN_END, SoundEvents.ENDER_DRAGON_GROWL, 0.3f, 0.5f);
-        Cinematic.cue(AWAKEN_END + 0.01f, SoundEvents.PORTAL_AMBIENT, 0.4f, 1.0f);
-        Cinematic.cue(HARVEST_END, SoundEvents.WARDEN_HEARTBEAT, 0.5f, 1.0f);
-        Cinematic.cue(HARVEST_END + 0.03f, SoundEvents.WARDEN_SONIC_CHARGE, 0.4f, 1.0f);
-        Cinematic.cue(FORGE_END - 0.03f, SoundEvents.WARDEN_SONIC_CHARGE, 0.8f, 1.0f);
+        Cinematic.cue(G1_END - 0.004f, com.amatista.arsenal.registry.ModSounds.POWER_UP.get(), 0.8f, 1.0f);
+        Cinematic.cue(G1_END, com.amatista.arsenal.registry.ModSounds.RUSH_WIND.get(), 0.6f, 0.9f);
+        Cinematic.cue(SPACE_START - 0.002f, com.amatista.arsenal.registry.ModSounds.POWER_DOWN.get(), 0.5f, 1.0f);
+        Cinematic.cue(SOLAR_END, com.amatista.arsenal.registry.ModSounds.RUSH_WIND.get(), 1.6f, 1.0f);
+        Cinematic.cue(HOME_END, com.amatista.arsenal.registry.ModSounds.COSMIC_SWELL.get(), 0.6f, 0.6f);
+        Cinematic.cue(HOME_END + 0.01f, com.amatista.arsenal.registry.ModSounds.CRYSTAL_RESONANCE.get(), 0.5f, 1.0f);
+        Cinematic.cue(WEB_END, com.amatista.arsenal.registry.ModSounds.RUSH_WIND.get(), 1.8f, 1.0f);
+        Cinematic.cue(EDGE_END - 0.01f, com.amatista.arsenal.registry.ModSounds.WARP_JUMP.get(), 0.5f, 0.4f);
+        Cinematic.cue(EDGE_END, com.amatista.arsenal.registry.ModSounds.COSMIC_SWELL.get(), 0.4f, 1.0f);
+        Cinematic.cue(EDGE_END + 0.02f, com.amatista.arsenal.registry.ModSounds.CRYSTAL_RESONANCE.get(), 0.4f, 1.0f);
+        Cinematic.cue(BEYOND_END, com.amatista.arsenal.registry.ModSounds.POWER_UP.get(), 0.4f, 1.0f);
+        Cinematic.cue(BEYOND_END + 0.01f, com.amatista.arsenal.registry.ModSounds.STATION_ONLINE.get(), 0.4f, 1.0f);
+        for (int k = 0; k < 6; k++) Cinematic.cue(BEYOND_END + 0.015f + k * 0.01f, com.amatista.arsenal.registry.ModSounds.CATHEDRAL_BELL.get(), 0.5f + k * 0.15f, 0.7f);
+        Cinematic.cue(AWAKEN_END, com.amatista.arsenal.registry.ModSounds.PLANET_GROAN.get(), 0.3f, 0.5f);
+        Cinematic.cue(AWAKEN_END + 0.01f, com.amatista.arsenal.registry.ModSounds.VOID_DRONE.get(), 0.4f, 1.0f);
+        Cinematic.cue(HARVEST_END, com.amatista.arsenal.registry.ModSounds.HEARTBEAT.get(), 0.5f, 1.0f);
+        Cinematic.cue(HARVEST_END + 0.03f, com.amatista.arsenal.registry.ModSounds.CHARGE_WHINE.get(), 0.4f, 1.0f);
+        Cinematic.cue(FORGE_END - 0.03f, com.amatista.arsenal.registry.ModSounds.CHARGE_WHINE.get(), 0.8f, 1.0f);
         float countdown = HudRenderer.countdownWindow();
         for (int i = 0; i < 5; i++) {
-            Cinematic.cue(FORGE_END - countdown + countdown * i / 5f, SoundEvents.AMETHYST_BLOCK_CHIME, 1.0f + i * 0.2f, 1.0f);
+            Cinematic.cue(FORGE_END - countdown + countdown * i / 5f, com.amatista.arsenal.registry.ModSounds.CRYSTAL_CHIME.get(), 1.0f + i * 0.2f, 1.0f);
         }
-        Cinematic.cue(FORGE_END, SoundEvents.WARDEN_SONIC_BOOM, 0.4f, 1.0f);
-        Cinematic.cue(FORGE_END, SoundEvents.BELL_BLOCK, 0.5f, 1.0f);
-        Cinematic.cue(FORGE_END + 0.003f, SoundEvents.TRIDENT_THUNDER, 0.4f, 1.0f);
-        Cinematic.cue(LAUNCH_END, SoundEvents.ELYTRA_FLYING, 1.9f, 1.0f);
-        Cinematic.cue(LAUNCH_END + 0.03f, SoundEvents.END_PORTAL_SPAWN, 0.8f, 0.6f);
-        Cinematic.cue(RETURN_TRIP_END, SoundEvents.AMETHYST_BLOCK_RESONATE, 0.6f, 1.0f);
-        Cinematic.cue(SPACE_END, SoundEvents.BELL_RESONATE, 0.5f, 1.0f);
-        Cinematic.cue(BLOOM_START, SoundEvents.BEACON_ACTIVATE, 0.5f, 1.0f);
-        Cinematic.cue(IMPACT - 0.012f, SoundEvents.WARDEN_SONIC_CHARGE, 1.2f, 1.0f);
-        Cinematic.cue(IMPACT, SoundEvents.WARDEN_SONIC_BOOM, 0.3f, 1.0f);
-        Cinematic.cue(IMPACT, SoundEvents.GENERIC_EXPLODE, 0.3f, 1.0f);
-        Cinematic.cue(IMPACT + 0.002f, SoundEvents.BELL_BLOCK, 0.5f, 1.0f);
-        Cinematic.cue(IMPACT + 0.006f, SoundEvents.AMETHYST_BLOCK_RESONATE, 0.5f, 1.0f);
-        Cinematic.cue(RETURN_START - 0.015f, SoundEvents.BEACON_DEACTIVATE, 0.8f, 0.8f);
-        Cinematic.cue(0.99f, SoundEvents.AMETHYST_BLOCK_CHIME, 1.2f, 0.9f);
+        Cinematic.cue(FORGE_END, com.amatista.arsenal.registry.ModSounds.SONIC_BLAST.get(), 0.4f, 1.0f);
+        Cinematic.cue(FORGE_END, com.amatista.arsenal.registry.ModSounds.BELL_STRIKE.get(), 0.5f, 1.0f);
+        Cinematic.cue(FORGE_END + 0.003f, com.amatista.arsenal.registry.ModSounds.ENERGY_CRACK.get(), 0.4f, 1.0f);
+        Cinematic.cue(LAUNCH_END, com.amatista.arsenal.registry.ModSounds.RUSH_WIND.get(), 1.9f, 1.0f);
+        Cinematic.cue(LAUNCH_END + 0.03f, com.amatista.arsenal.registry.ModSounds.COSMIC_SWELL.get(), 0.8f, 0.6f);
+        Cinematic.cue(RETURN_TRIP_END, com.amatista.arsenal.registry.ModSounds.CRYSTAL_RESONANCE.get(), 0.6f, 1.0f);
+        Cinematic.cue(SPACE_END, com.amatista.arsenal.registry.ModSounds.CATHEDRAL_BELL.get(), 0.5f, 1.0f);
+        Cinematic.cue(BLOOM_START, com.amatista.arsenal.registry.ModSounds.POWER_UP.get(), 0.5f, 1.0f);
+        Cinematic.cue(IMPACT - 0.012f, com.amatista.arsenal.registry.ModSounds.CHARGE_WHINE.get(), 1.2f, 1.0f);
+        Cinematic.cue(IMPACT, com.amatista.arsenal.registry.ModSounds.SONIC_BLAST.get(), 0.3f, 1.0f);
+        Cinematic.cue(IMPACT, com.amatista.arsenal.registry.ModSounds.EXPLOSION.get(), 0.3f, 1.0f);
+        Cinematic.cue(IMPACT + 0.002f, com.amatista.arsenal.registry.ModSounds.BELL_STRIKE.get(), 0.5f, 1.0f);
+        Cinematic.cue(IMPACT + 0.006f, com.amatista.arsenal.registry.ModSounds.CRYSTAL_RESONANCE.get(), 0.5f, 1.0f);
+        Cinematic.cue(RETURN_START - 0.015f, com.amatista.arsenal.registry.ModSounds.POWER_DOWN.get(), 0.8f, 0.8f);
+        Cinematic.cue(0.99f, com.amatista.arsenal.registry.ModSounds.CRYSTAL_CHIME.get(), 1.2f, 0.9f);
     }
 
     static void ambientSounds(float t, long tick) {
-        if (t >= SPACE_START && t < SPACE_END && tick % 70 == 0) Cinematic.play(SoundEvents.BEACON_AMBIENT, 0.4f, 1.0f);
-        if (t >= EDGE_END && t < LAUNCH_END && tick % 50 == 25) Cinematic.play(SoundEvents.AMETHYST_BLOCK_RESONATE, 0.5f + 0.3f * (float) Math.sin(tick * 0.1), 0.6f);
-        if (warp(t) > 0.5f && tick % 12 == 0) Cinematic.play(SoundEvents.ELYTRA_FLYING, 1.3f + warp(t) * 0.5f, 0.45f);
+        if (t >= SPACE_START && t < SPACE_END && tick % 70 == 0) Cinematic.play(com.amatista.arsenal.registry.ModSounds.MACHINE_HUM.get(), 0.4f, 1.0f);
+        if (t >= EDGE_END && t < LAUNCH_END && tick % 50 == 25) Cinematic.play(com.amatista.arsenal.registry.ModSounds.CRYSTAL_RESONANCE.get(), 0.5f + 0.3f * (float) Math.sin(tick * 0.1), 0.6f);
+        if (warp(t) > 0.5f && tick % 12 == 0) Cinematic.play(com.amatista.arsenal.registry.ModSounds.RUSH_WIND.get(), 1.3f + warp(t) * 0.5f, 0.45f);
         if (t >= HARVEST_END && t < FORGE_END) {
             float u = seg(t, HARVEST_END, FORGE_END);
             int every = Math.max(5, (int) (34 - 28 * u));
-            if (tick % every == 0) Cinematic.play(SoundEvents.WARDEN_HEARTBEAT, 0.5f + 0.8f * u, 1.0f);
+            if (tick % every == 0) Cinematic.play(com.amatista.arsenal.registry.ModSounds.HEARTBEAT.get(), 0.5f + 0.8f * u, 1.0f);
         }
-        if (t >= BLOOM_START && t < IMPACT && tick % 6 == 0) Cinematic.play(SoundEvents.AMETHYST_BLOCK_CHIME, 0.6f + 1.4f * seg(t, BLOOM_START, IMPACT), 0.7f);
-        if (t >= IMPACT && t < 0.99f && tick % 30 == 0) Cinematic.play(SoundEvents.AMETHYST_BLOCK_RESONATE, 0.8f, 0.6f);
+        if (t >= BLOOM_START && t < IMPACT && tick % 6 == 0) Cinematic.play(com.amatista.arsenal.registry.ModSounds.CRYSTAL_CHIME.get(), 0.6f + 1.4f * seg(t, BLOOM_START, IMPACT), 0.7f);
+        if (t >= IMPACT && t < 0.99f && tick % 30 == 0) Cinematic.play(com.amatista.arsenal.registry.ModSounds.CRYSTAL_RESONANCE.get(), 0.8f, 0.6f);
     }
 }

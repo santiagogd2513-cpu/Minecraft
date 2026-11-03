@@ -16,8 +16,8 @@ import static com.amatista.arsenal.client.PlanetMesh.smoothstep;
  * surcos y grietas que se encienden con el calor) y Deimos.
  */
 final class MarsMesh {
-    static final int LAT = 96, LON = 192;
-    static final int ROCK_LAT = 44, ROCK_LON = 88;
+    static final int LAT = 160, LON = 320;
+    static final int ROCK_LAT = 72, ROCK_LON = 144;
 
     private static float[] mn;              // normales de Marte
     private static float[] mc;              // color de Marte (r,g,b)

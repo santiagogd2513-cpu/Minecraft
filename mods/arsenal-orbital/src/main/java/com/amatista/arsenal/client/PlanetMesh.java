@@ -14,8 +14,8 @@ import java.util.Random;
  * atmósfera fina en el borde; luces de ciudades en el lado nocturno.
  */
 final class PlanetMesh {
-    static final int LAT = 120;
-    static final int LON = 240;
+    static final int LAT = 180;
+    static final int LON = 360;
 
     private static float[] nx, ny, nz;       // normales (= posiciones en la esfera unidad)
     private static float[] cr, cg, cb;       // color del suelo (con relieve ya aplicado)
@@ -76,9 +76,9 @@ final class PlanetMesh {
             }
         }
         Random rnd = new Random(7);
-        float[] tmp = new float[3 * 2200];
+        float[] tmp = new float[3 * 6500];
         int count = 0;
-        for (int tries = 0; tries < 80000 && count < 2200; tries++) {
+        for (int tries = 0; tries < 300000 && count < 6500; tries++) {
             double u = rnd.nextDouble() * 2 - 1, phi = rnd.nextDouble() * Math.PI * 2;
             double s = Math.sqrt(1 - u * u);
             float x = (float) (s * Math.cos(phi)), y = (float) u, z = (float) (s * Math.sin(phi));
@@ -121,6 +121,18 @@ final class PlanetMesh {
         float r = cr[k] * light + dusk * 0.8f;
         float g = cg[k] * light + dusk * 0.3f;
         float b = cb[k] * light + dusk * 0.08f;
+        // sombra de las nubes sobre el suelo y el mar
+        float shadow = 1f - 0.3f * cloud[k] * smoothstep(0f, 0.3f, d);
+        r *= shadow; g *= shadow; b *= shadow;
+        if (water[k] > 0f) {
+            // el mar se ve más azul y brillante cuando se mira de lado (Fresnel)
+            float px0 = x * radius, py0 = y * radius, pz0 = z * radius;
+            float vx0 = eye.x - px0, vy0 = eye.y - py0, vz0 = eye.z - pz0;
+            float vl0 = (float) Math.sqrt(vx0 * vx0 + vy0 * vy0 + vz0 * vz0) + 1e-3f;
+            float cosv = Math.max(0f, (x * vx0 + y * vy0 + z * vz0) / vl0);
+            float fres = (float) Math.pow(1f - cosv, 5) * 0.25f * smoothstep(-0.1f, 0.4f, d);
+            r += fres * 0.35f; g += fres * 0.55f; b += fres;
+        }
         if (water[k] > 0f && d > 0f) {
             // reflejo especular del sol en el océano
             float px = x * radius, py = y * radius, pz = z * radius;

@@ -2,7 +2,6 @@ package com.amatista.arsenal.client;
 
 import com.amatista.arsenal.BlackHoleTimeline;
 import com.amatista.arsenal.Timeline;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
@@ -252,49 +251,49 @@ final class BlackHoleDirector {
     }
 
     static void buildCues() {
-        Cinematic.cue(0.0f, SoundEvents.BEACON_POWER_SELECT, 0.7f, 0.9f);
+        Cinematic.cue(0.0f, com.amatista.arsenal.registry.ModSounds.UI_CONFIRM.get(), 0.7f, 0.9f);
         for (int i = 0; i < HudRenderer.CONSOLE_LINES; i++) {
-            Cinematic.cue(consoleLineStart(i), SoundEvents.AMETHYST_BLOCK_CHIME, 0.9f + i * 0.07f, 1.0f);
+            Cinematic.cue(consoleLineStart(i), com.amatista.arsenal.registry.ModSounds.CRYSTAL_CHIME.get(), 0.9f + i * 0.07f, 1.0f);
         }
-        Cinematic.cue(B1_END - 0.006f, SoundEvents.BEACON_ACTIVATE, 0.9f, 1.0f);
-        Cinematic.cue(B1_END, SoundEvents.ELYTRA_FLYING, 0.6f, 0.9f);
-        Cinematic.cue(SPACE_START - 0.002f, SoundEvents.BEACON_DEACTIVATE, 0.5f, 1.0f);
-        Cinematic.cue(SPACE_START + 0.04f, SoundEvents.ELYTRA_FLYING, 1.2f, 0.9f);
-        Cinematic.cue(SOLAR_END - 0.03f, SoundEvents.END_PORTAL_SPAWN, 0.9f, 0.6f);
-        Cinematic.cue(SOLAR_END, SoundEvents.ELYTRA_FLYING, 1.6f, 1.0f);
-        Cinematic.cue(MILKY_END, SoundEvents.END_PORTAL_SPAWN, 0.6f, 0.7f);
-        Cinematic.cue(MILKY_END + 0.01f, SoundEvents.ELYTRA_FLYING, 1.8f, 1.0f);
-        Cinematic.cue(INTERGALACTIC_END, SoundEvents.ENDER_DRAGON_GROWL, 0.3f, 0.5f);
-        Cinematic.cue(ANDROMEDA_END, SoundEvents.WARDEN_HEARTBEAT, 0.5f, 1.0f);
-        Cinematic.cue(ANDROMEDA_END + 0.003f, SoundEvents.SCULK_SHRIEKER_SHRIEK, 0.4f, 0.5f);
-        Cinematic.cue(HOLE_ORBIT_END, SoundEvents.BEACON_ACTIVATE, 0.5f, 1.0f);
-        Cinematic.cue(HOLE_ORBIT_END + 0.004f, SoundEvents.CONDUIT_ACTIVATE, 0.5f, 1.0f);
-        Cinematic.cue(HOLE_ORBIT_END + 0.014f, SoundEvents.WARDEN_SONIC_CHARGE, 0.5f, 1.0f);
-        Cinematic.cue(EXTRACT_END, SoundEvents.END_PORTAL_SPAWN, 0.5f, 1.0f);
-        Cinematic.cue(EXTRACT_END + 0.006f, SoundEvents.PORTAL_TRIGGER, 0.6f, 0.8f);
-        Cinematic.cue(WORMHOLE_OPEN_END, SoundEvents.WARDEN_SONIC_BOOM, 0.4f, 1.0f);
-        Cinematic.cue(WORMHOLE_OPEN_END + 0.004f, SoundEvents.PORTAL_TRAVEL, 0.7f, 0.5f);
-        Cinematic.cue(SPACE_END, SoundEvents.TRIDENT_THUNDER, 0.5f, 1.0f);
-        Cinematic.cue(SPACE_END + 0.004f, SoundEvents.WARDEN_EMERGE, 0.5f, 1.0f);
-        Cinematic.cue(PULL_START, SoundEvents.WARDEN_SONIC_CHARGE, 0.4f, 1.0f);
-        Cinematic.cue(IMPACT - 0.012f, SoundEvents.WARDEN_SONIC_CHARGE, 1.0f, 1.0f);
-        Cinematic.cue(IMPACT, SoundEvents.WARDEN_SONIC_BOOM, 0.3f, 1.0f);
-        Cinematic.cue(IMPACT, SoundEvents.GENERIC_EXPLODE, 0.3f, 1.0f);
-        Cinematic.cue(IMPACT + 0.003f, SoundEvents.WITHER_SPAWN, 0.4f, 0.6f);
-        Cinematic.cue(RETURN_START - 0.015f, SoundEvents.BEACON_DEACTIVATE, 0.8f, 0.8f);
-        Cinematic.cue(0.99f, SoundEvents.BEACON_POWER_SELECT, 1.0f, 0.7f);
+        Cinematic.cue(B1_END - 0.006f, com.amatista.arsenal.registry.ModSounds.POWER_UP.get(), 0.9f, 1.0f);
+        Cinematic.cue(B1_END, com.amatista.arsenal.registry.ModSounds.RUSH_WIND.get(), 0.6f, 0.9f);
+        Cinematic.cue(SPACE_START - 0.002f, com.amatista.arsenal.registry.ModSounds.POWER_DOWN.get(), 0.5f, 1.0f);
+        Cinematic.cue(SPACE_START + 0.04f, com.amatista.arsenal.registry.ModSounds.RUSH_WIND.get(), 1.2f, 0.9f);
+        Cinematic.cue(SOLAR_END - 0.03f, com.amatista.arsenal.registry.ModSounds.COSMIC_SWELL.get(), 0.9f, 0.6f);
+        Cinematic.cue(SOLAR_END, com.amatista.arsenal.registry.ModSounds.RUSH_WIND.get(), 1.6f, 1.0f);
+        Cinematic.cue(MILKY_END, com.amatista.arsenal.registry.ModSounds.COSMIC_SWELL.get(), 0.6f, 0.7f);
+        Cinematic.cue(MILKY_END + 0.01f, com.amatista.arsenal.registry.ModSounds.RUSH_WIND.get(), 1.8f, 1.0f);
+        Cinematic.cue(INTERGALACTIC_END, com.amatista.arsenal.registry.ModSounds.PLANET_GROAN.get(), 0.3f, 0.5f);
+        Cinematic.cue(ANDROMEDA_END, com.amatista.arsenal.registry.ModSounds.HEARTBEAT.get(), 0.5f, 1.0f);
+        Cinematic.cue(ANDROMEDA_END + 0.003f, com.amatista.arsenal.registry.ModSounds.ALARM.get(), 0.4f, 0.5f);
+        Cinematic.cue(HOLE_ORBIT_END, com.amatista.arsenal.registry.ModSounds.POWER_UP.get(), 0.5f, 1.0f);
+        Cinematic.cue(HOLE_ORBIT_END + 0.004f, com.amatista.arsenal.registry.ModSounds.STATION_ONLINE.get(), 0.5f, 1.0f);
+        Cinematic.cue(HOLE_ORBIT_END + 0.014f, com.amatista.arsenal.registry.ModSounds.CHARGE_WHINE.get(), 0.5f, 1.0f);
+        Cinematic.cue(EXTRACT_END, com.amatista.arsenal.registry.ModSounds.COSMIC_SWELL.get(), 0.5f, 1.0f);
+        Cinematic.cue(EXTRACT_END + 0.006f, com.amatista.arsenal.registry.ModSounds.WORMHOLE_OPEN.get(), 0.6f, 0.8f);
+        Cinematic.cue(WORMHOLE_OPEN_END, com.amatista.arsenal.registry.ModSounds.SONIC_BLAST.get(), 0.4f, 1.0f);
+        Cinematic.cue(WORMHOLE_OPEN_END + 0.004f, com.amatista.arsenal.registry.ModSounds.WARP_JUMP.get(), 0.7f, 0.5f);
+        Cinematic.cue(SPACE_END, com.amatista.arsenal.registry.ModSounds.ENERGY_CRACK.get(), 0.5f, 1.0f);
+        Cinematic.cue(SPACE_END + 0.004f, com.amatista.arsenal.registry.ModSounds.SINGULARITY_BIRTH.get(), 0.5f, 1.0f);
+        Cinematic.cue(PULL_START, com.amatista.arsenal.registry.ModSounds.CHARGE_WHINE.get(), 0.4f, 1.0f);
+        Cinematic.cue(IMPACT - 0.012f, com.amatista.arsenal.registry.ModSounds.CHARGE_WHINE.get(), 1.0f, 1.0f);
+        Cinematic.cue(IMPACT, com.amatista.arsenal.registry.ModSounds.SONIC_BLAST.get(), 0.3f, 1.0f);
+        Cinematic.cue(IMPACT, com.amatista.arsenal.registry.ModSounds.EXPLOSION.get(), 0.3f, 1.0f);
+        Cinematic.cue(IMPACT + 0.003f, com.amatista.arsenal.registry.ModSounds.TITAN_ROAR.get(), 0.4f, 0.6f);
+        Cinematic.cue(RETURN_START - 0.015f, com.amatista.arsenal.registry.ModSounds.POWER_DOWN.get(), 0.8f, 0.8f);
+        Cinematic.cue(0.99f, com.amatista.arsenal.registry.ModSounds.UI_CONFIRM.get(), 1.0f, 0.7f);
     }
 
     static void ambientSounds(float t, long tick) {
-        if (t >= SPACE_START && t < SPACE_END && tick % 60 == 0) Cinematic.play(SoundEvents.BEACON_AMBIENT, 0.4f, 1.0f);
-        if (warp(t) > 0.5f && tick % 12 == 0) Cinematic.play(SoundEvents.ELYTRA_FLYING, 1.3f + warp(t) * 0.5f, 0.45f);
-        if (t >= ANDROMEDA_END && t < WORMHOLE_OPEN_END && tick % 22 == 0) Cinematic.play(SoundEvents.WARDEN_HEARTBEAT, 0.5f, 1.0f);
-        if (t >= WORMHOLE_OPEN_END && t < SPACE_END && tick % 16 == 0) Cinematic.play(SoundEvents.PORTAL_AMBIENT, 1.4f, 0.6f);
+        if (t >= SPACE_START && t < SPACE_END && tick % 60 == 0) Cinematic.play(com.amatista.arsenal.registry.ModSounds.MACHINE_HUM.get(), 0.4f, 1.0f);
+        if (warp(t) > 0.5f && tick % 12 == 0) Cinematic.play(com.amatista.arsenal.registry.ModSounds.RUSH_WIND.get(), 1.3f + warp(t) * 0.5f, 0.45f);
+        if (t >= ANDROMEDA_END && t < WORMHOLE_OPEN_END && tick % 22 == 0) Cinematic.play(com.amatista.arsenal.registry.ModSounds.HEARTBEAT.get(), 0.5f, 1.0f);
+        if (t >= WORMHOLE_OPEN_END && t < SPACE_END && tick % 16 == 0) Cinematic.play(com.amatista.arsenal.registry.ModSounds.VOID_DRONE.get(), 1.4f, 0.6f);
         if (t >= PULL_START && t < IMPACT) {
             float u = seg(t, PULL_START, IMPACT);
             int every = Math.max(4, (int) (30 - 26 * u));
-            if (tick % every == 0) Cinematic.play(SoundEvents.WARDEN_HEARTBEAT, 0.5f + u, 1.0f);
+            if (tick % every == 0) Cinematic.play(com.amatista.arsenal.registry.ModSounds.HEARTBEAT.get(), 0.5f + u, 1.0f);
         }
-        if (t >= IMPACT && t < 0.99f && tick % 25 == 0) Cinematic.play(SoundEvents.FIRE_AMBIENT, 0.6f, 0.8f);
+        if (t >= IMPACT && t < 0.99f && tick % 25 == 0) Cinematic.play(com.amatista.arsenal.registry.ModSounds.PLASMA_CRACKLE.get(), 0.6f, 0.8f);
     }
 }

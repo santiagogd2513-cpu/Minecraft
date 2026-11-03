@@ -58,7 +58,7 @@ final class GenesisRenderer {
     static void build() {
         if (webPoints != null) return;
         Random r = new Random(4242);
-        int nodes = 240;
+        int nodes = 420;
         webNodes = new float[nodes * 4];
         for (int i = 0; i < nodes; i++) {
             double u = r.nextDouble() * 2 - 1, ph = r.nextDouble() * Math.PI * 2, s = Math.sqrt(1 - u * u);
@@ -68,7 +68,7 @@ final class GenesisRenderer {
             webNodes[i * 4 + 2] = (float) (s * Math.sin(ph) * rad);
             webNodes[i * 4 + 3] = 12000f + r.nextFloat() * 26000f;
         }
-        int per = 26;
+        int per = 40;
         float[] pts = new float[nodes * 2 * per * 8];
         int k = 0;
         for (int i = 0; i < nodes; i++) {
@@ -101,7 +101,7 @@ final class GenesisRenderer {
         webPoints = new float[k];
         System.arraycopy(pts, 0, webPoints, 0, k);
         // fondo de microondas (el resplandor del Big Bang)
-        int lat = 48, lon = 96;
+        int lat = 72, lon = 144;
         cmbColor = new float[(lat + 1) * (lon + 1) * 3];
         for (int i = 0; i <= lat; i++) {
             double th = Math.PI * i / lat;
@@ -117,7 +117,7 @@ final class GenesisRenderer {
             }
         }
         // cortinas de auroras alrededor de Génesis
-        curtains = new float[22][];
+        curtains = new float[40][];
         for (int i = 0; i < curtains.length; i++) {
             double a = r.nextDouble() * Math.PI * 2, d = 40000 + r.nextDouble() * 90000;
             curtains[i] = new float[]{(float) (Math.cos(a) * d), (float) (Math.sin(a) * d), r.nextFloat() * 6.28f,
@@ -223,7 +223,7 @@ final class GenesisRenderer {
         renderWeb(bb, view, eye, forward, right, up, t, time, 1f - 0.7f * u);
         beginGlow(true);
         begin(bb);
-        int lat = 48, lon = 96;
+        int lat = 72, lon = 144;
         float R = GenesisDirector.CMB_RADIUS;
         float a = 0.18f + 0.35f * u;
         for (int i = 0; i < lat; i++) {

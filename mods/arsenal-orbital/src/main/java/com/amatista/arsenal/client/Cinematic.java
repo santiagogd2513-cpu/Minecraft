@@ -9,7 +9,6 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvent;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.Marker;
@@ -395,53 +394,53 @@ public final class Cinematic {
             return;
         }
         // Acto 1: consola
-        cue(0.0f, SoundEvents.BEACON_POWER_SELECT, 1.3f, 0.9f);
+        cue(0.0f, com.amatista.arsenal.registry.ModSounds.UI_CONFIRM.get(), 1.3f, 0.9f);
         for (int i = 0; i < HudRenderer.CONSOLE_LINES; i++) {
-            cue(HudRenderer.consoleLineStart(i), SoundEvents.AMETHYST_BLOCK_CHIME, 1.4f + i * 0.08f, 1.0f);
+            cue(HudRenderer.consoleLineStart(i), com.amatista.arsenal.registry.ModSounds.CRYSTAL_CHIME.get(), 1.4f + i * 0.08f, 1.0f);
         }
-        cue(HudRenderer.consoleLineStart(HudRenderer.CONSOLE_LINES - 1) + 0.004f, SoundEvents.BEACON_ACTIVATE, 1.5f, 1.0f);
+        cue(HudRenderer.consoleLineStart(HudRenderer.CONSOLE_LINES - 1) + 0.004f, com.amatista.arsenal.registry.ModSounds.POWER_UP.get(), 1.5f, 1.0f);
         // Acto 2: despegue
-        cue(Timeline.A1_END, SoundEvents.ELYTRA_FLYING, 0.6f, 0.9f);
-        cue(Timeline.A1_END + 0.06f, SoundEvents.ELYTRA_FLYING, 0.85f, 0.9f);
-        cue(Timeline.A2_END - 0.04f, SoundEvents.FIRECHARGE_USE, 0.5f, 0.8f);
-        cue(Timeline.SPACE_START - 0.002f, SoundEvents.BEACON_DEACTIVATE, 0.5f, 1.0f);
+        cue(Timeline.A1_END, com.amatista.arsenal.registry.ModSounds.RUSH_WIND.get(), 0.6f, 0.9f);
+        cue(Timeline.A1_END + 0.06f, com.amatista.arsenal.registry.ModSounds.RUSH_WIND.get(), 0.85f, 0.9f);
+        cue(Timeline.A2_END - 0.04f, com.amatista.arsenal.registry.ModSounds.PLASMA_WHOOSH.get(), 0.5f, 0.8f);
+        cue(Timeline.SPACE_START - 0.002f, com.amatista.arsenal.registry.ModSounds.POWER_DOWN.get(), 0.5f, 1.0f);
         // Acto 4: el satélite despierta
         float a4 = Timeline.A3_END, d4 = Timeline.A4_END - Timeline.A3_END;
-        cue(a4 + d4 * 0.36f, SoundEvents.BEACON_ACTIVATE, 0.6f, 1.0f);
-        for (int i = 0; i < 6; i++) cue(a4 + d4 * (0.38f + i * 0.025f), SoundEvents.AMETHYST_BLOCK_CHIME, 0.8f + i * 0.15f, 0.9f);
-        cue(a4 + d4 * 0.50f, SoundEvents.PISTON_EXTEND, 0.5f, 1.0f);
-        cue(a4 + d4 * 0.58f, SoundEvents.PISTON_EXTEND, 0.6f, 1.0f);
-        cue(a4 + d4 * 0.66f, SoundEvents.PISTON_CONTRACT, 0.55f, 1.0f);
-        cue(a4 + d4 * 0.80f, SoundEvents.PISTON_EXTEND, 0.45f, 1.0f);
-        cue(a4 + d4 * 0.88f, SoundEvents.ENCHANTMENT_TABLE_USE, 0.6f, 1.0f);
+        cue(a4 + d4 * 0.36f, com.amatista.arsenal.registry.ModSounds.POWER_UP.get(), 0.6f, 1.0f);
+        for (int i = 0; i < 6; i++) cue(a4 + d4 * (0.38f + i * 0.025f), com.amatista.arsenal.registry.ModSounds.CRYSTAL_CHIME.get(), 0.8f + i * 0.15f, 0.9f);
+        cue(a4 + d4 * 0.50f, com.amatista.arsenal.registry.ModSounds.MECH_EXTEND.get(), 0.5f, 1.0f);
+        cue(a4 + d4 * 0.58f, com.amatista.arsenal.registry.ModSounds.MECH_EXTEND.get(), 0.6f, 1.0f);
+        cue(a4 + d4 * 0.66f, com.amatista.arsenal.registry.ModSounds.MECH_RETRACT.get(), 0.55f, 1.0f);
+        cue(a4 + d4 * 0.80f, com.amatista.arsenal.registry.ModSounds.MECH_EXTEND.get(), 0.45f, 1.0f);
+        cue(a4 + d4 * 0.88f, com.amatista.arsenal.registry.ModSounds.RUNE_GLIMMER.get(), 0.6f, 1.0f);
         // Acto 5: carga
         float a5 = Timeline.A4_END, d5 = Timeline.A5_END - Timeline.A4_END;
-        cue(a5 + d5 * 0.02f, SoundEvents.CONDUIT_ACTIVATE, 0.6f, 1.0f);
-        cue(a5 + d5 * 0.35f, SoundEvents.WARDEN_SONIC_CHARGE, 0.5f, 1.0f);
-        cue(a5 + d5 * 0.75f, SoundEvents.WARDEN_SONIC_CHARGE, 0.8f, 1.0f);
+        cue(a5 + d5 * 0.02f, com.amatista.arsenal.registry.ModSounds.STATION_ONLINE.get(), 0.6f, 1.0f);
+        cue(a5 + d5 * 0.35f, com.amatista.arsenal.registry.ModSounds.CHARGE_WHINE.get(), 0.5f, 1.0f);
+        cue(a5 + d5 * 0.75f, com.amatista.arsenal.registry.ModSounds.CHARGE_WHINE.get(), 0.8f, 1.0f);
         float countdown = HudRenderer.countdownWindow();
         for (int i = 0; i < 5; i++) {
-            cue(Timeline.A5_END - countdown + countdown * i / 5f, SoundEvents.ARROW_HIT_PLAYER, 0.8f + i * 0.1f, 1.0f);
+            cue(Timeline.A5_END - countdown + countdown * i / 5f, com.amatista.arsenal.registry.ModSounds.COUNTDOWN_TICK.get(), 0.8f + i * 0.1f, 1.0f);
         }
-        cue(Timeline.A5_END - 0.012f, SoundEvents.WARDEN_SONIC_CHARGE, 1.2f, 1.0f);
+        cue(Timeline.A5_END - 0.012f, com.amatista.arsenal.registry.ModSounds.CHARGE_WHINE.get(), 1.2f, 1.0f);
         // Disparo
-        cue(Timeline.A5_END, SoundEvents.WARDEN_SONIC_BOOM, 0.5f, 1.0f);
-        cue(Timeline.A5_END, SoundEvents.LIGHTNING_BOLT_THUNDER, 0.5f, 0.9f);
-        cue(Timeline.A5_END + 0.004f, SoundEvents.TRIDENT_THUNDER, 0.6f, 1.0f);
+        cue(Timeline.A5_END, com.amatista.arsenal.registry.ModSounds.SONIC_BLAST.get(), 0.5f, 1.0f);
+        cue(Timeline.A5_END, com.amatista.arsenal.registry.ModSounds.DEEP_THUNDER.get(), 0.5f, 0.9f);
+        cue(Timeline.A5_END + 0.004f, com.amatista.arsenal.registry.ModSounds.ENERGY_CRACK.get(), 0.6f, 1.0f);
         // Entrada en la atmósfera
-        cue(Timeline.SPACE_END, SoundEvents.FIRECHARGE_USE, 0.4f, 1.0f);
-        cue(Timeline.SPACE_END, SoundEvents.BLAZE_SHOOT, 0.5f, 1.0f);
-        cue(Timeline.SPACE_END + 0.004f, SoundEvents.ELYTRA_FLYING, 1.3f, 0.9f);
+        cue(Timeline.SPACE_END, com.amatista.arsenal.registry.ModSounds.PLASMA_WHOOSH.get(), 0.4f, 1.0f);
+        cue(Timeline.SPACE_END, com.amatista.arsenal.registry.ModSounds.LASER_SHOT.get(), 0.5f, 1.0f);
+        cue(Timeline.SPACE_END + 0.004f, com.amatista.arsenal.registry.ModSounds.RUSH_WIND.get(), 1.3f, 0.9f);
         // Acto 7: cámara lenta
-        cue(Timeline.A6_END, SoundEvents.WARDEN_SONIC_CHARGE, 0.5f, 1.0f);
-        cue(Timeline.A6_END + 0.035f, SoundEvents.END_PORTAL_SPAWN, 0.6f, 0.7f);
+        cue(Timeline.A6_END, com.amatista.arsenal.registry.ModSounds.CHARGE_WHINE.get(), 0.5f, 1.0f);
+        cue(Timeline.A6_END + 0.035f, com.amatista.arsenal.registry.ModSounds.COSMIC_SWELL.get(), 0.6f, 0.7f);
         // Impacto (además de la explosión real del servidor)
-        cue(Timeline.IMPACT, SoundEvents.LIGHTNING_BOLT_IMPACT, 0.5f, 1.0f);
-        cue(Timeline.IMPACT, SoundEvents.GENERIC_EXPLODE, 0.4f, 1.0f);
-        cue(Timeline.IMPACT + 0.003f, SoundEvents.ENDER_DRAGON_GROWL, 0.5f, 0.5f);
+        cue(Timeline.IMPACT, com.amatista.arsenal.registry.ModSounds.BEAM_IMPACT.get(), 0.5f, 1.0f);
+        cue(Timeline.IMPACT, com.amatista.arsenal.registry.ModSounds.EXPLOSION.get(), 0.4f, 1.0f);
+        cue(Timeline.IMPACT + 0.003f, com.amatista.arsenal.registry.ModSounds.PLANET_GROAN.get(), 0.5f, 0.5f);
         // Consecuencias y regreso
-        cue(Timeline.RETURN_START - 0.02f, SoundEvents.BEACON_DEACTIVATE, 0.8f, 0.8f);
-        cue(0.99f, SoundEvents.BEACON_POWER_SELECT, 1.0f, 0.7f);
+        cue(Timeline.RETURN_START - 0.02f, com.amatista.arsenal.registry.ModSounds.POWER_DOWN.get(), 0.8f, 0.8f);
+        cue(0.99f, com.amatista.arsenal.registry.ModSounds.UI_CONFIRM.get(), 1.0f, 0.7f);
         cues.sort((a, b) -> Float.compare(a.at, b.at));
     }
 
@@ -473,20 +472,20 @@ public final class Cinematic {
         }
         if (t >= Timeline.SPACE_START && t < Timeline.A5_END) {
             // zumbido grave del espacio
-            if (tick % 60 == 0) play(SoundEvents.BEACON_AMBIENT, 0.5f, 1.0f);
-            if (tick % 140 == 70) play(SoundEvents.PORTAL_AMBIENT, 0.5f, 0.35f);
+            if (tick % 60 == 0) play(com.amatista.arsenal.registry.ModSounds.MACHINE_HUM.get(), 0.5f, 1.0f);
+            if (tick % 140 == 70) play(com.amatista.arsenal.registry.ModSounds.VOID_DRONE.get(), 0.5f, 0.35f);
         }
         if (t >= Timeline.A4_END && t < Timeline.A5_END) {
             // la carga sube de tono
             float u = (t - Timeline.A4_END) / (Timeline.A5_END - Timeline.A4_END);
             int every = Math.max(6, (int) (40 - 32 * u));
-            if (tick % every == 0) play(SoundEvents.RESPAWN_ANCHOR_CHARGE, 0.5f + 1.5f * u, 0.7f);
+            if (tick % every == 0) play(com.amatista.arsenal.registry.ModSounds.CAPACITOR_CHARGE.get(), 0.5f + 1.5f * u, 0.7f);
         }
         if (t >= Timeline.SPACE_END && t < Timeline.A6_END && tick % 10 == 0) {
-            play(SoundEvents.FIRECHARGE_USE, 0.5f, 0.4f);
+            play(com.amatista.arsenal.registry.ModSounds.PLASMA_WHOOSH.get(), 0.5f, 0.4f);
         }
         if (t >= Timeline.IMPACT && t < 0.99f && tick % 30 == 0) {
-            play(SoundEvents.FIRE_AMBIENT, 0.7f, 0.8f);
+            play(com.amatista.arsenal.registry.ModSounds.PLASMA_CRACKLE.get(), 0.7f, 0.8f);
         }
     }
 

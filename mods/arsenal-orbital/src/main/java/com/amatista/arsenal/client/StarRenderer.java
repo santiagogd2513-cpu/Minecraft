@@ -25,7 +25,7 @@ import static com.amatista.arsenal.client.BlackHoleRenderer.draw;
 /** Escenas del "Protocolo Prometeo": el gran viaje, la hipergigante azul, la estación y el láser. */
 final class StarRenderer {
     private static final Vector3f SUN = SpaceRenderer.SUN;
-    private static final int LAT = 96, LON = 192;
+    private static final int LAT = 160, LON = 320;
     private static float[] sn;            // normales de la estrella
     private static float[] g1, g2, spot;  // granulado (dos fases) y manchas
     private static float[] rnd;

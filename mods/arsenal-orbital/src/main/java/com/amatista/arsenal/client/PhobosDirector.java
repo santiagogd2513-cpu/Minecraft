@@ -2,7 +2,6 @@ package com.amatista.arsenal.client;
 
 import com.amatista.arsenal.PhobosTimeline;
 import com.amatista.arsenal.Timeline;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.Vec3;
 
@@ -291,67 +290,67 @@ final class PhobosDirector {
     // ------------------------------------------------------------------ sonidos
 
     static void buildCues() {
-        Cinematic.cue(0.0f, SoundEvents.BEACON_POWER_SELECT, 0.9f, 0.9f);
+        Cinematic.cue(0.0f, com.amatista.arsenal.registry.ModSounds.UI_CONFIRM.get(), 0.9f, 0.9f);
         for (int i = 0; i < HudRenderer.CONSOLE_LINES; i++) {
-            Cinematic.cue(PhobosHud.consoleLineStart(i), SoundEvents.AMETHYST_BLOCK_CHIME, 1.1f + i * 0.07f, 1.0f);
+            Cinematic.cue(PhobosHud.consoleLineStart(i), com.amatista.arsenal.registry.ModSounds.CRYSTAL_CHIME.get(), 1.1f + i * 0.07f, 1.0f);
         }
-        Cinematic.cue(PhobosTimeline.P1_END - 0.008f, SoundEvents.BEACON_ACTIVATE, 1.2f, 1.0f);
-        Cinematic.cue(PhobosTimeline.P1_END, SoundEvents.ELYTRA_FLYING, 0.6f, 0.9f);
-        Cinematic.cue(PhobosTimeline.P1_END + 0.05f, SoundEvents.ELYTRA_FLYING, 0.85f, 0.9f);
-        Cinematic.cue(PhobosTimeline.SPACE_START - 0.002f, SoundEvents.BEACON_DEACTIVATE, 0.5f, 1.0f);
+        Cinematic.cue(PhobosTimeline.P1_END - 0.008f, com.amatista.arsenal.registry.ModSounds.POWER_UP.get(), 1.2f, 1.0f);
+        Cinematic.cue(PhobosTimeline.P1_END, com.amatista.arsenal.registry.ModSounds.RUSH_WIND.get(), 0.6f, 0.9f);
+        Cinematic.cue(PhobosTimeline.P1_END + 0.05f, com.amatista.arsenal.registry.ModSounds.RUSH_WIND.get(), 0.85f, 0.9f);
+        Cinematic.cue(PhobosTimeline.SPACE_START - 0.002f, com.amatista.arsenal.registry.ModSounds.POWER_DOWN.get(), 0.5f, 1.0f);
         // salto a gran velocidad
-        Cinematic.cue(0.22f, SoundEvents.END_PORTAL_SPAWN, 0.8f, 0.6f);
-        Cinematic.cue(0.23f, SoundEvents.ELYTRA_FLYING, 1.4f, 1.0f);
-        Cinematic.cue(0.26f, SoundEvents.ELYTRA_FLYING, 1.6f, 1.0f);
-        Cinematic.cue(0.30f, SoundEvents.ELYTRA_FLYING, 1.2f, 1.0f);
-        Cinematic.cue(PhobosTimeline.TRAVEL_END - 0.01f, SoundEvents.BEACON_DEACTIVATE, 0.7f, 1.0f);
+        Cinematic.cue(0.22f, com.amatista.arsenal.registry.ModSounds.COSMIC_SWELL.get(), 0.8f, 0.6f);
+        Cinematic.cue(0.23f, com.amatista.arsenal.registry.ModSounds.RUSH_WIND.get(), 1.4f, 1.0f);
+        Cinematic.cue(0.26f, com.amatista.arsenal.registry.ModSounds.RUSH_WIND.get(), 1.6f, 1.0f);
+        Cinematic.cue(0.30f, com.amatista.arsenal.registry.ModSounds.RUSH_WIND.get(), 1.2f, 1.0f);
+        Cinematic.cue(PhobosTimeline.TRAVEL_END - 0.01f, com.amatista.arsenal.registry.ModSounds.POWER_DOWN.get(), 0.7f, 1.0f);
         // Marte
-        Cinematic.cue(PhobosTimeline.TRAVEL_END + 0.005f, SoundEvents.ENDER_DRAGON_GROWL, 0.4f, 0.35f);
+        Cinematic.cue(PhobosTimeline.TRAVEL_END + 0.005f, com.amatista.arsenal.registry.ModSounds.PLANET_GROAN.get(), 0.4f, 0.35f);
         // misil
-        Cinematic.cue(PhobosTimeline.MARS_END, SoundEvents.FIRECHARGE_USE, 0.6f, 1.0f);
-        Cinematic.cue(PhobosTimeline.MARS_END + 0.003f, SoundEvents.FIREWORK_ROCKET_LAUNCH, 0.5f, 1.0f);
-        Cinematic.cue(PhobosTimeline.MARS_END + 0.03f, SoundEvents.FIREWORK_ROCKET_LAUNCH, 0.7f, 0.8f);
-        Cinematic.cue(PhobosTimeline.MISSILE_HIT, SoundEvents.GENERIC_EXPLODE, 0.5f, 1.0f);
-        Cinematic.cue(PhobosTimeline.MISSILE_HIT, SoundEvents.LIGHTNING_BOLT_THUNDER, 0.6f, 0.9f);
-        Cinematic.cue(PhobosTimeline.MISSILE_HIT + 0.003f, SoundEvents.FIREWORK_ROCKET_LARGE_BLAST, 0.5f, 1.0f);
+        Cinematic.cue(PhobosTimeline.MARS_END, com.amatista.arsenal.registry.ModSounds.PLASMA_WHOOSH.get(), 0.6f, 1.0f);
+        Cinematic.cue(PhobosTimeline.MARS_END + 0.003f, com.amatista.arsenal.registry.ModSounds.MISSILE_LAUNCH.get(), 0.5f, 1.0f);
+        Cinematic.cue(PhobosTimeline.MARS_END + 0.03f, com.amatista.arsenal.registry.ModSounds.MISSILE_LAUNCH.get(), 0.7f, 0.8f);
+        Cinematic.cue(PhobosTimeline.MISSILE_HIT, com.amatista.arsenal.registry.ModSounds.EXPLOSION.get(), 0.5f, 1.0f);
+        Cinematic.cue(PhobosTimeline.MISSILE_HIT, com.amatista.arsenal.registry.ModSounds.DEEP_THUNDER.get(), 0.6f, 0.9f);
+        Cinematic.cue(PhobosTimeline.MISSILE_HIT + 0.003f, com.amatista.arsenal.registry.ModSounds.SKY_BURST.get(), 0.5f, 1.0f);
         // honda gravitatoria
-        Cinematic.cue(PhobosTimeline.MISSILE_END, SoundEvents.CONDUIT_ACTIVATE, 0.5f, 1.0f);
-        Cinematic.cue(PhobosTimeline.SLING_END - 0.08f, SoundEvents.WARDEN_SONIC_CHARGE, 0.5f, 1.0f);
+        Cinematic.cue(PhobosTimeline.MISSILE_END, com.amatista.arsenal.registry.ModSounds.STATION_ONLINE.get(), 0.5f, 1.0f);
+        Cinematic.cue(PhobosTimeline.SLING_END - 0.08f, com.amatista.arsenal.registry.ModSounds.CHARGE_WHINE.get(), 0.5f, 1.0f);
         float countdown = HudRenderer.countdownWindow();
         for (int i = 0; i < 5; i++) {
-            Cinematic.cue(PhobosTimeline.SLING_END - countdown + countdown * i / 5f, SoundEvents.ARROW_HIT_PLAYER, 0.8f + i * 0.1f, 1.0f);
+            Cinematic.cue(PhobosTimeline.SLING_END - countdown + countdown * i / 5f, com.amatista.arsenal.registry.ModSounds.COUNTDOWN_TICK.get(), 0.8f + i * 0.1f, 1.0f);
         }
         // liberación
-        Cinematic.cue(PhobosTimeline.SLING_END, SoundEvents.WARDEN_SONIC_BOOM, 0.4f, 1.0f);
-        Cinematic.cue(PhobosTimeline.SLING_END, SoundEvents.TRIDENT_THUNDER, 0.5f, 1.0f);
-        Cinematic.cue(PhobosTimeline.SLING_END + 0.004f, SoundEvents.ELYTRA_FLYING, 1.5f, 1.0f);
-        Cinematic.cue(PhobosTimeline.SLING_END + 0.06f, SoundEvents.BLAZE_SHOOT, 0.4f, 1.0f);
+        Cinematic.cue(PhobosTimeline.SLING_END, com.amatista.arsenal.registry.ModSounds.SONIC_BLAST.get(), 0.4f, 1.0f);
+        Cinematic.cue(PhobosTimeline.SLING_END, com.amatista.arsenal.registry.ModSounds.ENERGY_CRACK.get(), 0.5f, 1.0f);
+        Cinematic.cue(PhobosTimeline.SLING_END + 0.004f, com.amatista.arsenal.registry.ModSounds.RUSH_WIND.get(), 1.5f, 1.0f);
+        Cinematic.cue(PhobosTimeline.SLING_END + 0.06f, com.amatista.arsenal.registry.ModSounds.LASER_SHOT.get(), 0.4f, 1.0f);
         // entrada en la atmósfera y caída
-        Cinematic.cue(PhobosTimeline.SPACE_END, SoundEvents.FIRECHARGE_USE, 0.3f, 1.0f);
-        Cinematic.cue(PhobosTimeline.SPACE_END + 0.003f, SoundEvents.ELYTRA_FLYING, 1.0f, 1.0f);
-        Cinematic.cue(PhobosTimeline.SPACE_END + 0.03f, SoundEvents.ENDER_DRAGON_GROWL, 0.4f, 0.7f);
+        Cinematic.cue(PhobosTimeline.SPACE_END, com.amatista.arsenal.registry.ModSounds.PLASMA_WHOOSH.get(), 0.3f, 1.0f);
+        Cinematic.cue(PhobosTimeline.SPACE_END + 0.003f, com.amatista.arsenal.registry.ModSounds.RUSH_WIND.get(), 1.0f, 1.0f);
+        Cinematic.cue(PhobosTimeline.SPACE_END + 0.03f, com.amatista.arsenal.registry.ModSounds.PLANET_GROAN.get(), 0.4f, 0.7f);
         // impacto
-        Cinematic.cue(PhobosTimeline.IMPACT, SoundEvents.LIGHTNING_BOLT_IMPACT, 0.4f, 1.0f);
-        Cinematic.cue(PhobosTimeline.IMPACT, SoundEvents.GENERIC_EXPLODE, 0.3f, 1.0f);
-        Cinematic.cue(PhobosTimeline.IMPACT + 0.003f, SoundEvents.WITHER_SPAWN, 0.5f, 0.6f);
-        Cinematic.cue(PhobosTimeline.RETURN_START - 0.02f, SoundEvents.BEACON_DEACTIVATE, 0.8f, 0.8f);
-        Cinematic.cue(0.99f, SoundEvents.BEACON_POWER_SELECT, 1.0f, 0.7f);
+        Cinematic.cue(PhobosTimeline.IMPACT, com.amatista.arsenal.registry.ModSounds.BEAM_IMPACT.get(), 0.4f, 1.0f);
+        Cinematic.cue(PhobosTimeline.IMPACT, com.amatista.arsenal.registry.ModSounds.EXPLOSION.get(), 0.3f, 1.0f);
+        Cinematic.cue(PhobosTimeline.IMPACT + 0.003f, com.amatista.arsenal.registry.ModSounds.TITAN_ROAR.get(), 0.5f, 0.6f);
+        Cinematic.cue(PhobosTimeline.RETURN_START - 0.02f, com.amatista.arsenal.registry.ModSounds.POWER_DOWN.get(), 0.8f, 0.8f);
+        Cinematic.cue(0.99f, com.amatista.arsenal.registry.ModSounds.UI_CONFIRM.get(), 1.0f, 0.7f);
     }
 
     static void ambientSounds(float t, long tick) {
         if (t >= PhobosTimeline.SPACE_START && t < PhobosTimeline.SPACE_END && tick % 60 == 0) {
-            Cinematic.play(SoundEvents.BEACON_AMBIENT, 0.45f, 1.0f);
+            Cinematic.play(com.amatista.arsenal.registry.ModSounds.MACHINE_HUM.get(), 0.45f, 1.0f);
         }
-        if (warp(t) > 0.4f && tick % 12 == 0) Cinematic.play(SoundEvents.ELYTRA_FLYING, 1.2f + warp(t) * 0.5f, 0.5f);
+        if (warp(t) > 0.4f && tick % 12 == 0) Cinematic.play(com.amatista.arsenal.registry.ModSounds.RUSH_WIND.get(), 1.2f + warp(t) * 0.5f, 0.5f);
         if (t >= PhobosTimeline.MISSILE_END && t < PhobosTimeline.SLING_END) {
             float u = slingProgress(t);
             int every = Math.max(4, (int) (40 - 36 * u));
-            if (tick % every == 0) Cinematic.play(SoundEvents.RESPAWN_ANCHOR_CHARGE, 0.4f + 1.6f * u, 0.7f);
+            if (tick % every == 0) Cinematic.play(com.amatista.arsenal.registry.ModSounds.CAPACITOR_CHARGE.get(), 0.4f + 1.6f * u, 0.7f);
         }
         if (t >= PhobosTimeline.SLING_END && t < PhobosTimeline.IMPACT && tick % 8 == 0) {
-            Cinematic.play(SoundEvents.FIRECHARGE_USE, 0.4f, 0.45f);
+            Cinematic.play(com.amatista.arsenal.registry.ModSounds.PLASMA_WHOOSH.get(), 0.4f, 0.45f);
         }
-        if (t >= PhobosTimeline.IMPACT && t < 0.99f && tick % 25 == 0) Cinematic.play(SoundEvents.FIRE_AMBIENT, 0.6f, 0.9f);
+        if (t >= PhobosTimeline.IMPACT && t < 0.99f && tick % 25 == 0) Cinematic.play(com.amatista.arsenal.registry.ModSounds.PLASMA_CRACKLE.get(), 0.6f, 0.9f);
     }
 
     // ------------------------------------------------------------------ utilidades

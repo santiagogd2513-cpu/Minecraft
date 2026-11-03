@@ -126,8 +126,8 @@ final class BlackHoleRenderer {
 
     static void build() {
         if (milky != null) return;
-        milky = new Galaxy(11, 14000, BlackHoleDirector.MILKY_RADIUS, 4);
-        andromeda = new Galaxy(31, 18000, BlackHoleDirector.ANDROMEDA_RADIUS, 2);
+        milky = new Galaxy(11, 34000, BlackHoleDirector.MILKY_RADIUS, 4);
+        andromeda = new Galaxy(31, 42000, BlackHoleDirector.ANDROMEDA_RADIUS, 2);
         Random r = new Random(55);
         int n = 70;
         backgroundGalaxies = new float[n * 11];
@@ -315,7 +315,7 @@ final class BlackHoleRenderer {
 
     /** Júpiter y Saturno: bandas de nubes, la Gran Mancha Roja en Júpiter. */
     private static void drawGasGiant(BufferBuilder bb, Matrix4f view, Vector3f c, float radius, float time, boolean saturn) {
-        int lat = 48, lon = 96;
+        int lat = 96, lon = 192;
         Quaternionf tilt = new Quaternionf().rotateZ(saturn ? 0.47f : 0.05f);
         Vector3f p = new Vector3f();
         for (int i = 0; i < lat; i++) {
@@ -430,7 +430,7 @@ final class BlackHoleRenderer {
     }
 
     static void drawSphere(BufferBuilder bb, Matrix4f view, Vector3f c, float radius, float r, float g, float b) {
-        int lat = 24, lon = 48;
+        int lat = 40, lon = 80;
         for (int i = 0; i < lat; i++) {
             for (int j = 0; j < lon; j++) {
                 for (int k = 0; k < 4; k++) {

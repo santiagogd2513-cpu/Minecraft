@@ -1,0 +1,353 @@
+{
+  "alarm": {
+    "sounds": [
+      {
+        "name": "arsenalorbital:alarm",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.arsenalorbital.alarm"
+  },
+  "beam_impact": {
+    "sounds": [
+      {
+        "name": "arsenalorbital:beam_impact",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.arsenalorbital.beam_impact"
+  },
+  "bell_strike": {
+    "sounds": [
+      {
+        "name": "arsenalorbital:bell_strike",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.arsenalorbital.bell_strike"
+  },
+  "capacitor_charge": {
+    "sounds": [
+      {
+        "name": "arsenalorbital:capacitor_charge",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.arsenalorbital.capacitor_charge"
+  },
+  "cathedral_bell": {
+    "sounds": [
+      {
+        "name": "arsenalorbital:cathedral_bell",
+        "stream": true
+      }
+    ],
+    "subtitle": "subtitles.arsenalorbital.cathedral_bell"
+  },
+  "charge_whine": {
+    "sounds": [
+      {
+        "name": "arsenalorbital:charge_whine",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.arsenalorbital.charge_whine"
+  },
+  "collapse": {
+    "sounds": [
+      {
+        "name": "arsenalorbital:collapse",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.arsenalorbital.collapse"
+  },
+  "cosmic_swell": {
+    "sounds": [
+      {
+        "name": "arsenalorbital:cosmic_swell",
+        "stream": true
+      }
+    ],
+    "subtitle": "subtitles.arsenalorbital.cosmic_swell"
+  },
+  "countdown_tick": {
+    "sounds": [
+      {
+        "name": "arsenalorbital:countdown_tick",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.arsenalorbital.countdown_tick"
+  },
+  "crystal_chime": {
+    "sounds": [
+      {
+        "name": "arsenalorbital:crystal_chime",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.arsenalorbital.crystal_chime"
+  },
+  "crystal_resonance": {
+    "sounds": [
+      {
+        "name": "arsenalorbital:crystal_resonance",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.arsenalorbital.crystal_resonance"
+  },
+  "deep_thunder": {
+    "sounds": [
+      {
+        "name": "arsenalorbital:deep_thunder",
+        "stream": true
+      }
+    ],
+    "subtitle": "subtitles.arsenalorbital.deep_thunder"
+  },
+  "energy_crack": {
+    "sounds": [
+      {
+        "name": "arsenalorbital:energy_crack",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.arsenalorbital.energy_crack"
+  },
+  "explosion": {
+    "sounds": [
+      {
+        "name": "arsenalorbital:explosion",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.arsenalorbital.explosion"
+  },
+  "heartbeat": {
+    "sounds": [
+      {
+        "name": "arsenalorbital:heartbeat",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.arsenalorbital.heartbeat"
+  },
+  "laser_shot": {
+    "sounds": [
+      {
+        "name": "arsenalorbital:laser_shot",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.arsenalorbital.laser_shot"
+  },
+  "lock_on": {
+    "sounds": [
+      {
+        "name": "arsenalorbital:lock_on",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.arsenalorbital.lock_on"
+  },
+  "machine_hum": {
+    "sounds": [
+      {
+        "name": "arsenalorbital:machine_hum",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.arsenalorbital.machine_hum"
+  },
+  "mech_extend": {
+    "sounds": [
+      {
+        "name": "arsenalorbital:mech_extend",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.arsenalorbital.mech_extend"
+  },
+  "mech_retract": {
+    "sounds": [
+      {
+        "name": "arsenalorbital:mech_retract",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.arsenalorbital.mech_retract"
+  },
+  "missile_launch": {
+    "sounds": [
+      {
+        "name": "arsenalorbital:missile_launch",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.arsenalorbital.missile_launch"
+  },
+  "planet_groan": {
+    "sounds": [
+      {
+        "name": "arsenalorbital:planet_groan",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.arsenalorbital.planet_groan"
+  },
+  "plasma_crackle": {
+    "sounds": [
+      {
+        "name": "arsenalorbital:plasma_crackle",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.arsenalorbital.plasma_crackle"
+  },
+  "plasma_whoosh": {
+    "sounds": [
+      {
+        "name": "arsenalorbital:plasma_whoosh",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.arsenalorbital.plasma_whoosh"
+  },
+  "power_down": {
+    "sounds": [
+      {
+        "name": "arsenalorbital:power_down",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.arsenalorbital.power_down"
+  },
+  "power_up": {
+    "sounds": [
+      {
+        "name": "arsenalorbital:power_up",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.arsenalorbital.power_up"
+  },
+  "rune_glimmer": {
+    "sounds": [
+      {
+        "name": "arsenalorbital:rune_glimmer",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.arsenalorbital.rune_glimmer"
+  },
+  "rush_wind": {
+    "sounds": [
+      {
+        "name": "arsenalorbital:rush_wind",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.arsenalorbital.rush_wind"
+  },
+  "singularity_birth": {
+    "sounds": [
+      {
+        "name": "arsenalorbital:singularity_birth",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.arsenalorbital.singularity_birth"
+  },
+  "sky_burst": {
+    "sounds": [
+      {
+        "name": "arsenalorbital:sky_burst",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.arsenalorbital.sky_burst"
+  },
+  "sonic_blast": {
+    "sounds": [
+      {
+        "name": "arsenalorbital:sonic_blast",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.arsenalorbital.sonic_blast"
+  },
+  "station_online": {
+    "sounds": [
+      {
+        "name": "arsenalorbital:station_online",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.arsenalorbital.station_online"
+  },
+  "thruster_burn": {
+    "sounds": [
+      {
+        "name": "arsenalorbital:thruster_burn",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.arsenalorbital.thruster_burn"
+  },
+  "thruster_idle": {
+    "sounds": [
+      {
+        "name": "arsenalorbital:thruster_idle",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.arsenalorbital.thruster_idle"
+  },
+  "titan_roar": {
+    "sounds": [
+      {
+        "name": "arsenalorbital:titan_roar",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.arsenalorbital.titan_roar"
+  },
+  "ui_confirm": {
+    "sounds": [
+      {
+        "name": "arsenalorbital:ui_confirm",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.arsenalorbital.ui_confirm"
+  },
+  "void_drone": {
+    "sounds": [
+      {
+        "name": "arsenalorbital:void_drone",
+        "stream": true
+      }
+    ],
+    "subtitle": "subtitles.arsenalorbital.void_drone"
+  },
+  "warp_jump": {
+    "sounds": [
+      {
+        "name": "arsenalorbital:warp_jump",
+        "stream": false
+      }
+    ],
+    "subtitle": "subtitles.arsenalorbital.warp_jump"
+  },
+  "wormhole_open": {
+    "sounds": [
+      {
+        "name": "arsenalorbital:wormhole_open",
+        "stream": true
+      }
+    ],
+    "subtitle": "subtitles.arsenalorbital.wormhole_open"
+  }
+}

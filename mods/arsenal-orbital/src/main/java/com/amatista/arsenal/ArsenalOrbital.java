@@ -20,6 +20,7 @@ public class ArsenalOrbital {
         IEventBus modBus = FMLJavaModLoadingContext.get().getModEventBus();
         ModItems.ITEMS.register(modBus);
         ModTabs.TABS.register(modBus);
+        com.amatista.arsenal.registry.ModSounds.SOUNDS.register(modBus);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
         Network.register();
         MinecraftForge.EVENT_BUS.register(OrbitalStrikeManager.class);

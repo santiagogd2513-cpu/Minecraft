@@ -6,7 +6,6 @@ import net.minecraft.core.particles.ParticleOptions;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
@@ -38,9 +37,9 @@ public final class ImpactEffects {
         RandomSource rnd = level.getRandom();
 
         // Sonido (lo oyen todos alrededor)
-        level.playSound(null, c.x, c.y, c.z, SoundEvents.GENERIC_EXPLODE, SoundSource.BLOCKS, 12f, 0.45f);
-        level.playSound(null, c.x, c.y, c.z, SoundEvents.LIGHTNING_BOLT_THUNDER, SoundSource.WEATHER, 16f, 0.55f);
-        level.playSound(null, c.x, c.y, c.z, SoundEvents.LIGHTNING_BOLT_IMPACT, SoundSource.WEATHER, 12f, 0.5f);
+        level.playSound(null, c.x, c.y, c.z, com.amatista.arsenal.registry.ModSounds.EXPLOSION.get(), SoundSource.BLOCKS, 12f, 0.45f);
+        level.playSound(null, c.x, c.y, c.z, com.amatista.arsenal.registry.ModSounds.DEEP_THUNDER.get(), SoundSource.WEATHER, 16f, 0.55f);
+        level.playSound(null, c.x, c.y, c.z, com.amatista.arsenal.registry.ModSounds.BEAM_IMPACT.get(), SoundSource.WEATHER, 12f, 0.5f);
 
         // Daño y empuje antes de romper bloques
         damageEntities(level, c, r, owner);
@@ -78,9 +77,9 @@ public final class ImpactEffects {
         boolean destroy = Config.DESTROY_BLOCKS.get();
         RandomSource rnd = level.getRandom();
 
-        level.playSound(null, c.x, c.y, c.z, SoundEvents.GENERIC_EXPLODE, SoundSource.BLOCKS, 16f, 0.35f);
-        level.playSound(null, c.x, c.y, c.z, SoundEvents.LIGHTNING_BOLT_THUNDER, SoundSource.WEATHER, 20f, 0.4f);
-        level.playSound(null, c.x, c.y, c.z, SoundEvents.WITHER_DEATH, SoundSource.HOSTILE, 10f, 0.5f);
+        level.playSound(null, c.x, c.y, c.z, com.amatista.arsenal.registry.ModSounds.EXPLOSION.get(), SoundSource.BLOCKS, 16f, 0.35f);
+        level.playSound(null, c.x, c.y, c.z, com.amatista.arsenal.registry.ModSounds.DEEP_THUNDER.get(), SoundSource.WEATHER, 20f, 0.4f);
+        level.playSound(null, c.x, c.y, c.z, com.amatista.arsenal.registry.ModSounds.COLLAPSE.get(), SoundSource.HOSTILE, 10f, 0.5f);
 
         damageEntities(level, c, r, owner);
         if (destroy) carveCrater(level, target, r, rnd);
@@ -185,8 +184,8 @@ public final class ImpactEffects {
             burst(level, ParticleTypes.SQUID_INK, c, 20, 1.5, 1.5, 1.5, 0.05);
         }
         if (time % 20 == 0) {
-            level.playSound(null, c.x, c.y, c.z, SoundEvents.PORTAL_AMBIENT, SoundSource.HOSTILE, 6f, 0.3f + progress * 0.4f);
-            level.playSound(null, c.x, c.y, c.z, SoundEvents.WARDEN_HEARTBEAT, SoundSource.HOSTILE, 8f, 0.5f + progress);
+            level.playSound(null, c.x, c.y, c.z, com.amatista.arsenal.registry.ModSounds.VOID_DRONE.get(), SoundSource.HOSTILE, 6f, 0.3f + progress * 0.4f);
+            level.playSound(null, c.x, c.y, c.z, com.amatista.arsenal.registry.ModSounds.HEARTBEAT.get(), SoundSource.HOSTILE, 8f, 0.5f + progress);
         }
     }
 
@@ -198,9 +197,9 @@ public final class ImpactEffects {
         RandomSource rnd = level.getRandom();
         // limpiar lo que quedaba girando
         for (FallingBlockEntity fb : level.getEntitiesOfClass(FallingBlockEntity.class, new AABB(c, c).inflate(80))) fb.discard();
-        level.playSound(null, c.x, c.y, c.z, SoundEvents.WARDEN_SONIC_BOOM, SoundSource.HOSTILE, 16f, 0.4f);
-        level.playSound(null, c.x, c.y, c.z, SoundEvents.GENERIC_EXPLODE, SoundSource.BLOCKS, 16f, 0.3f);
-        level.playSound(null, c.x, c.y, c.z, SoundEvents.END_PORTAL_SPAWN, SoundSource.HOSTILE, 12f, 0.5f);
+        level.playSound(null, c.x, c.y, c.z, com.amatista.arsenal.registry.ModSounds.SONIC_BLAST.get(), SoundSource.HOSTILE, 16f, 0.4f);
+        level.playSound(null, c.x, c.y, c.z, com.amatista.arsenal.registry.ModSounds.EXPLOSION.get(), SoundSource.BLOCKS, 16f, 0.3f);
+        level.playSound(null, c.x, c.y, c.z, com.amatista.arsenal.registry.ModSounds.COSMIC_SWELL.get(), SoundSource.HOSTILE, 12f, 0.5f);
         damageEntities(level, Vec3.atCenterOf(target), r, owner);
         if (destroy) carveCrater(level, target, r, rnd);
         level.explode(null, c.x, c.y - SINGULARITY_HEIGHT, c.z, 12f, destroy ? Level.ExplosionInteraction.TNT : Level.ExplosionInteraction.NONE);
@@ -257,7 +256,7 @@ public final class ImpactEffects {
             burst(level, ParticleTypes.END_ROD, c.add(0, 4, 0), 40, 3, 12, 3, 0.6);
             burst(level, ParticleTypes.LAVA, c, 12, reach * 0.3, 0.5, reach * 0.3, 0);
         }
-        if (time % 20 == 0) level.playSound(null, c.x, c.y, c.z, SoundEvents.BEACON_AMBIENT, SoundSource.BLOCKS, 12f, 0.5f + progress);
+        if (time % 20 == 0) level.playSound(null, c.x, c.y, c.z, com.amatista.arsenal.registry.ModSounds.MACHINE_HUM.get(), SoundSource.BLOCKS, 12f, 0.5f + progress);
         // quema a los mobs que están en el rayo
         double rad = reach;
         for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class, new AABB(c, c).inflate(rad, 40, rad))) {
@@ -274,9 +273,9 @@ public final class ImpactEffects {
         int r = Math.min(46, Math.round(Config.CRATER_RADIUS.get() * 2f));
         boolean destroy = Config.DESTROY_BLOCKS.get();
         RandomSource rnd = level.getRandom();
-        level.playSound(null, c.x, c.y, c.z, SoundEvents.GENERIC_EXPLODE, SoundSource.BLOCKS, 20f, 0.25f);
-        level.playSound(null, c.x, c.y, c.z, SoundEvents.WARDEN_SONIC_BOOM, SoundSource.HOSTILE, 20f, 0.3f);
-        level.playSound(null, c.x, c.y, c.z, SoundEvents.LIGHTNING_BOLT_THUNDER, SoundSource.WEATHER, 24f, 0.35f);
+        level.playSound(null, c.x, c.y, c.z, com.amatista.arsenal.registry.ModSounds.EXPLOSION.get(), SoundSource.BLOCKS, 20f, 0.25f);
+        level.playSound(null, c.x, c.y, c.z, com.amatista.arsenal.registry.ModSounds.SONIC_BLAST.get(), SoundSource.HOSTILE, 20f, 0.3f);
+        level.playSound(null, c.x, c.y, c.z, com.amatista.arsenal.registry.ModSounds.DEEP_THUNDER.get(), SoundSource.WEATHER, 24f, 0.35f);
         damageEntities(level, c, r, owner);
         if (destroy) {
             carveCrater(level, target, r, rnd);
@@ -332,8 +331,8 @@ public final class ImpactEffects {
             burst(level, ParticleTypes.WAX_ON, c, 30, reach * 0.4, 1, reach * 0.4, 0.2);
         }
         if (time % 10 == 0) {
-            level.playSound(null, c.x, c.y, c.z, SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.BLOCKS, 8f, 0.5f + progress * 1.2f);
-            level.playSound(null, c.x, c.y, c.z, SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.BLOCKS, 8f, 0.6f + progress);
+            level.playSound(null, c.x, c.y, c.z, com.amatista.arsenal.registry.ModSounds.CRYSTAL_CHIME.get(), SoundSource.BLOCKS, 8f, 0.5f + progress * 1.2f);
+            level.playSound(null, c.x, c.y, c.z, com.amatista.arsenal.registry.ModSounds.CRYSTAL_RESONANCE.get(), SoundSource.BLOCKS, 8f, 0.6f + progress);
         }
     }
 
@@ -343,10 +342,10 @@ public final class ImpactEffects {
         int r = Math.min(48, Math.round(Config.CRATER_RADIUS.get() * 2.1f));
         boolean destroy = Config.DESTROY_BLOCKS.get();
         RandomSource rnd = level.getRandom();
-        level.playSound(null, c.x, c.y, c.z, SoundEvents.GENERIC_EXPLODE, SoundSource.BLOCKS, 20f, 0.25f);
-        level.playSound(null, c.x, c.y, c.z, SoundEvents.WARDEN_SONIC_BOOM, SoundSource.HOSTILE, 20f, 0.35f);
-        level.playSound(null, c.x, c.y, c.z, SoundEvents.END_PORTAL_SPAWN, SoundSource.HOSTILE, 16f, 0.6f);
-        level.playSound(null, c.x, c.y, c.z, SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.BLOCKS, 20f, 0.5f);
+        level.playSound(null, c.x, c.y, c.z, com.amatista.arsenal.registry.ModSounds.EXPLOSION.get(), SoundSource.BLOCKS, 20f, 0.25f);
+        level.playSound(null, c.x, c.y, c.z, com.amatista.arsenal.registry.ModSounds.SONIC_BLAST.get(), SoundSource.HOSTILE, 20f, 0.35f);
+        level.playSound(null, c.x, c.y, c.z, com.amatista.arsenal.registry.ModSounds.COSMIC_SWELL.get(), SoundSource.HOSTILE, 16f, 0.6f);
+        level.playSound(null, c.x, c.y, c.z, com.amatista.arsenal.registry.ModSounds.CRYSTAL_RESONANCE.get(), SoundSource.BLOCKS, 20f, 0.5f);
         damageEntities(level, c, r, owner);
         if (destroy) {
             carveCrater(level, target, r, rnd);
@@ -539,7 +538,7 @@ public final class ImpactEffects {
             burst(l.level(), ParticleTypes.FLAME, l.center().add(0, -r * 0.3, 0), Math.round(10 * fade), r * 0.4, 0.3, r * 0.4, 0.02);
             if (now % 20 == 0) {
                 l.level().playSound(null, l.center().x, l.center().y, l.center().z,
-                        SoundEvents.FIRE_AMBIENT, SoundSource.BLOCKS, 3f, 0.6f);
+                        com.amatista.arsenal.registry.ModSounds.PLASMA_CRACKLE.get(), SoundSource.BLOCKS, 3f, 0.6f);
             }
         }
     }

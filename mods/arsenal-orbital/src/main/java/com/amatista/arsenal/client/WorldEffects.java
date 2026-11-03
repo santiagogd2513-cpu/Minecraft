@@ -14,7 +14,6 @@ import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
-import net.minecraft.sounds.SoundEvents;
 import net.minecraft.util.Mth;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
@@ -88,18 +87,18 @@ public final class WorldEffects {
         long now = Cinematic.clientTicks();
         if (type == com.amatista.arsenal.StrikeType.BLACKHOLE) {
             SINGULARITIES.add(new Meteor(target, now, now + Math.max(1, ticksToImpact)));
-            Cinematic.play(SoundEvents.WARDEN_EMERGE, 0.5f, 1.0f);
+            Cinematic.play(com.amatista.arsenal.registry.ModSounds.SINGULARITY_BIRTH.get(), 0.5f, 1.0f);
         } else if (type == com.amatista.arsenal.StrikeType.PHOBOS) {
             SpaceRenderer.prepare();
             METEORS.add(new Meteor(target, now, now + Math.max(1, ticksToImpact)));
-            Cinematic.play(SoundEvents.ENDER_DRAGON_GROWL, 0.4f, 0.5f);
+            Cinematic.play(com.amatista.arsenal.registry.ModSounds.PLANET_GROAN.get(), 0.4f, 0.5f);
         } else if (type == com.amatista.arsenal.StrikeType.GENESIS) {
             Meteor sp = new Meteor(target, now, now + Math.max(1, ticksToImpact));
             SPARKS.add(sp);
-            Cinematic.play(SoundEvents.AMETHYST_BLOCK_RESONATE, 0.5f, 1.0f);
+            Cinematic.play(com.amatista.arsenal.registry.ModSounds.CRYSTAL_RESONANCE.get(), 0.5f, 1.0f);
         } else if (type == com.amatista.arsenal.StrikeType.STAR) {
             BEAMS.add(new Beam(target, now, now + Math.max(1, ticksToImpact), 2.6f, true));
-            Cinematic.play(SoundEvents.WARDEN_SONIC_BOOM, 0.4f, 0.8f);
+            Cinematic.play(com.amatista.arsenal.registry.ModSounds.SONIC_BLAST.get(), 0.4f, 0.8f);
         } else {
             BEAMS.add(new Beam(target, now, now + Math.max(1, ticksToImpact)));
         }

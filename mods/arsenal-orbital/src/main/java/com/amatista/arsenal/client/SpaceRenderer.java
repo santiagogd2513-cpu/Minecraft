@@ -28,8 +28,8 @@ import java.util.Random;
 final class SpaceRenderer {
     static final Vector3f SUN = new Vector3f((float) Cinematic.SUN_DIR.x, (float) Cinematic.SUN_DIR.y, (float) Cinematic.SUN_DIR.z);
     private static final float S = Cinematic.SAT_SCALE;
-    private static final int STAR_COUNT = 7000;
-    private static final int BAND_COUNT = 5000;
+    private static final int STAR_COUNT = 16000;
+    private static final int BAND_COUNT = 14000;
     private static float[] starDir;   // x,y,z
     private static float[] starInfo;  // tamaño, brillo, r, g, b, fase
     private static float[] dust;      // nubes de la Vía Láctea: x,y,z,tamaño,alpha,tono
@@ -37,7 +37,7 @@ final class SpaceRenderer {
 
     // luna
     private static final float MOON_RADIUS = 270f;
-    private static final int MOON_LAT = 40, MOON_LON = 80;
+    private static final int MOON_LAT = 90, MOON_LON = 180;
     private static float[] moonN;     // normales x,y,z
     private static float[] moonC;     // gris
 
@@ -283,8 +283,8 @@ final class SpaceRenderer {
     private static void buildDeepSky() {
         if (faint != null) return;
         Random r = new Random(4040);
-        faint = new float[9000 * 5];
-        for (int i = 0; i < 9000; i++) {
+        faint = new float[22000 * 5];
+        for (int i = 0; i < 22000; i++) {
             Vector3f d = randomDir(r);
             faint[i * 5] = d.x; faint[i * 5 + 1] = d.y; faint[i * 5 + 2] = d.z;
             faint[i * 5 + 3] = 3.5f + r.nextFloat() * 3f;
@@ -292,7 +292,7 @@ final class SpaceRenderer {
         }
         // nebulosas de colores (rosa, turquesa, naranja, violeta)
         float[][] palettes = {{1f, 0.35f, 0.6f}, {0.3f, 0.85f, 0.9f}, {1f, 0.55f, 0.25f}, {0.6f, 0.4f, 1f}, {0.4f, 0.6f, 1f}};
-        int nebulae = 10, blobs = 46;
+        int nebulae = 18, blobs = 80;
         nebula = new float[nebulae * blobs * 8];
         int k = 0;
         for (int n = 0; n < nebulae; n++) {
@@ -312,7 +312,7 @@ final class SpaceRenderer {
             }
         }
         // galaxias lejanas (espirales vistas de lado o de frente)
-        int gal = 16;
+        int gal = 42;
         galaxy = new float[gal * 11];
         for (int i = 0; i < gal; i++) {
             Vector3f c = randomDir(r);
@@ -328,7 +328,7 @@ final class SpaceRenderer {
             galaxy[i * 11 + 10] = r.nextFloat();
         }
         // cúmulos de estrellas
-        int clusters = 8, per = 90;
+        int clusters = 16, per = 140;
         cluster = new float[clusters * per * 5];
         k = 0;
         for (int n = 0; n < clusters; n++) {
@@ -406,8 +406,8 @@ final class SpaceRenderer {
         RenderUtil.softDisc(bb, view, cx, cy, cz, right, up, 1300f * pulse, 32, 1f, 0.72f, 0.38f, 0.28f, 0f);
         RenderUtil.softDisc(bb, view, cx, cy, cz, right, up, 640f, 32, 1f, 0.86f, 0.58f, 0.4f, 0f);
         // corona: serpentinas irregulares que cambian despacio
-        for (int i = 0; i < 28; i++) {
-            float ang = i * (float) Math.PI * 2f / 28f + rnd(i * 13) * 0.2f + time * 0.01f;
+        for (int i = 0; i < 64; i++) {
+            float ang = i * (float) Math.PI * 2f / 64f + rnd(i * 13) * 0.2f + time * 0.01f;
             float len = (330f + 700f * rnd(i * 17)) * (0.8f + 0.2f * (float) Math.sin(time * 0.5f + i * 1.3f));
             Vector3f dir = new Vector3f(right).mul((float) Math.cos(ang)).add(new Vector3f(up).mul((float) Math.sin(ang)));
             Vector3f side = new Vector3f(right).mul((float) -Math.sin(ang)).add(new Vector3f(up).mul((float) Math.cos(ang)));
@@ -420,14 +420,14 @@ final class SpaceRenderer {
         RenderUtil.softDisc(bb, view, cx, cy, cz, right, up, 232f, 40, 1f, 0.92f, 0.7f, 1f, 0.6f);
         RenderUtil.softDisc(bb, view, cx, cy, cz, right, up, 215f, 40, 1f, 1f, 0.97f, 1f, 0f);
         // granulado de la superficie
-        for (int i = 0; i < 40; i++) {
+        for (int i = 0; i < 180; i++) {
             float ang = rnd(i * 23 + 1) * 6.283f, rr = (float) Math.sqrt(rnd(i * 23 + 2)) * 200f;
             float fl = 0.5f + 0.5f * (float) Math.sin(time * (1f + rnd(i)) + i);
             Vector3f off = new Vector3f(right).mul((float) Math.cos(ang) * rr).add(new Vector3f(up).mul((float) Math.sin(ang) * rr));
             RenderUtil.softDisc(bb, view, cx + off.x, cy + off.y, cz + off.z, right, up, 18f + 18f * rnd(i * 5), 8, 1f, 1f, 0.9f, 0.25f * fl, 0f);
         }
         // protuberancias rojizas en el borde
-        for (int i = 0; i < 7; i++) {
+        for (int i = 0; i < 16; i++) {
             float ang = rnd(i * 29 + 7) * 6.283f;
             float grow = 0.7f + 0.3f * (float) Math.sin(time * 0.6f + i * 2f);
             Vector3f dir = new Vector3f(right).mul((float) Math.cos(ang)).add(new Vector3f(up).mul((float) Math.sin(ang)));
