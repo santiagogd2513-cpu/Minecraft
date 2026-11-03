@@ -6,5 +6,6 @@
   "message.arsenalorbital.busy": "AEGIS-7 is already on a mission",
   "message.arsenalorbital.locked": "Target locked: %s %s %s. AEGIS-7 inbound…",
   "key.arsenalorbital.skip": "Skip orbital cinematic",
-  "key.categories.arsenalorbital": "Orbital Arsenal"
+  "key.categories.arsenalorbital": "Orbital Arsenal",
+  "itemGroup.arsenalorbital.arsenal": "Orbital Arsenal"
 }

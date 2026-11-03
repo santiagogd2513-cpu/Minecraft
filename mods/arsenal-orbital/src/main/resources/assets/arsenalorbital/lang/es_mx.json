@@ -6,5 +6,6 @@
   "message.arsenalorbital.busy": "ÉGIDA-7 ya está en una misión",
   "message.arsenalorbital.locked": "Objetivo fijado: %s %s %s. ÉGIDA-7 en camino…",
   "key.arsenalorbital.skip": "Omitir cinemática orbital",
-  "key.categories.arsenalorbital": "Arsenal Orbital"
+  "key.categories.arsenalorbital": "Arsenal Orbital",
+  "itemGroup.arsenalorbital.arsenal": "Arsenal Orbital"
 }
