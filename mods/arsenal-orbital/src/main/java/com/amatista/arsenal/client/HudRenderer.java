@@ -132,7 +132,8 @@ public final class HudRenderer {
         // destellos blancos
         float flash = 0f;
         // duraciones en segundos (cortas: un destello, no una pantalla blanca)
-        flash = Math.max(flash, pulse(t, Timeline.SPACE_START, sec(0.5f), sec(0.6f)));        // salida al espacio
+        // salida al espacio: sin destello blanco, el cielo ya está negro y la escena aparece desde la oscuridad
+        HudRenderer.spaceDip(g, w, h, pulse(t, Timeline.SPACE_START, sec(0.6f), sec(1.8f)));
         flash = Math.max(flash, pulse(t, Timeline.A5_END, sec(0.15f), sec(0.9f)) * 0.85f);    // disparo
         flash = Math.max(flash, pulse(t, Timeline.SPACE_END, sec(0.35f), sec(0.6f)));         // vuelta al mundo
         flash = Math.max(flash, pulse(t, Timeline.IMPACT, sec(0.1f), sec(1.8f)));             // impacto
@@ -166,6 +167,12 @@ public final class HudRenderer {
             int color = i == lines.length - 1 ? 0x55FF77 : i == 7 ? 0xFF6060 : 0x66FF99;
             text(g, font, s + (cursor ? "_" : ""), x, y + i * 12, color, fadeOut, 1f, false);
         }
+    }
+
+    /** Fundido con el color del espacio profundo (en vez de un destello blanco). */
+    static void spaceDip(GuiGraphics g, int w, int h, float a) {
+        if (a <= 0.001f) return;
+        g.fill(0, 0, w, h, ((int) (Mth.clamp(a * 0.95f, 0f, 1f) * 255) << 24) | 0x01030C);
     }
 
     /** Convierte segundos a fracción de la cinemática. */

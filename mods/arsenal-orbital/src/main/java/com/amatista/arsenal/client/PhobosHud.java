@@ -109,7 +109,8 @@ final class PhobosHud {
         }
 
         float flash = 0f;
-        flash = Math.max(flash, pulse(t, PhobosTimeline.SPACE_START, sec(0.5f), sec(0.6f)));
+        // salida al espacio: sin destello blanco, el cielo ya está negro y la escena aparece desde la oscuridad
+        HudRenderer.spaceDip(g, w, h, pulse(t, PhobosTimeline.SPACE_START, sec(0.6f), sec(1.8f)));
         flash = Math.max(flash, pulse(t, 0.215f, sec(0.15f), sec(0.5f)) * 0.6f);
         flash = Math.max(flash, pulse(t, PhobosTimeline.MISSILE_HIT, sec(0.1f), sec(1.2f)) * 0.9f);
         flash = Math.max(flash, pulse(t, PhobosTimeline.SLING_END, sec(0.1f), sec(0.6f)) * 0.7f);

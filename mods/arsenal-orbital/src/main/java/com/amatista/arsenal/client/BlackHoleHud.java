@@ -99,7 +99,8 @@ final class BlackHoleHud {
         }
 
         float flash = 0f;
-        flash = Math.max(flash, pulse(t, SPACE_START, sec(0.5f), sec(0.6f)));
+        // salida al espacio: sin destello blanco, el cielo ya está negro y la escena aparece desde la oscuridad
+        HudRenderer.spaceDip(g, w, h, pulse(t, SPACE_START, sec(0.6f), sec(1.8f)));
         flash = Math.max(flash, pulse(t, SOLAR_END, sec(0.2f), sec(0.5f)) * 0.8f);
         flash = Math.max(flash, pulse(t, MILKY_END, sec(0.2f), sec(0.5f)) * 0.6f);
         flash = Math.max(flash, pulse(t, EXTRACT_END, sec(0.1f), sec(0.8f)) * 0.7f);

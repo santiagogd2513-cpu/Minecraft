@@ -39,7 +39,9 @@ public final class ClientEvents {
 
     @SubscribeEvent
     public static void onRenderStage(RenderLevelStageEvent event) {
-        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
+        if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_SKY) {
+            AscentSky.render(event.getPoseStack(), event.getCamera(), event.getPartialTick());
+        } else if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
             WorldEffects.render(event.getPoseStack(), event.getCamera(), event.getPartialTick());
         } else if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_WEATHER) {
             if (Cinematic.isSpace(event.getPartialTick())) {
@@ -59,6 +61,16 @@ public final class ClientEvents {
         event.setYaw(p.yaw());
         event.setPitch(p.pitch());
         event.setRoll(p.roll());
+    }
+
+    /** La niebla del suelo toma el color del cielo mientras la cámara sube (o baja del espacio). */
+    @SubscribeEvent
+    public static void onFogColor(ViewportEvent.ComputeFogColor event) {
+        float[] c = AscentSky.fogColor(event.getCamera().getPosition().y);
+        if (c == null) return;
+        event.setRed(net.minecraft.util.Mth.lerp(c[3], event.getRed(), c[0]));
+        event.setGreen(net.minecraft.util.Mth.lerp(c[3], event.getGreen(), c[1]));
+        event.setBlue(net.minecraft.util.Mth.lerp(c[3], event.getBlue(), c[2]));
     }
 
     @SubscribeEvent

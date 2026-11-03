@@ -211,11 +211,14 @@ public final class Cinematic {
             double radius = 4.8 * (1 - smooth(Math.min(1f, u * 3f)));
             double height = 1.3 + 2200 * Math.pow(u, 2.6);
             Vec3 pos = eye.add(-Math.sin(ang) * radius, height, Math.cos(ang) * radius);
-            // mira al jugador al principio y luego al suelo, casi vertical
-            float look = smooth(Math.min(1f, u * 2.2f));
-            Vec3 lookTarget = eye.lerp(new Vec3(pos.x + 0.001, eye.y - 50, pos.z + 6), look);
-            Pose p = lookAt(pos, lookTarget, (float) (u * 25), 70f + u * 15f);
-            return p;
+            // mira al jugador al principio; después se endereza hacia el horizonte para ver cómo
+            // el cielo pasa del azul al negro, y al final levanta la vista hacia las estrellas
+            Pose start = lookAt(pos, eye, 0f, 70f);
+            float level = smooth(Math.min(1f, Math.max(0f, (u - 0.12f) / 0.3f)));
+            float upward = smooth(Math.max(0f, (u - 0.72f) / 0.28f));
+            float yaw = lerpAngle(start.yaw(), (float) Math.toDegrees(ang) + 180f, level);
+            float pitch = Mth.lerp(level, start.pitch(), 14f) - 48f * upward;
+            return new Pose(pos, yaw, pitch, (float) Math.sin(u * 3.0) * 4f, 70f + u * 12f);
         }
         if (t < Timeline.SPACE_END) {
             // En el espacio no se ve el mundo: la cámara descansa cerca del jugador (más barato)
