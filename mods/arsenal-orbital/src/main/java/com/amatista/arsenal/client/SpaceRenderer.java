@@ -26,7 +26,7 @@ import java.util.Random;
  * ÉGIDA-7 con sus partículas y el rayo.
  */
 final class SpaceRenderer {
-    private static final Vector3f SUN = new Vector3f((float) Cinematic.SUN_DIR.x, (float) Cinematic.SUN_DIR.y, (float) Cinematic.SUN_DIR.z);
+    static final Vector3f SUN = new Vector3f((float) Cinematic.SUN_DIR.x, (float) Cinematic.SUN_DIR.y, (float) Cinematic.SUN_DIR.z);
     private static final float S = Cinematic.SAT_SCALE;
     private static final int STAR_COUNT = 7000;
     private static final int BAND_COUNT = 5000;
@@ -115,7 +115,7 @@ final class SpaceRenderer {
     }
 
     /** Posición de la luna (orbita despacio alrededor del planeta). */
-    private static Vector3f moonPosition(float time) {
+    static Vector3f moonPosition(float time) {
         double base = Math.atan2(900, -2200);
         double ang = base + (time - 70f) * 0.004;
         double dist = Math.sqrt(2200 * 2200 + 900 * 900);
@@ -172,6 +172,7 @@ final class SpaceRenderer {
     static void prepare() {
         buildStatic();
         PlanetMesh.build(SUN);
+        MarsMesh.build(SUN);
     }
 
     static void render(float partialTick) {
@@ -267,7 +268,7 @@ final class SpaceRenderer {
         RenderSystem.restoreProjectionMatrix();
     }
 
-    private static void drawSky(BufferBuilder bb, Matrix4f view, Vector3f eye, Vector3f right, Vector3f up, float time) {
+    static void drawSky(BufferBuilder bb, Matrix4f view, Vector3f eye, Vector3f right, Vector3f up, float time) {
         float dist = 9000f;
         for (int i = 0; i < dust.length; i += 6) {
             float cx = eye.x + dust[i] * dist, cy = eye.y + dust[i + 1] * dist, cz = eye.z + dust[i + 2] * dist;
@@ -288,7 +289,7 @@ final class SpaceRenderer {
         }
     }
 
-    private static void drawSun(BufferBuilder bb, Matrix4f view, Vector3f eye, Vector3f right, Vector3f up, float time) {
+    static void drawSun(BufferBuilder bb, Matrix4f view, Vector3f eye, Vector3f right, Vector3f up, float time) {
         float dist = 8000f;
         float cx = eye.x + SUN.x * dist, cy = eye.y + SUN.y * dist, cz = eye.z + SUN.z * dist;
         float pulse = 1f + 0.03f * (float) Math.sin(time * 1.7f);
@@ -315,7 +316,7 @@ final class SpaceRenderer {
         RenderUtil.softStreak(bb, view, cx, cy, cz, up, 1300f, right, 18f, 1f, 0.85f, 0.7f, 0.1f);
     }
 
-    private static void drawMoon(BufferBuilder bb, Matrix4f view, Vector3f moon) {
+    static void drawMoon(BufferBuilder bb, Matrix4f view, Vector3f moon) {
         for (int i = 0; i < MOON_LAT; i++) {
             for (int j = 0; j < MOON_LON; j++) {
                 int k0 = i * (MOON_LON + 1) + j, k1 = k0 + 1, k2 = k0 + MOON_LON + 2, k3 = k0 + MOON_LON + 1;
@@ -336,7 +337,7 @@ final class SpaceRenderer {
                 .color(g * 1.02f, g, g * 0.97f, 1f).endVertex();
     }
 
-    private static void drawMoonGlow(BufferBuilder bb, Matrix4f view, Vector3f eye, Vector3f right, Vector3f up, Vector3f moon) {
+    static void drawMoonGlow(BufferBuilder bb, Matrix4f view, Vector3f eye, Vector3f right, Vector3f up, Vector3f moon) {
         // halo suave alrededor de la luna
         RenderUtil.softDisc(bb, view, moon.x, moon.y, moon.z, right, up, MOON_RADIUS * 1.6f, 32, 0.75f, 0.8f, 0.95f, 0.05f, 0f);
     }

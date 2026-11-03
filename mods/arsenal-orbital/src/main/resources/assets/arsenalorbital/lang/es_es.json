@@ -1,11 +1,20 @@
 {
   "item.arsenalorbital.orbital_designator": "Designador orbital",
   "item.arsenalorbital.orbital_designator.tip1": "Clic derecho (un toque en el celular) apuntando a un bloque.",
-  "item.arsenalorbital.orbital_designator.tip2": "Llama al satélite ÉGIDA-7. Durante la cinemática eres invulnerable.",
+  "item.arsenalorbital.orbital_designator.tip2": "Pulsa H para elegir el arma. Durante la cinemática eres invulnerable.",
   "message.arsenalorbital.no_target": "Sin objetivo: apunta a un bloque (fuera de alcance)",
   "message.arsenalorbital.busy": "ÉGIDA-7 ya está en una misión",
   "message.arsenalorbital.locked": "Objetivo fijado: %s %s %s. ÉGIDA-7 en camino…",
   "key.arsenalorbital.skip": "Omitir cinemática orbital",
   "key.categories.arsenalorbital": "Arsenal Orbital",
-  "itemGroup.arsenalorbital.arsenal": "Arsenal Orbital"
+  "itemGroup.arsenalorbital.arsenal": "Arsenal Orbital",
+  "weapon.arsenalorbital.satellite": "Bombardeo orbital · ÉGIDA-7",
+  "weapon.arsenalorbital.satellite.desc": "El satélite gigante ÉGIDA-7 despierta, carga su cañón de partículas y dispara un rayo que atraviesa todo hasta la roca madre.",
+  "weapon.arsenalorbital.phobos": "Protocolo Fobos",
+  "weapon.arsenalorbital.phobos.desc": "Viaje a Marte. Un misil golpea a Fobos, que usa la gravedad de Marte como honda y vuelve en llamas a estrellarse en tu objetivo.",
+  "screen.arsenalorbital.weapons": "ARSENAL ORBITAL · ELIGE UN ARMA",
+  "screen.arsenalorbital.weapons.hint": "Toca un arma para usarla con el Designador orbital (H para cerrar)",
+  "screen.arsenalorbital.selected": "✔ EN USO",
+  "key.arsenalorbital.weapons": "Menú de armas orbitales",
+  "message.arsenalorbital.selected": "Arma seleccionada: %s"
 }

@@ -1,5 +1,7 @@
 package com.amatista.arsenal.client;
 
+import com.amatista.arsenal.PhobosTimeline;
+import com.amatista.arsenal.StrikeType;
 import com.amatista.arsenal.Timeline;
 import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
@@ -35,6 +37,7 @@ public final class Cinematic {
     private static int nextCue;
     private static String playerName = "";
     private static long seed;
+    private static StrikeType type = StrikeType.SATELLITE;
 
     /** Contador de ticks del cliente (se detiene en pausa, igual que el servidor en un solo jugador). */
     private static long clientTicks;
@@ -65,17 +68,34 @@ public final class Cinematic {
         return seed;
     }
 
+    public static StrikeType type() {
+        return type;
+    }
+
+    static Vec3 playerEye() {
+        return playerEye;
+    }
+
+    static float playerYaw() {
+        return playerYaw;
+    }
+
+    static float playerPitch() {
+        return playerPitch;
+    }
+
     public static long clientTicks() {
         return clientTicks;
     }
 
     // ------------------------------------------------------------------ ciclo de vida
 
-    public static void start(BlockPos target, int durationTicks) {
+    public static void start(BlockPos target, int durationTicks, StrikeType strikeType) {
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer player = mc.player;
         if (player == null || mc.level == null) return;
         if (active) stop();
+        Cinematic.type = strikeType;
         Cinematic.target = target;
         Cinematic.targetCenter = Vec3.atCenterOf(target).add(0, 0.5, 0);
         Cinematic.durationTicks = Math.max(200, durationTicks);
@@ -123,6 +143,7 @@ public final class Cinematic {
     public static boolean isSpace(float partialTick) {
         if (!active) return false;
         float t = progress(partialTick);
+        if (type == StrikeType.PHOBOS) return t >= PhobosTimeline.SPACE_START && t < PhobosTimeline.SPACE_END;
         return t >= Timeline.SPACE_START && t < Timeline.SPACE_END;
     }
 
@@ -160,6 +181,12 @@ public final class Cinematic {
 
     /** Pose de la cámara en el mundo real para un tiempo t (0..1). */
     public static Pose worldPose(float t) {
+        if (type == StrikeType.PHOBOS) return PhobosDirector.worldPose(t);
+        return satelliteWorldPose(t);
+    }
+
+    /** Cámara de la cinemática del satélite (la de Fobos reutiliza sus dos primeros actos). */
+    static Pose satelliteWorldPose(float t) {
         Vec3 eye = playerEye;
         Vec3 tc = targetCenter;
         double baseYaw = Math.toRadians(playerYaw);
@@ -341,6 +368,11 @@ public final class Cinematic {
     private static void buildCues() {
         cues.clear();
         nextCue = 0;
+        if (type == StrikeType.PHOBOS) {
+            PhobosDirector.buildCues();
+            cues.sort((a, b) -> Float.compare(a.at, b.at));
+            return;
+        }
         // Acto 1: consola
         cue(0.0f, SoundEvents.BEACON_POWER_SELECT, 1.3f, 0.9f);
         for (int i = 0; i < HudRenderer.CONSOLE_LINES; i++) {
@@ -392,7 +424,7 @@ public final class Cinematic {
         cues.sort((a, b) -> Float.compare(a.at, b.at));
     }
 
-    private static void cue(float at, SoundEvent sound, float pitch, float volume) {
+    static void cue(float at, SoundEvent sound, float pitch, float volume) {
         cues.add(new Cue(at, () -> play(sound, pitch, volume)));
     }
 
@@ -402,6 +434,10 @@ public final class Cinematic {
 
     private static void ambientSounds(float t) {
         long tick = clientTicks - startTick;
+        if (type == StrikeType.PHOBOS) {
+            PhobosDirector.ambientSounds(t, tick);
+            return;
+        }
         if (t >= Timeline.SPACE_START && t < Timeline.A5_END) {
             // zumbido grave del espacio
             if (tick % 60 == 0) play(SoundEvents.BEACON_AMBIENT, 0.5f, 1.0f);
@@ -431,7 +467,7 @@ public final class Cinematic {
         return new Pose(from, yaw, pitch, roll, fov);
     }
 
-    private static Pose shake(Pose p, float amount, float t) {
+    static Pose shake(Pose p, float amount, float t) {
         if (amount <= 0.001f) return p;
         double s = t * durationTicks * 1.7;
         Vec3 off = new Vec3(Math.sin(s * 3.1) * 0.5 + Math.sin(s * 7.3) * 0.3,
@@ -463,7 +499,7 @@ public final class Cinematic {
         return ab.lerp(bc, t);
     }
 
-    private static float lerpAngle(float a, float b, float t) {
+    static float lerpAngle(float a, float b, float t) {
         return a + Mth.wrapDegrees(b - a) * t;
     }
 

@@ -1,7 +1,8 @@
 package com.amatista.arsenal.strike;
 
 import com.amatista.arsenal.Config;
-import com.amatista.arsenal.Timeline;
+import com.amatista.arsenal.StrikeType;
+import com.amatista.arsenal.net.SelectWeaponPacket;
 import com.amatista.arsenal.net.BeamPacket;
 import com.amatista.arsenal.net.Network;
 import com.amatista.arsenal.net.StartCinematicPacket;
@@ -37,17 +38,45 @@ public final class OrbitalStrikeManager {
         final UUID owner;
         final ResourceKey<Level> dimension;
         final BlockPos target;
+        final StrikeType type;
         long beamTick;
         long impactTick;
         long endTick;
         boolean beamSent;
         boolean impacted;
 
-        Strike(UUID owner, ResourceKey<Level> dimension, BlockPos target) {
+        Strike(UUID owner, ResourceKey<Level> dimension, BlockPos target, StrikeType type) {
             this.owner = owner;
             this.dimension = dimension;
             this.target = target;
+            this.type = type;
         }
+    }
+
+    private static final String SELECTED_KEY = "arsenalorbital_weapon";
+
+    /** Arma elegida por el jugador en el menú (H); se guarda con el jugador. */
+    public static StrikeType getSelected(Player player) {
+        return StrikeType.byId(player.getPersistentData().getString(SELECTED_KEY));
+    }
+
+    public static void setSelected(ServerPlayer player, StrikeType type) {
+        player.getPersistentData().putString(SELECTED_KEY, type.id);
+        player.displayClientMessage(Component.translatable("message.arsenalorbital.selected",
+                Component.translatable(type.nameKey())).withStyle(ChatFormatting.LIGHT_PURPLE), true);
+    }
+
+    @SubscribeEvent
+    public static void onLogin(PlayerEvent.PlayerLoggedInEvent event) {
+        if (event.getEntity() instanceof ServerPlayer player) {
+            Network.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new SelectWeaponPacket(getSelected(player)));
+        }
+    }
+
+    @SubscribeEvent
+    public static void onClone(PlayerEvent.Clone event) {
+        String id = event.getOriginal().getPersistentData().getString(SELECTED_KEY);
+        if (!id.isEmpty()) event.getEntity().getPersistentData().putString(SELECTED_KEY, id);
     }
 
     public static boolean isBusy(Player player) {
@@ -64,17 +93,18 @@ public final class OrbitalStrikeManager {
         ServerLevel level = player.serverLevel();
         BlockPos target = blockHit.getBlockPos();
         long now = level.getGameTime();
-        Strike strike = new Strike(player.getUUID(), level.dimension(), target);
+        StrikeType type = getSelected(player);
+        Strike strike = new Strike(player.getUUID(), level.dimension(), target, type);
         if (Config.CINEMATIC_ENABLED.get()) {
             int duration = Config.CINEMATIC_SECONDS.get() * 20;
-            strike.beamTick = now + Math.round(duration * Timeline.BEAM_WORLD_START);
-            strike.impactTick = now + Math.round(duration * Timeline.IMPACT);
+            strike.beamTick = now + Math.round(duration * type.worldVisualStart);
+            strike.impactTick = now + Math.round(duration * type.impact);
             strike.endTick = now + duration;
-            Network.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new StartCinematicPacket(target, duration));
+            Network.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new StartCinematicPacket(target, duration, type));
         } else {
             strike.beamTick = now;
-            strike.impactTick = now + 50;
-            strike.endTick = now + 60;
+            strike.impactTick = now + (type == StrikeType.PHOBOS ? 140 : 50);
+            strike.endTick = strike.impactTick + 10;
         }
         ACTIVE.put(player.getUUID(), strike);
         player.getCooldowns().addCooldown(ModItems.ORBITAL_DESIGNATOR.get(), Config.COOLDOWN_SECONDS.get() * 20);
@@ -112,12 +142,13 @@ public final class OrbitalStrikeManager {
                 s.beamSent = true;
                 int ticksToImpact = (int) Math.max(1, s.impactTick - now);
                 Network.CHANNEL.send(PacketDistributor.TRACKING_CHUNK.with(() -> level.getChunkAt(s.target)),
-                        new BeamPacket(s.target, ticksToImpact));
+                        new BeamPacket(s.target, ticksToImpact, s.type));
             }
             if (!s.impacted && now >= s.impactTick) {
                 s.impacted = true;
                 ServerPlayer owner = server.getPlayerList().getPlayer(s.owner);
-                ImpactEffects.impact(level, s.target, owner);
+                if (s.type == StrikeType.PHOBOS) ImpactEffects.moonImpact(level, s.target, owner);
+                else ImpactEffects.impact(level, s.target, owner);
             }
             if (s.impacted && now >= s.endTick) it.remove();
         }

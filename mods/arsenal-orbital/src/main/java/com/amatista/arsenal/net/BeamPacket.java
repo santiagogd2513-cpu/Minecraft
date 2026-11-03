@@ -1,5 +1,6 @@
 package com.amatista.arsenal.net;
 
+import com.amatista.arsenal.StrikeType;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraftforge.api.distmarker.Dist;
@@ -13,19 +14,23 @@ public class BeamPacket {
     public final BlockPos target;
     /** Ticks hasta el impacto. */
     public final int ticksToImpact;
+    /** Rayo del satélite o Fobos cayendo. */
+    public final StrikeType type;
 
-    public BeamPacket(BlockPos target, int ticksToImpact) {
+    public BeamPacket(BlockPos target, int ticksToImpact, StrikeType type) {
         this.target = target;
         this.ticksToImpact = ticksToImpact;
+        this.type = type;
     }
 
     public BeamPacket(FriendlyByteBuf buf) {
-        this(buf.readBlockPos(), buf.readVarInt());
+        this(buf.readBlockPos(), buf.readVarInt(), StrikeType.byOrdinal(buf.readVarInt()));
     }
 
     public void encode(FriendlyByteBuf buf) {
         buf.writeBlockPos(target);
         buf.writeVarInt(ticksToImpact);
+        buf.writeVarInt(type.ordinal());
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {

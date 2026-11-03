@@ -36,6 +36,10 @@ public final class HudRenderer {
 
     public static void render(ForgeGui gui, GuiGraphics g, float partialTick, int w, int h) {
         if (!Cinematic.isActive()) return;
+        if (Cinematic.type() == com.amatista.arsenal.StrikeType.PHOBOS) {
+            PhobosHud.render(g, partialTick, w, h);
+            return;
+        }
         Minecraft mc = Minecraft.getInstance();
         Font font = mc.font;
         float t = Cinematic.progress(partialTick);
@@ -153,17 +157,17 @@ public final class HudRenderer {
     }
 
     /** Convierte segundos a fracción de la cinemática. */
-    private static float sec(float seconds) {
+    static float sec(float seconds) {
         return seconds / Math.max(1f, Cinematic.durationSeconds());
     }
 
-    private static float pulse(float t, float at, float in, float out) {
+    static float pulse(float t, float at, float in, float out) {
         if (t < at - in || t > at + out) return 0f;
         if (t < at) return Cinematic.smooth((t - (at - in)) / in);
         return 1f - Cinematic.smooth((t - at) / out);
     }
 
-    private static void vignette(GuiGraphics g, int w, int h, float r, float gr, float b, float a) {
+    static void vignette(GuiGraphics g, int w, int h, float r, float gr, float b, float a) {
         if (a <= 0.01f) return;
         int steps = 10;
         for (int i = 0; i < steps; i++) {
@@ -178,7 +182,7 @@ public final class HudRenderer {
         }
     }
 
-    private static void text(GuiGraphics g, Font font, String s, int x, int y, int rgb, float alpha, float scale, boolean centered) {
+    static void text(GuiGraphics g, Font font, String s, int x, int y, int rgb, float alpha, float scale, boolean centered) {
         int a = Mth.clamp((int) (alpha * 255), 0, 255);
         if (a < 5) return;
         g.pose().pushPose();

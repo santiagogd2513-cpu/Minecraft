@@ -28,6 +28,10 @@ public final class ClientEvents {
         WorldEffects.tick();
         // La cinemática no se puede omitir: se descartan las pulsaciones de salto mientras dura
         Minecraft mc = Minecraft.getInstance();
+        // H: menú de armas
+        while (ClientSetup.WEAPONS.consumeClick()) {
+            if (mc.screen == null && !Cinematic.isActive() && mc.player != null) mc.setScreen(new WeaponSelectScreen());
+        }
         if (Cinematic.isActive()) {
             while (mc.options.keyJump.consumeClick()) { }
         }
@@ -36,9 +40,12 @@ public final class ClientEvents {
     @SubscribeEvent
     public static void onRenderStage(RenderLevelStageEvent event) {
         if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
-            WorldEffects.render(event.getPoseStack(), event.getCamera().getPosition(), event.getPartialTick());
+            WorldEffects.render(event.getPoseStack(), event.getCamera(), event.getPartialTick());
         } else if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_WEATHER) {
-            if (Cinematic.isSpace(event.getPartialTick())) SpaceRenderer.render(event.getPartialTick());
+            if (Cinematic.isSpace(event.getPartialTick())) {
+                if (Cinematic.type() == com.amatista.arsenal.StrikeType.PHOBOS) MarsRenderer.render(event.getPartialTick());
+                else SpaceRenderer.render(event.getPartialTick());
+            }
         }
     }
 

@@ -1,11 +1,20 @@
 {
   "item.arsenalorbital.orbital_designator": "Orbital Designator",
   "item.arsenalorbital.orbital_designator.tip1": "Right-click while aiming at a block.",
-  "item.arsenalorbital.orbital_designator.tip2": "Calls the AEGIS-7 satellite. You are invulnerable during the cinematic.",
+  "item.arsenalorbital.orbital_designator.tip2": "Press H to choose the weapon. You are invulnerable during the cinematic.",
   "message.arsenalorbital.no_target": "No target: aim at a block (out of range)",
   "message.arsenalorbital.busy": "AEGIS-7 is already on a mission",
   "message.arsenalorbital.locked": "Target locked: %s %s %s. AEGIS-7 inbound…",
   "key.arsenalorbital.skip": "Skip orbital cinematic",
   "key.categories.arsenalorbital": "Orbital Arsenal",
-  "itemGroup.arsenalorbital.arsenal": "Orbital Arsenal"
+  "itemGroup.arsenalorbital.arsenal": "Orbital Arsenal",
+  "weapon.arsenalorbital.satellite": "Orbital strike · AEGIS-7",
+  "weapon.arsenalorbital.satellite.desc": "The giant AEGIS-7 satellite wakes up, charges its particle cannon and fires a beam that drills down to bedrock.",
+  "weapon.arsenalorbital.phobos": "Phobos Protocol",
+  "weapon.arsenalorbital.phobos.desc": "Travel to Mars. A missile hits Phobos, which slingshots around Mars and comes back in flames to crash on your target.",
+  "screen.arsenalorbital.weapons": "ORBITAL ARSENAL · CHOOSE A WEAPON",
+  "screen.arsenalorbital.weapons.hint": "Tap a weapon to use it with the Orbital Designator (H to close)",
+  "screen.arsenalorbital.selected": "✔ IN USE",
+  "key.arsenalorbital.weapons": "Orbital weapons menu",
+  "message.arsenalorbital.selected": "Weapon selected: %s"
 }

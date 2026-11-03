@@ -7,7 +7,7 @@ import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 public final class Network {
-    private static final String VERSION = "1";
+    private static final String VERSION = "2";
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(ArsenalOrbital.MODID, "main"), () -> VERSION, VERSION::equals, VERSION::equals);
 
@@ -22,6 +22,9 @@ public final class Network {
         CHANNEL.messageBuilder(SkipPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
                 .encoder(SkipPacket::encode).decoder(SkipPacket::new)
                 .consumerMainThread(SkipPacket::handle).add();
+        CHANNEL.messageBuilder(SelectWeaponPacket.class, id++)
+                .encoder(SelectWeaponPacket::encode).decoder(SelectWeaponPacket::new)
+                .consumerMainThread(SelectWeaponPacket::handle).add();
     }
 
     private Network() {}

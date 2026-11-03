@@ -20,6 +20,8 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.HitResult;
 import net.minecraft.world.phys.Vec3;
 import org.joml.Matrix4f;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -44,19 +46,50 @@ public final class WorldEffects {
         }
     }
 
-    public static void addBeam(BlockPos target, int ticksToImpact) {
+    /** Fobos cayendo del cielo envuelta en fuego. */
+    private static final class Meteor {
+        final BlockPos target;
+        final Vec3 center;
+        final long start;
+        final long impact;
+        final long end;
+
+        Meteor(BlockPos target, long start, long impact) {
+            this.target = target;
+            this.center = Vec3.atCenterOf(target).add(0, 0.5, 0);
+            this.start = start;
+            this.impact = impact;
+            this.end = impact + 140;
+        }
+
+        float fraction(float now) {
+            return Mth.clamp((now - start) / (float) Math.max(1, impact - start), 0f, 1f);
+        }
+    }
+
+    private static final List<Meteor> METEORS = new ArrayList<>();
+
+    public static void addStrike(BlockPos target, int ticksToImpact, com.amatista.arsenal.StrikeType type) {
         long now = Cinematic.clientTicks();
-        BEAMS.add(new Beam(target, now, now + Math.max(1, ticksToImpact)));
+        if (type == com.amatista.arsenal.StrikeType.PHOBOS) {
+            SpaceRenderer.prepare();
+            METEORS.add(new Meteor(target, now, now + Math.max(1, ticksToImpact)));
+            Cinematic.play(SoundEvents.ENDER_DRAGON_GROWL, 0.4f, 0.5f);
+        } else {
+            BEAMS.add(new Beam(target, now, now + Math.max(1, ticksToImpact)));
+        }
     }
 
     public static void clear() {
         BEAMS.clear();
+        METEORS.clear();
     }
 
     public static void tick() {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) return;
         long now = Cinematic.clientTicks();
+        tickMeteors(mc, now);
         Iterator<Beam> it = BEAMS.iterator();
         while (it.hasNext()) {
             Beam b = it.next();
@@ -81,6 +114,27 @@ public final class WorldEffects {
         }
     }
 
+    private static void tickMeteors(Minecraft mc, long now) {
+        Iterator<Meteor> it = METEORS.iterator();
+        while (it.hasNext()) {
+            Meteor m = it.next();
+            if (now > m.end) {
+                it.remove();
+                continue;
+            }
+            if (now < m.impact) {
+                Vec3 p = PhobosDirector.meteorWorldPos(m.center, m.fraction(now));
+                for (int i = 0; i < 14; i++) {
+                    double ox = mc.level.random.nextGaussian() * 9, oy = mc.level.random.nextGaussian() * 9, oz = mc.level.random.nextGaussian() * 9;
+                    mc.level.addParticle(ParticleTypes.FLAME, true, p.x + ox, p.y + oy, p.z + oz, 0, 0.05, 0);
+                    mc.level.addParticle(ParticleTypes.LARGE_SMOKE, true, p.x + ox, p.y + oy + 6, p.z + oz, 0, 0.1, 0);
+                }
+                mc.level.addParticle(ParticleTypes.LAVA, true, p.x, p.y, p.z, 0, 0, 0);
+                mc.level.addParticle(ParticleTypes.CAMPFIRE_SIGNAL_SMOKE, true, p.x, p.y + 10, p.z, 0, 0.05, 0);
+            }
+        }
+    }
+
     /** Con el designador en la mano (y el satélite listo) se muestra la mira. */
     private static boolean isAiming(LocalPlayer p) {
         boolean holding = p.getMainHandItem().is(ModItems.ORBITAL_DESIGNATOR.get())
@@ -88,10 +142,12 @@ public final class WorldEffects {
         return holding && !p.getCooldowns().isOnCooldown(ModItems.ORBITAL_DESIGNATOR.get());
     }
 
-    public static void render(PoseStack poseStack, Vec3 cam, float partialTick) {
+    public static void render(PoseStack poseStack, net.minecraft.client.Camera camera, float partialTick) {
+        Vec3 cam = camera.getPosition();
         Minecraft mc = Minecraft.getInstance();
         LocalPlayer player = mc.player;
         boolean aiming = player != null && !Cinematic.isActive() && isAiming(player);
+        if (!METEORS.isEmpty()) renderMeteors(poseStack, camera, partialTick);
         if (BEAMS.isEmpty() && !aiming) return;
 
         poseStack.pushPose();
@@ -111,6 +167,80 @@ public final class WorldEffects {
         for (Beam b : BEAMS) drawBeam(bb, m, b, now);
         if (aiming) drawAim(bb, m, player, partialTick, now);
 
+        BufferUploader.drawWithShader(bb.end());
+        RenderSystem.depthMask(true);
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.disableBlend();
+        RenderSystem.enableCull();
+        poseStack.popPose();
+    }
+
+    private static void renderMeteors(PoseStack poseStack, net.minecraft.client.Camera camera, float partialTick) {
+        Vec3 cam = camera.getPosition();
+        Vector3f right = new Vector3f(camera.getLeftVector()).negate();
+        Vector3f up = new Vector3f(camera.getUpVector());
+        poseStack.pushPose();
+        poseStack.translate(-cam.x, -cam.y, -cam.z);
+        Matrix4f m = poseStack.last().pose();
+        float now = Cinematic.clientTicks() - 1 + partialTick;
+        float time = now / 20f;
+        Vector3f light = new Vector3f(0.3f, 0.9f, 0.3f).normalize();
+        Vector3f motion = new Vector3f((float) -PhobosDirector.METEOR_DIR.x,
+                (float) -PhobosDirector.METEOR_DIR.y, (float) -PhobosDirector.METEOR_DIR.z);
+        Quaternionf rot = new Quaternionf().rotateY(time * 0.8f).rotateX(time * 0.5f);
+
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        RenderSystem.disableCull();
+        BufferBuilder bb = Tesselator.getInstance().getBuilder();
+        // roca sólida
+        RenderSystem.disableBlend();
+        RenderSystem.enableDepthTest();
+        RenderSystem.depthMask(true);
+        bb.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        for (Meteor me : METEORS) {
+            if (now >= me.impact) continue;
+            Vec3 p = PhobosDirector.meteorWorldPos(me.center, me.fraction(now));
+            MarsMesh.renderPhobosScaled(bb, m, new Vector3f((float) p.x, (float) p.y, (float) p.z), rot, light, 0.3f);
+        }
+        BufferUploader.drawWithShader(bb.end());
+        // fuego, plasma y cola (aditivo)
+        RenderSystem.enableBlend();
+        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
+        RenderSystem.depthMask(false);
+        bb.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        for (Meteor me : METEORS) {
+            float x = (float) me.center.x, y = (float) me.center.y, z = (float) me.center.z;
+            if (now < me.impact) {
+                Vec3 pv = PhobosDirector.meteorWorldPos(me.center, me.fraction(now));
+                Vector3f p = new Vector3f((float) pv.x, (float) pv.y, (float) pv.z);
+                MarsMesh.renderPhobosHeat(bb, m, p, rot, motion, 1f, time, 0.3f);
+                float flick = 0.85f + 0.15f * (float) Math.sin(time * 40);
+                Vector3f front = new Vector3f(p).add(new Vector3f(motion).mul(14f));
+                RenderUtil.softDisc(bb, m, front.x, front.y, front.z, right, up, 46f * flick, 20, 1f, 0.6f, 0.25f, 0.8f, 0f);
+                RenderUtil.softDisc(bb, m, front.x, front.y, front.z, right, up, 22f, 20, 1f, 0.95f, 0.8f, 0.9f, 0f);
+                // cola de fuego
+                Vector3f toCam = new Vector3f((float) cam.x, (float) cam.y, (float) cam.z).sub(p);
+                Vector3f side = new Vector3f(motion).cross(toCam).normalize();
+                float tail = 420f;
+                Vector3f mid = new Vector3f(p).sub(new Vector3f(motion).mul(tail * 0.5f));
+                RenderUtil.softBeam(bb, m, mid.x, mid.y, mid.z, motion, tail * 0.5f, side, 34f, 1f, 0.45f, 0.12f, 0.55f);
+                RenderUtil.softBeam(bb, m, mid.x, mid.y, mid.z, motion, tail * 0.45f, side, 14f, 1f, 0.85f, 0.5f, 0.75f);
+                // resplandor en el suelo que crece al acercarse
+                float f = me.fraction(now);
+                Matrix4f g = new Matrix4f(m).translate(x, y, z);
+                RenderUtil.ring(bb, g, 0f, 20f + 60f * f, 0.2f, 48, 1f, 0.5f, 0.2f, 0.12f + 0.3f * f * f);
+            } else if (now < me.impact + 70) {
+                // onda expansiva gigante y columna de fuego
+                float u = (now - me.impact) / 70f;
+                float radius = 12f + 260f * Cinematic.easeOutCubic(u);
+                float alpha = (1f - u) * 0.85f;
+                Matrix4f g = new Matrix4f(m).translate(x, y, z);
+                RenderUtil.ring(bb, g, radius, radius + 9f, 0.4f, 120, 1f, 0.8f, 0.55f, alpha);
+                RenderUtil.ring(bb, g, radius * 0.7f, radius * 0.7f + 4f, 2f + u * 14f, 96, 1f, 0.55f, 0.25f, alpha * 0.6f);
+                RenderUtil.cylinder(bb, g, 22f + 40f * u, 0, 180f * (1 - u) + 10, 32, 1f, 0.45f, 0.12f, 0.4f * (1 - u));
+                RenderUtil.softDisc(bb, m, x, y + 20f, z, right, up, 160f * (1 - u * 0.5f), 24, 1f, 0.7f, 0.35f, 0.6f * (1 - u), 0f);
+            }
+        }
         BufferUploader.drawWithShader(bb.end());
         RenderSystem.depthMask(true);
         RenderSystem.defaultBlendFunc();

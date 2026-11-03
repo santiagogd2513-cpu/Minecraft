@@ -68,6 +68,54 @@ public final class ImpactEffects {
         LINGERING.add(new Lingering(level, c, r, level.getGameTime() + 20 * 60));
     }
 
+    /**
+     * Impacto de Fobos: cráter enorme (1,6 veces el normal), fragmentos de la luna saliendo
+     * disparados, explosiones secundarias en anillo, fuego y humo durante dos minutos.
+     */
+    public static void moonImpact(ServerLevel level, BlockPos target, @Nullable ServerPlayer owner) {
+        Vec3 c = Vec3.atCenterOf(target).add(0, 0.5, 0);
+        int r = Math.min(56, Math.round(Config.CRATER_RADIUS.get() * 1.6f));
+        boolean destroy = Config.DESTROY_BLOCKS.get();
+        RandomSource rnd = level.getRandom();
+
+        level.playSound(null, c.x, c.y, c.z, SoundEvents.GENERIC_EXPLODE, SoundSource.BLOCKS, 16f, 0.35f);
+        level.playSound(null, c.x, c.y, c.z, SoundEvents.LIGHTNING_BOLT_THUNDER, SoundSource.WEATHER, 20f, 0.4f);
+        level.playSound(null, c.x, c.y, c.z, SoundEvents.WITHER_DEATH, SoundSource.HOSTILE, 10f, 0.5f);
+
+        damageEntities(level, c, r, owner);
+        if (destroy) carveCrater(level, target, r, rnd);
+        level.explode(null, c.x, c.y, c.z, 12f, destroy ? Level.ExplosionInteraction.TNT : Level.ExplosionInteraction.NONE);
+        // explosiones secundarias en anillo
+        for (int i = 0; i < 10; i++) {
+            double ang = Math.PI * 2 * i / 10 + rnd.nextDouble() * 0.3;
+            double d = r * (0.8 + rnd.nextDouble() * 0.4);
+            level.explode(null, c.x + Math.cos(ang) * d, c.y, c.z + Math.sin(ang) * d, 5f,
+                    destroy ? Level.ExplosionInteraction.TNT : Level.ExplosionInteraction.NONE);
+        }
+        // fragmentos de Fobos (roca oscura) saliendo disparados
+        if (destroy) {
+            BlockState[] rock = {Blocks.BASALT.defaultBlockState(), Blocks.BLACKSTONE.defaultBlockState(),
+                    Blocks.TUFF.defaultBlockState(), Blocks.MAGMA_BLOCK.defaultBlockState(), Blocks.SMOOTH_BASALT.defaultBlockState()};
+            for (int i = 0; i < 90; i++) {
+                BlockPos at = BlockPos.containing(c.x + rnd.nextGaussian() * 3, c.y + 2 + rnd.nextDouble() * 4, c.z + rnd.nextGaussian() * 3);
+                if (!level.getBlockState(at).isAir()) continue;
+                FallingBlockEntity fb = FallingBlockEntity.fall(level, at, rock[rnd.nextInt(rock.length)]);
+                fb.dropItem = false;
+                double ang = rnd.nextDouble() * Math.PI * 2, sp = 1.2 + rnd.nextDouble() * 2.2;
+                fb.setDeltaMovement(Math.cos(ang) * sp, 1.2 + rnd.nextDouble() * 2.0, Math.sin(ang) * sp);
+            }
+        }
+        burst(level, ParticleTypes.EXPLOSION_EMITTER, c, 30, r * 0.5, r * 0.25, r * 0.5, 0);
+        burst(level, ParticleTypes.FLASH, c, 10, 2, 2, 2, 0);
+        burst(level, ParticleTypes.FLAME, c, 900, r * 0.6, r * 0.4, r * 0.6, 0.45);
+        burst(level, ParticleTypes.LAVA, c, 300, r * 0.5, r * 0.3, r * 0.5, 0);
+        burst(level, ParticleTypes.LARGE_SMOKE, c, 700, r * 0.7, r * 0.5, r * 0.7, 0.2);
+        burst(level, ParticleTypes.CAMPFIRE_SIGNAL_SMOKE, c, 220, r * 0.6, r * 0.3, r * 0.6, 0.04);
+        burst(level, ParticleTypes.ASH, c, 600, r * 0.8, r * 0.5, r * 0.8, 0.1);
+        burst(level, ParticleTypes.WHITE_ASH, c, 300, r * 0.8, r * 0.5, r * 0.8, 0.1);
+        LINGERING.add(new Lingering(level, c, r, level.getGameTime() + 20 * 120));
+    }
+
     private static void damageEntities(ServerLevel level, Vec3 c, int r, @Nullable ServerPlayer owner) {
         double reach = r * 2.5;
         AABB box = new AABB(c.x - reach, c.y - reach, c.z - reach, c.x + reach, c.y + reach, c.z + reach);
