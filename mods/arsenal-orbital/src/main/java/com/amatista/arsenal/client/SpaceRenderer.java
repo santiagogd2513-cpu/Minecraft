@@ -268,12 +268,116 @@ final class SpaceRenderer {
         RenderSystem.restoreProjectionMatrix();
     }
 
+    // ------------------------------------------------------------------ espacio profundo
+
+    private static float[] faint;       // estrellas tenues de fondo: x,y,z,tamaño,alpha
+    private static float[] nebula;      // nubes de nebulosas: x,y,z,tamaño,r,g,b,alpha
+    private static float[] galaxy;      // galaxias lejanas: x,y,z, ejeA(x,y,z), ejeB(x,y,z), tamaño, tono
+    private static float[] cluster;     // cúmulos de estrellas: x,y,z,tamaño,alpha
+
+    private static Vector3f randomDir(Random r) {
+        double u = r.nextDouble() * 2 - 1, phi = r.nextDouble() * Math.PI * 2, s = Math.sqrt(1 - u * u);
+        return new Vector3f((float) (s * Math.cos(phi)), (float) u, (float) (s * Math.sin(phi)));
+    }
+
+    private static void buildDeepSky() {
+        if (faint != null) return;
+        Random r = new Random(4040);
+        faint = new float[9000 * 5];
+        for (int i = 0; i < 9000; i++) {
+            Vector3f d = randomDir(r);
+            faint[i * 5] = d.x; faint[i * 5 + 1] = d.y; faint[i * 5 + 2] = d.z;
+            faint[i * 5 + 3] = 3.5f + r.nextFloat() * 3f;
+            faint[i * 5 + 4] = 0.10f + r.nextFloat() * 0.22f;
+        }
+        // nebulosas de colores (rosa, turquesa, naranja, violeta)
+        float[][] palettes = {{1f, 0.35f, 0.6f}, {0.3f, 0.85f, 0.9f}, {1f, 0.55f, 0.25f}, {0.6f, 0.4f, 1f}, {0.4f, 0.6f, 1f}};
+        int nebulae = 10, blobs = 46;
+        nebula = new float[nebulae * blobs * 8];
+        int k = 0;
+        for (int n = 0; n < nebulae; n++) {
+            Vector3f c = randomDir(r);
+            Vector3f t1 = new Vector3f(c).cross(Math.abs(c.y) < 0.9f ? new Vector3f(0, 1, 0) : new Vector3f(1, 0, 0)).normalize();
+            Vector3f t2 = new Vector3f(c).cross(t1).normalize();
+            float[] a = palettes[r.nextInt(palettes.length)], b = palettes[r.nextInt(palettes.length)];
+            float spread = 0.04f + r.nextFloat() * 0.07f;
+            for (int i = 0; i < blobs; i++) {
+                float gx = (float) r.nextGaussian() * spread, gy = (float) r.nextGaussian() * spread * 0.6f;
+                Vector3f d = new Vector3f(c).add(new Vector3f(t1).mul(gx)).add(new Vector3f(t2).mul(gy)).normalize();
+                float mix = r.nextFloat();
+                nebula[k++] = d.x; nebula[k++] = d.y; nebula[k++] = d.z;
+                nebula[k++] = 140f + r.nextFloat() * 420f;
+                nebula[k++] = a[0] + (b[0] - a[0]) * mix; nebula[k++] = a[1] + (b[1] - a[1]) * mix; nebula[k++] = a[2] + (b[2] - a[2]) * mix;
+                nebula[k++] = 0.025f + r.nextFloat() * 0.05f;
+            }
+        }
+        // galaxias lejanas (espirales vistas de lado o de frente)
+        int gal = 16;
+        galaxy = new float[gal * 11];
+        for (int i = 0; i < gal; i++) {
+            Vector3f c = randomDir(r);
+            Vector3f t1 = new Vector3f(c).cross(Math.abs(c.y) < 0.9f ? new Vector3f(0, 1, 0) : new Vector3f(1, 0, 0)).normalize();
+            Vector3f t2 = new Vector3f(c).cross(t1).normalize();
+            float ang = r.nextFloat() * 6.28f;
+            Vector3f ax = new Vector3f(t1).mul((float) Math.cos(ang)).add(new Vector3f(t2).mul((float) Math.sin(ang)));
+            Vector3f bx = new Vector3f(t1).mul((float) -Math.sin(ang)).add(new Vector3f(t2).mul((float) Math.cos(ang)));
+            galaxy[i * 11] = c.x; galaxy[i * 11 + 1] = c.y; galaxy[i * 11 + 2] = c.z;
+            galaxy[i * 11 + 3] = ax.x; galaxy[i * 11 + 4] = ax.y; galaxy[i * 11 + 5] = ax.z;
+            galaxy[i * 11 + 6] = bx.x; galaxy[i * 11 + 7] = bx.y; galaxy[i * 11 + 8] = bx.z;
+            galaxy[i * 11 + 9] = 50f + r.nextFloat() * 130f;
+            galaxy[i * 11 + 10] = r.nextFloat();
+        }
+        // cúmulos de estrellas
+        int clusters = 8, per = 90;
+        cluster = new float[clusters * per * 5];
+        k = 0;
+        for (int n = 0; n < clusters; n++) {
+            Vector3f c = randomDir(r);
+            float spread = 0.006f + r.nextFloat() * 0.012f;
+            for (int i = 0; i < per; i++) {
+                Vector3f d = new Vector3f(c).add((float) r.nextGaussian() * spread, (float) r.nextGaussian() * spread,
+                        (float) r.nextGaussian() * spread).normalize();
+                cluster[k++] = d.x; cluster[k++] = d.y; cluster[k++] = d.z;
+                cluster[k++] = 4f + r.nextFloat() * 6f;
+                cluster[k++] = 0.35f + r.nextFloat() * 0.5f;
+            }
+        }
+    }
+
     static void drawSky(BufferBuilder bb, Matrix4f view, Vector3f eye, Vector3f right, Vector3f up, float time) {
+        buildDeepSky();
         float dist = 9000f;
+        // nebulosas (lo más tenue, primero)
+        for (int i = 0; i < nebula.length; i += 8) {
+            RenderUtil.softDisc(bb, view, eye.x + nebula[i] * dist, eye.y + nebula[i + 1] * dist, eye.z + nebula[i + 2] * dist,
+                    right, up, nebula[i + 3], 12, nebula[i + 4], nebula[i + 5], nebula[i + 6], nebula[i + 7], 0f);
+        }
         for (int i = 0; i < dust.length; i += 6) {
             float cx = eye.x + dust[i] * dist, cy = eye.y + dust[i + 1] * dist, cz = eye.z + dust[i + 2] * dist;
             float tone = dust[i + 5];
             RenderUtil.softDisc(bb, view, cx, cy, cz, right, up, dust[i + 3], 14, 0.55f + tone * 0.4f, 0.45f + tone * 0.2f, 0.75f - tone * 0.2f, dust[i + 4], 0f);
+        }
+        // galaxias lejanas
+        for (int i = 0; i < galaxy.length; i += 11) {
+            float cx = eye.x + galaxy[i] * dist, cy = eye.y + galaxy[i + 1] * dist, cz = eye.z + galaxy[i + 2] * dist;
+            Vector3f ax = new Vector3f(galaxy[i + 3], galaxy[i + 4], galaxy[i + 5]);
+            Vector3f bx = new Vector3f(galaxy[i + 6], galaxy[i + 7], galaxy[i + 8]);
+            float size = galaxy[i + 9], tone = galaxy[i + 10];
+            float r = 0.85f + 0.15f * tone, g = 0.8f + 0.1f * tone, b = 0.7f + 0.3f * (1 - tone);
+            RenderUtil.softStreak(bb, view, cx, cy, cz, ax, size, bx, size * 0.35f, r, g, b, 0.22f);
+            RenderUtil.softStreak(bb, view, cx, cy, cz, new Vector3f(ax).add(new Vector3f(bx).mul(0.5f)).normalize(), size * 0.7f, bx, size * 0.2f, r, g, b, 0.12f);
+            RenderUtil.softDisc(bb, view, cx, cy, cz, right, up, size * 0.22f, 10, 1f, 0.95f, 0.85f, 0.55f, 0f);
+        }
+        // estrellas tenues de fondo
+        for (int i = 0; i < faint.length; i += 5) {
+            RenderUtil.billboard(bb, view, eye.x + faint[i] * dist, eye.y + faint[i + 1] * dist, eye.z + faint[i + 2] * dist,
+                    right, up, faint[i + 3], 0.85f, 0.88f, 1f, faint[i + 4]);
+        }
+        // cúmulos
+        for (int i = 0; i < cluster.length; i += 5) {
+            float tw = 0.8f + 0.2f * (float) Math.sin(time * 3f + i);
+            RenderUtil.billboard(bb, view, eye.x + cluster[i] * dist, eye.y + cluster[i + 1] * dist, eye.z + cluster[i + 2] * dist,
+                    right, up, cluster[i + 3], 0.8f, 0.9f, 1f, cluster[i + 4] * tw);
         }
         int total = STAR_COUNT + BAND_COUNT;
         for (int i = 0; i < total; i++) {
@@ -283,8 +387,11 @@ final class SpaceRenderer {
             float a = starInfo[i * 6 + 1] * twinkle;
             RenderUtil.billboard(bb, view, cx, cy, cz, right, up, size,
                     starInfo[i * 6 + 2], starInfo[i * 6 + 3], starInfo[i * 6 + 4], a);
-            if (size > 22f) {
-                RenderUtil.softDisc(bb, view, cx, cy, cz, right, up, size * 3.5f, 14, starInfo[i * 6 + 2], starInfo[i * 6 + 3], starInfo[i * 6 + 4], a * 0.12f, 0f);
+            if (size > 20f) {
+                RenderUtil.softDisc(bb, view, cx, cy, cz, right, up, size * 3.5f, 14, starInfo[i * 6 + 2], starInfo[i * 6 + 3], starInfo[i * 6 + 4], a * 0.14f, 0f);
+                // destello en cruz de las estrellas más brillantes
+                RenderUtil.softStreak(bb, view, cx, cy, cz, right, size * 5f, up, size * 0.25f, starInfo[i * 6 + 2], starInfo[i * 6 + 3], starInfo[i * 6 + 4], a * 0.5f);
+                RenderUtil.softStreak(bb, view, cx, cy, cz, up, size * 5f, right, size * 0.25f, starInfo[i * 6 + 2], starInfo[i * 6 + 3], starInfo[i * 6 + 4], a * 0.5f);
             }
         }
     }
@@ -293,27 +400,68 @@ final class SpaceRenderer {
         float dist = 8000f;
         float cx = eye.x + SUN.x * dist, cy = eye.y + SUN.y * dist, cz = eye.z + SUN.z * dist;
         float pulse = 1f + 0.03f * (float) Math.sin(time * 1.7f);
-        // halo enorme
-        RenderUtil.softDisc(bb, view, cx, cy, cz, right, up, 4200f * pulse, 24, 1f, 0.5f, 0.15f, 0.10f, 0f);
-        RenderUtil.softDisc(bb, view, cx, cy, cz, right, up, 2400f * pulse, 24, 1f, 0.6f, 0.25f, 0.16f, 0f);
-        RenderUtil.softDisc(bb, view, cx, cy, cz, right, up, 1200f * pulse, 24, 1f, 0.75f, 0.4f, 0.30f, 0f);
-        RenderUtil.softDisc(bb, view, cx, cy, cz, right, up, 620f, 24, 1f, 0.88f, 0.6f, 0.35f, 0f);
-        // disco
-        RenderUtil.softDisc(bb, view, cx, cy, cz, right, up, 330f, 24, 1f, 0.96f, 0.82f, 0.8f, 0f);
-        RenderUtil.softDisc(bb, view, cx, cy, cz, right, up, 250f, 24, 1f, 1f, 0.97f, 1f, 0.6f);
-        RenderUtil.softDisc(bb, view, cx, cy, cz, right, up, 230f, 24, 1f, 1f, 1f, 1f, 1f);
+        // halo
+        RenderUtil.softDisc(bb, view, cx, cy, cz, right, up, 4600f * pulse, 32, 1f, 0.45f, 0.12f, 0.09f, 0f);
+        RenderUtil.softDisc(bb, view, cx, cy, cz, right, up, 2600f * pulse, 32, 1f, 0.58f, 0.22f, 0.15f, 0f);
+        RenderUtil.softDisc(bb, view, cx, cy, cz, right, up, 1300f * pulse, 32, 1f, 0.72f, 0.38f, 0.28f, 0f);
+        RenderUtil.softDisc(bb, view, cx, cy, cz, right, up, 640f, 32, 1f, 0.86f, 0.58f, 0.4f, 0f);
+        // corona: serpentinas irregulares que cambian despacio
+        for (int i = 0; i < 28; i++) {
+            float ang = i * (float) Math.PI * 2f / 28f + rnd(i * 13) * 0.2f + time * 0.01f;
+            float len = (330f + 700f * rnd(i * 17)) * (0.8f + 0.2f * (float) Math.sin(time * 0.5f + i * 1.3f));
+            Vector3f dir = new Vector3f(right).mul((float) Math.cos(ang)).add(new Vector3f(up).mul((float) Math.sin(ang)));
+            Vector3f side = new Vector3f(right).mul((float) -Math.sin(ang)).add(new Vector3f(up).mul((float) Math.cos(ang)));
+            float base = 235f + len * 0.5f;
+            RenderUtil.softStreak(bb, view, cx + dir.x * base, cy + dir.y * base, cz + dir.z * base,
+                    dir, len * 0.5f, side, 25f + 40f * rnd(i * 19), 1f, 0.93f, 0.8f, 0.13f);
+        }
+        // disco con oscurecimiento en el borde (más brillante en el centro)
+        RenderUtil.softDisc(bb, view, cx, cy, cz, right, up, 236f, 40, 1f, 0.6f, 0.25f, 1f, 1f);
+        RenderUtil.softDisc(bb, view, cx, cy, cz, right, up, 232f, 40, 1f, 0.92f, 0.7f, 1f, 0.6f);
+        RenderUtil.softDisc(bb, view, cx, cy, cz, right, up, 215f, 40, 1f, 1f, 0.97f, 1f, 0f);
+        // granulado de la superficie
+        for (int i = 0; i < 40; i++) {
+            float ang = rnd(i * 23 + 1) * 6.283f, rr = (float) Math.sqrt(rnd(i * 23 + 2)) * 200f;
+            float fl = 0.5f + 0.5f * (float) Math.sin(time * (1f + rnd(i)) + i);
+            Vector3f off = new Vector3f(right).mul((float) Math.cos(ang) * rr).add(new Vector3f(up).mul((float) Math.sin(ang) * rr));
+            RenderUtil.softDisc(bb, view, cx + off.x, cy + off.y, cz + off.z, right, up, 18f + 18f * rnd(i * 5), 8, 1f, 1f, 0.9f, 0.25f * fl, 0f);
+        }
+        // protuberancias rojizas en el borde
+        for (int i = 0; i < 7; i++) {
+            float ang = rnd(i * 29 + 7) * 6.283f;
+            float grow = 0.7f + 0.3f * (float) Math.sin(time * 0.6f + i * 2f);
+            Vector3f dir = new Vector3f(right).mul((float) Math.cos(ang)).add(new Vector3f(up).mul((float) Math.sin(ang)));
+            Vector3f side = new Vector3f(right).mul((float) -Math.sin(ang)).add(new Vector3f(up).mul((float) Math.cos(ang)));
+            float h = (25f + 40f * rnd(i * 31)) * grow;
+            Vector3f p = new Vector3f(cx, cy, cz).add(new Vector3f(dir).mul(236f + h * 0.5f));
+            RenderUtil.softStreak(bb, view, p.x, p.y, p.z, dir, h, side, 14f + 10f * rnd(i), 1f, 0.35f, 0.18f, 0.75f);
+        }
         // rayos de luz que giran despacio
         for (int i = 0; i < 16; i++) {
             float ang = i * (float) Math.PI / 8f + time * 0.03f;
-            float len = (1400f + 900f * rnd(i * 7)) * (0.85f + 0.15f * (float) Math.sin(time * 0.8f + i));
+            float len = (1600f + 1000f * rnd(i * 7)) * (0.85f + 0.15f * (float) Math.sin(time * 0.8f + i));
             Vector3f dir = new Vector3f(right).mul((float) Math.cos(ang)).add(new Vector3f(up).mul((float) Math.sin(ang)));
             Vector3f side = new Vector3f(right).mul((float) -Math.sin(ang)).add(new Vector3f(up).mul((float) Math.cos(ang)));
             RenderUtil.softStreak(bb, view, cx + dir.x * len * 0.5f, cy + dir.y * len * 0.5f, cz + dir.z * len * 0.5f, dir, len * 0.5f, side, 30f + 30f * rnd(i * 3), 1f, 0.85f, 0.6f, 0.07f);
         }
         // destello de lente horizontal
-        RenderUtil.softStreak(bb, view, cx, cy, cz, right, 6500f, up, 30f, 1f, 0.8f, 0.6f, 0.2f);
-        RenderUtil.softStreak(bb, view, cx, cy, cz, right, 2500f, up, 9f, 1f, 1f, 0.9f, 0.4f);
+        RenderUtil.softStreak(bb, view, cx, cy, cz, right, 7000f, up, 30f, 1f, 0.8f, 0.6f, 0.2f);
+        RenderUtil.softStreak(bb, view, cx, cy, cz, right, 2600f, up, 9f, 1f, 1f, 0.9f, 0.45f);
         RenderUtil.softStreak(bb, view, cx, cy, cz, up, 1300f, right, 18f, 1f, 0.85f, 0.7f, 0.1f);
+        // reflejos de lente hacia el centro de la pantalla (solo si se mira hacia el sol)
+        Vector3f forward = new Vector3f(up).cross(right).normalize();
+        float facing = forward.dot(SUN);
+        if (facing > 0.3f) {
+            float fa = Cinematic.smooth((facing - 0.3f) / 0.4f);
+            Vector3f sun = new Vector3f(cx, cy, cz);
+            Vector3f mid = new Vector3f(eye).add(new Vector3f(forward).mul(dist));
+            float[][] ghosts = {{0.35f, 160f, 1f, 0.6f, 0.3f}, {0.6f, 70f, 0.4f, 1f, 0.8f}, {0.85f, 240f, 0.6f, 0.4f, 1f},
+                    {1.15f, 110f, 1f, 0.8f, 0.4f}, {1.45f, 320f, 0.4f, 0.7f, 1f}, {1.85f, 150f, 0.9f, 0.4f, 0.9f}};
+            for (float[] gh : ghosts) {
+                Vector3f p = new Vector3f(sun).lerp(mid, gh[0]);
+                RenderUtil.softDisc(bb, view, p.x, p.y, p.z, right, up, gh[1], 6, gh[2], gh[3], gh[4], 0.07f * fa, 0.02f * fa);
+            }
+        }
     }
 
     static void drawMoon(BufferBuilder bb, Matrix4f view, Vector3f moon) {

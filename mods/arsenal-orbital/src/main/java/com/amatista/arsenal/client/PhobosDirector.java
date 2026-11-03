@@ -160,6 +160,148 @@ final class PhobosDirector {
         if (t < PhobosTimeline.MARS_END) {
             float u = (t - PhobosTimeline.TRAVEL_END) / (PhobosTimeline.MARS_END - PhobosTimeline.TRAVEL_END);
             Vec3 p = phobosPosition(t);
+            double orbitR = 2600, orbitH = 520;
+            Vec3 arrive = MARS.add(0, 900, 4300);
+            Vec3 orbitStart = MARS.add(0, orbitH, orbitR);
+            if (u < 0.12f) {
+                // se acerca a Marte
+                float e = smooth(u / 0.12f);
+                return new Cinematic.SpacePose(arrive.lerp(orbitStart, e), MARS, 60f, 0f);
+            }
+            if (u < 0.55f) {
+                // vuelta rápida completa alrededor de Marte
+                float e = smooth((u - 0.12f) / 0.43f);
+                double ang = Math.PI / 2 + e * Math.PI * 2;
+                double h = orbitH + Math.sin(e * Math.PI) * 600;
+                Vec3 eye = MARS.add(Math.cos(ang) * orbitR, h, Math.sin(ang) * orbitR);
+                return new Cinematic.SpacePose(eye, MARS, 60f, (float) Math.sin(e * Math.PI * 2) * 8f);
+            }
+            // primer plano de Fobos: cráteres y surcos
+            float v = (u - 0.55f) / 0.45f;
+            double ang = 0.6 + v * 1.4;
+            double radius = Mth.lerp(smooth(Math.min(1f, v * 2.5f)), 1400f, 230f);
+            Vec3 eye = p.add(Math.cos(ang) * radius, 70 + 40 * v, Math.sin(ang) * radius);
+            Vec3 center = p;
+            if (v < 0.4f) {
+                float k = smooth(v / 0.4f);
+                eye = orbitStart.lerp(eye, k);
+                center = MARS.lerp(p, k);
+            }
+            return new Cinematic.SpacePose(eye, center, 55f, 0f);
+        }
+        if (t < PhobosTimeline.MISSILE_END) {
+            return -Math.PI * 2 * TURNS + 0.04 * (secs - slingStartSecs);
+        }
+        float u = slingProgress(t);
+        double f = Math.pow(u, 2.6);
+        return -Math.PI * 2 * TURNS * (1 - f);
+    }
+
+    static float orbitRadius(float t) {
+        float u = Math.max(0f, slingProgress(t));
+        return Mth.lerp(smooth(u), ORBIT_START, ORBIT_END);
+    }
+
+    /** Posición de Fobos en la escena espacial. */
+    static Vec3 phobosPosition(float t) {
+        if (t >= PhobosTimeline.SLING_END) {
+            float u = releaseProgress(t);
+            float s = u * 0.65f + u * u * 0.35f;
+            Vec3 p0 = MARS.add(ORBIT_END, 0, 0);
+            Vec3 p1 = p0.add(0, 0, 16000);
+            Vec3 p2 = EARTH_TARGET.add(800, 5200, 7000);
+            Vec3 p3 = EARTH_TARGET.add(0, 70, 0);
+            return cubic(p0, p1, p2, p3, s);
+        }
+        double a = orbitAngle(t);
+        float r = orbitRadius(t);
+        return MARS.add(Math.cos(a) * r, Math.sin(a * 0.5) * r * 0.05, Math.sin(a) * r);
+    }
+
+    /** Dirección en la que se mueve Fobos. */
+    static Vec3 phobosVelocityDir(float t) {
+        float dt = 0.0015f;
+        Vec3 a = phobosPosition(t), b = phobosPosition(Math.min(1f, t + dt));
+        Vec3 d = b.subtract(a);
+        if (d.lengthSqr() < 1e-6) {
+            double ang = orbitAngle(t);
+            return new Vec3(-Math.sin(ang), 0, Math.cos(ang));
+        }
+        return d.normalize();
+    }
+
+    /** Velocidad "de pantalla" para la telemetría (km/s, inventada pero coherente). */
+    static float phobosSpeedKms(float t) {
+        if (t < PhobosTimeline.MISSILE_HIT) return 2.1f;
+        if (t < PhobosTimeline.MISSILE_END) return 2.6f;
+        if (t < PhobosTimeline.SLING_END) {
+            float u = slingProgress(t);
+            return 2.6f + 38f * (float) Math.pow(u, 1.8);
+        }
+        return 41f + 30f * releaseProgress(t);
+    }
+
+    /** Calor (0..1): grietas encendidas tras el misil, cada vez más al acelerar, fuego al entrar en la atmósfera. */
+    static float heat(float t) {
+        if (t < PhobosTimeline.MISSILE_HIT) return 0f;
+        if (t < PhobosTimeline.MISSILE_END) return 0.18f;
+        if (t < PhobosTimeline.SLING_END) return 0.18f + 0.5f * smooth(slingProgress(t));
+        return 0.68f + 0.32f * smooth((releaseProgress(t) - 0.55f) / 0.45f);
+    }
+
+    /** Giro propio de Fobos (da vueltas sobre sí misma cada vez más rápido). */
+    static float spin(float t) {
+        float secs = t * Cinematic.durationSeconds();
+        float extra = 0f;
+        if (t >= PhobosTimeline.MISSILE_HIT) extra += (secs - PhobosTimeline.MISSILE_HIT * Cinematic.durationSeconds()) * 0.6f;
+        if (t >= PhobosTimeline.MISSILE_END) extra += (float) Math.pow(slingProgress(t), 2) * 40f;
+        return secs * 0.05f + extra;
+    }
+
+    // ------------------------------------------------------------------ misil
+
+    static Vec3 missileTarget() {
+        return phobosPosition(PhobosTimeline.MISSILE_HIT);
+    }
+
+    static Vec3 missileStart() {
+        return missileTarget().add(-2600, 700, 1800);
+    }
+
+    /** Fracción del vuelo del misil (0..1) o -1 fuera del vuelo. */
+    static float missileProgress(float t) {
+        if (t < PhobosTimeline.MARS_END || t > PhobosTimeline.MISSILE_HIT) return -1f;
+        return (t - PhobosTimeline.MARS_END) / (PhobosTimeline.MISSILE_HIT - PhobosTimeline.MARS_END);
+    }
+
+    static Vec3 missilePosition(float u) {
+        float e = u * u * 0.6f + u * 0.4f;
+        Vec3 a = missileStart(), b = missileTarget();
+        Vec3 mid = a.lerp(b, 0.5).add(0, 350, 0);
+        return bezier(a, mid, b, e);
+    }
+
+    // ------------------------------------------------------------------ cámara en el espacio
+
+    static Cinematic.SpacePose spacePose(float t) {
+        if (t < 0.215f) {
+            float e = smooth((t - PhobosTimeline.SPACE_START) / (0.215f - PhobosTimeline.SPACE_START));
+            Vec3 eye = EARTH_TARGET.add(0, 80, 0).lerp(EARTH_TARGET.add(30, 260, 60), e);
+            return new Cinematic.SpacePose(eye, EARTH_TARGET, 75f, 0f);
+        }
+        if (t < PhobosTimeline.TRAVEL_END) {
+            // viaje a toda velocidad: primero se mira la Tierra alejarse, luego Marte acercarse
+            float u = (t - 0.215f) / (PhobosTimeline.TRAVEL_END - 0.215f);
+            float e = smooth(u);
+            Vec3 eye = cubic(EARTH_TARGET.add(30, 260, 60), new Vec3(0, 2600, -3000),
+                    MARS.add(0, 1500, 9500), MARS.add(0, 900, 4300), e);
+            float look = smooth((u - 0.15f) / 0.3f);
+            Vec3 center = Vec3.ZERO.lerp(MARS, look);
+            return new Cinematic.SpacePose(eye, center, 70f + 25f * warp(t), (float) Math.sin(u * 6) * 6f * warp(t));
+        }
+        if (t < PhobosTimeline.MARS_END) {
+            float u = (t - PhobosTimeline.TRAVEL_END) / (PhobosTimeline.MARS_END - PhobosTimeline.TRAVEL_END);
+            Vec3 p = phobosPosition(t);
             if (u < 0.5f) {
                 // llegada: Marte enorme con Fobos delante
                 float e = smooth(u / 0.5f);
