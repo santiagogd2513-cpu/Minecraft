@@ -100,9 +100,7 @@ final class StarRenderer {
         }
         Matrix4f view = new Matrix4f().lookAt(eye.x, eye.y, eye.z, center.x, center.y, center.z, up.x, up.y, up.z);
         int w = mc.getWindow().getWidth(), h = Math.max(1, mc.getWindow().getHeight());
-        float near = scene == StarDirector.Scene.SOLAR ? BlackHoleRenderer.solarNear(eye, time)
-                : scene == StarDirector.Scene.EARTH ? RenderUtil.nearPlane(eye, 1f, 0f, 0f, 0f, Cinematic.PLANET_RADIUS * 1.04f)
-                : scene == StarDirector.Scene.STAR ? RenderUtil.nearToCenter(eye, center, 4f, 40f) : 40f;
+        float near = scene == StarDirector.Scene.STAR || scene == StarDirector.Scene.EARTH || scene == StarDirector.Scene.SOLAR ? 4f : 40f;
         Matrix4f proj = new Matrix4f().setPerspective((float) Math.toRadians(pose.fov()), (float) w / h, near, 4_000_000f);
 
         RenderSystem.backupProjectionMatrix();

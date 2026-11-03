@@ -40,6 +40,7 @@ public final class WorldEffects {
         /** Tamaño (1 = satélite; el láser de Prometeo es mucho más grande y baja del cielo). */
         final float scale;
         final boolean descend;
+        boolean fx;
 
         Beam(BlockPos target, long start, long impact) {
             this(target, start, impact, 1f, false);
@@ -62,6 +63,7 @@ public final class WorldEffects {
         final long start;
         final long impact;
         final long end;
+        boolean fx;
 
         Meteor(BlockPos target, long start, long impact) {
             this.target = target;
@@ -108,12 +110,19 @@ public final class WorldEffects {
         METEORS.clear();
         SINGULARITIES.clear();
         SPARKS.clear();
+        ImpactFx.clear();
     }
 
     public static void tick() {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level == null) return;
         long now = Cinematic.clientTicks();
+        // explosión realista (hongo, polvo, escombros) justo en el momento del impacto
+        for (Beam b : BEAMS) if (!b.fx && now >= b.impact) { b.fx = true; ImpactFx.spawn(Vec3.atCenterOf(b.target), b.scale > 1f ? com.amatista.arsenal.StrikeType.STAR : com.amatista.arsenal.StrikeType.SATELLITE); }
+        for (Meteor me : METEORS) if (!me.fx && now >= me.impact) { me.fx = true; ImpactFx.spawn(me.center, com.amatista.arsenal.StrikeType.PHOBOS); }
+        for (Meteor me : SINGULARITIES) if (!me.fx && now >= me.impact) { me.fx = true; ImpactFx.spawn(me.center, com.amatista.arsenal.StrikeType.BLACKHOLE); }
+        for (Meteor me : SPARKS) if (!me.fx && now >= me.impact) { me.fx = true; ImpactFx.spawn(me.center, com.amatista.arsenal.StrikeType.GENESIS); }
+        ImpactFx.tick();
         tickMeteors(mc, now);
         SINGULARITIES.removeIf(sg -> now > sg.end);
         SPARKS.removeIf(sp -> now > sp.impact + 600);
@@ -204,6 +213,7 @@ public final class WorldEffects {
         if (!METEORS.isEmpty()) renderMeteors(poseStack, camera, partialTick);
         if (!SINGULARITIES.isEmpty()) renderSingularities(poseStack, camera, partialTick);
         if (!SPARKS.isEmpty()) renderSparks(poseStack, camera, partialTick);
+        ImpactFx.render(poseStack, camera, partialTick);
         if (BEAMS.isEmpty() && !aiming) return;
 
         poseStack.pushPose();
@@ -527,6 +537,45 @@ public final class WorldEffects {
         poseStack.popPose();
     }
 
+    /** Rayos eléctricos que saltan del rayo al suelo y aire ionizado alrededor. */
+    private static void drawArcs(BufferBuilder bb, Matrix4f mm, Beam b, float now, float k, float y0, float grow, float a) {
+        int frame = (int) (now / 2f);
+        java.util.Random r = new java.util.Random(frame * 31L + b.target.asLong());
+        int bolts = 3 + (int) (grow * 6);
+        for (int n = 0; n < bolts; n++) {
+            float h = y0 + (4f + r.nextFloat() * 50f) * k;
+            float ang = r.nextFloat() * 6.283f;
+            float px = 0f, py = h, pz = 0f;
+            float reach = (10f + r.nextFloat() * 22f) * k;
+            for (int s = 0; s < 8; s++) {
+                float f = (s + 1) / 8f;
+                float nx = (float) Math.cos(ang) * reach * f + (r.nextFloat() - 0.5f) * 3f * k;
+                float nz = (float) Math.sin(ang) * reach * f + (r.nextFloat() - 0.5f) * 3f * k;
+                float ny = Mth.lerp(f, h, y0) + (r.nextFloat() - 0.5f) * 3f * k;
+                Vector3f dir = new Vector3f(nx - px, ny - py, nz - pz);
+                float len = dir.length();
+                if (len < 0.01f) continue;
+                dir.div(len);
+                Vector3f s1 = new Vector3f(dir).cross(0, 1, 0);
+                if (s1.lengthSquared() < 1e-4f) s1.set(1, 0, 0);
+                s1.normalize();
+                Vector3f s2 = new Vector3f(dir).cross(s1).normalize();
+                float cx = (px + nx) / 2, cy = (py + ny) / 2, cz = (pz + nz) / 2;
+                RenderUtil.streak(bb, mm, cx, cy, cz, dir, len / 2, s1, 0.25f * k, 0.75f, 0.88f, 1f, 0.9f * a);
+                RenderUtil.streak(bb, mm, cx, cy, cz, dir, len / 2, s2, 0.25f * k, 0.75f, 0.88f, 1f, 0.9f * a);
+                px = nx; py = ny; pz = nz;
+            }
+        }
+        // aire ionizado: anillos tenues que suben alrededor del rayo
+        for (int i = 0; i < 6; i++) {
+            float ph = ((now * 0.03f) + i / 6f) % 1f;
+            float rr = (18f + 30f * ph) * k * (0.6f + 0.4f * grow);
+            RenderUtil.ring(bb, mm, rr, rr + 1.2f * k, y0 + ph * 40f * k, 64, 0.55f, 0.75f, 1f, 0.18f * (1f - ph) * a);
+        }
+        // brillo de calor en el suelo que crece
+        RenderUtil.ring(bb, mm, 0f, (30f + 50f * grow) * k, 0.1f, 64, 1f, 0.55f, 0.25f, 0.12f * grow * a);
+    }
+
     private static void drawBeam(BufferBuilder bb, Matrix4f m, Beam b, float now) {
         float x = b.target.getX() + 0.5f, y = b.target.getY() + 1f, z = b.target.getZ() + 0.5f;
         float sinceStart = now - b.start;
@@ -549,6 +598,7 @@ public final class WorldEffects {
             RenderUtil.cylinder(bb, mm, (8f + 5f * grow) * flick * k, y0, top, 24, 0.3f, 0.7f, 1f, 0.45f * a);
             RenderUtil.cylinder(bb, mm, (3.5f + 2f * grow) * k, y0, top, 16, 0.9f, 0.97f, 1f, 0.95f * a);
             RenderUtil.cylinder(bb, mm, (1.5f + 0.8f * grow) * k, y0, top, 12, 1f, 1f, 1f, 1f * a);
+            if (now < b.impact) drawArcs(bb, mm, b, now, k, y0, grow, a);
             if (touching) {
                 // resplandor en el suelo
                 RenderUtil.ring(bb, mm, 0f, (10f + 22f * grow) * k, 0.05f, 48, 0.6f, 0.85f, 1f, 0.45f * a);

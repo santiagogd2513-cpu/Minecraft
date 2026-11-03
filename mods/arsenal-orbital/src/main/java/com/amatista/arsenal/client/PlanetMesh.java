@@ -201,6 +201,9 @@ final class PlanetMesh {
 
     /** Luces de ciudades en el lado de noche (aditivo). */
     static void renderCityLights(BufferBuilder bb, Matrix4f m, float radius, Vector3f sun, float time) {
+        renderLightning(bb, m, radius, sun, time);
+        renderAuroras(bb, m, radius, sun, time);
+        renderOrbiters(bb, m, radius, sun, time);
         for (int i = 0; i < lights.length; i += 3) {
             float x = lights[i], y = lights[i + 1], z = lights[i + 2];
             float d = x * sun.x + y * sun.y + z * sun.z;
@@ -214,6 +217,107 @@ final class PlanetMesh {
             float s = 2.4f;
             float cx = x * (radius + 2.5f), cy = y * (radius + 2.5f), cz = z * (radius + 2.5f);
             RenderUtil.streak(bb, m, cx, cy, cz, t1, s, t2, s, 1.0f, 0.75f, 0.35f, 0.8f * night * flicker);
+        }
+    }
+
+    // --------------------------------------------------------------- tormentas, auroras y satélites
+
+    private static float[] bolts;       // x,y,z (normal) de las celdas de tormenta
+    private static float[] orbiters;    // radio, inclinación, nodo, fase, velocidad
+
+    private static void buildExtras() {
+        if (bolts != null) return;
+        Random r = new Random(515);
+        float[] tmp = new float[3 * 90];
+        int n = 0;
+        for (int tries = 0; tries < 20000 && n < 90; tries++) {
+            int k = r.nextInt(nx.length);
+            if (cloud[k] < 0.55f) continue;
+            tmp[n * 3] = nx[k]; tmp[n * 3 + 1] = ny[k]; tmp[n * 3 + 2] = nz[k];
+            n++;
+        }
+        bolts = new float[n * 3];
+        System.arraycopy(tmp, 0, bolts, 0, n * 3);
+        orbiters = new float[160 * 5];
+        for (int i = 0; i < 160; i++) {
+            orbiters[i * 5] = 1.06f + r.nextFloat() * 0.18f;
+            orbiters[i * 5 + 1] = (r.nextFloat() - 0.5f) * 2.2f;
+            orbiters[i * 5 + 2] = r.nextFloat() * 6.283f;
+            orbiters[i * 5 + 3] = r.nextFloat() * 6.283f;
+            orbiters[i * 5 + 4] = 0.02f + r.nextFloat() * 0.03f;
+        }
+    }
+
+    /** Relámpagos dentro de las nubes de tormenta (se ven sobre todo de noche). */
+    private static void renderLightning(BufferBuilder bb, Matrix4f m, float radius, Vector3f sun, float time) {
+        buildExtras();
+        Vector3f r1 = new Vector3f(), u1 = new Vector3f();
+        for (int i = 0; i < bolts.length; i += 3) {
+            float x = bolts[i], y = bolts[i + 1], z = bolts[i + 2];
+            if (cull && x * ex + y * ey + z * ez < radius * 0.99f) continue;
+            float seed = i * 0.731f;
+            float flash = (float) Math.pow(Math.max(0f, Math.sin(time * (1.3f + (i % 7) * 0.31f) + seed * 5f)), 30);
+            if (flash < 0.03f) continue;
+            float d = x * sun.x + y * sun.y + z * sun.z;
+            float vis = 0.35f + 0.65f * smoothstep(0.1f, -0.25f, d);
+            Vector3f n = new Vector3f(x, y, z);
+            r1.set(n).cross(Math.abs(y) < 0.9f ? new Vector3f(0, 1, 0) : new Vector3f(1, 0, 0)).normalize();
+            u1.set(n).cross(r1).normalize();
+            float rr = radius * 1.014f;
+            RenderUtil.softDisc(bb, m, x * rr, y * rr, z * rr, r1, u1, 9f + 9f * (i % 3), 12, 0.75f, 0.82f, 1f, 0.9f * flash * vis, 0f);
+            RenderUtil.softDisc(bb, m, x * rr, y * rr, z * rr, r1, u1, 3f, 8, 1f, 1f, 1f, flash * vis, 0f);
+        }
+    }
+
+    /** Auroras verdes y rosadas alrededor de los dos polos. */
+    private static void renderAuroras(BufferBuilder bb, Matrix4f m, float radius, Vector3f sun, float time) {
+        Quaternionf back = new Quaternionf(toMap).conjugate();
+        for (int pole = -1; pole <= 1; pole += 2) {
+            int segs = 110;
+            for (int s = 0; s < segs; s++) {
+                float a = s * 6.2832f / segs;
+                float wob = 0.05f * (float) Math.sin(a * 5 + time * 0.3f) + 0.03f * (float) Math.sin(a * 11 - time * 0.5f);
+                float lat = 0.9f + wob;
+                float rad = (float) Math.sqrt(1 - lat * lat);
+                Vector3f nm = back.transform(new Vector3f((float) Math.cos(a) * rad, lat * pole, (float) Math.sin(a) * rad));
+                if (cull && nm.x * ex + nm.y * ey + nm.z * ez < radius * 0.97f) continue;
+                float d = nm.x * sun.x + nm.y * sun.y + nm.z * sun.z;
+                float night = 0.25f + 0.75f * smoothstep(0.15f, -0.2f, d);
+                float flick = 0.6f + 0.4f * (float) Math.sin(a * 17 + time * 1.7f + pole);
+                float h = 0.035f * radius * (0.7f + 0.5f * (float) Math.sin(a * 7 + time * 0.8f));
+                Vector3f base = new Vector3f(nm).mul(radius * 1.02f);
+                Vector3f mid = new Vector3f(nm).mul(radius * 1.02f + h * 0.5f);
+                Vector3f side = new Vector3f(nm).cross(new Vector3f(ex, ey, ez).sub(mid)).normalize();
+                RenderUtil.softBeam(bb, m, mid.x, mid.y, mid.z, nm, h * 0.5f, side, radius * 0.012f, 0.25f, 1f, 0.55f, 0.22f * night * flick);
+                Vector3f top = new Vector3f(nm).mul(radius * 1.02f + h);
+                RenderUtil.softBeam(bb, m, top.x, top.y, top.z, nm, h * 0.3f, side, radius * 0.01f, 1f, 0.35f, 0.7f, 0.12f * night * flick);
+                RenderUtil.softDisc(bb, m, base.x, base.y, base.z, side, nm, radius * 0.02f, 8, 0.3f, 1f, 0.6f, 0.08f * night, 0f);
+            }
+        }
+    }
+
+    /** Satélites y estaciones en órbita: puntitos que brillan cuando les da el sol. */
+    private static void renderOrbiters(BufferBuilder bb, Matrix4f m, float radius, Vector3f sun, float time) {
+        Vector3f eye = new Vector3f(ex, ey, ez);
+        for (int i = 0; i < orbiters.length; i += 5) {
+            float rr = orbiters[i] * radius, inc = orbiters[i + 1], node = orbiters[i + 2];
+            float ph = orbiters[i + 3] + time * orbiters[i + 4];
+            Vector3f p = new Vector3f((float) Math.cos(ph) * rr, 0f, (float) Math.sin(ph) * rr).rotateX(inc).rotateY(node);
+            // en la sombra de la Tierra no se ven
+            float along = p.dot(sun);
+            if (along < 0f && new Vector3f(p).sub(new Vector3f(sun).mul(along)).length() < radius) continue;
+            Vector3f dv = new Vector3f(p).sub(eye);
+            float L = dv.length();
+            dv.div(L);
+            float tc = -eye.dot(dv);
+            if (tc > 0f && tc < L && new Vector3f(dv).mul(tc).add(eye).length() < radius) continue; // detrás de la Tierra
+            Vector3f toEye = new Vector3f(eye).sub(p).normalize();
+            Vector3f side = new Vector3f(toEye).cross(0, 1, 0);
+            if (side.lengthSquared() < 1e-4f) side.set(1, 0, 0);
+            side.normalize();
+            Vector3f upv = new Vector3f(toEye).cross(side).normalize();
+            float glint = (float) Math.pow(Math.max(0, Math.sin(time * 0.7f + i)), 20);
+            RenderUtil.softDisc(bb, m, p.x, p.y, p.z, side, upv, 1.6f + 5f * glint, 6, 1f, 0.97f, 0.9f, 0.55f + 0.45f * glint, 0f);
         }
     }
 

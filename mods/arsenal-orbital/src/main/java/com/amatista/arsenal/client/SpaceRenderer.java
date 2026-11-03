@@ -198,11 +198,7 @@ final class SpaceRenderer {
         Matrix4f view = new Matrix4f().lookAt(eye.x, eye.y, eye.z, center.x, center.y, center.z, up.x, up.y, up.z);
 
         int w = mc.getWindow().getWidth(), h = Math.max(1, mc.getWindow().getHeight());
-        Vector3f moonNow = moonPosition(time);
-        float near = RenderUtil.nearPlane(eye, 0.5f, 0f, 0f, 0f, Cinematic.PLANET_RADIUS * 1.04f,
-                moonNow.x, moonNow.y, moonNow.z, MOON_RADIUS,
-                (float) Cinematic.SATELLITE.x, (float) Cinematic.SATELLITE.y, (float) Cinematic.SATELLITE.z, 140f);
-        Matrix4f proj = new Matrix4f().setPerspective((float) Math.toRadians(pose.fov()), (float) w / h, near, 80000f);
+        Matrix4f proj = new Matrix4f().setPerspective((float) Math.toRadians(pose.fov()), (float) w / h, 1f, 80000f);
 
         RenderSystem.backupProjectionMatrix();
         RenderSystem.setProjectionMatrix(proj, VertexSorting.DISTANCE_TO_ORIGIN);

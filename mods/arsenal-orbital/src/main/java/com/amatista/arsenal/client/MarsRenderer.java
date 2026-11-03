@@ -63,13 +63,7 @@ final class MarsRenderer {
         }
         Matrix4f view = new Matrix4f().lookAt(eye.x, eye.y, eye.z, center.x, center.y, center.z, up.x, up.y, up.z);
         int w = mc.getWindow().getWidth(), h = Math.max(1, mc.getWindow().getHeight());
-        Vector3f marsC = v(PhobosDirector.MARS), phobosC = v(PhobosDirector.phobosPosition(t)), moonC = SpaceRenderer.moonPosition(time);
-        float near = RenderUtil.nearPlane(eye, 0.5f, 0f, 0f, 0f, Cinematic.PLANET_RADIUS * 1.04f,
-                marsC.x, marsC.y, marsC.z, PhobosDirector.MARS_RADIUS * 1.03f,
-                phobosC.x, phobosC.y, phobosC.z, 120f,
-                moonC.x, moonC.y, moonC.z, 270f);
-        near = Math.min(near, RenderUtil.nearToCenter(eye, center, 0.5f, 1e9f) * 4f);
-        Matrix4f proj = new Matrix4f().setPerspective((float) Math.toRadians(pose.fov()), (float) w / h, near, 120000f);
+        Matrix4f proj = new Matrix4f().setPerspective((float) Math.toRadians(pose.fov()), (float) w / h, 2f, 120000f);
 
         RenderSystem.backupProjectionMatrix();
         RenderSystem.setProjectionMatrix(proj, VertexSorting.DISTANCE_TO_ORIGIN);
