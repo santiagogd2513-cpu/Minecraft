@@ -116,6 +116,104 @@ public final class ImpactEffects {
         LINGERING.add(new Lingering(level, c, r, level.getGameTime() + 20 * 120));
     }
 
+    /** Altura a la que flota la singularidad sobre el objetivo. */
+    public static final double SINGULARITY_HEIGHT = 14.0;
+
+    /**
+     * La singularidad absorbe: arranca bloques que salen girando en espiral hacia ella, atrae a
+     * los mobs y jugadores, y destruye todo lo que llega al centro. progress va de 0 a 1.
+     */
+    public static void singularityPull(ServerLevel level, BlockPos target, float progress, @Nullable ServerPlayer owner) {
+        Vec3 c = Vec3.atCenterOf(target).add(0, SINGULARITY_HEIGHT, 0);
+        RandomSource rnd = level.getRandom();
+        int maxR = Math.min(48, Math.round(Config.CRATER_RADIUS.get() * 1.3f));
+        float reachR = 4f + maxR * Math.min(1f, progress * 1.3f);
+        boolean destroy = Config.DESTROY_BLOCKS.get();
+        long time = level.getGameTime();
+
+        // bloques arrancados (cada vez más)
+        if (destroy) {
+            int perTick = 4 + Math.round(progress * 22);
+            for (int i = 0; i < perTick; i++) {
+                double ang = rnd.nextDouble() * Math.PI * 2;
+                double rr = Math.sqrt(rnd.nextDouble()) * reachR;
+                double dy = -SINGULARITY_HEIGHT - rnd.nextDouble() * reachR * 0.6 + rnd.nextDouble() * 6;
+                BlockPos pos = BlockPos.containing(c.x + Math.cos(ang) * rr, c.y + dy, c.z + Math.sin(ang) * rr);
+                // buscar el bloque de la superficie en esa columna
+                for (int k = 0; k < 12 && level.getBlockState(pos).isAir() && pos.getY() > level.getMinBuildHeight(); k++) pos = pos.below();
+                BlockState state = level.getBlockState(pos);
+                if (state.isAir() || state.getDestroySpeed(level, pos) < 0 || level.getBlockEntity(pos) != null
+                        || !state.getFluidState().isEmpty()) continue;
+                FallingBlockEntity fb = FallingBlockEntity.fall(level, pos, state);
+                fb.dropItem = false;
+                fb.setNoGravity(true);
+            }
+        }
+        // arrastrar en espiral todo lo que está cerca (bloques que vuelan, ítems, mobs, jugadores)
+        double field = reachR + 20;
+        AABB box = new AABB(c.x - field, c.y - field, c.z - field, c.x + field, c.y + field, c.z + field);
+        for (net.minecraft.world.entity.Entity e : level.getEntities((net.minecraft.world.entity.Entity) null, box, en -> !(en instanceof ServerPlayer p && p == owner))) {
+            Vec3 to = c.subtract(e.position().add(0, e.getBbHeight() * 0.5, 0));
+            double d = to.length();
+            if (d > field) continue;
+            if (d < 2.2) {
+                if (e instanceof FallingBlockEntity || e instanceof net.minecraft.world.entity.item.ItemEntity) {
+                    e.discard();
+                } else if (e instanceof LivingEntity living) {
+                    living.hurt(level.damageSources().fellOutOfWorld(), 12f);
+                }
+                continue;
+            }
+            Vec3 dir = to.normalize();
+            Vec3 swirl = new Vec3(-dir.z, 0, dir.x).normalize();
+            double strength = (0.08 + 0.5 * progress) * (1.0 - d / field) + 0.05;
+            Vec3 pull = dir.scale(strength * (e instanceof FallingBlockEntity ? 2.2 : 1.0)).add(swirl.scale(strength * 0.9));
+            if (e instanceof FallingBlockEntity fb) {
+                fb.setNoGravity(true);
+                fb.time = 1; // que no se pose como bloque mientras vuela
+                fb.setDeltaMovement(fb.getDeltaMovement().scale(0.85).add(pull));
+            } else {
+                e.setDeltaMovement(e.getDeltaMovement().add(pull.scale(0.6)));
+                if (e instanceof LivingEntity) e.fallDistance = 0;
+            }
+            e.hurtMarked = true;
+        }
+        // partículas: remolino oscuro y chispas que caen hacia el centro
+        if (time % 2 == 0) {
+            burst(level, ParticleTypes.REVERSE_PORTAL, c, 60, 3 + reachR * 0.2, 3 + reachR * 0.1, 3 + reachR * 0.2, 0.4);
+            burst(level, ParticleTypes.PORTAL, c, 40, reachR * 0.4, 4, reachR * 0.4, 1.2);
+            burst(level, ParticleTypes.SQUID_INK, c, 20, 1.5, 1.5, 1.5, 0.05);
+        }
+        if (time % 20 == 0) {
+            level.playSound(null, c.x, c.y, c.z, SoundEvents.PORTAL_AMBIENT, SoundSource.HOSTILE, 6f, 0.3f + progress * 0.4f);
+            level.playSound(null, c.x, c.y, c.z, SoundEvents.WARDEN_HEARTBEAT, SoundSource.HOSTILE, 8f, 0.5f + progress);
+        }
+    }
+
+    /** La singularidad colapsa: todo lo que absorbió sale en una explosión enorme y deja un cráter esférico. */
+    public static void singularityCollapse(ServerLevel level, BlockPos target, @Nullable ServerPlayer owner) {
+        Vec3 c = Vec3.atCenterOf(target).add(0, SINGULARITY_HEIGHT, 0);
+        int r = Math.min(52, Math.round(Config.CRATER_RADIUS.get() * 1.4f));
+        boolean destroy = Config.DESTROY_BLOCKS.get();
+        RandomSource rnd = level.getRandom();
+        // limpiar lo que quedaba girando
+        for (FallingBlockEntity fb : level.getEntitiesOfClass(FallingBlockEntity.class, new AABB(c, c).inflate(80))) fb.discard();
+        level.playSound(null, c.x, c.y, c.z, SoundEvents.WARDEN_SONIC_BOOM, SoundSource.HOSTILE, 16f, 0.4f);
+        level.playSound(null, c.x, c.y, c.z, SoundEvents.GENERIC_EXPLODE, SoundSource.BLOCKS, 16f, 0.3f);
+        level.playSound(null, c.x, c.y, c.z, SoundEvents.END_PORTAL_SPAWN, SoundSource.HOSTILE, 12f, 0.5f);
+        damageEntities(level, Vec3.atCenterOf(target), r, owner);
+        if (destroy) carveCrater(level, target, r, rnd);
+        level.explode(null, c.x, c.y - SINGULARITY_HEIGHT, c.z, 12f, destroy ? Level.ExplosionInteraction.TNT : Level.ExplosionInteraction.NONE);
+        burst(level, ParticleTypes.EXPLOSION_EMITTER, c, 30, r * 0.5, r * 0.3, r * 0.5, 0);
+        burst(level, ParticleTypes.FLASH, c, 12, 2, 2, 2, 0);
+        burst(level, ParticleTypes.REVERSE_PORTAL, c, 1500, r * 0.6, r * 0.6, r * 0.6, 1.5);
+        burst(level, ParticleTypes.END_ROD, c, 700, r * 0.4, r * 0.4, r * 0.4, 1.4);
+        burst(level, ParticleTypes.SONIC_BOOM, c, 12, r * 0.3, 2, r * 0.3, 0);
+        burst(level, ParticleTypes.DRAGON_BREATH, c, 600, r * 0.6, r * 0.3, r * 0.6, 0.3);
+        burst(level, ParticleTypes.LARGE_SMOKE, c, 400, r * 0.6, r * 0.4, r * 0.6, 0.2);
+        LINGERING.add(new Lingering(level, Vec3.atCenterOf(target), r, level.getGameTime() + 20 * 90));
+    }
+
     private static void damageEntities(ServerLevel level, Vec3 c, int r, @Nullable ServerPlayer owner) {
         double reach = r * 2.5;
         AABB box = new AABB(c.x - reach, c.y - reach, c.z - reach, c.x + reach, c.y + reach, c.z + reach);

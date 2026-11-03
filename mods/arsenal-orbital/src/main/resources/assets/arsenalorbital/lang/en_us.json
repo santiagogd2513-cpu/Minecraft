@@ -16,5 +16,7 @@
   "screen.arsenalorbital.weapons.hint": "Tap a weapon to use it with the Orbital Designator (H to close)",
   "screen.arsenalorbital.selected": "✔ IN USE",
   "key.arsenalorbital.weapons": "Orbital weapons menu",
-  "message.arsenalorbital.selected": "Weapon selected: %s"
+  "message.arsenalorbital.selected": "Weapon selected: %s",
+  "weapon.arsenalorbital.blackhole": "Singularity Protocol",
+  "weapon.arsenalorbital.blackhole.desc": "Travel to Andromeda's black hole. The Anchor station rips out a singularity and sends it through a wormhole: it devours everything and collapses."
 }

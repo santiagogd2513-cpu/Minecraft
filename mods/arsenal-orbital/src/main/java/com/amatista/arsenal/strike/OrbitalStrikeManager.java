@@ -40,6 +40,7 @@ public final class OrbitalStrikeManager {
         final BlockPos target;
         final StrikeType type;
         long beamTick;
+        long pullTick;
         long impactTick;
         long endTick;
         boolean beamSent;
@@ -99,11 +100,13 @@ public final class OrbitalStrikeManager {
             int duration = Config.CINEMATIC_SECONDS.get() * 20;
             strike.beamTick = now + Math.round(duration * type.worldVisualStart);
             strike.impactTick = now + Math.round(duration * type.impact);
+            strike.pullTick = now + Math.round(duration * type.pullStart);
             strike.endTick = now + duration;
             Network.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new StartCinematicPacket(target, duration, type));
         } else {
             strike.beamTick = now;
-            strike.impactTick = now + (type == StrikeType.PHOBOS ? 140 : 50);
+            strike.impactTick = now + (type == StrikeType.SATELLITE ? 50 : type == StrikeType.PHOBOS ? 140 : 260);
+            strike.pullTick = type == StrikeType.BLACKHOLE ? now + 100 : strike.impactTick;
             strike.endTick = strike.impactTick + 10;
         }
         ACTIVE.put(player.getUUID(), strike);
@@ -144,10 +147,15 @@ public final class OrbitalStrikeManager {
                 Network.CHANNEL.send(PacketDistributor.TRACKING_CHUNK.with(() -> level.getChunkAt(s.target)),
                         new BeamPacket(s.target, ticksToImpact, s.type));
             }
+            if (s.type == StrikeType.BLACKHOLE && !s.impacted && now >= s.pullTick && now < s.impactTick) {
+                float progress = (now - s.pullTick) / (float) Math.max(1, s.impactTick - s.pullTick);
+                ImpactEffects.singularityPull(level, s.target, progress, server.getPlayerList().getPlayer(s.owner));
+            }
             if (!s.impacted && now >= s.impactTick) {
                 s.impacted = true;
                 ServerPlayer owner = server.getPlayerList().getPlayer(s.owner);
                 if (s.type == StrikeType.PHOBOS) ImpactEffects.moonImpact(level, s.target, owner);
+                else if (s.type == StrikeType.BLACKHOLE) ImpactEffects.singularityCollapse(level, s.target, owner);
                 else ImpactEffects.impact(level, s.target, owner);
             }
             if (s.impacted && now >= s.endTick) it.remove();

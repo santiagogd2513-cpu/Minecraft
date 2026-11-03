@@ -16,5 +16,7 @@
   "screen.arsenalorbital.weapons.hint": "Toca un arma para usarla con el Designador orbital (H para cerrar)",
   "screen.arsenalorbital.selected": "✔ EN USO",
   "key.arsenalorbital.weapons": "Menú de armas orbitales",
-  "message.arsenalorbital.selected": "Arma seleccionada: %s"
+  "message.arsenalorbital.selected": "Arma seleccionada: %s",
+  "weapon.arsenalorbital.blackhole": "Protocolo Singularidad",
+  "weapon.arsenalorbital.blackhole.desc": "Viaje hasta el agujero negro de Andrómeda. La estación Áncora arranca una singularidad y la envía por un agujero de gusano: absorbe todo y colapsa."
 }

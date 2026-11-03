@@ -144,6 +144,7 @@ public final class Cinematic {
         if (!active) return false;
         float t = progress(partialTick);
         if (type == StrikeType.PHOBOS) return t >= PhobosTimeline.SPACE_START && t < PhobosTimeline.SPACE_END;
+        if (type == StrikeType.BLACKHOLE) return t >= com.amatista.arsenal.BlackHoleTimeline.SPACE_START && t < com.amatista.arsenal.BlackHoleTimeline.SPACE_END;
         return t >= Timeline.SPACE_START && t < Timeline.SPACE_END;
     }
 
@@ -182,6 +183,7 @@ public final class Cinematic {
     /** Pose de la cámara en el mundo real para un tiempo t (0..1). */
     public static Pose worldPose(float t) {
         if (type == StrikeType.PHOBOS) return PhobosDirector.worldPose(t);
+        if (type == StrikeType.BLACKHOLE) return BlackHoleDirector.worldPose(t);
         return satelliteWorldPose(t);
     }
 
@@ -368,6 +370,11 @@ public final class Cinematic {
     private static void buildCues() {
         cues.clear();
         nextCue = 0;
+        if (type == StrikeType.BLACKHOLE) {
+            BlackHoleDirector.buildCues();
+            cues.sort((a, b) -> Float.compare(a.at, b.at));
+            return;
+        }
         if (type == StrikeType.PHOBOS) {
             PhobosDirector.buildCues();
             cues.sort((a, b) -> Float.compare(a.at, b.at));
@@ -436,6 +443,10 @@ public final class Cinematic {
         long tick = clientTicks - startTick;
         if (type == StrikeType.PHOBOS) {
             PhobosDirector.ambientSounds(t, tick);
+            return;
+        }
+        if (type == StrikeType.BLACKHOLE) {
+            BlackHoleDirector.ambientSounds(t, tick);
             return;
         }
         if (t >= Timeline.SPACE_START && t < Timeline.A5_END) {

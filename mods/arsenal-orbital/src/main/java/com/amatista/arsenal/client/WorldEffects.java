@@ -68,10 +68,15 @@ public final class WorldEffects {
     }
 
     private static final List<Meteor> METEORS = new ArrayList<>();
+    /** Mini agujeros negros (usa la misma estructura: aparece, absorbe y colapsa en "impact"). */
+    private static final List<Meteor> SINGULARITIES = new ArrayList<>();
 
     public static void addStrike(BlockPos target, int ticksToImpact, com.amatista.arsenal.StrikeType type) {
         long now = Cinematic.clientTicks();
-        if (type == com.amatista.arsenal.StrikeType.PHOBOS) {
+        if (type == com.amatista.arsenal.StrikeType.BLACKHOLE) {
+            SINGULARITIES.add(new Meteor(target, now, now + Math.max(1, ticksToImpact)));
+            Cinematic.play(SoundEvents.WARDEN_EMERGE, 0.5f, 1.0f);
+        } else if (type == com.amatista.arsenal.StrikeType.PHOBOS) {
             SpaceRenderer.prepare();
             METEORS.add(new Meteor(target, now, now + Math.max(1, ticksToImpact)));
             Cinematic.play(SoundEvents.ENDER_DRAGON_GROWL, 0.4f, 0.5f);
@@ -83,6 +88,7 @@ public final class WorldEffects {
     public static void clear() {
         BEAMS.clear();
         METEORS.clear();
+        SINGULARITIES.clear();
     }
 
     public static void tick() {
@@ -90,6 +96,16 @@ public final class WorldEffects {
         if (mc.level == null) return;
         long now = Cinematic.clientTicks();
         tickMeteors(mc, now);
+        SINGULARITIES.removeIf(sg -> now > sg.end);
+        for (Meteor sg : SINGULARITIES) {
+            if (now >= sg.impact) continue;
+            Vec3 p = BlackHoleDirector.singularityWorldPos(sg.center, sg.fraction(now));
+            for (int i = 0; i < 10; i++) {
+                double a = mc.level.random.nextDouble() * Math.PI * 2, r = 4 + mc.level.random.nextDouble() * 14;
+                mc.level.addParticle(ParticleTypes.REVERSE_PORTAL, true, p.x + Math.cos(a) * r, p.y + (mc.level.random.nextDouble() - 0.5) * 4,
+                        p.z + Math.sin(a) * r, -Math.cos(a) * 0.4, 0, -Math.sin(a) * 0.4);
+            }
+        }
         Iterator<Beam> it = BEAMS.iterator();
         while (it.hasNext()) {
             Beam b = it.next();
@@ -148,6 +164,7 @@ public final class WorldEffects {
         LocalPlayer player = mc.player;
         boolean aiming = player != null && !Cinematic.isActive() && isAiming(player);
         if (!METEORS.isEmpty()) renderMeteors(poseStack, camera, partialTick);
+        if (!SINGULARITIES.isEmpty()) renderSingularities(poseStack, camera, partialTick);
         if (BEAMS.isEmpty() && !aiming) return;
 
         poseStack.pushPose();
@@ -239,6 +256,106 @@ public final class WorldEffects {
                 RenderUtil.ring(bb, g, radius * 0.7f, radius * 0.7f + 4f, 2f + u * 14f, 96, 1f, 0.55f, 0.25f, alpha * 0.6f);
                 RenderUtil.cylinder(bb, g, 22f + 40f * u, 0, 180f * (1 - u) + 10, 32, 1f, 0.45f, 0.12f, 0.4f * (1 - u));
                 RenderUtil.softDisc(bb, m, x, y + 20f, z, right, up, 160f * (1 - u * 0.5f), 24, 1f, 0.7f, 0.35f, 0.6f * (1 - u), 0f);
+            }
+        }
+        BufferUploader.drawWithShader(bb.end());
+        RenderSystem.depthMask(true);
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.disableBlend();
+        RenderSystem.enableCull();
+        poseStack.popPose();
+    }
+
+    /** El mini agujero negro: esfera negra, halo oscuro, disco de acreción morado y anillo de luz. */
+    private static void renderSingularities(PoseStack poseStack, net.minecraft.client.Camera camera, float partialTick) {
+        Vec3 cam = camera.getPosition();
+        Vector3f right = new Vector3f(camera.getLeftVector()).negate();
+        Vector3f up = new Vector3f(camera.getUpVector());
+        poseStack.pushPose();
+        poseStack.translate(-cam.x, -cam.y, -cam.z);
+        Matrix4f m = poseStack.last().pose();
+        float now = Cinematic.clientTicks() - 1 + partialTick;
+        float time = now / 20f;
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        RenderSystem.disableCull();
+        BufferBuilder bb = Tesselator.getInstance().getBuilder();
+        float pullFrac = (com.amatista.arsenal.BlackHoleTimeline.PULL_START - com.amatista.arsenal.BlackHoleTimeline.WORLD_START)
+                / (com.amatista.arsenal.BlackHoleTimeline.IMPACT - com.amatista.arsenal.BlackHoleTimeline.WORLD_START);
+
+        // 1) halo oscuro (la luz se "dobla" alrededor)
+        RenderSystem.enableBlend();
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.enableDepthTest();
+        RenderSystem.depthMask(false);
+        bb.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        for (Meteor sg : SINGULARITIES) {
+            if (now >= sg.impact) continue;
+            float f = sg.fraction(now);
+            float grow = Cinematic.smooth(f / pullFrac) * 0.6f + 0.4f + 0.6f * Math.max(0f, (f - pullFrac) / (1f - pullFrac));
+            Vec3 p = BlackHoleDirector.singularityWorldPos(sg.center, f);
+            RenderUtil.softDisc(bb, m, (float) p.x, (float) p.y, (float) p.z, right, up, 11f * grow, 32, 0f, 0f, 0.02f, 0.75f, 0f);
+        }
+        BufferUploader.drawWithShader(bb.end());
+
+        // 2) esfera negra
+        RenderSystem.disableBlend();
+        RenderSystem.depthMask(true);
+        bb.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        for (Meteor sg : SINGULARITIES) {
+            if (now >= sg.impact) continue;
+            float f = sg.fraction(now);
+            float grow = Cinematic.smooth(f / pullFrac) * 0.6f + 0.4f + 0.6f * Math.max(0f, (f - pullFrac) / (1f - pullFrac));
+            Vec3 p = BlackHoleDirector.singularityWorldPos(sg.center, f);
+            float r = 3.2f * grow;
+            for (int i = 0; i < 16; i++) {
+                for (int j = 0; j < 32; j++) {
+                    for (int k = 0; k < 4; k++) {
+                        int ii = i + (k == 1 || k == 2 ? 1 : 0), jj = j + (k >= 2 ? 1 : 0);
+                        double th = Math.PI * ii / 16, ph = Math.PI * 2 * jj / 32;
+                        bb.vertex(m, (float) (p.x + Math.sin(th) * Math.cos(ph) * r), (float) (p.y + Math.cos(th) * r),
+                                (float) (p.z + Math.sin(th) * Math.sin(ph) * r)).color(0f, 0f, 0f, 1f).endVertex();
+                    }
+                }
+            }
+        }
+        BufferUploader.drawWithShader(bb.end());
+
+        // 3) disco de acreción, anillo de fotones y colapso (aditivo)
+        RenderSystem.enableBlend();
+        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
+        RenderSystem.depthMask(false);
+        bb.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        for (Meteor sg : SINGULARITIES) {
+            float x = (float) sg.center.x, y = (float) sg.center.y, z = (float) sg.center.z;
+            if (now < sg.impact) {
+                float f = sg.fraction(now);
+                float grow = Cinematic.smooth(f / pullFrac) * 0.6f + 0.4f + 0.6f * Math.max(0f, (f - pullFrac) / (1f - pullFrac));
+                Vec3 p = BlackHoleDirector.singularityWorldPos(sg.center, f);
+                float px = (float) p.x, py = (float) p.y, pz = (float) p.z;
+                RenderUtil.softDisc(bb, m, px, py, pz, right, up, 3.2f * grow * 1.18f, 40, 1f, 0.8f, 1f, 0f, 0.95f);
+                Matrix4f disk = new Matrix4f(m).translate(px, py, pz).rotateX(0.35f).rotateZ(0.2f).rotateY(time * 2.5f);
+                for (int ring = 0; ring < 6; ring++) {
+                    float r0 = 4.5f * grow + ring * 2.2f * grow, r1 = r0 + 2.2f * grow;
+                    float heat = 1f - ring / 6f;
+                    RenderUtil.ring(bb, disk, r0, r1, 0, 72, 0.8f + 0.2f * heat, 0.4f + 0.45f * heat, 1f, 0.25f + 0.55f * heat);
+                }
+                // espiral de materia que cae
+                for (int i = 0; i < 120; i++) {
+                    float ph = (i * 0.618f + time * 0.5f) % 1f;
+                    float rr = (4f + 26f * (1 - ph)) * grow;
+                    float a = i * 2.4f + ph * 9f + time * 3f;
+                    RenderUtil.softDisc(bb, m, px + (float) Math.cos(a) * rr, py + (float) Math.sin(i) * 2f * (1 - ph), pz + (float) Math.sin(a) * rr,
+                            right, up, 0.6f + 0.6f * ph, 6, 0.7f + 0.3f * ph, 0.4f + 0.3f * ph, 1f, 0.8f * ph, 0f);
+                }
+            } else if (now < sg.impact + 80) {
+                float u = (now - sg.impact) / 80f;
+                float py = y + (float) com.amatista.arsenal.strike.ImpactEffects.SINGULARITY_HEIGHT;
+                float radius = 6f + 240f * Cinematic.easeOutCubic(u);
+                Matrix4f g = new Matrix4f(m).translate(x, y, z);
+                RenderUtil.ring(bb, g, radius, radius + 10f, 0.5f, 120, 0.8f, 0.5f, 1f, (1f - u) * 0.9f);
+                RenderUtil.ring(bb, g, radius * 0.6f, radius * 0.6f + 5f, 3f + u * 20f, 96, 1f, 0.7f, 1f, (1f - u) * 0.6f);
+                RenderUtil.softDisc(bb, m, x, py, z, right, up, 30f + 200f * u, 40, 0.85f, 0.6f, 1f, (1f - u) * 0.9f, 0f);
+                RenderUtil.softDisc(bb, m, x, py, z, right, up, 12f + 60f * u, 40, 1f, 1f, 1f, (1f - u), 0f);
             }
         }
         BufferUploader.drawWithShader(bb.end());
