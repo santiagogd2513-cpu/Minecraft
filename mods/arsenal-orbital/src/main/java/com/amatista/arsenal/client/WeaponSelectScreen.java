@@ -15,9 +15,9 @@ import java.util.List;
 
 /** Menú de armas (tecla H): imagen, nombre y descripción de cada arma; un toque la selecciona. */
 public class WeaponSelectScreen extends Screen {
-    private static final int ENTRY_H = 60;
+    private static final int ENTRY_H = 50;
     private static final int ENTRY_W = 330;
-    private static final int ICON = 46;
+    private static final int ICON = 40;
 
     public WeaponSelectScreen() {
         super(Component.translatable("screen.arsenalorbital.weapons"));
@@ -32,8 +32,8 @@ public class WeaponSelectScreen extends Screen {
     }
 
     private int top() {
-        int total = StrikeType.values().length * (ENTRY_H + 6);
-        return Math.max(34, (height - total) / 2 + 10);
+        int total = StrikeType.values().length * (ENTRY_H + 5);
+        return Math.max(30, (height - total) / 2 + 10);
     }
 
     private static ResourceLocation icon(StrikeType type) {
@@ -43,13 +43,13 @@ public class WeaponSelectScreen extends Screen {
     @Override
     public void render(GuiGraphics g, int mouseX, int mouseY, float partialTick) {
         renderBackground(g);
-        g.drawCenteredString(font, title, width / 2, top() - 28, 0xE0C8FF);
-        g.drawCenteredString(font, Component.translatable("screen.arsenalorbital.weapons.hint"), width / 2, top() - 16, 0x9A8AB0);
+        g.drawCenteredString(font, title, width / 2, top() - 24, 0xE0C8FF);
+        g.drawCenteredString(font, Component.translatable("screen.arsenalorbital.weapons.hint"), width / 2, top() - 13, 0x9A8AB0);
         int x = left(), w = entryWidth();
         StrikeType[] types = StrikeType.values();
         for (int i = 0; i < types.length; i++) {
             StrikeType type = types[i];
-            int y = top() + i * (ENTRY_H + 6);
+            int y = top() + i * (ENTRY_H + 5);
             boolean selected = ClientState.selected == type;
             boolean hover = mouseX >= x && mouseX < x + w && mouseY >= y && mouseY < y + ENTRY_H;
             int bg = selected ? 0xD0402468 : hover ? 0xC0302048 : 0xB0180F28;
@@ -65,8 +65,8 @@ public class WeaponSelectScreen extends Screen {
             if (selected) g.drawString(font, Component.translatable("screen.arsenalorbital.selected"), x + w - 8 - font.width(
                     Component.translatable("screen.arsenalorbital.selected")), y + 6, 0xFF7CFF9C, true);
             List<FormattedCharSequence> lines = font.split(Component.translatable(type.descKey()), w - (tx - x) - 10);
-            for (int l = 0; l < Math.min(3, lines.size()); l++) {
-                g.drawString(font, lines.get(l), tx, y + 19 + l * 11, 0xFFC8B8E0, false);
+            for (int l = 0; l < Math.min(2, lines.size()); l++) {
+                g.drawString(font, lines.get(l), tx, y + 18 + l * 11, 0xFFC8B8E0, false);
             }
         }
         super.render(g, mouseX, mouseY, partialTick);
@@ -77,7 +77,7 @@ public class WeaponSelectScreen extends Screen {
         int x = left(), w = entryWidth();
         StrikeType[] types = StrikeType.values();
         for (int i = 0; i < types.length; i++) {
-            int y = top() + i * (ENTRY_H + 6);
+            int y = top() + i * (ENTRY_H + 5);
             if (mouseX >= x && mouseX < x + w && mouseY >= y && mouseY < y + ENTRY_H) {
                 ClientState.selected = types[i];
                 Network.CHANNEL.sendToServer(new SelectWeaponPacket(types[i]));

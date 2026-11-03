@@ -214,6 +214,91 @@ public final class ImpactEffects {
         LINGERING.add(new Lingering(level, Vec3.atCenterOf(target), r, level.getGameTime() + 20 * 90));
     }
 
+    /**
+     * El rayo de Prometeo quema el suelo antes de la explosión: el área se derrite (magma,
+     * obsidiana, vidrio), salen llamas y explosiones pequeñas cada vez más seguidas.
+     */
+    public static void starBurn(ServerLevel level, BlockPos target, float progress) {
+        Vec3 c = Vec3.atCenterOf(target).add(0, 0.5, 0);
+        RandomSource rnd = level.getRandom();
+        boolean destroy = Config.DESTROY_BLOCKS.get();
+        int reach = Math.round(6 + 34 * progress);
+        if (destroy) {
+            for (int i = 0; i < 18 + Math.round(progress * 40); i++) {
+                double ang = rnd.nextDouble() * Math.PI * 2, rr = Math.sqrt(rnd.nextDouble()) * reach;
+                BlockPos col = BlockPos.containing(c.x + Math.cos(ang) * rr, c.y + 6, c.z + Math.sin(ang) * rr);
+                BlockPos pos = col;
+                for (int k = 0; k < 20 && level.getBlockState(pos).isAir() && pos.getY() > level.getMinBuildHeight(); k++) pos = pos.below();
+                BlockState state = level.getBlockState(pos);
+                if (state.isAir() || level.getBlockEntity(pos) != null) continue;
+                float p = rnd.nextFloat();
+                BlockState melted = rr < reach * 0.35 ? Blocks.AIR.defaultBlockState()
+                        : p < 0.35f ? Blocks.MAGMA_BLOCK.defaultBlockState()
+                        : p < 0.55f ? Blocks.OBSIDIAN.defaultBlockState()
+                        : p < 0.7f ? Blocks.CRYING_OBSIDIAN.defaultBlockState()
+                        : p < 0.85f ? Blocks.GLASS.defaultBlockState()
+                        : Blocks.LAVA.defaultBlockState();
+                level.setBlock(pos, melted, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
+                BlockPos above = pos.above();
+                if (level.getBlockState(above).isAir() && rnd.nextFloat() < 0.4f) {
+                    level.setBlock(above, BaseFireBlock.getState(level, above), Block.UPDATE_ALL);
+                }
+            }
+        }
+        long time = level.getGameTime();
+        int every = Math.max(3, 14 - Math.round(progress * 11));
+        if (time % every == 0) {
+            double ang = rnd.nextDouble() * Math.PI * 2, rr = rnd.nextDouble() * reach * 0.8;
+            level.explode(null, c.x + Math.cos(ang) * rr, c.y, c.z + Math.sin(ang) * rr, 2.5f + 2f * progress,
+                    destroy ? Level.ExplosionInteraction.TNT : Level.ExplosionInteraction.NONE);
+        }
+        if (time % 2 == 0) {
+            burst(level, ParticleTypes.FLAME, c, 60, reach * 0.4, 1, reach * 0.4, 0.2);
+            burst(level, ParticleTypes.END_ROD, c.add(0, 4, 0), 40, 3, 12, 3, 0.6);
+            burst(level, ParticleTypes.LAVA, c, 12, reach * 0.3, 0.5, reach * 0.3, 0);
+        }
+        if (time % 20 == 0) level.playSound(null, c.x, c.y, c.z, SoundEvents.BEACON_AMBIENT, SoundSource.BLOCKS, 12f, 0.5f + progress);
+        // quema a los mobs que están en el rayo
+        double rad = reach;
+        for (LivingEntity e : level.getEntitiesOfClass(LivingEntity.class, new AABB(c, c).inflate(rad, 40, rad))) {
+            if (e.position().distanceToSqr(c.x, e.getY(), c.z) < rad * rad) {
+                e.setSecondsOnFire(10);
+                e.hurt(level.damageSources().inFire(), 4f + 10f * progress);
+            }
+        }
+    }
+
+    /** Explosión final del rayo de Prometeo: el cráter más grande, pozo ancho hasta el fondo del mundo. */
+    public static void starImpact(ServerLevel level, BlockPos target, @Nullable ServerPlayer owner) {
+        Vec3 c = Vec3.atCenterOf(target).add(0, 0.5, 0);
+        int r = Math.min(46, Math.round(Config.CRATER_RADIUS.get() * 2f));
+        boolean destroy = Config.DESTROY_BLOCKS.get();
+        RandomSource rnd = level.getRandom();
+        level.playSound(null, c.x, c.y, c.z, SoundEvents.GENERIC_EXPLODE, SoundSource.BLOCKS, 20f, 0.25f);
+        level.playSound(null, c.x, c.y, c.z, SoundEvents.WARDEN_SONIC_BOOM, SoundSource.HOSTILE, 20f, 0.3f);
+        level.playSound(null, c.x, c.y, c.z, SoundEvents.LIGHTNING_BOLT_THUNDER, SoundSource.WEATHER, 24f, 0.35f);
+        damageEntities(level, c, r, owner);
+        if (destroy) {
+            carveCrater(level, target, r, rnd);
+            if (Config.PIERCE_BEDROCK.get()) drillShaft(level, target, Math.min(24, Config.SHAFT_RADIUS.get() * 2), rnd);
+        }
+        level.explode(null, c.x, c.y, c.z, 16f, destroy ? Level.ExplosionInteraction.TNT : Level.ExplosionInteraction.NONE);
+        for (int i = 0; i < 14; i++) {
+            double ang = Math.PI * 2 * i / 14, d = r * (0.9 + rnd.nextDouble() * 0.3);
+            level.explode(null, c.x + Math.cos(ang) * d, c.y, c.z + Math.sin(ang) * d, 6f,
+                    destroy ? Level.ExplosionInteraction.TNT : Level.ExplosionInteraction.NONE);
+        }
+        burst(level, ParticleTypes.EXPLOSION_EMITTER, c, 40, r * 0.5, r * 0.3, r * 0.5, 0);
+        burst(level, ParticleTypes.FLASH, c, 14, 3, 3, 3, 0);
+        burst(level, ParticleTypes.END_ROD, c, 1200, r * 0.5, r * 0.6, r * 0.5, 1.6);
+        burst(level, ParticleTypes.SOUL_FIRE_FLAME, c, 900, r * 0.6, r * 0.5, r * 0.6, 0.5);
+        burst(level, ParticleTypes.FLAME, c, 900, r * 0.6, r * 0.4, r * 0.6, 0.5);
+        burst(level, ParticleTypes.LARGE_SMOKE, c, 700, r * 0.7, r * 0.5, r * 0.7, 0.2);
+        burst(level, ParticleTypes.CAMPFIRE_SIGNAL_SMOKE, c, 260, r * 0.6, r * 0.3, r * 0.6, 0.04);
+        burst(level, ParticleTypes.ELECTRIC_SPARK, c, 700, r * 0.6, r * 0.6, r * 0.6, 1.2);
+        LINGERING.add(new Lingering(level, c, r, level.getGameTime() + 20 * 180));
+    }
+
     private static void damageEntities(ServerLevel level, Vec3 c, int r, @Nullable ServerPlayer owner) {
         double reach = r * 2.5;
         AABB box = new AABB(c.x - reach, c.y - reach, c.z - reach, c.x + reach, c.y + reach, c.z + reach);

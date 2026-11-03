@@ -45,6 +45,7 @@ public final class ClientEvents {
             if (Cinematic.isSpace(event.getPartialTick())) {
                 if (Cinematic.type() == com.amatista.arsenal.StrikeType.PHOBOS) MarsRenderer.render(event.getPartialTick());
                 else if (Cinematic.type() == com.amatista.arsenal.StrikeType.BLACKHOLE) BlackHoleRenderer.render(event.getPartialTick());
+                else if (Cinematic.type() == com.amatista.arsenal.StrikeType.STAR) StarRenderer.render(event.getPartialTick());
                 else SpaceRenderer.render(event.getPartialTick());
             }
         }

@@ -44,6 +44,10 @@ public final class HudRenderer {
             BlackHoleHud.render(g, partialTick, w, h);
             return;
         }
+        if (Cinematic.type() == com.amatista.arsenal.StrikeType.STAR) {
+            StarHud.render(g, partialTick, w, h);
+            return;
+        }
         Minecraft mc = Minecraft.getInstance();
         Font font = mc.font;
         float t = Cinematic.progress(partialTick);

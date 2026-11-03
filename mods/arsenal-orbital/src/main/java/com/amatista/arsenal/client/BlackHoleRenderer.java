@@ -26,7 +26,7 @@ import static com.amatista.arsenal.BlackHoleTimeline.*;
 final class BlackHoleRenderer {
     private static final Vector3f SUN = SpaceRenderer.SUN;
     private static float[] rnd;
-    private static Galaxy milky, andromeda;
+    static Galaxy milky, andromeda;
     private static float[] backgroundGalaxies; // dirección, ejes, tamaño, tono
 
     private BlackHoleRenderer() {}
@@ -47,7 +47,7 @@ final class BlackHoleRenderer {
     // ------------------------------------------------------------------ galaxias
 
     /** Galaxia espiral hecha de puntos de luz, cúmulos rosados de formación estelar y un núcleo brillante. */
-    private static final class Galaxy {
+    static final class Galaxy {
         final float[] pos;   // x,y,z en el plano de la galaxia
         final float[] col;   // r,g,b,alpha,tamaño
         final float[] clumps; // x,y,z,tamaño,r,g,b,alpha
@@ -97,28 +97,34 @@ final class BlackHoleRenderer {
         }
 
         void render(BufferBuilder bb, Matrix4f view, Matrix4f model, Vector3f eye, Vector3f right, Vector3f up, float brightness) {
+            render(bb, view, model, eye, right, up, brightness, 1f, 1);
+        }
+
+        /** sizeScale: escala de los puntos; step: dibuja una de cada "step" estrellas (galaxias lejanas, más ligero). */
+        void render(BufferBuilder bb, Matrix4f view, Matrix4f model, Vector3f eye, Vector3f right, Vector3f up, float brightness,
+                    float sizeScale, int step) {
             Matrix4f m = new Matrix4f(view).mul(model);
             // núcleo
             Vector3f core = model.transformPosition(new Vector3f());
-            RenderUtil.softDisc(bb, view, core.x, core.y, core.z, right, up, radius * 0.35f, 32, 1f, 0.85f, 0.6f, 0.35f * brightness, 0f);
-            RenderUtil.softDisc(bb, view, core.x, core.y, core.z, right, up, radius * 0.12f, 32, 1f, 0.95f, 0.85f, 0.8f * brightness, 0f);
+            RenderUtil.softDisc(bb, view, core.x, core.y, core.z, right, up, radius * 0.35f * sizeScale, 32, 1f, 0.85f, 0.6f, 0.35f * brightness, 0f);
+            RenderUtil.softDisc(bb, view, core.x, core.y, core.z, right, up, radius * 0.12f * sizeScale, 32, 1f, 0.95f, 0.85f, 0.8f * brightness, 0f);
             // brazos difusos
             for (int i = 0; i < clumps.length; i += 8) {
                 Vector3f p = model.transformPosition(new Vector3f(clumps[i], clumps[i + 1], clumps[i + 2]));
-                RenderUtil.softDisc(bb, view, p.x, p.y, p.z, right, up, clumps[i + 3], 10,
+                RenderUtil.softDisc(bb, view, p.x, p.y, p.z, right, up, clumps[i + 3] * sizeScale, 10,
                         clumps[i + 4], clumps[i + 5], clumps[i + 6], clumps[i + 7] * brightness, 0f);
             }
             // estrellas
             Vector3f p = new Vector3f();
-            for (int i = 0; i < pos.length / 3; i++) {
+            for (int i = 0; i < pos.length / 3; i += step) {
                 model.transformPosition(p.set(pos[i * 3], pos[i * 3 + 1], pos[i * 3 + 2]));
-                float s = col[i * 5 + 4];
+                float s = col[i * 5 + 4] * sizeScale * (step > 1 ? 1.6f : 1f);
                 RenderUtil.billboard(bb, view, p.x, p.y, p.z, right, up, s, col[i * 5], col[i * 5 + 1], col[i * 5 + 2], col[i * 5 + 3] * brightness);
             }
         }
     }
 
-    private static void build() {
+    static void build() {
         if (milky != null) return;
         milky = new Galaxy(11, 14000, BlackHoleDirector.MILKY_RADIUS, 4);
         andromeda = new Galaxy(31, 18000, BlackHoleDirector.ANDROMEDA_RADIUS, 2);
@@ -142,7 +148,7 @@ final class BlackHoleRenderer {
     }
 
     /** Galaxias lejanas en todas direcciones (se ven al salir de la Vía Láctea). */
-    private static void drawBackgroundGalaxies(BufferBuilder bb, Matrix4f view, Vector3f eye, Vector3f right, Vector3f up, float alpha) {
+    static void drawBackgroundGalaxies(BufferBuilder bb, Matrix4f view, Vector3f eye, Vector3f right, Vector3f up, float alpha) {
         float dist = 9000f;
         for (int i = 0; i < backgroundGalaxies.length; i += 11) {
             float cx = eye.x + backgroundGalaxies[i] * dist, cy = eye.y + backgroundGalaxies[i + 1] * dist, cz = eye.z + backgroundGalaxies[i + 2] * dist;
@@ -222,33 +228,33 @@ final class BlackHoleRenderer {
         RenderSystem.restoreProjectionMatrix();
     }
 
-    private static void additive() {
+    static void additive() {
         RenderSystem.enableBlend();
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
     }
 
-    private static void beginGlow(boolean depth) {
+    static void beginGlow(boolean depth) {
         additive();
         if (depth) RenderSystem.enableDepthTest(); else RenderSystem.disableDepthTest();
         RenderSystem.depthMask(false);
     }
 
-    private static void beginSolid() {
+    static void beginSolid() {
         RenderSystem.disableBlend();
         RenderSystem.enableDepthTest();
         RenderSystem.depthMask(true);
     }
 
-    private static void draw(BufferBuilder bb) {
+    static void draw(BufferBuilder bb) {
         BufferUploader.drawWithShader(bb.end());
     }
 
-    private static void begin(BufferBuilder bb) {
+    static void begin(BufferBuilder bb) {
         bb.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
     }
 
     /** Líneas de velocidad alrededor de la cámara. */
-    private static void drawWarp(BufferBuilder bb, Matrix4f view, Vector3f eye, Vector3f forward, Vector3f right, Vector3f up,
+    static void drawWarp(BufferBuilder bb, Matrix4f view, Vector3f eye, Vector3f forward, Vector3f right, Vector3f up,
                                  float warp, float time, float r0, float g0, float b0, float scale) {
         if (warp <= 0.01f) return;
         for (int i = 0; i < 600; i++) {
@@ -271,11 +277,15 @@ final class BlackHoleRenderer {
     // ------------------------------------------------------------------ 1. sistema solar
 
     private static void renderSolar(BufferBuilder bb, Matrix4f view, Vector3f eye, Vector3f forward, Vector3f right, Vector3f up, float t, float time) {
+        renderSolarScene(bb, view, eye, forward, right, up, BlackHoleDirector.warp(t), time);
+    }
+
+    static void renderSolarScene(BufferBuilder bb, Matrix4f view, Vector3f eye, Vector3f forward, Vector3f right, Vector3f up, float warpAmount, float time) {
         beginGlow(false);
         begin(bb);
         SpaceRenderer.drawSky(bb, view, eye, right, up, time);
         SpaceRenderer.drawSun(bb, view, eye, right, up, time);
-        drawWarp(bb, view, eye, forward, right, up, BlackHoleDirector.warp(t) * 0.8f, time, 0.8f, 0.9f, 1f, 1f);
+        drawWarp(bb, view, eye, forward, right, up, warpAmount * 0.8f, time, 0.8f, 0.9f, 1f, 1f);
         draw(bb);
 
         beginSolid();
@@ -354,7 +364,7 @@ final class BlackHoleRenderer {
 
     // ------------------------------------------------------------------ 3. Andrómeda y su agujero negro
 
-    private static Matrix4f andromedaModel(float time) {
+    static Matrix4f andromedaModel(float time) {
         return new Matrix4f().rotateX(0.22f).rotateZ(0.12f).rotateY(time * 0.002f);
     }
 
@@ -365,8 +375,8 @@ final class BlackHoleRenderer {
         begin(bb);
         drawBackgroundGalaxies(bb, view, eye, right, up, 1f - 0.6f * approach);
         // dentro de Andrómeda el fondo se llena de sus estrellas
-        if (t >= INTERGALACTIC_END) SpaceRenderer.drawSky(bb, view, eye, right, up, time);
-        andromeda.render(bb, view, andromedaModel(time), eye, right, up, atHole ? 0.35f : 1f);
+        if (t >= INTERGALACTIC_END && t < ANDROMEDA_END) SpaceRenderer.drawSky(bb, view, eye, right, up, time);
+        andromeda.render(bb, view, andromedaModel(time), eye, right, up, atHole ? 0.1f : Mth.lerp(Cinematic.smooth(approach), 1f, 0.3f));
         drawWarp(bb, view, eye, forward, right, up, BlackHoleDirector.warp(t), time, 0.9f, 0.85f, 1f, t < INTERGALACTIC_END ? 8f : 2f);
         draw(bb);
         if (!atHole && approach < 0.85f) return;
@@ -395,7 +405,7 @@ final class BlackHoleRenderer {
         begin(bb);
         drawAccretionDisk(bb, view, eye, diskRot, n, time);
         // anillo de fotones y la imagen curvada del disco (lente gravitatoria)
-        RenderUtil.softDisc(bb, view, 0, 0, 0, right, up, BlackHoleDirector.HORIZON * 1.13f, 64, 1f, 0.9f, 0.7f, 0f, 0.95f);
+        RenderUtil.softDisc(bb, view, 0, 0, 0, right, up, BlackHoleDirector.HORIZON * 1.13f, 64, 1f, 0.9f, 0.7f, 0f, 0.75f);
         drawLensedHalo(bb, view, right, up, time);
         // chorros relativistas
         for (int s = -1; s <= 1; s += 2) {
@@ -404,8 +414,8 @@ final class BlackHoleRenderer {
             float len = 26000f;
             Vector3f mid = new Vector3f(dir).mul(len * 0.5f + BlackHoleDirector.HORIZON);
             float flick = 0.85f + 0.15f * (float) Math.sin(time * 8 + s);
-            RenderUtil.softBeam(bb, view, mid.x, mid.y, mid.z, dir, len * 0.5f, side, 260f * flick, 0.45f, 0.6f, 1f, 0.35f);
-            RenderUtil.softBeam(bb, view, mid.x, mid.y, mid.z, dir, len * 0.5f, side, 70f, 0.85f, 0.92f, 1f, 0.7f);
+            RenderUtil.softBeam(bb, view, mid.x, mid.y, mid.z, dir, len * 0.5f, side, 260f * flick, 0.45f, 0.6f, 1f, 0.22f);
+            RenderUtil.softBeam(bb, view, mid.x, mid.y, mid.z, dir, len * 0.5f, side, 70f, 0.85f, 0.92f, 1f, 0.45f);
         }
         // estrellas despedazadas que caen en espiral
         for (int i = 0; i < 260; i++) {
@@ -413,13 +423,13 @@ final class BlackHoleRenderer {
             float speed = 9000f / (rr * (float) Math.sqrt(rr / 100f));
             float a = rnd(i + 400) * 6.283f + time * speed;
             Vector3f p = diskRot.transform(new Vector3f((float) Math.cos(a) * rr, (rnd(i + 600) - 0.5f) * 120f, (float) Math.sin(a) * rr));
-            RenderUtil.softDisc(bb, view, p.x, p.y, p.z, right, up, 14f + 20f * rnd(i), 6, 1f, 0.85f, 0.7f, 0.6f, 0f);
+            RenderUtil.softDisc(bb, view, p.x, p.y, p.z, right, up, 14f + 20f * rnd(i), 6, 1f, 0.85f, 0.7f, 0.35f, 0f);
         }
         if (t >= HOLE_ORBIT_END - 0.01f) drawStationGlow(bb, view, eye, right, up, t, time, gate, portal, seed, extract);
         draw(bb);
     }
 
-    private static void drawSphere(BufferBuilder bb, Matrix4f view, Vector3f c, float radius, float r, float g, float b) {
+    static void drawSphere(BufferBuilder bb, Matrix4f view, Vector3f c, float radius, float r, float g, float b) {
         int lat = 24, lon = 48;
         for (int i = 0; i < lat; i++) {
             for (int j = 0; j < lon; j++) {
@@ -454,7 +464,7 @@ final class BlackHoleRenderer {
                             * (float) Math.sin(a * 3 + time * omega * 0.5f + f * 9);
                     float heat = 1f - f;
                     float cr = 1f, cg = 0.35f + 0.6f * heat, cb = 0.1f + 0.75f * heat * heat;
-                    float alpha = (ii == 0 || ii == rings ? 0f : 0.85f) * swirl * doppler * (0.35f + 0.65f * heat);
+                    float alpha = (ii == 0 || ii == rings ? 0f : 0.6f) * swirl * doppler * (0.3f + 0.6f * heat);
                     bb.vertex(view, p.x, p.y, p.z).color(cr, cg, cb, Math.min(1f, alpha)).endVertex();
                 }
             }
@@ -471,10 +481,10 @@ final class BlackHoleRenderer {
             float sw = 0.8f + 0.2f * (float) Math.sin(a0 * 9 - time * 6);
             Vector3f d0 = new Vector3f(right).mul((float) Math.cos(a0)).add(new Vector3f(up).mul((float) Math.sin(a0)));
             Vector3f d1 = new Vector3f(right).mul((float) Math.cos(a1)).add(new Vector3f(up).mul((float) Math.sin(a1)));
-            bb.vertex(view, d0.x * r0, d0.y * r0, d0.z * r0).color(1f, 0.85f, 0.55f, 0.85f * w0 * sw).endVertex();
+            bb.vertex(view, d0.x * r0, d0.y * r0, d0.z * r0).color(1f, 0.85f, 0.55f, 0.6f * w0 * sw).endVertex();
             bb.vertex(view, d0.x * r1, d0.y * r1, d0.z * r1).color(1f, 0.45f, 0.15f, 0f).endVertex();
             bb.vertex(view, d1.x * r1, d1.y * r1, d1.z * r1).color(1f, 0.45f, 0.15f, 0f).endVertex();
-            bb.vertex(view, d1.x * r0, d1.y * r0, d1.z * r0).color(1f, 0.85f, 0.55f, 0.85f * w1 * sw).endVertex();
+            bb.vertex(view, d1.x * r0, d1.y * r0, d1.z * r0).color(1f, 0.85f, 0.55f, 0.6f * w1 * sw).endVertex();
         }
     }
 

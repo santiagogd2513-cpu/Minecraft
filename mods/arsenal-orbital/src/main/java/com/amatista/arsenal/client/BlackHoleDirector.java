@@ -90,7 +90,7 @@ final class BlackHoleDirector {
                 .add(p3.scale(0.5 * t3 - 0.5 * t2));
     }
 
-    private static Cinematic.SpacePose solarPose(float u) {
+    static Cinematic.SpacePose solarPose(float u) {
         Vec3 eye = spline(SOLAR_POINTS, SOLAR_TIMES, u);
         Vec3 earth = Vec3.ZERO;
         Vec3 ahead = SATURN.add(-2000, 3500, -90000);
@@ -103,7 +103,7 @@ final class BlackHoleDirector {
         return new Cinematic.SpacePose(eye, look, 68f + 20f * smooth((u - 0.85f) / 0.15f), (float) Math.sin(u * 9) * 3f);
     }
 
-    private static Cinematic.SpacePose milkyPose(float u) {
+    static Cinematic.SpacePose milkyPose(float u) {
         float e = smooth(u);
         Vec3 eye = bezier(new Vec3(36000, 250, 0), new Vec3(52000, 28000, 70000), new Vec3(0, 95000, 165000), e);
         Vec3 look = new Vec3(30000, 0, -20000).lerp(Vec3.ZERO, smooth(u * 1.6f));

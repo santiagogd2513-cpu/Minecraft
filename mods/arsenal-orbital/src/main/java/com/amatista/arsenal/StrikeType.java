@@ -4,7 +4,8 @@ package com.amatista.arsenal;
 public enum StrikeType {
     SATELLITE("satellite", Timeline.BEAM_WORLD_START, Timeline.IMPACT, Timeline.IMPACT),
     PHOBOS("phobos", PhobosTimeline.WORLD_START, PhobosTimeline.IMPACT, PhobosTimeline.IMPACT),
-    BLACKHOLE("blackhole", BlackHoleTimeline.WORLD_START, BlackHoleTimeline.IMPACT, BlackHoleTimeline.PULL_START);
+    BLACKHOLE("blackhole", BlackHoleTimeline.WORLD_START, BlackHoleTimeline.IMPACT, BlackHoleTimeline.PULL_START),
+    STAR("star", StarTimeline.WORLD_START, StarTimeline.IMPACT, StarTimeline.BURN_START);
 
     public final String id;
     /** Cuándo empieza el efecto visible en el mundo para todos (fracción de la cinemática). */
@@ -27,6 +28,11 @@ public enum StrikeType {
 
     public String descKey() {
         return "weapon.arsenalorbital." + id + ".desc";
+    }
+
+    /** Multiplica la duración configurada (el Protocolo Prometeo dura 3 min 30 s). */
+    public float durationScale() {
+        return this == STAR ? StarTimeline.DURATION_SCALE : 1f;
     }
 
     public static StrikeType byId(String id) {
