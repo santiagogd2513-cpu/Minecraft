@@ -41,6 +41,7 @@ public final class ClientEvents {
     public static void onRenderStage(RenderLevelStageEvent event) {
         if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_SKY) {
             AscentSky.render(event.getPoseStack(), event.getCamera(), event.getPartialTick());
+            NightSky.render(event.getPoseStack(), event.getCamera(), event.getPartialTick());
         } else if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
             WorldEffects.render(event.getPoseStack(), event.getCamera(), event.getPartialTick());
         } else if (event.getStage() == RenderLevelStageEvent.Stage.AFTER_WEATHER) {
