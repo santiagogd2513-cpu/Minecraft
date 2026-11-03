@@ -94,6 +94,7 @@ public final class Cinematic {
         mc.options.setCameraType(CameraType.FIRST_PERSON);
         mc.setCameraEntity(camera);
         buildCues();
+        SpaceRenderer.prepare();
         active = true;
     }
 
@@ -247,7 +248,7 @@ public final class Cinematic {
     private static final Vec3 WIDE_CENTER = WIDE.add(WIDE.scale(-1).normalize().add(SUN_DIR.scale(0.8)).normalize().scale(1000));
     /** Punto del planeta donde el sol está justo en el horizonte (amanecer). */
     private static final Vec3 SUNRISE_N = new Vec3(0, 1, 0).subtract(SUN_DIR.scale(SUN_DIR.y)).normalize();
-    private static final Vec3 SUNRISE_EYE = SUNRISE_N.scale(PLANET_RADIUS + 60).subtract(SUN_DIR.scale(150));
+    private static final Vec3 SUNRISE_EYE = SUNRISE_N.scale(PLANET_RADIUS + 75).subtract(SUN_DIR.scale(150));
     private static final Vec3 SUNRISE_CENTER = SUNRISE_EYE.add(SUN_DIR.scale(1000)).subtract(SUNRISE_N.scale(40));
 
     public record SpacePose(Vec3 eye, Vec3 center, float fov, float roll) {}
@@ -263,7 +264,7 @@ public final class Cinematic {
             if (u < 0.22f) {
                 // saliendo de la atmósfera: mirando hacia abajo al objetivo
                 float e = smooth(u / 0.22f);
-                return new SpacePose(TARGET_SPACE.add(0, 25, 0).lerp(riseEnd, e), TARGET_SPACE, 75f, 0f);
+                return new SpacePose(TARGET_SPACE.add(0, 75, 0).lerp(riseEnd, e), TARGET_SPACE, 75f, 0f);
             }
             if (u < 0.38f) {
                 // la cámara gira hacia el horizonte, donde va a salir el sol

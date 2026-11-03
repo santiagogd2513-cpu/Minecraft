@@ -168,9 +168,14 @@ final class SpaceRenderer {
 
     // ------------------------------------------------------------------ dibujo
 
-    static void render(float partialTick) {
+    /** Prepara estrellas, luna y planeta (se llama al empezar la cinemática para no trabar después). */
+    static void prepare() {
         buildStatic();
-        PlanetMesh.build();
+        PlanetMesh.build(SUN);
+    }
+
+    static void render(float partialTick) {
+        prepare();
         Minecraft mc = Minecraft.getInstance();
         float t = Cinematic.progress(partialTick);
         float time = Cinematic.seconds(partialTick);
@@ -227,7 +232,7 @@ final class SpaceRenderer {
         RenderSystem.enableDepthTest();
         RenderSystem.depthMask(true);
         bb.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        PlanetMesh.renderSurface(bb, view, Cinematic.PLANET_RADIUS, SUN);
+        PlanetMesh.renderSurface(bb, view, Cinematic.PLANET_RADIUS, SUN, eye);
         drawMoon(bb, view, moon);
         drawSatellite(bb, view, sat, time);
         BufferUploader.drawWithShader(bb.end());

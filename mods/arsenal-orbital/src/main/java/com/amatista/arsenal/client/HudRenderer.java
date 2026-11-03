@@ -115,10 +115,11 @@ public final class HudRenderer {
 
         // destellos blancos
         float flash = 0f;
-        flash = Math.max(flash, pulse(t, Timeline.SPACE_START, 0.012f, 0.012f));   // salida al espacio
-        flash = Math.max(flash, pulse(t, Timeline.A5_END, 0.002f, 0.01f) * 0.85f); // disparo
-        flash = Math.max(flash, pulse(t, Timeline.SPACE_END, 0.006f, 0.01f));      // vuelta al mundo
-        flash = Math.max(flash, pulse(t, Timeline.IMPACT, 0.002f, 0.025f));        // impacto
+        // duraciones en segundos (cortas: un destello, no una pantalla blanca)
+        flash = Math.max(flash, pulse(t, Timeline.SPACE_START, sec(0.5f), sec(0.6f)));        // salida al espacio
+        flash = Math.max(flash, pulse(t, Timeline.A5_END, sec(0.15f), sec(0.9f)) * 0.85f);    // disparo
+        flash = Math.max(flash, pulse(t, Timeline.SPACE_END, sec(0.35f), sec(0.6f)));         // vuelta al mundo
+        flash = Math.max(flash, pulse(t, Timeline.IMPACT, sec(0.1f), sec(1.8f)));             // impacto
         if (flash > 0.001f) g.fill(0, 0, w, h, ((int) (flash * 255) << 24) | 0xFFFFFF);
 
         // cómo omitir
@@ -151,6 +152,11 @@ public final class HudRenderer {
             int color = i == lines.length - 1 ? 0x55FF77 : i == 7 ? 0xFF6060 : 0x66FF99;
             text(g, font, s + (cursor ? "_" : ""), x, y + i * 12, color, fadeOut, 1f, false);
         }
+    }
+
+    /** Convierte segundos a fracción de la cinemática. */
+    private static float sec(float seconds) {
+        return seconds / Math.max(1f, Cinematic.durationSeconds());
     }
 
     private static float pulse(float t, float at, float in, float out) {
