@@ -2,6 +2,7 @@ package com.amatista.arsenal.client;
 
 import com.mojang.blaze3d.vertex.BufferBuilder;
 import org.joml.Matrix4f;
+import org.joml.Quaternionf;
 import org.joml.Vector3f;
 
 import java.util.Random;
@@ -22,6 +23,8 @@ final class PlanetMesh {
     private static float[] cloud;            // opacidad de nubes
     private static float[] lights;           // luces de ciudad (x,y,z por luz)
     private static boolean built;
+    /** Gira el mapa para que el objetivo (arriba del todo) caiga en un continente templado y no en el polo. */
+    private static Quaternionf toMap;
 
     private PlanetMesh() {}
 
@@ -32,6 +35,7 @@ final class PlanetMesh {
         cr = new float[n]; cg = new float[n]; cb = new float[n];
         water = new float[n];
         cloud = new float[n];
+        toMap = new Quaternionf().rotationTo(new Vector3f(0, 1, 0), findTargetLand());
         for (int i = 0; i <= LAT; i++) {
             double theta = Math.PI * i / LAT;          // 0 = polo norte (arriba)
             for (int j = 0; j <= LON; j++) {
@@ -41,13 +45,17 @@ final class PlanetMesh {
                 float y = (float) Math.cos(theta);
                 float z = (float) (Math.sin(theta) * Math.sin(phi));
                 nx[k] = x; ny[k] = y; nz[k] = z;
-                float[] col = surfaceColor(x, y, z, sun);
+                // coordenadas en el "mapa" del planeta (girado)
+                Vector3f q = toMap.transform(new Vector3f(x, y, z));
+                Vector3f sunMap = toMap.transform(new Vector3f(sun));
+                float[] col = surfaceColor(q.x, q.y, q.z, sunMap);
+                x = q.x; y = q.y; z = q.z;
                 cr[k] = col[0]; cg[k] = col[1]; cb[k] = col[2]; water[k] = col[3];
                 // nubes: grandes sistemas, bandas por latitud y remolinos
                 float c = fbm(x * 3.1f + 11f, y * 3.1f + 3f, z * 3.1f - 7f, 6);
                 float swirl = fbm(x * 7f - 4f, y * 7f + 9f, z * 7f + 1f, 3);
                 float band = 0.5f + 0.5f * (float) Math.cos(y * 9.0);
-                cloud[k] = smoothstep(0.52f, 0.74f, c * 0.75f + band * 0.12f + swirl * 0.13f) * 0.85f;
+                cloud[k] = smoothstep(0.55f, 0.78f, c * 0.75f + band * 0.12f + swirl * 0.13f) * 0.8f;
             }
         }
         Random rnd = new Random(7);
@@ -60,7 +68,9 @@ final class PlanetMesh {
             float e = elevation(x, y, z);
             if (e < 0.53f || e > 0.66f || Math.abs(y) > 0.72f) continue;
             if (fbm(x * 9 + 2, y * 9, z * 9 - 4, 3) < 0.52f) continue; // las ciudades se agrupan
-            tmp[count * 3] = x; tmp[count * 3 + 1] = y; tmp[count * 3 + 2] = z;
+            // del mapa a la posición real
+            Vector3f w = new Quaternionf(toMap).conjugate().transform(new Vector3f(x, y, z));
+            tmp[count * 3] = w.x; tmp[count * 3 + 1] = w.y; tmp[count * 3 + 2] = w.z;
             count++;
         }
         lights = new float[count * 3];
@@ -86,7 +96,7 @@ final class PlanetMesh {
     private static void vertexSurface(BufferBuilder bb, Matrix4f m, float radius, int k, Vector3f sun, Vector3f eye) {
         float x = nx[k], y = ny[k], z = nz[k];
         float d = x * sun.x + y * sun.y + z * sun.z;
-        float light = 0.025f + 0.975f * smoothstep(-0.06f, 0.5f, d);
+        float light = 0.02f + 0.80f * smoothstep(-0.06f, 0.6f, d);
         float dusk = Math.max(0f, 1f - Math.abs(d) * 8f) * 0.22f;
         float r = cr[k] * light + dusk * 0.8f;
         float g = cg[k] * light + dusk * 0.3f;
@@ -98,7 +108,7 @@ final class PlanetMesh {
             float vl = (float) Math.sqrt(vx * vx + vy * vy + vz * vz);
             float hx = sun.x + vx / vl, hy = sun.y + vy / vl, hz = sun.z + vz / vl;
             float hl = (float) Math.sqrt(hx * hx + hy * hy + hz * hz);
-            float spec = (float) Math.pow(Math.max(0f, (x * hx + y * hy + z * hz) / hl), 90) * 0.75f * water[k];
+            float spec = (float) Math.pow(Math.max(0f, (x * hx + y * hy + z * hz) / hl), 120) * 0.45f * water[k];
             r += spec; g += spec * 0.92f; b += spec * 0.8f;
         }
         bb.vertex(m, x * radius, y * radius, z * radius).color(Math.min(1f, r), Math.min(1f, g), Math.min(1f, b), 1f).endVertex();
@@ -124,10 +134,10 @@ final class PlanetMesh {
         float z = nx[k] * sin + nz[k] * cos;
         float y = ny[k];
         float d = x * sun.x + y * sun.y + z * sun.z;
-        float light = 0.04f + 0.9f * smoothstep(-0.1f, 0.45f, d);
+        float light = 0.03f + 0.72f * smoothstep(-0.1f, 0.55f, d);
         float dusk = Math.max(0f, 1f - Math.abs(d) * 7f) * 0.35f;
         bb.vertex(m, x * radius, y * radius, z * radius)
-                .color(light + dusk * 0.5f, light * 0.97f + dusk * 0.18f, light * 0.95f, cloud[k] * (0.3f + 0.6f * light))
+                .color(light + dusk * 0.5f, light * 0.97f + dusk * 0.18f, light * 0.95f, cloud[k] * 0.62f)
                 .endVertex();
     }
 
@@ -161,7 +171,7 @@ final class PlanetMesh {
         float d = nx[k] * sun.x + ny[k] * sun.y + nz[k] * sun.z;
         float day = smoothstep(-0.3f, 0.35f, d);
         float dusk = Math.max(0f, 1f - Math.abs(d + 0.05f) * 6f);
-        float a = (rim * 0.55f + 0.015f) * (0.08f + 0.92f * day) * fade;
+        float a = (rim * 0.38f + 0.01f) * (0.08f + 0.92f * day) * fade;
         bb.vertex(m, px, py, pz).color(0.22f + dusk * 0.6f, 0.45f + dusk * 0.12f, 0.95f - dusk * 0.4f, a).endVertex();
     }
 
@@ -183,6 +193,27 @@ final class PlanetMesh {
     }
 
     // --------------------------------------------------------------- terreno
+
+    /** Busca un punto de tierra firme templada (latitud media, pradera o bosque) para el objetivo. */
+    private static Vector3f findTargetLand() {
+        Random r = new Random(99);
+        for (int i = 0; i < 20000; i++) {
+            double u = 0.25 + r.nextDouble() * 0.25, phi = r.nextDouble() * Math.PI * 2;
+            if (r.nextBoolean()) u = -u;
+            double s = Math.sqrt(1 - u * u);
+            float x = (float) (s * Math.cos(phi)), y = (float) u, z = (float) (s * Math.sin(phi));
+            float e = elevation(x, y, z);
+            if (e < 0.56f || e > 0.62f) continue;
+            float moist = fbm(x * 2.7f - 3f, y * 2.7f + 8f, z * 2.7f, 5);
+            if (moist < 0.47f) continue;
+            // que haya costa cerca (más bonito desde el espacio)
+            Vector3f side = new Vector3f(x, y, z).cross(0, 1, 0).normalize().mul(0.12f);
+            Vector3f near = new Vector3f(x, y, z).add(side).normalize();
+            if (elevation(near.x, near.y, near.z) > 0.52f) continue;
+            return new Vector3f(x, y, z);
+        }
+        return new Vector3f(0.62f, 0.45f, 0.64f).normalize();
+    }
 
     private static float elevation(float x, float y, float z) {
         float base = fbm(x * 1.9f + 5f, y * 1.9f, z * 1.9f + 1f, 7);
@@ -207,7 +238,7 @@ final class PlanetMesh {
             float coast = smoothstep(0.495f, 0.52f, e);
             r = lerp(0.008f, 0.03f, depth); g = lerp(0.035f, 0.18f, depth); b = lerp(0.14f, 0.40f, depth);
             r = lerp(r, 0.08f, coast); g = lerp(g, 0.42f, coast); b = lerp(b, 0.50f, coast);
-            if (temp < 0.08f) { r = 0.82f; g = 0.88f; b = 0.94f; } // hielo marino
+            if (temp < 0.08f) { r = 0.70f; g = 0.77f; b = 0.84f; } // hielo marino
             else wat = 1f;
             float v = 0.94f + 0.12f * detail;
             return new float[]{r * v, g * v, b * v, wat};
@@ -216,9 +247,9 @@ final class PlanetMesh {
         float lake = fbm(x * 11f + 7f, y * 11f, z * 11f - 2f, 3);
         if (lake > 0.72f && e < 0.6f && temp > 0.15f) return new float[]{0.04f, 0.2f, 0.35f, 1f};
 
-        if (temp < 0.08f) { r = 0.9f; g = 0.93f; b = 0.97f; }                  // casquete polar / glaciar
+        if (temp < 0.08f) { r = 0.76f; g = 0.80f; b = 0.86f; }                  // casquete polar / glaciar
         else if (e < 0.53f) { r = 0.78f; g = 0.71f; b = 0.52f; }               // playa
-        else if (e > 0.78f || (e > 0.68f && temp < 0.35f)) { r = 0.93f; g = 0.94f; b = 0.97f; } // nieve en cumbres
+        else if (e > 0.78f || (e > 0.68f && temp < 0.35f)) { r = 0.80f; g = 0.82f; b = 0.86f; } // nieve en cumbres
         else if (e > 0.64f) { r = 0.40f; g = 0.36f; b = 0.32f; }               // roca de montaña
         else if (temp < 0.22f) { r = 0.47f; g = 0.46f; b = 0.38f; }            // tundra
         else if (temp < 0.38f) {                                               // bosque boreal

@@ -272,8 +272,7 @@ final class SpaceRenderer {
         for (int i = 0; i < dust.length; i += 6) {
             float cx = eye.x + dust[i] * dist, cy = eye.y + dust[i + 1] * dist, cz = eye.z + dust[i + 2] * dist;
             float tone = dust[i + 5];
-            RenderUtil.billboard(bb, view, cx, cy, cz, right, up, dust[i + 3],
-                    0.55f + tone * 0.4f, 0.45f + tone * 0.2f, 0.75f - tone * 0.2f, dust[i + 4]);
+            RenderUtil.softDisc(bb, view, cx, cy, cz, right, up, dust[i + 3], 14, 0.55f + tone * 0.4f, 0.45f + tone * 0.2f, 0.75f - tone * 0.2f, dust[i + 4], 0f);
         }
         int total = STAR_COUNT + BAND_COUNT;
         for (int i = 0; i < total; i++) {
@@ -284,8 +283,7 @@ final class SpaceRenderer {
             RenderUtil.billboard(bb, view, cx, cy, cz, right, up, size,
                     starInfo[i * 6 + 2], starInfo[i * 6 + 3], starInfo[i * 6 + 4], a);
             if (size > 22f) {
-                RenderUtil.billboard(bb, view, cx, cy, cz, right, up, size * 3.5f,
-                        starInfo[i * 6 + 2], starInfo[i * 6 + 3], starInfo[i * 6 + 4], a * 0.12f);
+                RenderUtil.softDisc(bb, view, cx, cy, cz, right, up, size * 3.5f, 14, starInfo[i * 6 + 2], starInfo[i * 6 + 3], starInfo[i * 6 + 4], a * 0.12f, 0f);
             }
         }
     }
@@ -295,27 +293,26 @@ final class SpaceRenderer {
         float cx = eye.x + SUN.x * dist, cy = eye.y + SUN.y * dist, cz = eye.z + SUN.z * dist;
         float pulse = 1f + 0.03f * (float) Math.sin(time * 1.7f);
         // halo enorme
-        RenderUtil.billboard(bb, view, cx, cy, cz, right, up, 4200f * pulse, 1f, 0.5f, 0.15f, 0.05f);
-        RenderUtil.billboard(bb, view, cx, cy, cz, right, up, 2400f * pulse, 1f, 0.6f, 0.25f, 0.09f);
-        RenderUtil.billboard(bb, view, cx, cy, cz, right, up, 1200f * pulse, 1f, 0.75f, 0.4f, 0.16f);
-        RenderUtil.billboard(bb, view, cx, cy, cz, right, up, 620f, 1f, 0.88f, 0.6f, 0.35f);
+        RenderUtil.softDisc(bb, view, cx, cy, cz, right, up, 4200f * pulse, 24, 1f, 0.5f, 0.15f, 0.10f, 0f);
+        RenderUtil.softDisc(bb, view, cx, cy, cz, right, up, 2400f * pulse, 24, 1f, 0.6f, 0.25f, 0.16f, 0f);
+        RenderUtil.softDisc(bb, view, cx, cy, cz, right, up, 1200f * pulse, 24, 1f, 0.75f, 0.4f, 0.30f, 0f);
+        RenderUtil.softDisc(bb, view, cx, cy, cz, right, up, 620f, 24, 1f, 0.88f, 0.6f, 0.35f, 0f);
         // disco
-        RenderUtil.billboard(bb, view, cx, cy, cz, right, up, 330f, 1f, 0.96f, 0.82f, 0.8f);
-        RenderUtil.billboard(bb, view, cx, cy, cz, right, up, 250f, 1f, 1f, 0.97f, 1f);
-        RenderUtil.billboard(bb, view, cx, cy, cz, right, up, 230f, 1f, 1f, 1f, 1f);
+        RenderUtil.softDisc(bb, view, cx, cy, cz, right, up, 330f, 24, 1f, 0.96f, 0.82f, 0.8f, 0f);
+        RenderUtil.softDisc(bb, view, cx, cy, cz, right, up, 250f, 24, 1f, 1f, 0.97f, 1f, 0.6f);
+        RenderUtil.softDisc(bb, view, cx, cy, cz, right, up, 230f, 24, 1f, 1f, 1f, 1f, 1f);
         // rayos de luz que giran despacio
         for (int i = 0; i < 16; i++) {
             float ang = i * (float) Math.PI / 8f + time * 0.03f;
             float len = (1400f + 900f * rnd(i * 7)) * (0.85f + 0.15f * (float) Math.sin(time * 0.8f + i));
             Vector3f dir = new Vector3f(right).mul((float) Math.cos(ang)).add(new Vector3f(up).mul((float) Math.sin(ang)));
             Vector3f side = new Vector3f(right).mul((float) -Math.sin(ang)).add(new Vector3f(up).mul((float) Math.cos(ang)));
-            RenderUtil.streak(bb, view, cx + dir.x * len * 0.5f, cy + dir.y * len * 0.5f, cz + dir.z * len * 0.5f,
-                    dir, len * 0.5f, side, 30f + 30f * rnd(i * 3), 1f, 0.85f, 0.6f, 0.07f);
+            RenderUtil.softStreak(bb, view, cx + dir.x * len * 0.5f, cy + dir.y * len * 0.5f, cz + dir.z * len * 0.5f, dir, len * 0.5f, side, 30f + 30f * rnd(i * 3), 1f, 0.85f, 0.6f, 0.07f);
         }
         // destello de lente horizontal
-        RenderUtil.streak(bb, view, cx, cy, cz, right, 6500f, up, 30f, 1f, 0.8f, 0.6f, 0.2f);
-        RenderUtil.streak(bb, view, cx, cy, cz, right, 2500f, up, 9f, 1f, 1f, 0.9f, 0.4f);
-        RenderUtil.streak(bb, view, cx, cy, cz, up, 1300f, right, 18f, 1f, 0.85f, 0.7f, 0.1f);
+        RenderUtil.softStreak(bb, view, cx, cy, cz, right, 6500f, up, 30f, 1f, 0.8f, 0.6f, 0.2f);
+        RenderUtil.softStreak(bb, view, cx, cy, cz, right, 2500f, up, 9f, 1f, 1f, 0.9f, 0.4f);
+        RenderUtil.softStreak(bb, view, cx, cy, cz, up, 1300f, right, 18f, 1f, 0.85f, 0.7f, 0.1f);
     }
 
     private static void drawMoon(BufferBuilder bb, Matrix4f view, Vector3f moon) {
@@ -341,7 +338,7 @@ final class SpaceRenderer {
 
     private static void drawMoonGlow(BufferBuilder bb, Matrix4f view, Vector3f eye, Vector3f right, Vector3f up, Vector3f moon) {
         // halo suave alrededor de la luna
-        RenderUtil.billboard(bb, view, moon.x, moon.y, moon.z, right, up, MOON_RADIUS * 1.5f, 0.75f, 0.8f, 0.95f, 0.06f);
+        RenderUtil.softDisc(bb, view, moon.x, moon.y, moon.z, right, up, MOON_RADIUS * 1.6f, 32, 0.75f, 0.8f, 0.95f, 0.05f, 0f);
     }
 
     private static void drawTargetMarker(BufferBuilder bb, Matrix4f view, Vector3f eye, Vector3f right, Vector3f up,
@@ -351,8 +348,8 @@ final class SpaceRenderer {
         float pulse = 0.6f + 0.4f * (float) Math.sin(time * 6);
         float distance = eye.distance((float) tp.x, (float) tp.y, (float) tp.z);
         float size = Math.max(3f, distance * 0.006f);
-        RenderUtil.billboard(bb, view, (float) tp.x, (float) tp.y + 1f, (float) tp.z, right, up, size, 1f, 0.1f, 0.08f, pulse);
-        RenderUtil.billboard(bb, view, (float) tp.x, (float) tp.y + 1f, (float) tp.z, right, up, size * 4f, 1f, 0.1f, 0.05f, 0.25f * pulse);
+        RenderUtil.softDisc(bb, view, (float) tp.x, (float) tp.y + 1f, (float) tp.z, right, up, size, 14, 1f, 0.1f, 0.08f, pulse, 0f);
+        RenderUtil.softDisc(bb, view, (float) tp.x, (float) tp.y + 1f, (float) tp.z, right, up, size * 4f, 14, 1f, 0.1f, 0.05f, 0.25f * pulse, 0f);
         Matrix4f m = new Matrix4f(view).translate((float) tp.x, (float) tp.y + 1.2f, (float) tp.z);
         float ringR = 10f + 6f * (float) ((time * 0.8) % 1.0);
         RenderUtil.ring(bb, m, ringR, ringR + 1.6f, 0f, 48, 1f, 0.15f, 0.1f, 0.8f);
@@ -467,7 +464,7 @@ final class SpaceRenderer {
 
     private static void glow(BufferBuilder bb, Matrix4f view, Vector3f p, Vector3f right, Vector3f up,
                              float size, float r, float g, float b, float a) {
-        RenderUtil.billboard(bb, view, p.x, p.y, p.z, right, up, size * S, r, g, b, a);
+        RenderUtil.softDisc(bb, view, p.x, p.y, p.z, right, up, size * S, 10, r, g, b, a, 0f);
     }
 
     private static void drawSatelliteGlow(BufferBuilder bb, Matrix4f view, Vector3f eye, Vector3f right, Vector3f up,
@@ -523,7 +520,7 @@ final class SpaceRenderer {
                     float l = (5f + r.nextFloat() * 10f * s.charge) * S;
                     Vector3f mid = new Vector3f(muzzle).add(new Vector3f(dir).mul(l * 0.5f));
                     Vector3f side = new Vector3f(dir).cross(new Vector3f(eye).sub(mid)).normalize();
-                    RenderUtil.streak(bb, view, mid.x, mid.y, mid.z, dir, l * 0.5f, side, 0.22f * S, 0.6f, 0.85f, 1f, 0.9f);
+                    RenderUtil.softBeam(bb, view, mid.x, mid.y, mid.z, dir, l * 0.5f, side, 0.22f * S, 0.6f, 0.85f, 1f, 0.9f);
                 }
             }
         }
@@ -614,11 +611,11 @@ final class SpaceRenderer {
         Vector3f side = new Vector3f(axis).cross(new Vector3f(eye).sub(mid)).normalize();
         float flick = 1f + 0.12f * (float) Math.sin(time * 50);
         // rayo GIGANTE: varias capas de luz
-        RenderUtil.streak(bb, view, mid.x, mid.y, mid.z, axis, length / 2, side, 90f * flick, 0.12f, 0.25f, 1f, 0.10f);
-        RenderUtil.streak(bb, view, mid.x, mid.y, mid.z, axis, length / 2, side, 55f * flick, 0.15f, 0.35f, 1f, 0.18f);
-        RenderUtil.streak(bb, view, mid.x, mid.y, mid.z, axis, length / 2, side, 26f * flick, 0.3f, 0.7f, 1f, 0.5f);
-        RenderUtil.streak(bb, view, mid.x, mid.y, mid.z, axis, length / 2, side, 10f, 0.85f, 0.95f, 1f, 0.95f);
-        RenderUtil.streak(bb, view, mid.x, mid.y, mid.z, axis, length / 2, side, 4f, 1f, 1f, 1f, 1f);
+        RenderUtil.softBeam(bb, view, mid.x, mid.y, mid.z, axis, length / 2, side, 90f * flick, 0.12f, 0.25f, 1f, 0.10f);
+        RenderUtil.softBeam(bb, view, mid.x, mid.y, mid.z, axis, length / 2, side, 55f * flick, 0.15f, 0.35f, 1f, 0.18f);
+        RenderUtil.softBeam(bb, view, mid.x, mid.y, mid.z, axis, length / 2, side, 26f * flick, 0.3f, 0.7f, 1f, 0.5f);
+        RenderUtil.softBeam(bb, view, mid.x, mid.y, mid.z, axis, length / 2, side, 10f, 0.85f, 0.95f, 1f, 0.95f);
+        RenderUtil.softBeam(bb, view, mid.x, mid.y, mid.z, axis, length / 2, side, 4f, 1f, 1f, 1f, 1f);
         // espiral de energía alrededor del rayo
         Vector3f other = new Vector3f(axis).cross(side).normalize();
         for (int i = 0; i < 80; i++) {
@@ -628,21 +625,21 @@ final class SpaceRenderer {
             Vector3f p = new Vector3f(from).lerp(to, f)
                     .add(new Vector3f(side).mul((float) Math.cos(ang) * 40f))
                     .add(new Vector3f(other).mul((float) Math.sin(ang) * 40f));
-            RenderUtil.billboard(bb, view, p.x, p.y, p.z, right, up, 7f, 0.5f, 0.8f, 1f, 0.5f);
+            RenderUtil.softDisc(bb, view, p.x, p.y, p.z, right, up, 7f, 14, 0.5f, 0.8f, 1f, 0.5f, 0f);
         }
         // destello en la boca y en el frente
-        RenderUtil.billboard(bb, view, from.x, from.y, from.z, right, up, 110f * flick, 0.5f, 0.8f, 1f, 0.6f);
-        RenderUtil.billboard(bb, view, from.x, from.y, from.z, right, up, 40f * flick, 1f, 1f, 1f, 0.9f);
-        RenderUtil.billboard(bb, view, end.x, end.y, end.z, right, up, 80f * flick, 0.7f, 0.9f, 1f, 0.8f);
+        RenderUtil.softDisc(bb, view, from.x, from.y, from.z, right, up, 110f * flick, 14, 0.5f, 0.8f, 1f, 0.6f, 0f);
+        RenderUtil.softDisc(bb, view, from.x, from.y, from.z, right, up, 40f * flick, 14, 1f, 1f, 1f, 0.9f, 0f);
+        RenderUtil.softDisc(bb, view, end.x, end.y, end.z, right, up, 80f * flick, 14, 0.7f, 0.9f, 1f, 0.8f, 0f);
         for (int i = 1; i <= 8; i++) {
             float f = ((time * 0.9f + i / 8f) % 1f);
             if (f > front) continue;
             Vector3f p = new Vector3f(from).lerp(to, f);
-            RenderUtil.billboard(bb, view, p.x, p.y, p.z, right, up, 45f, 0.4f, 0.7f, 1f, 0.25f);
+            RenderUtil.softDisc(bb, view, p.x, p.y, p.z, right, up, 45f, 14, 0.4f, 0.7f, 1f, 0.25f, 0f);
         }
         if (front > 0.97f) {
-            RenderUtil.billboard(bb, view, to.x, to.y + 1, to.z, right, up, 320f * flick, 1f, 0.9f, 0.7f, 0.7f);
-            RenderUtil.billboard(bb, view, to.x, to.y + 1, to.z, right, up, 800f, 1f, 0.6f, 0.3f, 0.25f);
+            RenderUtil.softDisc(bb, view, to.x, to.y + 1, to.z, right, up, 320f * flick, 14, 1f, 0.9f, 0.7f, 0.7f, 0f);
+            RenderUtil.softDisc(bb, view, to.x, to.y + 1, to.z, right, up, 800f, 14, 1f, 0.6f, 0.3f, 0.25f, 0f);
         }
     }
 }
