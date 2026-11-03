@@ -192,20 +192,20 @@ public final class Cinematic {
             // Acto 6: la cámara baja junto al rayo, atravesando la atmósfera
             float u = (t - Timeline.SPACE_END) / (Timeline.A6_END - Timeline.SPACE_END);
             float e = easeOutCubic(u);
-            Vec3 from = tc.add(14, 520, 10);
-            Vec3 to = tc.add(26, 48, 20);
+            Vec3 from = tc.add(25, 900, 18);
+            Vec3 to = tc.add(48, 88, 36);
             Vec3 pos = from.lerp(to, e);
-            Pose p = lookAt(pos, tc.add(0, 10 * (1 - e), 0), (float) Math.sin(u * 9) * 4f * (1 - u), 78f - 10f * e);
+            Pose p = lookAt(pos, tc.add(0, 18 * (1 - e), 0), (float) Math.sin(u * 9) * 4f * (1 - u), 80f - 10f * e);
             return shake(p, 0.6f * (1 - u), t);
         }
         if (t < Timeline.IMPACT) {
             // Acto 7: cámara lenta rodeando el punto mientras el rayo toca el suelo
             float u = (t - Timeline.A6_END) / (Timeline.IMPACT - Timeline.A6_END);
             double ang = Math.atan2(20, 26) + u * Math.toRadians(75);
-            double radius = 33 - 6 * u;
-            double h = 22 - 7 * u;
+            double radius = 62 - 10 * u;
+            double h = 40 - 12 * u;
             Vec3 pos = tc.add(Math.sin(ang) * radius, h, Math.cos(ang) * radius);
-            Pose p = lookAt(pos, tc.add(0, 3, 0), 0f, 58f - 10f * u);
+            Pose p = lookAt(pos, tc.add(0, 6, 0), 0f, 62f - 10f * u);
             return shake(p, 0.05f + 0.25f * u * u, t);
         }
         if (t < Timeline.RETURN_START) {
@@ -213,8 +213,8 @@ public final class Cinematic {
             float u = (t - Timeline.IMPACT) / (Timeline.RETURN_START - Timeline.IMPACT);
             float e = smooth(u);
             double ang = Math.atan2(20, 26) + Math.toRadians(75) + u * Math.toRadians(40);
-            Vec3 start = tc.add(Math.sin(ang) * 27, 15, Math.cos(ang) * 27);
-            Vec3 aerial = tc.add(Math.sin(ang) * 42, 75, Math.cos(ang) * 42);
+            Vec3 start = tc.add(Math.sin(ang) * 52, 28, Math.cos(ang) * 52);
+            Vec3 aerial = tc.add(Math.sin(ang) * 80, 135, Math.cos(ang) * 80);
             Vec3 pos = start.lerp(aerial, e);
             Pose p = lookAt(pos, tc, 0f, 48f + 20f * e);
             return shake(p, 2.4f * (float) Math.pow(1 - Math.min(1f, u * 2.5f), 2), t);
@@ -223,7 +223,7 @@ public final class Cinematic {
         float u = (t - Timeline.RETURN_START) / (1f - Timeline.RETURN_START);
         float e = smooth(u);
         double ang = Math.atan2(20, 26) + Math.toRadians(115);
-        Vec3 aerial = tc.add(Math.sin(ang) * 42, 75, Math.cos(ang) * 42);
+        Vec3 aerial = tc.add(Math.sin(ang) * 80, 135, Math.cos(ang) * 80);
         Vec3 mid = aerial.lerp(eye, 0.5).add(0, 30, 0);
         Vec3 pos = bezier(aerial, mid, eye, e);
         Pose look = lookAt(pos, tc, 0f, 68f);
@@ -236,45 +236,72 @@ public final class Cinematic {
 
     /** Escena espacial: planeta en el origen, objetivo arriba del todo, satélite encima. */
     public static final float PLANET_RADIUS = 1000f;
+    /** Tamaño del satélite (3 = tres veces su modelo base: más de 400 bloques de punta a punta). */
+    public static final float SAT_SCALE = 3f;
     public static final Vec3 TARGET_SPACE = new Vec3(0, PLANET_RADIUS, 0);
-    public static final Vec3 SATELLITE = new Vec3(0, PLANET_RADIUS + 240, 0);
+    public static final Vec3 SATELLITE = new Vec3(0, PLANET_RADIUS + 450, 0);
+    /** Dirección hacia el sol (de día sobre el objetivo). */
+    public static final Vec3 SUN_DIR = new Vec3(-0.55, 0.55, -0.62).normalize();
     private static final Vec3 WIDE = new Vec3(1900, 1300, 2600);
+    /** La vista amplia mira entre el planeta (abajo) y el sol (arriba). */
+    private static final Vec3 WIDE_CENTER = WIDE.add(WIDE.scale(-1).normalize().add(SUN_DIR.scale(0.8)).normalize().scale(1000));
+    /** Punto del planeta donde el sol está justo en el horizonte (amanecer). */
+    private static final Vec3 SUNRISE_N = new Vec3(0, 1, 0).subtract(SUN_DIR.scale(SUN_DIR.y)).normalize();
+    private static final Vec3 SUNRISE_EYE = SUNRISE_N.scale(PLANET_RADIUS + 60).subtract(SUN_DIR.scale(150));
+    private static final Vec3 SUNRISE_CENTER = SUNRISE_EYE.add(SUN_DIR.scale(1000)).subtract(SUNRISE_N.scale(40));
 
     public record SpacePose(Vec3 eye, Vec3 center, float fov, float roll) {}
+
+    private static Vec3 sat(double x, double y, double z) {
+        return SATELLITE.add(x * SAT_SCALE, y * SAT_SCALE, z * SAT_SCALE);
+    }
 
     public static SpacePose spacePose(float t) {
         if (t < Timeline.A3_END) {
             float u = Mth.clamp((t - Timeline.SPACE_START) / (Timeline.A3_END - Timeline.SPACE_START), 0f, 1f);
-            if (u < 0.35f) {
+            Vec3 riseEnd = TARGET_SPACE.add(30, 220, 60);
+            if (u < 0.22f) {
                 // saliendo de la atmósfera: mirando hacia abajo al objetivo
-                float e = smooth(u / 0.35f);
-                Vec3 eye = TARGET_SPACE.add(0, 25, 0).lerp(TARGET_SPACE.add(30, 220, 60), e);
-                return new SpacePose(eye, TARGET_SPACE, 75f, 0f);
+                float e = smooth(u / 0.22f);
+                return new SpacePose(TARGET_SPACE.add(0, 25, 0).lerp(riseEnd, e), TARGET_SPACE, 75f, 0f);
             }
-            // se aleja hasta ver el planeta entero con el sol asomando por el borde
-            float e = smooth((u - 0.35f) / 0.65f);
-            Vec3 eye = bezier(TARGET_SPACE.add(30, 220, 60), new Vec3(400, 1700, 1300), WIDE, e);
-            Vec3 center = TARGET_SPACE.lerp(new Vec3(-150, 250, -100), e);
-            return new SpacePose(eye, center, 75f - 15f * e, 0f);
+            if (u < 0.38f) {
+                // la cámara gira hacia el horizonte, donde va a salir el sol
+                float e = smooth((u - 0.22f) / 0.16f);
+                Vec3 eye = bezier(riseEnd, riseEnd.lerp(SUNRISE_EYE, 0.5).add(SUNRISE_N.scale(250)), SUNRISE_EYE, e);
+                return new SpacePose(eye, TARGET_SPACE.lerp(SUNRISE_CENTER, e), 75f - 10f * e, 0f);
+            }
+            if (u < 0.6f) {
+                // AMANECER: el sol asoma por el borde del planeta
+                float e = (u - 0.38f) / 0.22f;
+                Vec3 eye = SUNRISE_EYE.add(SUNRISE_N.scale(90 * smooth(e)));
+                return new SpacePose(eye, SUNRISE_CENTER.add(SUNRISE_N.scale(60 * smooth(e))), 65f, 4f * (1 - e));
+            }
+            // se aleja hasta ver el planeta entero, el sol arriba y la luna a un lado
+            float e = smooth((u - 0.6f) / 0.4f);
+            Vec3 from = SUNRISE_EYE.add(SUNRISE_N.scale(90));
+            Vec3 eye = bezier(from, from.add(WIDE).scale(0.5).add(0, 900, 0), WIDE, e);
+            Vec3 center = SUNRISE_CENTER.add(SUNRISE_N.scale(60)).lerp(WIDE_CENTER, e);
+            return new SpacePose(eye, center, Mth.lerp(e, 65f, 70f), 0f);
         }
         if (t < Timeline.A4_END) {
             float u = (t - Timeline.A3_END) / (Timeline.A4_END - Timeline.A3_END);
-            Vec3 near = SATELLITE.add(140, 60, 180);
+            Vec3 near = sat(140, 60, 180);
             if (u < 0.35f) {
-                // viaje hacia el satélite
+                // viaje hacia el satélite gigante
                 float e = smooth(u / 0.35f);
-                Vec3 eye = bezier(WIDE, new Vec3(900, 1500, 1200), near, e);
-                Vec3 center = new Vec3(-150, 250, -100).lerp(SATELLITE, e);
-                return new SpacePose(eye, center, 60f - 10f * e, 0f);
+                Vec3 eye = bezier(WIDE, new Vec3(1300, 2300, 1900), near, e);
+                Vec3 center = WIDE_CENTER.lerp(SATELLITE, e);
+                return new SpacePose(eye, center, 70f - 18f * e, 0f);
             }
             // vuelta lenta alrededor del satélite mientras despierta
             float v = (u - 0.35f) / 0.65f;
             double a0 = Math.atan2(140, 180);
             double ang = a0 + v * Math.toRadians(150);
-            double radius = Mth.lerp(smooth(Math.min(1f, v * 3)), (float) Math.sqrt(140 * 140 + 180 * 180), 70f) - 12 * v;
+            double radius = Mth.lerp(smooth(Math.min(1f, v * 3)), (float) Math.sqrt(140 * 140 + 180 * 180), 78f) - 12 * v;
             double h = Mth.lerp(smooth(Math.min(1f, v * 3)), 60f, 22f) - 8 * v;
-            Vec3 eye = SATELLITE.add(Math.sin(ang) * radius, h, Math.cos(ang) * radius);
-            return new SpacePose(eye, SATELLITE.add(0, -2, 0), 50f, (float) Math.sin(v * 3) * 3f);
+            Vec3 eye = sat(Math.sin(ang) * radius, h, Math.cos(ang) * radius);
+            return new SpacePose(eye, sat(0, -2, 0), 52f, (float) Math.sin(v * 3) * 3f);
         }
         if (t < Timeline.A5_END) {
             float u = (t - Timeline.A4_END) / (Timeline.A5_END - Timeline.A4_END);
@@ -282,29 +309,30 @@ public final class Cinematic {
                 // detrás del satélite: se ve el cañón apuntando al planeta y el objetivo abajo
                 float e = smooth(u / 0.6f);
                 double a0 = Math.atan2(140, 180) + Math.toRadians(150);
-                Vec3 orbitEnd = SATELLITE.add(Math.sin(a0) * 58, 14, Math.cos(a0) * 58);
-                Vec3 behind = SATELLITE.add(10, 42, 78);
-                Vec3 eye = orbitEnd.lerp(behind, e).add(0, 0, -10 * u);
-                Vec3 center = SATELLITE.add(0, -2, 0).lerp(SATELLITE.lerp(TARGET_SPACE, 0.4), e);
-                return new SpacePose(eye, center, 55f, 0f);
+                Vec3 orbitEnd = sat(Math.sin(a0) * 66, 14, Math.cos(a0) * 66);
+                Vec3 behind = sat(10, 46, 86);
+                Vec3 eye = orbitEnd.lerp(behind, e).add(0, 0, -10 * SAT_SCALE * u);
+                Vec3 center = sat(0, -2, 0).lerp(SATELLITE.lerp(TARGET_SPACE, 0.35), e);
+                return new SpacePose(eye, center, 58f, 0f);
             }
             // primer plano de la boca del cañón cargando
             float e = smooth((u - 0.6f) / 0.4f);
             Vec3 muzzle = SpaceRenderer.muzzlePosition(t);
-            Vec3 eye = SATELLITE.add(10, 42, 68).lerp(muzzle.add(22, 4, 20), e);
-            Vec3 center = SATELLITE.lerp(TARGET_SPACE, 0.4).lerp(muzzle.add(0, -6, 0), e);
-            return new SpacePose(eye, center, 55f - 10f * e, 0f);
+            Vec3 eye = sat(10, 46, 76).lerp(muzzle.add(26 * SAT_SCALE, 6 * SAT_SCALE, 24 * SAT_SCALE), e);
+            Vec3 center = SATELLITE.lerp(TARGET_SPACE, 0.35).lerp(muzzle.add(0, -8 * SAT_SCALE, 0), e);
+            return new SpacePose(eye, center, 58f - 10f * e, 0f);
         }
-        // Acto 6 (espacio): el rayo sale y la cámara lo persigue hasta el planeta
+        // Acto 6 (espacio): el rayo gigante sale y la cámara lo persigue hasta el planeta
         float u = Mth.clamp((t - Timeline.A5_END) / (Timeline.SPACE_END - Timeline.A5_END), 0f, 1f);
         Vec3 muzzle = SpaceRenderer.muzzlePosition(t);
+        Vec3 close = muzzle.add(26 * SAT_SCALE, 6 * SAT_SCALE, 24 * SAT_SCALE);
         if (u < 0.18f) {
-            return new SpacePose(muzzle.add(22, 4, 20), muzzle.add(0, -10, 0), 45f + 25f * (u / 0.18f), 0f);
+            return new SpacePose(close, muzzle.add(0, -12 * SAT_SCALE, 0), 48f + 25f * (u / 0.18f), 0f);
         }
         float v = easeInCubic((u - 0.18f) / 0.82f);
         Vec3 front = muzzle.lerp(TARGET_SPACE, v);
-        Vec3 eye = front.add(22 * (1 - v) + 5, 30 * (1 - v) + 8, 20 * (1 - v) + 5);
-        return new SpacePose(eye, front.lerp(TARGET_SPACE, 0.6), 70f, (1 - v) * 10f);
+        Vec3 off = new Vec3(70, 90, 60).scale(1 - v).add(15, 25, 15);
+        return new SpacePose(front.add(off), front.lerp(TARGET_SPACE, 0.6), 72f, (1 - v) * 10f);
     }
 
     // ------------------------------------------------------------------ sonidos

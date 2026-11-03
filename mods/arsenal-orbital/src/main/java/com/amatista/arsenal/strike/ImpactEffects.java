@@ -47,6 +47,7 @@ public final class ImpactEffects {
 
         if (destroy) {
             carveCrater(level, target, r, rnd);
+            if (Config.PIERCE_BEDROCK.get()) drillShaft(level, target, Config.SHAFT_RADIUS.get(), rnd);
         }
         // Explosión central (también hace el sonido y empuje de ítems)
         level.explode(null, c.x, c.y, c.z, Math.min(10f, r * 0.55f),
@@ -87,6 +88,7 @@ public final class ImpactEffects {
 
     private static void carveCrater(ServerLevel level, BlockPos target, int r, RandomSource rnd) {
         int debrisLeft = Config.DEBRIS_COUNT.get();
+        boolean pierce = Config.PIERCE_BEDROCK.get();
         int rr = r + 2;
         BlockState air = Blocks.AIR.defaultBlockState();
         List<BlockPos> floor = new ArrayList<>();
@@ -100,9 +102,10 @@ public final class ImpactEffects {
                     if (level.isOutsideBuildHeight(pos)) continue;
                     BlockState state = level.getBlockState(pos);
                     if (state.isAir()) continue;
-                    if (state.getDestroySpeed(level, pos) < 0) continue; // roca madre, etc.
+                    boolean unbreakable = state.getDestroySpeed(level, pos) < 0; // roca madre, etc.
+                    if (unbreakable && !pierce) continue;
                     if (dist <= edge) {
-                        boolean canFly = debrisLeft > 0 && level.getBlockEntity(pos) == null
+                        boolean canFly = debrisLeft > 0 && !unbreakable && level.getBlockEntity(pos) == null
                                 && state.getFluidState().isEmpty() && dist > r * 0.35
                                 && rnd.nextFloat() < 0.18f;
                         if (canFly) {
@@ -117,7 +120,7 @@ public final class ImpactEffects {
                             level.setBlock(pos, air, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
                         }
                         if (dy <= -r / 2 + 1) floor.add(pos);
-                    } else if (dist <= edge + 2.2 && state.getFluidState().isEmpty()
+                    } else if (!unbreakable && dist <= edge + 2.2 && state.getFluidState().isEmpty()
                             && level.getBlockEntity(pos) == null && rnd.nextFloat() < 0.55f) {
                         // borde quemado: piedra negra, basalto y magma
                         float p = rnd.nextFloat();
@@ -136,6 +139,42 @@ public final class ImpactEffects {
             BlockPos below = pos.below();
             if (level.getBlockState(pos).isAir() && level.getBlockState(below).isSolidRender(level, below)) {
                 level.setBlock(pos, BaseFireBlock.getState(level, pos), Block.UPDATE_ALL);
+            }
+        }
+    }
+
+    /**
+     * El rayo atraviesa todo: abre un pozo desde el cráter hasta el fondo del mundo,
+     * rompiendo también la roca madre. Las paredes quedan de magma, obsidiana y piedra negra.
+     */
+    private static void drillShaft(ServerLevel level, BlockPos target, int radius, RandomSource rnd) {
+        BlockState air = Blocks.AIR.defaultBlockState();
+        int bottom = level.getMinBuildHeight();
+        int wall = radius + 2;
+        for (int y = target.getY(); y >= bottom; y--) {
+            // el pozo se estrecha un poco con la profundidad y tiene bordes irregulares
+            double depth = (target.getY() - y) / (double) Math.max(1, target.getY() - bottom);
+            double rr = radius * (1.0 - 0.25 * depth);
+            for (int dx = -wall; dx <= wall; dx++) {
+                for (int dz = -wall; dz <= wall; dz++) {
+                    double d = Math.sqrt(dx * dx + dz * dz);
+                    double edge = rr * (0.9 + 0.2 * hashNoise(dx, y, dz));
+                    BlockPos pos = new BlockPos(target.getX() + dx, y, target.getZ() + dz);
+                    BlockState state = level.getBlockState(pos);
+                    if (d <= edge) {
+                        if (state.isAir()) continue;
+                        if (level.getBlockEntity(pos) != null) level.removeBlockEntity(pos);
+                        level.setBlock(pos, air, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
+                    } else if (d <= edge + 1.6 && !state.isAir() && state.getFluidState().isEmpty()
+                            && level.getBlockEntity(pos) == null && rnd.nextFloat() < 0.6f) {
+                        float p = rnd.nextFloat();
+                        BlockState glass = p < 0.35f ? Blocks.MAGMA_BLOCK.defaultBlockState()
+                                : p < 0.6f ? Blocks.OBSIDIAN.defaultBlockState()
+                                : p < 0.85f ? Blocks.BLACKSTONE.defaultBlockState()
+                                : Blocks.CRYING_OBSIDIAN.defaultBlockState();
+                        level.setBlock(pos, glass, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
+                    }
+                }
             }
         }
     }

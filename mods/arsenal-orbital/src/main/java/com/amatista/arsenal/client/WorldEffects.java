@@ -68,8 +68,8 @@ public final class WorldEffects {
             if (now < b.impact) {
                 Vec3 c = Vec3.atCenterOf(b.target).add(0, 0.6, 0);
                 float u = (now - b.start) / (float) Math.max(1, b.impact - b.start);
-                for (int i = 0; i < 2 + (int) (u * 8); i++) {
-                    double a = mc.level.random.nextDouble() * Math.PI * 2, r = mc.level.random.nextDouble() * (1.5 + u * 4);
+                for (int i = 0; i < 4 + (int) (u * 20); i++) {
+                    double a = mc.level.random.nextDouble() * Math.PI * 2, r = mc.level.random.nextDouble() * (4 + u * 14);
                     mc.level.addParticle(ParticleTypes.ELECTRIC_SPARK, true, c.x + Math.cos(a) * r, c.y, c.z + Math.sin(a) * r,
                             Math.cos(a) * 0.3, 0.2 + u, Math.sin(a) * 0.3);
                 }
@@ -130,30 +130,32 @@ public final class WorldEffects {
             // el rayo se va haciendo más grueso a medida que se acerca el impacto
             float grow = now < b.impact ? Mth.clamp(1f - toImpact / Math.max(1f, b.impact - b.start), 0f, 1f) : 1f;
             float flick = 1f + 0.12f * (float) Math.sin(now * 2.7f);
-            float top = 700f;
+            float top = 1400f;
             Matrix4f mm = new Matrix4f(m).translate(x, y, z);
-            RenderUtil.cylinder(bb, mm, (7f + 5f * grow) * flick, 0, top, 20, 0.15f, 0.3f, 1f, 0.12f * a);
-            RenderUtil.cylinder(bb, mm, (2.6f + 2f * grow) * flick, 0, top, 16, 0.3f, 0.7f, 1f, 0.45f * a);
-            RenderUtil.cylinder(bb, mm, (0.9f + 0.6f * grow), 0, top, 12, 0.9f, 0.97f, 1f, 0.95f * a);
+            RenderUtil.cylinder(bb, mm, (26f + 14f * grow) * flick, 0, top, 32, 0.12f, 0.25f, 1f, 0.08f * a);
+            RenderUtil.cylinder(bb, mm, (15f + 9f * grow) * flick, 0, top, 28, 0.15f, 0.35f, 1f, 0.14f * a);
+            RenderUtil.cylinder(bb, mm, (8f + 5f * grow) * flick, 0, top, 24, 0.3f, 0.7f, 1f, 0.45f * a);
+            RenderUtil.cylinder(bb, mm, (3.5f + 2f * grow), 0, top, 16, 0.9f, 0.97f, 1f, 0.95f * a);
+            RenderUtil.cylinder(bb, mm, (1.5f + 0.8f * grow), 0, top, 12, 1f, 1f, 1f, 1f * a);
             // resplandor en el suelo
-            RenderUtil.ring(bb, mm, 0f, 4f + 10f * grow, 0.05f, 32, 0.6f, 0.85f, 1f, 0.45f * a);
-            RenderUtil.ring(bb, mm, 4f + 10f * grow, 9f + 16f * grow, 0.05f, 32, 0.2f, 0.4f, 1f, 0.15f * a);
+            RenderUtil.ring(bb, mm, 0f, 10f + 22f * grow, 0.05f, 48, 0.6f, 0.85f, 1f, 0.45f * a);
+            RenderUtil.ring(bb, mm, 10f + 22f * grow, 22f + 40f * grow, 0.05f, 48, 0.2f, 0.4f, 1f, 0.15f * a);
             // anillos que bajan por el rayo
-            for (int i = 0; i < 5; i++) {
-                float h = top - ((now * 6f + i * 140f) % top);
-                RenderUtil.ring(bb, mm, 3.2f + 2 * grow, 4.4f + 2 * grow, h, 24, 0.5f, 0.8f, 1f, 0.35f * a);
+            for (int i = 0; i < 8; i++) {
+                float h = top - ((now * 14f + i * 175f) % top);
+                RenderUtil.ring(bb, mm, 10f + 6 * grow, 14f + 6 * grow, h, 32, 0.5f, 0.8f, 1f, 0.35f * a);
             }
         }
         // onda expansiva tras el impacto
         if (now >= b.impact && now < b.impact + 45) {
             float u = (now - b.impact) / 45f;
-            float radius = 4f + 90f * Cinematic.easeOutCubic(u);
+            float radius = 8f + 170f * Cinematic.easeOutCubic(u);
             float alpha = (1f - u) * 0.8f;
             Matrix4f mm = new Matrix4f(m).translate(x, y, z);
-            RenderUtil.ring(bb, mm, radius, radius + 3.5f, 0.3f, 72, 1f, 0.85f, 0.6f, alpha);
-            RenderUtil.ring(bb, mm, radius * 0.7f, radius * 0.7f + 1.5f, 1.5f + u * 6, 64, 1f, 0.6f, 0.3f, alpha * 0.6f);
+            RenderUtil.ring(bb, mm, radius, radius + 6f, 0.3f, 96, 1f, 0.85f, 0.6f, alpha);
+            RenderUtil.ring(bb, mm, radius * 0.7f, radius * 0.7f + 3f, 1.5f + u * 10, 96, 1f, 0.6f, 0.3f, alpha * 0.6f);
             // columna de fuego
-            RenderUtil.cylinder(bb, mm, 6f + 10f * u, 0, 40f * (1 - u) + 5, 20, 1f, 0.5f, 0.15f, 0.35f * (1 - u));
+            RenderUtil.cylinder(bb, mm, 14f + 24f * u, 0, 110f * (1 - u) + 8, 28, 1f, 0.5f, 0.15f, 0.35f * (1 - u));
         }
     }
 
