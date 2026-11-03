@@ -21,6 +21,8 @@ final class PlanetMesh {
     private static float[] cr, cg, cb;       // color del suelo (con relieve ya aplicado)
     private static float[] water;            // 1 = agua (para el reflejo del sol)
     private static float[] cloud;            // opacidad de nubes
+    private static float[] cloudShade;       // brillo de cada nube (gruesas más blancas, finas más grises)
+    private static float[][] storms;         // centros de huracanes (x, y, z, radio, giro)
     private static float[] lights;           // luces de ciudad (x,y,z por luz)
     private static boolean built;
     /** Gira el mapa para que el objetivo (arriba del todo) caiga en un continente templado y no en el polo. */
@@ -35,6 +37,8 @@ final class PlanetMesh {
         cr = new float[n]; cg = new float[n]; cb = new float[n];
         water = new float[n];
         cloud = new float[n];
+        cloudShade = new float[n];
+        storms = makeStorms();
         toMap = new Quaternionf().rotationTo(new Vector3f(0, 1, 0), findTargetLand());
         for (int i = 0; i <= LAT; i++) {
             double theta = Math.PI * i / LAT;          // 0 = polo norte (arriba)
@@ -55,7 +59,9 @@ final class PlanetMesh {
                 float c = fbm(x * 3.1f + 11f, y * 3.1f + 3f, z * 3.1f - 7f, 6);
                 float swirl = fbm(x * 7f - 4f, y * 7f + 9f, z * 7f + 1f, 3);
                 float band = 0.5f + 0.5f * (float) Math.cos(y * 9.0);
-                cloud[k] = smoothstep(0.55f, 0.78f, c * 0.75f + band * 0.12f + swirl * 0.13f) * 0.8f;
+                float[] cl = cloudAt(x, y, z, c, swirl, band);
+                cloud[k] = cl[0];
+                cloudShade[k] = cl[1];
             }
         }
         Random rnd = new Random(7);
@@ -96,7 +102,7 @@ final class PlanetMesh {
     private static void vertexSurface(BufferBuilder bb, Matrix4f m, float radius, int k, Vector3f sun, Vector3f eye) {
         float x = nx[k], y = ny[k], z = nz[k];
         float d = x * sun.x + y * sun.y + z * sun.z;
-        float light = 0.02f + 0.80f * smoothstep(-0.06f, 0.6f, d);
+        float light = 0.02f + 0.80f * smoothstep(-0.06f, 0.6f, d) + 0.10f * smoothstep(0.35f, 0.95f, d);
         float dusk = Math.max(0f, 1f - Math.abs(d) * 8f) * 0.22f;
         float r = cr[k] * light + dusk * 0.8f;
         float g = cg[k] * light + dusk * 0.3f;
@@ -134,7 +140,7 @@ final class PlanetMesh {
         float z = nx[k] * sin + nz[k] * cos;
         float y = ny[k];
         float d = x * sun.x + y * sun.y + z * sun.z;
-        float light = 0.03f + 0.72f * smoothstep(-0.1f, 0.55f, d);
+        float light = (0.03f + 0.72f * smoothstep(-0.1f, 0.55f, d) + 0.08f * smoothstep(0.35f, 0.95f, d)) * cloudShade[k];
         float dusk = Math.max(0f, 1f - Math.abs(d) * 7f) * 0.35f;
         bb.vertex(m, x * radius, y * radius, z * radius)
                 .color(light + dusk * 0.5f, light * 0.97f + dusk * 0.18f, light * 0.95f, cloud[k] * 0.62f)
@@ -190,6 +196,63 @@ final class PlanetMesh {
             float cx = x * (radius + 0.6f), cy = y * (radius + 0.6f), cz = z * (radius + 0.6f);
             RenderUtil.streak(bb, m, cx, cy, cz, t1, s, t2, s, 1.0f, 0.75f, 0.35f, 0.8f * night * flicker);
         }
+    }
+
+    // --------------------------------------------------------------- nubes
+
+    /** Huracanes repartidos por las zonas tropicales y templadas. */
+    private static float[][] makeStorms() {
+        Random r = new Random(4242);
+        float[][] out = new float[7][];
+        for (int i = 0; i < out.length; i++) {
+            double lat = (0.12 + r.nextDouble() * 0.4) * (r.nextBoolean() ? 1 : -1);
+            double phi = r.nextDouble() * Math.PI * 2;
+            double s = Math.sqrt(1 - lat * lat);
+            float radius = 0.06f + r.nextFloat() * 0.07f;
+            // giran al revés en cada hemisferio
+            float spin = lat > 0 ? 1f : -1f;
+            out[i] = new float[]{(float) (s * Math.cos(phi)), (float) lat, (float) (s * Math.sin(phi)), radius, spin};
+        }
+        return out;
+    }
+
+    /**
+     * Mezcla varios tipos de nubes: grandes frentes, cirros finos y alargados, cúmulos pequeños
+     * sobre los trópicos y huracanes en espiral. Devuelve {opacidad, brillo}.
+     */
+    private static float[] cloudAt(float x, float y, float z, float c, float swirl, float band) {
+        // frentes y sistemas grandes
+        float fronts = smoothstep(0.56f, 0.78f, c * 0.75f + band * 0.12f + swirl * 0.13f) * 0.78f;
+        // cirros: franjas finas estiradas de este a oeste
+        float cirrusN = fbm(x * 2.2f + 40f, y * 16f, z * 2.2f - 13f, 4);
+        float cirrus = smoothstep(0.55f, 0.72f, cirrusN) * 0.35f * (0.4f + 0.6f * Math.abs(y));
+        // cúmulos: nubecitas sueltas, sobre todo cerca del ecuador
+        float cumN = fbm(x * 22f - 5f, y * 22f + 2f, z * 22f + 9f, 3);
+        float tropics = 1f - smoothstep(0.15f, 0.45f, Math.abs(y));
+        float cumulus = smoothstep(0.6f, 0.72f, cumN) * 0.65f * (0.35f + 0.65f * tropics);
+        // huracanes en espiral
+        float storm = 0f;
+        for (float[] s : storms) {
+            float dx = x - s[0], dy = y - s[1], dz = z - s[2];
+            float dist = (float) Math.sqrt(dx * dx + dy * dy + dz * dz);
+            if (dist > s[3] * 1.6f) continue;
+            // ángulo alrededor del centro, en el plano tangente
+            Vector3f nrm = new Vector3f(s[0], s[1], s[2]);
+            Vector3f t1 = new Vector3f(nrm).cross(0, 1, 0).normalize();
+            Vector3f t2 = new Vector3f(nrm).cross(t1).normalize();
+            float u = dx * t1.x + dy * t1.y + dz * t1.z, v = dx * t2.x + dy * t2.y + dz * t2.z;
+            float ang = (float) Math.atan2(v, u);
+            float rr = dist / s[3];
+            float arms = 0.5f + 0.5f * (float) Math.sin(ang * 2f + s[4] * rr * 9f);
+            float eye = smoothstep(0.05f, 0.14f, rr);              // ojo despejado en el centro
+            float fall = 1f - smoothstep(0.6f, 1.6f, rr);
+            storm = Math.max(storm, (0.35f + 0.65f * arms) * eye * fall);
+        }
+        float alpha = Math.min(0.92f, Math.max(Math.max(fronts, storm * 0.9f), Math.max(cirrus, cumulus)) + fronts * cumulus * 0.3f);
+        // las nubes gruesas son más blancas y las finas algo grises/transparentes
+        float thick = Math.max(fronts / 0.78f, storm);
+        float shade = 0.82f + 0.18f * Math.min(1f, thick);
+        return new float[]{alpha, shade};
     }
 
     // --------------------------------------------------------------- terreno
