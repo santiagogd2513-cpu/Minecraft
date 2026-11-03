@@ -20,7 +20,7 @@ public final class Config {
         b.comment("Bombardeo orbital ÉGIDA-7").push("bombardeo");
         CINEMATIC_ENABLED = b.comment("Mostrar la cinemática al disparar (si es false, el rayo cae a los 2 segundos)")
                 .define("cinematica", true);
-        CINEMATIC_SECONDS = b.comment("Duración de la cinemática en segundos (40 a 180)")
+        CINEMATIC_SECONDS = b.comment("Duración de la cinemática en segundos (40 a 180). Por defecto la más larga: 180")
                 .defineInRange("duracionCinematicaSegundos", 180, 40, 180);
         CRATER_RADIUS = b.comment("Radio del cráter en bloques")
                 .defineInRange("radioCrater", 22, 3, 48);

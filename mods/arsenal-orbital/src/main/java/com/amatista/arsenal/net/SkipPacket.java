@@ -1,8 +1,6 @@
 package com.amatista.arsenal.net;
 
-import com.amatista.arsenal.strike.OrbitalStrikeManager;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.server.level.ServerPlayer;
 import net.minecraftforge.network.NetworkEvent;
 
 import java.util.function.Supplier;
@@ -16,8 +14,7 @@ public class SkipPacket {
     public void encode(FriendlyByteBuf buf) {}
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
-        ServerPlayer player = ctx.get().getSender();
-        if (player != null) OrbitalStrikeManager.skip(player);
+        // La cinemática ya no se puede omitir: se ignora.
         ctx.get().setPacketHandled(true);
     }
 }

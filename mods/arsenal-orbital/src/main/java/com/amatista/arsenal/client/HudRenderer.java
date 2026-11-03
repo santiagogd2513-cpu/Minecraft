@@ -122,8 +122,6 @@ public final class HudRenderer {
         flash = Math.max(flash, pulse(t, Timeline.IMPACT, sec(0.1f), sec(1.8f)));             // impacto
         if (flash > 0.001f) g.fill(0, 0, w, h, ((int) (flash * 255) << 24) | 0xFFFFFF);
 
-        // cómo omitir
-        text(g, font, "SALTAR o RETROCESO: omitir", w - 140, h - Math.max(barH, 14) + 2, 0x777777, 0.8f, 0.9f, false);
     }
 
     private static void drawConsole(GuiGraphics g, Font font, int w, int h, float t, int barH) {

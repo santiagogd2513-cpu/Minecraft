@@ -1,8 +1,6 @@
 package com.amatista.arsenal.client;
 
 import com.amatista.arsenal.ArsenalOrbital;
-import com.amatista.arsenal.net.Network;
-import com.amatista.arsenal.net.SkipPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.Input;
 import net.minecraft.resources.ResourceLocation;
@@ -28,15 +26,10 @@ public final class ClientEvents {
         if (event.phase != TickEvent.Phase.END) return;
         Cinematic.clientTick();
         WorldEffects.tick();
+        // La cinemática no se puede omitir: se descartan las pulsaciones de salto mientras dura
         Minecraft mc = Minecraft.getInstance();
         if (Cinematic.isActive()) {
-            boolean skip = false;
-            while (ClientSetup.SKIP.consumeClick()) skip = true;
-            while (mc.options.keyJump.consumeClick()) skip = true;
-            if (skip) {
-                Network.CHANNEL.sendToServer(new SkipPacket());
-                Cinematic.stop();
-            }
+            while (mc.options.keyJump.consumeClick()) { }
         }
     }
 
