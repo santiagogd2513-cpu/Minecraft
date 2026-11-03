@@ -299,6 +299,100 @@ public final class ImpactEffects {
         LINGERING.add(new Lingering(level, c, r, level.getGameTime() + 20 * 180));
     }
 
+    private static final BlockState[] CRYSTALS = {
+            Blocks.AMETHYST_BLOCK.defaultBlockState(), Blocks.CALCITE.defaultBlockState(), Blocks.QUARTZ_BLOCK.defaultBlockState(),
+            Blocks.SMOOTH_QUARTZ.defaultBlockState(), Blocks.PURPUR_BLOCK.defaultBlockState(), Blocks.PRISMARINE_BRICKS.defaultBlockState(),
+            Blocks.SEA_LANTERN.defaultBlockState(), Blocks.GLOWSTONE.defaultBlockState(), Blocks.AMETHYST_BLOCK.defaultBlockState()};
+
+    /** La chispa florece: el suelo alrededor se va convirtiendo en cristal y brotan racimos de amatista. */
+    public static void genesisBloom(ServerLevel level, BlockPos target, float progress) {
+        Vec3 c = Vec3.atCenterOf(target).add(0, 0.5, 0);
+        RandomSource rnd = level.getRandom();
+        boolean destroy = Config.DESTROY_BLOCKS.get();
+        int reach = Math.round(5 + 40 * progress);
+        if (destroy) {
+            for (int i = 0; i < 14 + Math.round(progress * 30); i++) {
+                double ang = rnd.nextDouble() * Math.PI * 2, rr = Math.sqrt(rnd.nextDouble()) * reach;
+                BlockPos pos = BlockPos.containing(c.x + Math.cos(ang) * rr, c.y + 8, c.z + Math.sin(ang) * rr);
+                for (int k = 0; k < 24 && level.getBlockState(pos).isAir() && pos.getY() > level.getMinBuildHeight(); k++) pos = pos.below();
+                BlockState state = level.getBlockState(pos);
+                if (state.isAir() || level.getBlockEntity(pos) != null || state.getDestroySpeed(level, pos) < 0) continue;
+                level.setBlock(pos, CRYSTALS[rnd.nextInt(CRYSTALS.length)], Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
+                BlockPos above = pos.above();
+                if (level.getBlockState(above).isAir() && rnd.nextFloat() < 0.35f) {
+                    level.setBlock(above, Blocks.AMETHYST_CLUSTER.defaultBlockState(), Block.UPDATE_ALL);
+                }
+            }
+        }
+        long time = level.getGameTime();
+        if (time % 2 == 0) {
+            burst(level, ParticleTypes.END_ROD, c.add(0, 20, 0), 50, reach * 0.3, 8, reach * 0.3, 0.3);
+            burst(level, ParticleTypes.GLOW, c, 40, reach * 0.5, 2, reach * 0.5, 0.1);
+            burst(level, ParticleTypes.ELECTRIC_SPARK, c.add(0, 20, 0), 30, 4, 4, 4, 0.6);
+            burst(level, ParticleTypes.WAX_ON, c, 30, reach * 0.4, 1, reach * 0.4, 0.2);
+        }
+        if (time % 10 == 0) {
+            level.playSound(null, c.x, c.y, c.z, SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.BLOCKS, 8f, 0.5f + progress * 1.2f);
+            level.playSound(null, c.x, c.y, c.z, SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.BLOCKS, 8f, 0.6f + progress);
+        }
+    }
+
+    /** Supernova de Génesis: el cráter más grande, revestido de cristales que brillan. */
+    public static void genesisImpact(ServerLevel level, BlockPos target, @Nullable ServerPlayer owner) {
+        Vec3 c = Vec3.atCenterOf(target).add(0, 0.5, 0);
+        int r = Math.min(48, Math.round(Config.CRATER_RADIUS.get() * 2.1f));
+        boolean destroy = Config.DESTROY_BLOCKS.get();
+        RandomSource rnd = level.getRandom();
+        level.playSound(null, c.x, c.y, c.z, SoundEvents.GENERIC_EXPLODE, SoundSource.BLOCKS, 20f, 0.25f);
+        level.playSound(null, c.x, c.y, c.z, SoundEvents.WARDEN_SONIC_BOOM, SoundSource.HOSTILE, 20f, 0.35f);
+        level.playSound(null, c.x, c.y, c.z, SoundEvents.END_PORTAL_SPAWN, SoundSource.HOSTILE, 16f, 0.6f);
+        level.playSound(null, c.x, c.y, c.z, SoundEvents.AMETHYST_BLOCK_RESONATE, SoundSource.BLOCKS, 20f, 0.5f);
+        damageEntities(level, c, r, owner);
+        if (destroy) {
+            carveCrater(level, target, r, rnd);
+            // revestir el cráter de cristal
+            int rr = r + 3;
+            for (int dx = -rr; dx <= rr; dx++) {
+                for (int dz = -rr; dz <= rr; dz++) {
+                    double d = Math.sqrt(dx * dx + dz * dz);
+                    if (d > rr) continue;
+                    BlockPos col = target.offset(dx, r / 2 + 4, dz);
+                    BlockPos pos = col;
+                    for (int k = 0; k < r + 12 && level.getBlockState(pos).isAir() && pos.getY() > level.getMinBuildHeight(); k++) pos = pos.below();
+                    BlockState st = level.getBlockState(pos);
+                    if (st.isAir() || level.getBlockEntity(pos) != null || st.getDestroySpeed(level, pos) < 0 || !st.getFluidState().isEmpty()) continue;
+                    if (rnd.nextFloat() < 0.8f) level.setBlock(pos, CRYSTALS[rnd.nextInt(CRYSTALS.length)], Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
+                    BlockPos above = pos.above();
+                    if (level.getBlockState(above).isAir() && rnd.nextFloat() < 0.18f) {
+                        level.setBlock(above, Blocks.AMETHYST_CLUSTER.defaultBlockState(), Block.UPDATE_ALL);
+                    }
+                }
+            }
+            // columnas de cristal alrededor
+            for (int i = 0; i < 9; i++) {
+                double ang = Math.PI * 2 * i / 9;
+                BlockPos base = BlockPos.containing(c.x + Math.cos(ang) * (r + 6), c.y + 10, c.z + Math.sin(ang) * (r + 6));
+                for (int k = 0; k < 30 && level.getBlockState(base).isAir() && base.getY() > level.getMinBuildHeight(); k++) base = base.below();
+                int hgt = 6 + rnd.nextInt(10);
+                for (int y = 1; y <= hgt; y++) {
+                    BlockPos p = base.above(y);
+                    if (!level.getBlockState(p).isAir()) break;
+                    level.setBlock(p, y == hgt ? Blocks.SEA_LANTERN.defaultBlockState() : Blocks.AMETHYST_BLOCK.defaultBlockState(), Block.UPDATE_ALL);
+                }
+            }
+        }
+        level.explode(null, c.x, c.y + 4, c.z, 14f, Level.ExplosionInteraction.NONE);
+        burst(level, ParticleTypes.EXPLOSION_EMITTER, c, 30, r * 0.5, r * 0.3, r * 0.5, 0);
+        burst(level, ParticleTypes.FLASH, c, 16, 3, 3, 3, 0);
+        burst(level, ParticleTypes.END_ROD, c, 1600, r * 0.6, r * 0.7, r * 0.6, 1.8);
+        burst(level, ParticleTypes.GLOW, c, 900, r * 0.7, r * 0.5, r * 0.7, 0.6);
+        burst(level, ParticleTypes.ELECTRIC_SPARK, c, 900, r * 0.6, r * 0.6, r * 0.6, 1.2);
+        burst(level, ParticleTypes.WAX_ON, c, 600, r * 0.6, r * 0.4, r * 0.6, 0.5);
+        burst(level, ParticleTypes.SOUL_FIRE_FLAME, c, 500, r * 0.6, r * 0.5, r * 0.6, 0.4);
+        burst(level, ParticleTypes.CHERRY_LEAVES, c, 600, r * 0.7, r * 0.5, r * 0.7, 0.2);
+        LINGERING.add(new Lingering(level, c, r, level.getGameTime() + 20 * 180));
+    }
+
     private static void damageEntities(ServerLevel level, Vec3 c, int r, @Nullable ServerPlayer owner) {
         double reach = r * 2.5;
         AABB box = new AABB(c.x - reach, c.y - reach, c.z - reach, c.x + reach, c.y + reach, c.z + reach);

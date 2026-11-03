@@ -145,6 +145,7 @@ public final class Cinematic {
         float t = progress(partialTick);
         if (type == StrikeType.PHOBOS) return t >= PhobosTimeline.SPACE_START && t < PhobosTimeline.SPACE_END;
         if (type == StrikeType.BLACKHOLE) return t >= com.amatista.arsenal.BlackHoleTimeline.SPACE_START && t < com.amatista.arsenal.BlackHoleTimeline.SPACE_END;
+        if (type == StrikeType.GENESIS) return t >= com.amatista.arsenal.GenesisTimeline.SPACE_START && t < com.amatista.arsenal.GenesisTimeline.SPACE_END;
         if (type == StrikeType.STAR) return t >= com.amatista.arsenal.StarTimeline.SPACE_START && t < com.amatista.arsenal.StarTimeline.SPACE_END;
         return t >= Timeline.SPACE_START && t < Timeline.SPACE_END;
     }
@@ -186,6 +187,7 @@ public final class Cinematic {
         if (type == StrikeType.PHOBOS) return PhobosDirector.worldPose(t);
         if (type == StrikeType.BLACKHOLE) return BlackHoleDirector.worldPose(t);
         if (type == StrikeType.STAR) return StarDirector.worldPose(t);
+        if (type == StrikeType.GENESIS) return GenesisDirector.worldPose(t);
         return satelliteWorldPose(t);
     }
 
@@ -372,6 +374,11 @@ public final class Cinematic {
     private static void buildCues() {
         cues.clear();
         nextCue = 0;
+        if (type == StrikeType.GENESIS) {
+            GenesisDirector.buildCues();
+            cues.sort((a, b) -> Float.compare(a.at, b.at));
+            return;
+        }
         if (type == StrikeType.STAR) {
             StarDirector.buildCues();
             cues.sort((a, b) -> Float.compare(a.at, b.at));
@@ -454,6 +461,10 @@ public final class Cinematic {
         }
         if (type == StrikeType.BLACKHOLE) {
             BlackHoleDirector.ambientSounds(t, tick);
+            return;
+        }
+        if (type == StrikeType.GENESIS) {
+            GenesisDirector.ambientSounds(t, tick);
             return;
         }
         if (type == StrikeType.STAR) {

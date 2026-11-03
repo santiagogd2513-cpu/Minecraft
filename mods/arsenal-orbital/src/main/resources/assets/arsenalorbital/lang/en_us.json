@@ -20,5 +20,7 @@
   "weapon.arsenalorbital.blackhole": "Singularity Protocol",
   "weapon.arsenalorbital.blackhole.desc": "Travel to Andromeda's black hole. The Anchor station rips out a singularity and sends it through a wormhole: it devours everything and collapses.",
   "weapon.arsenalorbital.star": "Prometheus Protocol",
-  "weapon.arsenalorbital.star.desc": "The biggest attack: a trip to the middle of nowhere. Prometheus station drains a blue hypergiant and fires a laser across the universe. Lasts 3 min 30 s."
+  "weapon.arsenalorbital.star.desc": "The biggest attack: a trip to the middle of nowhere. Prometheus station drains a blue hypergiant and fires a laser across the universe. Lasts 3 min 30 s.",
+  "weapon.arsenalorbital.genesis": "Genesis Protocol",
+  "weapon.arsenalorbital.genesis.desc": "The final order: travel beyond the edge of the universe, awaken Genesis, harvest six galaxies and forge a new star over the target. Lasts 5 min."
 }

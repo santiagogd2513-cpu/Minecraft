@@ -5,7 +5,8 @@ public enum StrikeType {
     SATELLITE("satellite", Timeline.BEAM_WORLD_START, Timeline.IMPACT, Timeline.IMPACT),
     PHOBOS("phobos", PhobosTimeline.WORLD_START, PhobosTimeline.IMPACT, PhobosTimeline.IMPACT),
     BLACKHOLE("blackhole", BlackHoleTimeline.WORLD_START, BlackHoleTimeline.IMPACT, BlackHoleTimeline.PULL_START),
-    STAR("star", StarTimeline.WORLD_START, StarTimeline.IMPACT, StarTimeline.BURN_START);
+    STAR("star", StarTimeline.WORLD_START, StarTimeline.IMPACT, StarTimeline.BURN_START),
+    GENESIS("genesis", GenesisTimeline.WORLD_START, GenesisTimeline.IMPACT, GenesisTimeline.BLOOM_START);
 
     public final String id;
     /** Cuándo empieza el efecto visible en el mundo para todos (fracción de la cinemática). */
@@ -32,6 +33,7 @@ public enum StrikeType {
 
     /** Multiplica la duración configurada (el Protocolo Prometeo dura 3 min 30 s). */
     public float durationScale() {
+        if (this == GENESIS) return GenesisTimeline.DURATION_SCALE;
         return this == STAR ? StarTimeline.DURATION_SCALE : 1f;
     }
 

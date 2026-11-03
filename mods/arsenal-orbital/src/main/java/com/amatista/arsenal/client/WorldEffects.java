@@ -79,6 +79,8 @@ public final class WorldEffects {
     private static final List<Meteor> METEORS = new ArrayList<>();
     /** Mini agujeros negros (usa la misma estructura: aparece, absorbe y colapsa en "impact"). */
     private static final List<Meteor> SINGULARITIES = new ArrayList<>();
+    /** La chispa de Génesis: baja del cielo, hace florecer cristales y estalla en una supernova de arcoíris. */
+    private static final List<Meteor> SPARKS = new ArrayList<>();
 
     public static void addStrike(BlockPos target, int ticksToImpact, com.amatista.arsenal.StrikeType type) {
         long now = Cinematic.clientTicks();
@@ -89,6 +91,10 @@ public final class WorldEffects {
             SpaceRenderer.prepare();
             METEORS.add(new Meteor(target, now, now + Math.max(1, ticksToImpact)));
             Cinematic.play(SoundEvents.ENDER_DRAGON_GROWL, 0.4f, 0.5f);
+        } else if (type == com.amatista.arsenal.StrikeType.GENESIS) {
+            Meteor sp = new Meteor(target, now, now + Math.max(1, ticksToImpact));
+            SPARKS.add(sp);
+            Cinematic.play(SoundEvents.AMETHYST_BLOCK_RESONATE, 0.5f, 1.0f);
         } else if (type == com.amatista.arsenal.StrikeType.STAR) {
             BEAMS.add(new Beam(target, now, now + Math.max(1, ticksToImpact), 2.6f, true));
             Cinematic.play(SoundEvents.WARDEN_SONIC_BOOM, 0.4f, 0.8f);
@@ -101,6 +107,7 @@ public final class WorldEffects {
         BEAMS.clear();
         METEORS.clear();
         SINGULARITIES.clear();
+        SPARKS.clear();
     }
 
     public static void tick() {
@@ -109,6 +116,25 @@ public final class WorldEffects {
         long now = Cinematic.clientTicks();
         tickMeteors(mc, now);
         SINGULARITIES.removeIf(sg -> now > sg.end);
+        SPARKS.removeIf(sp -> now > sp.impact + 600);
+        for (Meteor sp : SPARKS) {
+            if (now < sp.impact) {
+                Vec3 p = GenesisDirector.sparkWorldPos(sp.center, sp.fraction(now));
+                for (int i = 0; i < 8; i++) {
+                    double ox = mc.level.random.nextGaussian() * 3, oy = mc.level.random.nextGaussian() * 3, oz = mc.level.random.nextGaussian() * 3;
+                    mc.level.addParticle(i % 2 == 0 ? ParticleTypes.END_ROD : ParticleTypes.ELECTRIC_SPARK, true,
+                            p.x + ox, p.y + oy, p.z + oz, ox * 0.05, oy * 0.05, oz * 0.05);
+                }
+                if (now % 2 == 0) mc.level.addParticle(ParticleTypes.GLOW, true, p.x, p.y - 2, p.z, 0, -0.3, 0);
+            } else if (now < sp.impact + 600 && now % 4 == 0) {
+                // polvo de estrellas que sigue cayendo sobre el cráter
+                for (int i = 0; i < 6; i++) {
+                    double a = mc.level.random.nextDouble() * Math.PI * 2, r = mc.level.random.nextDouble() * 60;
+                    mc.level.addParticle(ParticleTypes.END_ROD, true, sp.center.x + Math.cos(a) * r, sp.center.y + 40 + mc.level.random.nextDouble() * 40,
+                            sp.center.z + Math.sin(a) * r, 0, -0.08, 0);
+                }
+            }
+        }
         for (Meteor sg : SINGULARITIES) {
             if (now >= sg.impact) continue;
             Vec3 p = BlackHoleDirector.singularityWorldPos(sg.center, sg.fraction(now));
@@ -177,6 +203,7 @@ public final class WorldEffects {
         boolean aiming = player != null && !Cinematic.isActive() && isAiming(player);
         if (!METEORS.isEmpty()) renderMeteors(poseStack, camera, partialTick);
         if (!SINGULARITIES.isEmpty()) renderSingularities(poseStack, camera, partialTick);
+        if (!SPARKS.isEmpty()) renderSparks(poseStack, camera, partialTick);
         if (BEAMS.isEmpty() && !aiming) return;
 
         poseStack.pushPose();
@@ -368,6 +395,128 @@ public final class WorldEffects {
                 RenderUtil.ring(bb, g, radius * 0.6f, radius * 0.6f + 5f, 3f + u * 20f, 96, 1f, 0.7f, 1f, (1f - u) * 0.6f);
                 RenderUtil.softDisc(bb, m, x, py, z, right, up, 30f + 200f * u, 40, 0.85f, 0.6f, 1f, (1f - u) * 0.9f, 0f);
                 RenderUtil.softDisc(bb, m, x, py, z, right, up, 12f + 60f * u, 40, 1f, 1f, 1f, (1f - u), 0f);
+            }
+        }
+        BufferUploader.drawWithShader(bb.end());
+        RenderSystem.depthMask(true);
+        RenderSystem.defaultBlendFunc();
+        RenderSystem.disableBlend();
+        RenderSystem.enableCull();
+        poseStack.popPose();
+    }
+
+    private static float[] hue(float h) {
+        return GenesisRenderer.hue(h);
+    }
+
+    /** La chispa en el mundo: orbe prismático, anillos dorados, auroras en el cielo y supernova de cristal. */
+    private static void renderSparks(PoseStack poseStack, net.minecraft.client.Camera camera, float partialTick) {
+        Vec3 cam = camera.getPosition();
+        Vector3f right = new Vector3f(camera.getLeftVector()).negate();
+        Vector3f up = new Vector3f(camera.getUpVector());
+        poseStack.pushPose();
+        poseStack.translate(-cam.x, -cam.y, -cam.z);
+        Matrix4f m = poseStack.last().pose();
+        float now = Cinematic.clientTicks() - 1 + partialTick;
+        float time = now / 20f;
+        RenderSystem.setShader(GameRenderer::getPositionColorShader);
+        RenderSystem.disableCull();
+        RenderSystem.enableBlend();
+        RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
+        RenderSystem.enableDepthTest();
+        RenderSystem.depthMask(false);
+        BufferBuilder bb = Tesselator.getInstance().getBuilder();
+        bb.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
+        float bloomFrac = (com.amatista.arsenal.GenesisTimeline.BLOOM_START - com.amatista.arsenal.GenesisTimeline.WORLD_START)
+                / (com.amatista.arsenal.GenesisTimeline.IMPACT - com.amatista.arsenal.GenesisTimeline.WORLD_START);
+        for (Meteor sp : SPARKS) {
+            float x = (float) sp.center.x, y = (float) sp.center.y, z = (float) sp.center.z;
+            Vector3f camV = new Vector3f((float) cam.x, (float) cam.y, (float) cam.z);
+            // auroras en el cielo (mientras dura todo)
+            float auroraA = now < sp.impact ? Math.min(1f, (now - sp.start) / 60f) : Math.max(0f, 1f - (now - sp.impact) / 500f);
+            if (auroraA > 0.01f) {
+                Vector3f yAxis = new Vector3f(0, 1, 0);
+                for (int c = 0; c < 5; c++) {
+                    for (int s = 0; s < 40; s++) {
+                        float f = s / 39f - 0.5f;
+                        float ang = c * 1.2566f + f * 1.3f + time * 0.01f;
+                        float dist = 260f + c * 40f;
+                        float wave = (float) Math.sin(f * 9 + time * 0.6f + c) * 18f;
+                        float px = x + (float) Math.cos(ang) * (dist + wave), pz = z + (float) Math.sin(ang) * (dist + wave);
+                        float h = 90f + 30f * (float) Math.sin(f * 6 + time * 0.4f + c * 2);
+                        float py = y + 160f + h * 0.5f;
+                        Vector3f mid = new Vector3f(px, py, pz);
+                        Vector3f side = new Vector3f(yAxis).cross(new Vector3f(camV).sub(mid)).normalize();
+                        float[] col = hue(0.3f + 0.12f * c + 0.1f * (float) Math.sin(f * 4 + time * 0.2f));
+                        RenderUtil.softBeam(bb, m, px, py, pz, yAxis, h * 0.5f, side, 10f, col[0], col[1], col[2], 0.16f * auroraA);
+                    }
+                }
+            }
+            if (now < sp.impact) {
+                float f = sp.fraction(now);
+                Vec3 pv = GenesisDirector.sparkWorldPos(sp.center, f);
+                Vector3f p = new Vector3f((float) pv.x, (float) pv.y, (float) pv.z);
+                float bloom = Mth.clamp((f - bloomFrac) / (1f - bloomFrac), 0f, 1f);
+                float size = 6f + 10f * bloom;
+                GenesisRenderer.drawSpark(bb, m, p, right, up, size, time, 1f);
+                // estela de arcoíris desde el cielo
+                Vector3f trail = new Vector3f((float) GenesisDirector.EARTH_WORLD_OFFSET.x, (float) GenesisDirector.EARTH_WORLD_OFFSET.y,
+                        (float) GenesisDirector.EARTH_WORLD_OFFSET.z).normalize();
+                for (int i = 0; i < 6; i++) {
+                    float[] col = hue(i / 6f + time * 0.1f);
+                    Vector3f mid = new Vector3f(p).add(new Vector3f(trail).mul(300f));
+                    Vector3f side = new Vector3f(trail).cross(new Vector3f(camV).sub(mid)).normalize();
+                    Vector3f off = new Vector3f(side).mul((i - 2.5f) * 1.6f);
+                    RenderUtil.softBeam(bb, m, mid.x + off.x, mid.y + off.y, mid.z + off.z, trail, 300f, side, 2.4f,
+                            col[0], col[1], col[2], 0.5f * (1f - bloom * 0.5f));
+                }
+                // anillos dorados girando alrededor del orbe
+                for (int k = 0; k < 3; k++) {
+                    Matrix4f rm = new Matrix4f(m).translate(p.x, p.y, p.z).rotateX(0.5f + k * 1.1f + time * 0.3f).rotateZ(time * (0.6f + k * 0.3f));
+                    float rr = size * (1.8f + k * 0.6f);
+                    RenderUtil.ring(bb, rm, rr, rr + 0.6f, 0, 64, 1f, 0.82f, 0.45f, 0.7f);
+                }
+                Matrix4f g = new Matrix4f(m).translate(x, y, z);
+                if (bloom > 0f) {
+                    // rayos de arcoíris que suben del suelo y anillos de floración
+                    for (int i = 0; i < 24; i++) {
+                        float a = i * 0.2618f + time * 0.1f;
+                        float r = 10f + 40f * bloom * (0.5f + 0.5f * GenesisRenderer.rnd(i));
+                        float[] col = hue(i / 24f + time * 0.05f);
+                        float hgt = (40f + 140f * GenesisRenderer.rnd(i + 50)) * bloom;
+                        Vector3f base = new Vector3f(x + (float) Math.cos(a) * r, y, z + (float) Math.sin(a) * r);
+                        Vector3f mid = new Vector3f(base).add(0, hgt * 0.5f, 0);
+                        Vector3f side = new Vector3f(0, 1, 0).cross(new Vector3f(camV).sub(mid)).normalize();
+                        RenderUtil.softBeam(bb, m, mid.x, mid.y, mid.z, new Vector3f(0, 1, 0), hgt * 0.5f, side, 1.2f,
+                                col[0], col[1], col[2], 0.6f * bloom);
+                    }
+                    for (int k = 0; k < 4; k++) {
+                        float ph = (time * 0.4f + k * 0.25f) % 1f;
+                        float rr = 6f + 70f * ph * bloom;
+                        float[] col = hue(k / 4f + time * 0.08f);
+                        RenderUtil.ring(bb, g, rr, rr + 1.5f, 0.3f, 72, col[0], col[1], col[2], 0.6f * (1 - ph) * bloom);
+                    }
+                }
+                RenderUtil.ring(bb, g, 0f, 10f + 50f * f, 0.2f, 48, 0.9f, 0.7f, 1f, 0.1f + 0.3f * f * f);
+            } else if (now < sp.impact + 100) {
+                // supernova de cristal: ondas de arcoíris, esfera de luz y columna prismática
+                float u = (now - sp.impact) / 100f;
+                float e = Cinematic.easeOutCubic(u);
+                Matrix4f g = new Matrix4f(m).translate(x, y, z);
+                for (int k = 0; k < 6; k++) {
+                    float rr = 10f + (320f - k * 30f) * e;
+                    float[] col = hue(k / 6f + u * 0.5f);
+                    RenderUtil.ring(bb, g, rr, rr + 7f, 0.5f + k * 3f * u, 128, col[0], col[1], col[2], (1f - u) * 0.8f);
+                }
+                RenderUtil.cylinder(bb, g, 18f + 30f * u, 0, 260f * (1 - u) + 10, 32, 1f, 0.8f, 1f, 0.35f * (1 - u));
+                RenderUtil.softDisc(bb, m, x, y + 24f, z, right, up, 60f + 260f * e, 40, 1f, 0.85f, 1f, (1f - u) * 0.9f, 0f);
+                RenderUtil.softDisc(bb, m, x, y + 24f, z, right, up, 20f + 70f * e, 40, 1f, 1f, 1f, 1f - u, 0f);
+                GenesisRenderer.drawSpark(bb, m, new Vector3f(x, y + 24f, z), right, up, 20f * (1f - u) + 2f, time, 1f - u);
+            } else {
+                // la estrella nueva queda brillando en el centro del cráter
+                float u = Math.min(1f, (now - sp.impact - 100) / 500f);
+                float a = 1f - u;
+                GenesisRenderer.drawSpark(bb, m, new Vector3f(x, y + 12f, z), right, up, 3f, time, 0.8f * a);
             }
         }
         BufferUploader.drawWithShader(bb.end());

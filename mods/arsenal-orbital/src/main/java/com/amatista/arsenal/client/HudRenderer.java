@@ -48,6 +48,10 @@ public final class HudRenderer {
             StarHud.render(g, partialTick, w, h);
             return;
         }
+        if (Cinematic.type() == com.amatista.arsenal.StrikeType.GENESIS) {
+            GenesisHud.render(g, partialTick, w, h);
+            return;
+        }
         Minecraft mc = Minecraft.getInstance();
         Font font = mc.font;
         float t = Cinematic.progress(partialTick);

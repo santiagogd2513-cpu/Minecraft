@@ -20,5 +20,7 @@
   "weapon.arsenalorbital.blackhole": "Protocolo Singularidad",
   "weapon.arsenalorbital.blackhole.desc": "Viaje hasta el agujero negro de Andrómeda. La estación Áncora arranca una singularidad y la envía por un agujero de gusano: absorbe todo y colapsa.",
   "weapon.arsenalorbital.star": "Protocolo Prometeo",
-  "weapon.arsenalorbital.star.desc": "El ataque más grande: viaje a la mitad de la nada. La estación Prometeo roba la energía de una hipergigante azul y dispara un láser que cruza el universo. Dura 3 min 30 s."
+  "weapon.arsenalorbital.star.desc": "El ataque más grande: viaje a la mitad de la nada. La estación Prometeo roba la energía de una hipergigante azul y dispara un láser que cruza el universo. Dura 3 min 30 s.",
+  "weapon.arsenalorbital.genesis": "Protocolo Génesis",
+  "weapon.arsenalorbital.genesis.desc": "La última orden: viajar más allá del borde del universo, despertar a Génesis, cosechar seis galaxias y forjar una estrella nueva sobre el objetivo. Dura 5 min."
 }

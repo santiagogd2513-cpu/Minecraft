@@ -15,9 +15,9 @@ import java.util.List;
 
 /** Menú de armas (tecla H): imagen, nombre y descripción de cada arma; un toque la selecciona. */
 public class WeaponSelectScreen extends Screen {
-    private static final int ENTRY_H = 50;
+    private static final int ENTRY_H = 44;
     private static final int ENTRY_W = 330;
-    private static final int ICON = 40;
+    private static final int ICON = 36;
 
     public WeaponSelectScreen() {
         super(Component.translatable("screen.arsenalorbital.weapons"));
@@ -32,7 +32,7 @@ public class WeaponSelectScreen extends Screen {
     }
 
     private int top() {
-        int total = StrikeType.values().length * (ENTRY_H + 5);
+        int total = StrikeType.values().length * (ENTRY_H + 4);
         return Math.max(30, (height - total) / 2 + 10);
     }
 
@@ -49,7 +49,7 @@ public class WeaponSelectScreen extends Screen {
         StrikeType[] types = StrikeType.values();
         for (int i = 0; i < types.length; i++) {
             StrikeType type = types[i];
-            int y = top() + i * (ENTRY_H + 5);
+            int y = top() + i * (ENTRY_H + 4);
             boolean selected = ClientState.selected == type;
             boolean hover = mouseX >= x && mouseX < x + w && mouseY >= y && mouseY < y + ENTRY_H;
             int bg = selected ? 0xD0402468 : hover ? 0xC0302048 : 0xB0180F28;
@@ -61,12 +61,12 @@ public class WeaponSelectScreen extends Screen {
             g.fill(x + w - 1, y, x + w, y + ENTRY_H, border);
             g.blit(icon(type), x + 9, y + (ENTRY_H - ICON) / 2, 0, 0, ICON, ICON, ICON, ICON);
             int tx = x + ICON + 18;
-            g.drawString(font, Component.translatable(type.nameKey()), tx, y + 6, selected ? 0xFFE0B0FF : 0xFFFFFFFF, true);
+            g.drawString(font, Component.translatable(type.nameKey()), tx, y + 5, selected ? 0xFFE0B0FF : 0xFFFFFFFF, true);
             if (selected) g.drawString(font, Component.translatable("screen.arsenalorbital.selected"), x + w - 8 - font.width(
-                    Component.translatable("screen.arsenalorbital.selected")), y + 6, 0xFF7CFF9C, true);
+                    Component.translatable("screen.arsenalorbital.selected")), y + 5, 0xFF7CFF9C, true);
             List<FormattedCharSequence> lines = font.split(Component.translatable(type.descKey()), w - (tx - x) - 10);
             for (int l = 0; l < Math.min(2, lines.size()); l++) {
-                g.drawString(font, lines.get(l), tx, y + 18 + l * 11, 0xFFC8B8E0, false);
+                g.drawString(font, lines.get(l), tx, y + 17 + l * 10, 0xFFC8B8E0, false);
             }
         }
         super.render(g, mouseX, mouseY, partialTick);
@@ -77,7 +77,7 @@ public class WeaponSelectScreen extends Screen {
         int x = left(), w = entryWidth();
         StrikeType[] types = StrikeType.values();
         for (int i = 0; i < types.length; i++) {
-            int y = top() + i * (ENTRY_H + 5);
+            int y = top() + i * (ENTRY_H + 4);
             if (mouseX >= x && mouseX < x + w && mouseY >= y && mouseY < y + ENTRY_H) {
                 ClientState.selected = types[i];
                 Network.CHANNEL.sendToServer(new SelectWeaponPacket(types[i]));

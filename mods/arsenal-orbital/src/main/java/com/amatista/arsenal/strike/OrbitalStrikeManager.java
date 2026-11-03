@@ -106,7 +106,7 @@ public final class OrbitalStrikeManager {
         } else {
             strike.beamTick = now;
             strike.impactTick = now + (type == StrikeType.SATELLITE ? 50 : type == StrikeType.PHOBOS ? 140 : 260);
-            strike.pullTick = type == StrikeType.BLACKHOLE ? now + 100 : type == StrikeType.STAR ? now + 120 : strike.impactTick;
+            strike.pullTick = type == StrikeType.BLACKHOLE ? now + 100 : type == StrikeType.STAR || type == StrikeType.GENESIS ? now + 120 : strike.impactTick;
             strike.endTick = strike.impactTick + 10;
         }
         ACTIVE.put(player.getUUID(), strike);
@@ -151,6 +151,7 @@ public final class OrbitalStrikeManager {
                 float progress = (now - s.pullTick) / (float) Math.max(1, s.impactTick - s.pullTick);
                 if (s.type == StrikeType.BLACKHOLE) ImpactEffects.singularityPull(level, s.target, progress, server.getPlayerList().getPlayer(s.owner));
                 else if (s.type == StrikeType.STAR) ImpactEffects.starBurn(level, s.target, progress);
+                else if (s.type == StrikeType.GENESIS) ImpactEffects.genesisBloom(level, s.target, progress);
             }
             if (!s.impacted && now >= s.impactTick) {
                 s.impacted = true;
@@ -158,6 +159,7 @@ public final class OrbitalStrikeManager {
                 if (s.type == StrikeType.PHOBOS) ImpactEffects.moonImpact(level, s.target, owner);
                 else if (s.type == StrikeType.BLACKHOLE) ImpactEffects.singularityCollapse(level, s.target, owner);
                 else if (s.type == StrikeType.STAR) ImpactEffects.starImpact(level, s.target, owner);
+                else if (s.type == StrikeType.GENESIS) ImpactEffects.genesisImpact(level, s.target, owner);
                 else ImpactEffects.impact(level, s.target, owner);
             }
             if (s.impacted && now >= s.endTick) it.remove();
