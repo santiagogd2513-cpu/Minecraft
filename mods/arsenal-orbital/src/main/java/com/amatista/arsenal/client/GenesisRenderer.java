@@ -152,8 +152,14 @@ final class GenesisRenderer {
         }
         Matrix4f view = new Matrix4f().lookAt(eye.x, eye.y, eye.z, center.x, center.y, center.z, up.x, up.y, up.z);
         int w = mc.getWindow().getWidth(), h = Math.max(1, mc.getWindow().getHeight());
-        float near = scene == GenesisDirector.Scene.WEB || scene == GenesisDirector.Scene.EDGE ? 400f
-                : scene == GenesisDirector.Scene.GENESIS || scene == GenesisDirector.Scene.MILKY_WAY ? 20f : 4f;
+        float near = switch (scene) {
+            case SOLAR -> BlackHoleRenderer.solarNear(eye, time);
+            case EARTH -> RenderUtil.nearPlane(eye, 1f, 0f, 0f, 0f, Cinematic.PLANET_RADIUS * 1.04f);
+            case WEB, EDGE -> 400f;
+            case GENESIS -> RenderUtil.nearToCenter(eye, center, 20f, 150f);
+            case RETURN -> 4f;
+            default -> 20f;
+        };
         Matrix4f proj = new Matrix4f().setPerspective((float) Math.toRadians(pose.fov()), (float) w / h, near, 8_000_000f);
 
         RenderSystem.backupProjectionMatrix();

@@ -27,6 +27,17 @@ final class PlanetMesh {
     private static boolean built;
     /** Gira el mapa para que el objetivo (arriba del todo) caiga en un continente templado y no en el polo. */
     private static Quaternionf toMap;
+    /** Cámara (para no dibujar la cara oculta: en el celular se cuela por el borde del planeta). */
+    private static float ex, ey, ez;
+    private static boolean cull;
+
+    /** ¿Algún vértice del cuadro mira hacia la cámara? (ojo = cámara en coordenadas del planeta) */
+    private static boolean faces(float radius, float cx, float cy, float cz, int... ks) {
+        if (!cull) return true;
+        float lim = radius * 0.985f;
+        for (int k : ks) if (nx[k] * cx + ny[k] * cy + nz[k] * cz > lim) return true;
+        return false;
+    }
 
     private PlanetMesh() {}
 
@@ -88,9 +99,12 @@ final class PlanetMesh {
 
     /** Superficie (opaca), con día/noche, atardecer en la línea del terminador y reflejo del sol en el mar. */
     static void renderSurface(BufferBuilder bb, Matrix4f m, float radius, Vector3f sun, Vector3f eye) {
+        ex = eye.x; ey = eye.y; ez = eye.z;
+        cull = eye.length() > radius * 1.001f;
         for (int i = 0; i < LAT; i++) {
             for (int j = 0; j < LON; j++) {
                 int k0 = i * (LON + 1) + j, k1 = k0 + 1, k2 = k0 + LON + 2, k3 = k0 + LON + 1;
+                if (!faces(radius, ex, ey, ez, k0, k1, k2, k3)) continue;
                 vertexSurface(bb, m, radius, k0, sun, eye);
                 vertexSurface(bb, m, radius, k3, sun, eye);
                 vertexSurface(bb, m, radius, k2, sun, eye);
@@ -123,10 +137,13 @@ final class PlanetMesh {
     /** Nubes (transparencia normal), giran lentamente. */
     static void renderClouds(BufferBuilder bb, Matrix4f m, float radius, Vector3f sun, float rotation) {
         float cos = (float) Math.cos(rotation), sin = (float) Math.sin(rotation);
+        // la cámara girada al revés, para comparar con las normales sin girar
+        float rx = ex * cos + ez * sin, rz = -ex * sin + ez * cos;
         for (int i = 0; i < LAT; i++) {
             for (int j = 0; j < LON; j++) {
                 int k0 = i * (LON + 1) + j, k1 = k0 + 1, k2 = k0 + LON + 2, k3 = k0 + LON + 1;
                 if (cloud[k0] + cloud[k1] + cloud[k2] + cloud[k3] < 0.02f) continue;
+                if (!faces(radius, rx, ey, rz, k0, k1, k2, k3)) continue;
                 vertexCloud(bb, m, radius, k0, sun, cos, sin);
                 vertexCloud(bb, m, radius, k3, sun, cos, sin);
                 vertexCloud(bb, m, radius, k2, sun, cos, sin);
@@ -160,6 +177,7 @@ final class PlanetMesh {
             for (int j = 0; j < LON; j += step) {
                 int i2 = Math.min(LAT, i + step), j2 = Math.min(LON, j + step);
                 int k0 = i * (LON + 1) + j, k1 = i * (LON + 1) + j2, k2 = i2 * (LON + 1) + j2, k3 = i2 * (LON + 1) + j;
+                if (!faces(radius, eye.x, eye.y, eye.z, k0, k1, k2, k3)) continue;
                 vertexAtmo(bb, m, radius, k0, sun, eye, fade);
                 vertexAtmo(bb, m, radius, k3, sun, eye, fade);
                 vertexAtmo(bb, m, radius, k2, sun, eye, fade);
@@ -188,12 +206,13 @@ final class PlanetMesh {
             float d = x * sun.x + y * sun.y + z * sun.z;
             float night = smoothstep(0.05f, -0.2f, d);
             if (night <= 0.01f) continue;
+            if (cull && x * ex + y * ey + z * ez < radius * 0.99f) continue;
             float flicker = 0.75f + 0.25f * (float) Math.sin(time * 3 + i);
             Vector3f n = new Vector3f(x, y, z);
             Vector3f t1 = new Vector3f(n).cross(Math.abs(y) < 0.9f ? new Vector3f(0, 1, 0) : new Vector3f(1, 0, 0)).normalize();
             Vector3f t2 = new Vector3f(n).cross(t1).normalize();
             float s = 2.4f;
-            float cx = x * (radius + 0.6f), cy = y * (radius + 0.6f), cz = z * (radius + 0.6f);
+            float cx = x * (radius + 2.5f), cy = y * (radius + 2.5f), cz = z * (radius + 2.5f);
             RenderUtil.streak(bb, m, cx, cy, cz, t1, s, t2, s, 1.0f, 0.75f, 0.35f, 0.8f * night * flicker);
         }
     }

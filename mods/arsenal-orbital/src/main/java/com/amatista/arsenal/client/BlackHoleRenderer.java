@@ -195,7 +195,9 @@ final class BlackHoleRenderer {
         }
         Matrix4f view = new Matrix4f().lookAt(eye.x, eye.y, eye.z, center.x, center.y, center.z, up.x, up.y, up.z);
         int w = mc.getWindow().getWidth(), h = Math.max(1, mc.getWindow().getHeight());
-        float near = scene == BlackHoleDirector.Scene.MILKY_WAY ? 40f : 2f;
+        float near = scene == BlackHoleDirector.Scene.SOLAR ? solarNear(eye, time)
+                : scene == BlackHoleDirector.Scene.MILKY_WAY ? 40f
+                : scene == BlackHoleDirector.Scene.ANDROMEDA ? RenderUtil.nearToCenter(eye, center, 2f, 60f) : 2f;
         Matrix4f proj = new Matrix4f().setPerspective((float) Math.toRadians(pose.fov()), (float) w / h, near, 2_000_000f);
 
         RenderSystem.backupProjectionMatrix();
@@ -278,6 +280,16 @@ final class BlackHoleRenderer {
 
     private static void renderSolar(BufferBuilder bb, Matrix4f view, Vector3f eye, Vector3f forward, Vector3f right, Vector3f up, float t, float time) {
         renderSolarScene(bb, view, eye, forward, right, up, BlackHoleDirector.warp(t), time);
+    }
+
+    /** Plano cercano para la escena del sistema solar (Tierra, Luna, Marte, Júpiter y Saturno). */
+    static float solarNear(Vector3f eye, float time) {
+        Vector3f moon = SpaceRenderer.moonPosition(time);
+        Vec3 ma = BlackHoleDirector.MARS_S, ju = BlackHoleDirector.JUPITER, sa = BlackHoleDirector.SATURN;
+        return RenderUtil.nearPlane(eye, 1f, 0f, 0f, 0f, Cinematic.PLANET_RADIUS * 1.04f, moon.x, moon.y, moon.z, 270f,
+                (float) ma.x, (float) ma.y, (float) ma.z, BlackHoleDirector.MARS_R * 1.03f,
+                (float) ju.x, (float) ju.y, (float) ju.z, BlackHoleDirector.JUPITER_R * 1.03f,
+                (float) sa.x, (float) sa.y, (float) sa.z, BlackHoleDirector.SATURN_R * 2.4f);
     }
 
     static void renderSolarScene(BufferBuilder bb, Matrix4f view, Vector3f eye, Vector3f forward, Vector3f right, Vector3f up, float warpAmount, float time) {

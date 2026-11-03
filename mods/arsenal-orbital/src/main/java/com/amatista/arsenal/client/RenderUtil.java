@@ -126,4 +126,24 @@ final class RenderUtil {
             bb.vertex(m, cx - ax + sx * k, cy - ay + sy * k, cz - az + sz * k).color(r, g, b, 0f).endVertex();
         }
     }
+
+    /**
+     * Plano cercano de la cámara según el cuerpo más cercano (grupos x, y, z, radio).
+     * En el celular el búfer de profundidad tiene poca precisión: con un plano cercano muy chico
+     * la Tierra, sus nubes y su atmósfera "pelean" y el planeta se ve blanco y rayado.
+     */
+    static float nearPlane(org.joml.Vector3f eye, float minNear, float... bodies) {
+        float best = Float.MAX_VALUE;
+        for (int i = 0; i + 3 < bodies.length; i += 4) {
+            float dx = eye.x - bodies[i], dy = eye.y - bodies[i + 1], dz = eye.z - bodies[i + 2];
+            best = Math.min(best, (float) Math.sqrt(dx * dx + dy * dy + dz * dz) - bodies[i + 3]);
+        }
+        if (best == Float.MAX_VALUE) return minNear;
+        return Math.max(minNear, best * 0.5f);
+    }
+
+    /** Plano cercano cuando solo se conoce el punto al que mira la cámara. */
+    static float nearToCenter(org.joml.Vector3f eye, org.joml.Vector3f center, float minNear, float maxNear) {
+        return Math.max(minNear, Math.min(maxNear, eye.distance(center) * 0.06f));
+    }
 }

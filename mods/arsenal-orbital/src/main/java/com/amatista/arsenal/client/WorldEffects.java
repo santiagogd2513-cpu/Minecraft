@@ -592,9 +592,8 @@ public final class WorldEffects {
     }
 
     private static void drawAim(BufferBuilder bb, Matrix4f m, LocalPlayer player, float partialTick, float now) {
-        HitResult hit = player.pick(AIM_RANGE, partialTick, false);
-        if (hit.getType() != HitResult.Type.BLOCK) return;
-        BlockPos pos = ((BlockHitResult) hit).getBlockPos();
+        BlockPos pos = com.amatista.arsenal.strike.Targeting.find(player, AIM_RANGE, partialTick);
+        if (pos == null) return;
         float pulse = 0.6f + 0.4f * (float) Math.sin(now * 0.5f);
         float lock = 0.5f + 0.5f * (float) Math.sin(now * 0.12f);
         boolean locked = true;

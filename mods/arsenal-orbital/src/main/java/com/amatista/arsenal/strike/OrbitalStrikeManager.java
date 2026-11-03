@@ -86,13 +86,12 @@ public final class OrbitalStrikeManager {
 
     public static void tryStart(ServerPlayer player) {
         if (ACTIVE.containsKey(player.getUUID())) return;
-        HitResult hit = player.pick(Config.MAX_RANGE.get(), 1.0F, false);
-        if (hit.getType() != HitResult.Type.BLOCK || !(hit instanceof BlockHitResult blockHit)) {
+        BlockPos target = Targeting.find(player, Math.max(160, Config.MAX_RANGE.get()), 1.0F);
+        if (target == null) {
             player.displayClientMessage(Component.translatable("message.arsenalorbital.no_target").withStyle(ChatFormatting.RED), true);
             return;
         }
         ServerLevel level = player.serverLevel();
-        BlockPos target = blockHit.getBlockPos();
         long now = level.getGameTime();
         StrikeType type = getSelected(player);
         Strike strike = new Strike(player.getUUID(), level.dimension(), target, type);
