@@ -1006,6 +1006,17 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                         all.add(e);
                     }
                     sort(all);
+                    appsFolder = AppIcons.isAppsFolder(p);
+                    if (appsFolder) {
+                        // las apps instaladas primero, por su nombre; luego las carpetas sobrantes
+                        all.sort((x, y) -> {
+                            AppIcons.App ax = x.dir ? AppIcons.of(this, x.name) : null, ay = y.dir ? AppIcons.of(this, y.name) : null;
+                            if ((ax == null) != (ay == null)) return ax != null ? -1 : 1;
+                            String lx = ax != null ? ax.label : x.name, ly = ay != null ? ay.label : y.name;
+                            int c = naturalCompare(lx, ly);
+                            return c != 0 ? c : x.name.compareToIgnoreCase(y.name);
+                        });
+                    }
                 }
                 selected.retainAll(pathsOf(all));
                 applyFilter();
@@ -1065,7 +1076,14 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
 
     private void applyFilter() {
         shown.clear();
-        for (Entry e : all) if (filter.isEmpty() || e.name.toLowerCase().contains(filter)) shown.add(e);
+        for (Entry e : all) {
+            if (filter.isEmpty() || e.name.toLowerCase().contains(filter)) {
+                shown.add(e);
+                continue;
+            }
+            AppIcons.App app = appsFolder && e.dir ? AppIcons.of(this, e.name) : null;
+            if (app != null && app.label.toLowerCase().contains(filter)) shown.add(e);
+        }
         adapter.notifyDataSetChanged();
         if (path != null) {
             empty.setText(filter.isEmpty() ? "Carpeta vacía" : "Nada coincide con «" + filter + "»");
@@ -1914,13 +1932,32 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             Entry e = shown.get(pos);
             boolean sel = selected.contains(e.path);
             int color = FileTypes.color(e);
-            h.icon.setImageDrawable(Ui.icon(MainActivity.this, FileTypes.icon(e), color));
-            h.iconBox.setBackground(Ui.round((color & 0x00FFFFFF) | (e.hidden() ? 0x14000000 : 0x26000000), dp(14)));
-            h.icon.setAlpha(e.hidden() ? 0.55f : 1f);
+            // en Android/data, obb y media: el ícono y el nombre de la app dueña de cada carpeta
+            AppIcons.App app = e.dir && appsFolder ? AppIcons.of(MainActivity.this, e.name) : null;
+            FrameLayout.LayoutParams ilp = (FrameLayout.LayoutParams) h.icon.getLayoutParams();
+            int want = app != null ? dp(40) : dp(22);
+            if (ilp.width != want) {
+                ilp.width = want;
+                ilp.height = want;
+                h.icon.setLayoutParams(ilp);
+            }
+            if (app != null) {
+                h.icon.setImageDrawable(app.icon);
+                h.iconBox.setBackground(null);
+                h.icon.setAlpha(1f);
+                h.name.setText(app.label);
+                h.name.setTextColor(Ui.TEXT);
+                h.info.setText(e.name);
+            } else {
+                h.icon.setImageDrawable(Ui.icon(MainActivity.this, FileTypes.icon(e), color));
+                h.iconBox.setBackground(Ui.round((color & 0x00FFFFFF) | (e.hidden() ? 0x14000000 : 0x26000000), dp(14)));
+                h.icon.setAlpha(e.hidden() ? 0.55f : 1f);
+                h.name.setText(e.name);
+                h.name.setTextColor(e.hidden() ? Ui.SUB : Ui.TEXT);
+                h.info.setText(e.dir ? (appsFolder && e.name.contains(".") ? "App no instalada  ·  " : "") + Ui.date(e.modified)
+                        : Ui.size(e.size) + "  ·  " + Ui.date(e.modified));
+            }
             h.check.setVisibility(sel ? View.VISIBLE : View.GONE);
-            h.name.setText(e.name);
-            h.name.setTextColor(e.hidden() ? Ui.SUB : Ui.TEXT);
-            h.info.setText(e.dir ? Ui.date(e.modified) : Ui.size(e.size) + "  ·  " + Ui.date(e.modified));
             boolean fav = e.dir && (prefs.isPinned(e.path) || prefs.isFavorite(e.path));
             h.star.setVisibility(fav ? View.VISIBLE : View.GONE);
             if (fav) h.star.setImageDrawable(Ui.icon(MainActivity.this,
@@ -1929,6 +1966,9 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             return v;
         }
     }
+
+    /** La carpeta actual guarda una carpeta por app (Android/data, obb, media). */
+    private boolean appsFolder;
 
     private static final class Holder {
         FrameLayout iconBox;
