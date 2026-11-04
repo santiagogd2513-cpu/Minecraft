@@ -33,6 +33,7 @@ public class DownloadsActivity extends Activity implements DownloadEngine.Listen
     private LinearLayout list;
     private TextView summary;
     private TextView speedBig;
+    private TextView where;
     private View emptyView;
     private final Map<Long, Card> cards = new HashMap<>();
     private List<Long> order = new ArrayList<>();
@@ -68,7 +69,8 @@ public class DownloadsActivity extends Activity implements DownloadEngine.Listen
         panel.setBackground(Ui.gradient(dp(20), 0xFF14234A, 0xFF0F1A33, 0xFF101A2C));
         speedBig = Ui.text(this, "0 KB/s", 30, Ui.TEXT, true);
         summary = Ui.text(this, "", 13, Ui.SUB, false);
-        TextView where = Ui.text(this, "Se guardan en  Descargas / Nocturna", 12, 0xFF6F86AE, false);
+        where = Ui.text(this, "", 12, 0xFF6F86AE, false);
+        where.setOnClickListener(v -> StoragePermission.ask(this, null));
         where.setPadding(0, dp(6), 0, 0);
         panel.addView(speedBig);
         panel.addView(summary);
@@ -155,6 +157,8 @@ public class DownloadsActivity extends Activity implements DownloadEngine.Listen
         summary.setText(active + (active == 1 ? " descarga activa" : " descargas activas") + " · " + finished
                 + (finished == 1 ? " terminada" : " terminadas"));
         emptyView.setVisibility(items.isEmpty() ? View.VISIBLE : View.GONE);
+        where.setText(DownloadEngine.canUseRootFolder() ? "Se guardan en  Nocturna Downloads  (almacenamiento principal)"
+                : "Se guardan en  Descargas / Nocturna  ·  toca aquí para usar Nocturna Downloads");
     }
 
     private int dp(float v) {
@@ -291,7 +295,7 @@ public class DownloadsActivity extends Activity implements DownloadEngine.Listen
 
     private void open(DownloadItem d) {
         try {
-            startActivity(DownloadEngine.openIntent(d));
+            startActivity(DownloadEngine.openIntent(this, d));
         } catch (Exception e) {
             Toast.makeText(this, "No hay ninguna app para abrir este archivo", Toast.LENGTH_SHORT).show();
         }
@@ -300,7 +304,7 @@ public class DownloadsActivity extends Activity implements DownloadEngine.Listen
     private void share(DownloadItem d) {
         Intent i = new Intent(Intent.ACTION_SEND);
         i.setType(d.mime == null ? "*/*" : d.mime);
-        i.putExtra(Intent.EXTRA_STREAM, Uri.parse(d.uri));
+        i.putExtra(Intent.EXTRA_STREAM, DownloadEngine.shareUri(this, d));
         i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         startActivity(Intent.createChooser(i, "Compartir " + d.name));
     }

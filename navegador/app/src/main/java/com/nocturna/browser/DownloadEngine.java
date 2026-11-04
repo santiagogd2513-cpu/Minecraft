@@ -11,6 +11,8 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
+import android.os.Environment;
+import android.media.MediaScannerConnection;
 import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.webkit.CookieManager;
@@ -44,7 +46,7 @@ import java.util.concurrent.TimeUnit;
  *   todas siguen trabajando hasta el final (no se queda una sola conexión lenta).
  * - Si una conexión se cae, reintenta desde donde iba.
  * - Se puede pausar y reanudar (también después de cerrar la app).
- * - Guarda en Descargas/Nocturna.
+ * - Guarda en «Nocturna Downloads» (raíz del almacenamiento) o, sin permiso, en Descargas/Nocturna.
  */
 final class DownloadEngine {
     interface Listener {
@@ -127,10 +129,9 @@ final class DownloadEngine {
             d.total = data.length;
             items.add(0, d);
             try {
-                Uri uri = createFile(d);
-                try (ParcelFileDescriptor pfd = app.getContentResolver().openFileDescriptor(uri, "w");
-                     FileOutputStream out = new FileOutputStream(pfd.getFileDescriptor())) {
-                    out.write(data);
+                createFile(d);
+                try (Sink sink = openSink(d)) {
+                    writeFully(sink.channel, data, data.length, 0);
                 }
                 d.done.set(data.length);
                 finish(d);
@@ -164,12 +165,7 @@ final class DownloadEngine {
         pool.execute(() -> {
             // espera a que las conexiones suelten el archivo
             for (int i = 0; i < 40 && d.connections.get() > 0; i++) sleep(50);
-            if (d.uri != null && d.status != DownloadItem.DONE) {
-                try {
-                    app.getContentResolver().delete(Uri.parse(d.uri), null, null);
-                } catch (Exception ignored) {
-                }
-            }
+            if (d.uri != null && d.status != DownloadItem.DONE) deleteFile(d);
         });
         changed(true);
     }
@@ -177,12 +173,7 @@ final class DownloadEngine {
     /** Quita de la lista; si deleteFile, también borra el archivo. */
     void remove(DownloadItem d, boolean deleteFile) {
         items.remove(d);
-        if (deleteFile && d.uri != null) {
-            try {
-                app.getContentResolver().delete(Uri.parse(d.uri), null, null);
-            } catch (Exception ignored) {
-            }
-        }
+        if (deleteFile && d.uri != null) pool.execute(() -> deleteFile(d));
         changed(true);
     }
 
@@ -201,14 +192,12 @@ final class DownloadEngine {
         }
         d.status = DownloadItem.RUNNING;
         changed(true);
-        ParcelFileDescriptor pfd = null;
-        FileOutputStream fos = null;
+        Sink sink = null;
         try {
             probe(d);
-            if (d.uri == null) d.uri = createFile(d).toString();
-            pfd = app.getContentResolver().openFileDescriptor(Uri.parse(d.uri), "rw");
-            fos = new FileOutputStream(pfd.getFileDescriptor());
-            FileChannel ch = fos.getChannel();
+            if (d.uri == null) createFile(d);
+            sink = openSink(d);
+            FileChannel ch = sink.channel;
             if (d.ranges && d.total > 0) {
                 prepareSegments(d);
                 runSegments(d, ch);
@@ -232,11 +221,7 @@ final class DownloadEngine {
             }
         } finally {
             try {
-                if (fos != null) fos.close();
-            } catch (IOException ignored) {
-            }
-            try {
-                if (pfd != null) pfd.close();
+                if (sink != null) sink.close();
             } catch (IOException ignored) {
             }
             d.connections.set(0);
@@ -477,7 +462,85 @@ final class DownloadEngine {
 
     // ------------------------------------------------------------------ archivo
 
-    private Uri createFile(DownloadItem d) throws IOException {
+    /** Carpeta "Nocturna Downloads" en la raíz del almacenamiento (junto a Download, DCIM, Android…). */
+    static File rootFolder() {
+        return new File(Environment.getExternalStorageDirectory(), "Nocturna Downloads");
+    }
+
+    static boolean canUseRootFolder() {
+        return android.os.Build.VERSION.SDK_INT >= 30 && Environment.isExternalStorageManager();
+    }
+
+    static boolean isPlainFile(DownloadItem d) {
+        return d.uri != null && d.uri.startsWith("file:");
+    }
+
+    static File fileOf(DownloadItem d) {
+        return new File(Uri.parse(d.uri).getPath());
+    }
+
+    /** El archivo abierto para escribir (en la carpeta propia o en Descargas por MediaStore). */
+    private static final class Sink implements java.io.Closeable {
+        final FileChannel channel;
+        private final java.io.Closeable a, b;
+
+        Sink(FileChannel channel, java.io.Closeable a, java.io.Closeable b) {
+            this.channel = channel;
+            this.a = a;
+            this.b = b;
+        }
+
+        @Override
+        public void close() throws IOException {
+            try {
+                if (a != null) a.close();
+            } finally {
+                if (b != null) b.close();
+            }
+        }
+    }
+
+    private Sink openSink(DownloadItem d) throws IOException {
+        if (isPlainFile(d)) {
+            java.io.RandomAccessFile raf = new java.io.RandomAccessFile(fileOf(d), "rw");
+            return new Sink(raf.getChannel(), raf, null);
+        }
+        ParcelFileDescriptor pfd = app.getContentResolver().openFileDescriptor(Uri.parse(d.uri), "rw");
+        if (pfd == null) throw new IOException("No se pudo abrir el archivo");
+        FileOutputStream fos = new FileOutputStream(pfd.getFileDescriptor());
+        return new Sink(fos.getChannel(), fos, pfd);
+    }
+
+    private void deleteFile(DownloadItem d) {
+        try {
+            if (isPlainFile(d)) {
+                //noinspection ResultOfMethodCallIgnored
+                fileOf(d).delete();
+            } else {
+                app.getContentResolver().delete(Uri.parse(d.uri), null, null);
+            }
+        } catch (Exception ignored) {
+        }
+    }
+
+    private void createFile(DownloadItem d) throws IOException {
+        if (canUseRootFolder()) {
+            File dir = rootFolder();
+            if (!dir.isDirectory() && !dir.mkdirs()) throw new IOException("No se pudo crear la carpeta Nocturna Downloads");
+            String name = d.name == null || d.name.isEmpty() ? "descarga" : d.name.replaceAll("[\\\\/:*?\"<>|]", "_");
+            File f = new File(dir, name);
+            int dot = name.lastIndexOf('.');
+            String base = dot > 0 ? name.substring(0, dot) : name, ext = dot > 0 ? name.substring(dot) : "";
+            for (int n = 1; f.exists(); n++) f = new File(dir, base + " (" + n + ")" + ext);
+            if (!f.createNewFile()) throw new IOException("No se pudo crear el archivo");
+            d.name = f.getName();
+            d.uri = Uri.fromFile(f).toString();
+            return;
+        }
+        createMediaStoreFile(d);
+    }
+
+    private void createMediaStoreFile(DownloadItem d) throws IOException {
         ContentResolver r = app.getContentResolver();
         ContentValues v = new ContentValues();
         v.put(MediaStore.Downloads.DISPLAY_NAME, d.name);
@@ -492,14 +555,18 @@ final class DownloadEngine {
         } catch (Exception ignored) {
         }
         d.uri = uri.toString();
-        return uri;
     }
 
     private void finish(DownloadItem d) {
         try {
-            ContentValues v = new ContentValues();
-            v.put(MediaStore.Downloads.IS_PENDING, 0);
-            app.getContentResolver().update(Uri.parse(d.uri), v, null, null);
+            if (isPlainFile(d)) {
+                // para que aparezca en la galería, el reproductor, etc.
+                MediaScannerConnection.scanFile(app, new String[]{fileOf(d).getAbsolutePath()}, new String[]{d.mime}, null);
+            } else {
+                ContentValues v = new ContentValues();
+                v.put(MediaStore.Downloads.IS_PENDING, 0);
+                app.getContentResolver().update(Uri.parse(d.uri), v, null, null);
+            }
         } catch (Exception ignored) {
         }
         d.status = DownloadItem.DONE;
@@ -507,11 +574,17 @@ final class DownloadEngine {
         notifyDone(d);
     }
 
-    static Intent openIntent(DownloadItem d) {
+    /** Dirección que se le puede pasar a otras apps (abrir, compartir, instalar). */
+    static Uri shareUri(Context c, DownloadItem d) {
+        if (isPlainFile(d)) return androidx.core.content.FileProvider.getUriForFile(c, c.getPackageName() + ".files", fileOf(d));
+        return Uri.parse(d.uri);
+    }
+
+    static Intent openIntent(Context c, DownloadItem d) {
         Intent i = new Intent(Intent.ACTION_VIEW);
         String mime = d.mime;
         if ("apk".equals(d.extension())) mime = "application/vnd.android.package-archive";
-        i.setDataAndType(Uri.parse(d.uri), mime == null ? "*/*" : mime);
+        i.setDataAndType(shareUri(c, d), mime == null ? "*/*" : mime);
         i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_ACTIVITY_NEW_TASK);
         return i;
     }
@@ -588,7 +661,7 @@ final class DownloadEngine {
 
     private void notifyDone(DownloadItem d) {
         try {
-            PendingIntent pi = PendingIntent.getActivity(app, (int) (d.id % 100000), openIntent(d),
+            PendingIntent pi = PendingIntent.getActivity(app, (int) (d.id % 100000), openIntent(app, d),
                     PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
             android.app.Notification n = new android.app.Notification.Builder(app, CHANNEL_DONE)
                     .setSmallIcon(R.drawable.ic_download)

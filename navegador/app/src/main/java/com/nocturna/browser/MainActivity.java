@@ -106,6 +106,12 @@ public class MainActivity extends Activity {
         if (!handleIntent(in) && tabs.isEmpty()) openTab(HomePage.URL, true, false);
 
         if (Build.VERSION.SDK_INT >= 33) requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 3);
+        // la primera vez: permiso para la carpeta Nocturna Downloads
+        android.content.SharedPreferences sp = getSharedPreferences("nocturna", MODE_PRIVATE);
+        if (!sp.getBoolean("pidio_almacenamiento", false)) {
+            sp.edit().putBoolean("pidio_almacenamiento", true).apply();
+            StoragePermission.ask(this, null);
+        }
     }
 
     @Override
@@ -647,7 +653,7 @@ public class MainActivity extends Activity {
                 .setMessage(name + "  ·  " + Ui.size(data.length))
                 .setPositiveButton("Guardar", (dlg, w) -> {
                     DownloadEngine.get(this).saveBytes(data, name, mime);
-                    snack("Guardado en Descargas/Nocturna", "Ver", () -> startActivity(new Intent(this, DownloadsActivity.class)));
+                    snack("Archivo guardado", "Ver", () -> startActivity(new Intent(this, DownloadsActivity.class)));
                 })
                 .setNegativeButton("Cancelar", null)
                 .show();
