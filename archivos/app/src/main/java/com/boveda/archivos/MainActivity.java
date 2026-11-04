@@ -73,6 +73,16 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
     private static final List<String> extractPicks = new ArrayList<>();
     private static String extractBase = "";
 
+    // «Descargar a…» desde MediaFire
+    private static final List<MediaFire.Item> cloudDownload = new ArrayList<>();
+
+    static void setCloudDownloadClip(List<MediaFire.Item> items) {
+        clip.clear();
+        extractArchive = null;
+        cloudDownload.clear();
+        cloudDownload.addAll(items);
+    }
+
     static void setExtractClip(String archive, List<String> picks, String base) {
         clip.clear();
         extractArchive = archive;
@@ -529,6 +539,9 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         for (String p : favs) box.addView(shortcut(R.drawable.ic_star, Ui.WARN, Paths.name(p), p, p));
 
         if (!picker()) {
+            box.addView(section("Nube"));
+            MediaFire mf = MediaFire.get(this);
+            box.addView(cloudCard(mf.loggedIn() ? mf.email() : "Toca para iniciar sesión"));
             box.addView(section("Shizuku"));
             box.addView(shizukuCard());
         }
@@ -572,6 +585,29 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, -2);
         lp.setMargins(0, 0, 0, dp(6));
         r.setLayoutParams(lp);
+        return r;
+    }
+
+    private View cloudCard(String sub) {
+        LinearLayout r = Ui.row(this);
+        r.setPadding(dp(14), dp(14), dp(14), dp(14));
+        r.setBackground(Ui.ripple(Ui.gradient(dp(18), 0xFF0F2B57, 0xFF0F1A30), Ui.round(Color.WHITE, dp(18))));
+        TextView logo = Ui.text(this, "MF", 15, Color.WHITE, true);
+        logo.setGravity(Gravity.CENTER);
+        logo.setBackground(Ui.gradient(dp(12), 0xFF5AB2FF, 0xFF1E88FF));
+        r.addView(logo, new LinearLayout.LayoutParams(dp(40), dp(40)));
+        LinearLayout texts = Ui.column(this);
+        texts.setPadding(dp(12), 0, 0, 0);
+        texts.addView(Ui.text(this, "MediaFire", 15.5f, Ui.TEXT, true));
+        TextView s = Ui.text(this, sub, 12, Ui.SUB, false);
+        s.setSingleLine(true);
+        s.setEllipsize(TextUtils.TruncateAt.END);
+        texts.addView(s);
+        r.addView(texts, Ui.weight(1));
+        ImageView ch = new ImageView(this);
+        ch.setImageDrawable(Ui.icon(this, R.drawable.ic_chevron, 0xFF4A5670));
+        r.addView(ch, new LinearLayout.LayoutParams(dp(20), dp(20)));
+        r.setOnClickListener(v -> startActivity(new Intent(this, CloudActivity.class)));
         return r;
     }
 
@@ -915,6 +951,31 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             Volume v = volumeOf(path);
             title.setText(v != null && v.path.equals(path) ? v.name : Paths.name(path));
         }
+        if (path != null && !cloudDownload.isEmpty() && !picker()) {
+            TextView info = Ui.text(this, "Descargar " + (cloudDownload.size() == 1 ? "«" + cloudDownload.get(0).name + "»"
+                    : cloudDownload.size() + " elementos") + " de MediaFire", 13.5f, Ui.TEXT, true);
+            info.setPadding(dp(10), 0, 0, 0);
+            info.setMaxLines(2);
+            info.setEllipsize(TextUtils.TruncateAt.MIDDLE);
+            bottom.addView(info, Ui.weight(1));
+            TextView cancel = Ui.text(this, "Cancelar", 14, Ui.SUB, true);
+            cancel.setPadding(dp(14), dp(10), dp(14), dp(10));
+            cancel.setOnClickListener(v -> {
+                cloudDownload.clear();
+                updateBars();
+            });
+            bottom.addView(cancel);
+            TextView go = bigButton("Descargar aquí", v -> {
+                engine.submitCloudDownload(new ArrayList<>(cloudDownload), path);
+                cloudDownload.clear();
+                updateBars();
+                Toast.makeText(this, "Descargando de MediaFire…", Toast.LENGTH_SHORT).show();
+            });
+            go.setPadding(dp(16), dp(10), dp(16), dp(10));
+            bottom.addView(go);
+            bottom.setVisibility(View.VISIBLE);
+            return;
+        }
         if (path != null && extractArchive != null && !picker()) {
             String what = extractPicks.isEmpty() ? "todo" : extractPicks.size() + (extractPicks.size() == 1 ? " elemento" : " elementos");
             TextView info = Ui.text(this, "Extraer " + what + " de «" + Paths.name(extractArchive) + "»", 13.5f, Ui.TEXT, true);
@@ -987,6 +1048,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
 
     private void toClip(boolean move) {
         extractArchive = null;
+        cloudDownload.clear();
         clip.clear();
         clip.addAll(selected);
         clipMove = move;
@@ -1118,6 +1180,14 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             labels.add("Compartir");
             acts.add(() -> share(sel));
         }
+        labels.add("Subir a MediaFire");
+        acts.add(() -> {
+            CloudActivity.pendingUpload.clear();
+            CloudActivity.pendingUpload.addAll(sel);
+            clearSelection();
+            Toast.makeText(this, "Elige la carpeta de MediaFire y toca «Subir aquí»", Toast.LENGTH_LONG).show();
+            startActivity(new Intent(this, CloudActivity.class));
+        });
         labels.add("Propiedades");
         acts.add(() -> properties(sel));
         new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)

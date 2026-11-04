@@ -31,7 +31,7 @@ import java.util.zip.ZipOutputStream;
  * Las tareas se hacen de una en una (así no se pelean por el disco).
  */
 final class TransferEngine {
-    enum Kind { COPY, MOVE, DELETE, ZIP, EXTRACT }
+    enum Kind { COPY, MOVE, DELETE, ZIP, EXTRACT, CLOUD_DOWN, CLOUD_UP }
 
     enum Conflict { REPLACE, KEEP_BOTH, SKIP }
 
@@ -52,6 +52,10 @@ final class TransferEngine {
         /** Al extraer: qué cosas de adentro (vacío = todo) y qué carpeta interna se quita del nombre. */
         List<String> picks = new ArrayList<>();
         String innerBase = "";
+        /** MediaFire: qué bajar, o a qué carpeta subir. */
+        List<MediaFire.Item> cloudItems = new ArrayList<>();
+        String cloudFolder;
+        String cloudFolderName = "MediaFire";
 
         Job(Kind kind, List<String> sources, String dest, Conflict conflict) {
             this.kind = kind;
@@ -61,14 +65,20 @@ final class TransferEngine {
         }
 
         String title() {
+            if (kind == Kind.CLOUD_DOWN) {
+                int n = cloudItems.size();
+                return "Bajando de MediaFire " + (n == 1 ? cloudItems.get(0).name : n + " elementos");
+            }
             int n = sources.size();
             String what = n == 1 ? Paths.name(sources.get(0)) : n + " elementos";
+            if (kind == Kind.CLOUD_UP) return "Subiendo a MediaFire " + what;
             return switch (kind) {
                 case COPY -> "Copiando " + what;
                 case MOVE -> "Moviendo " + what;
                 case DELETE -> "Borrando " + what;
                 case ZIP -> "Comprimiendo " + what;
                 case EXTRACT -> "Extrayendo " + what;
+                default -> what;
             };
         }
 
@@ -165,6 +175,19 @@ final class TransferEngine {
         return submit(j);
     }
 
+    Job submitCloudDownload(List<MediaFire.Item> items, String dest) {
+        Job j = new Job(Kind.CLOUD_DOWN, new ArrayList<>(), dest, Conflict.KEEP_BOTH);
+        j.cloudItems = new ArrayList<>(items);
+        return submit(j);
+    }
+
+    Job submitCloudUpload(List<String> sources, String folderKey, String folderName) {
+        Job j = new Job(Kind.CLOUD_UP, sources, null, Conflict.KEEP_BOTH);
+        j.cloudFolder = folderKey;
+        j.cloudFolderName = folderName;
+        return submit(j);
+    }
+
     private Job submit(Job j) {
         jobs.add(0, j);
         changed(false);
@@ -189,6 +212,8 @@ final class TransferEngine {
                 case DELETE -> delete(j);
                 case ZIP -> zip(j);
                 case EXTRACT -> extract(j);
+                case CLOUD_DOWN -> cloudDown(j);
+                case CLOUD_UP -> cloudUp(j);
             }
             j.state = j.cancel ? 4 : 2;
         } catch (Cancelled c) {
@@ -540,6 +565,195 @@ final class TransferEngine {
             return true;
         });
         if (j.totalBytes > 0) j.doneBytes = j.totalBytes;
+    }
+
+    // ------------------------------------------------------------------ MediaFire
+
+    private void cloudMeasure(Job j, MediaFire mf, MediaFire.Item it) throws IOException {
+        check(j);
+        j.totalItems++;
+        if (it.folder) for (MediaFire.Item k : mf.list(it.key)) cloudMeasure(j, mf, k);
+        else j.totalBytes += it.size;
+    }
+
+    private void cloudDown(Job j) throws IOException {
+        MediaFire mf = MediaFire.get(app);
+        j.current = "Revisando…";
+        for (MediaFire.Item it : j.cloudItems) cloudMeasure(j, mf, it);
+        Fs df = fs(j.dest);
+        mkdirsAbsolute(df, j.dest);
+        for (MediaFire.Item it : j.cloudItems) cloudDownItem(j, mf, it, j.dest, df);
+    }
+
+    private void cloudDownItem(Job j, MediaFire mf, MediaFire.Item it, String dir, Fs df) throws IOException {
+        check(j);
+        String target = Paths.join(dir, it.name.replace('/', '_'));
+        if (it.folder) {
+            if (df.stat(target) == null) df.mkdir(target);
+            j.doneItems++;
+            for (MediaFire.Item k : mf.list(it.key)) cloudDownItem(j, mf, k, target, df);
+            return;
+        }
+        if (df.stat(target) != null) target = uniqueName(df, target);
+        j.current = it.name;
+        String tmp = Paths.join(dir, "." + Paths.name(target) + ".boveda-parte");
+        long start = j.doneBytes;
+        IOException last = null;
+        for (int attempt = 0; attempt < 3; attempt++) {
+            j.doneBytes = start;
+            try {
+                if (df.stat(tmp) != null) df.delete(tmp);
+                java.security.MessageDigest sha = java.security.MessageDigest.getInstance("SHA-256");
+                long written = 0;
+                java.net.HttpURLConnection c = (java.net.HttpURLConnection) new java.net.URL(mf.downloadLink(it)).openConnection();
+                c.setConnectTimeout(20000);
+                c.setReadTimeout(60000);
+                c.setRequestProperty("User-Agent", "Mozilla/5.0 (Linux; Android 14) AppleWebKit/537.36 Chrome/130 Mobile Safari/537.36");
+                try (InputStream in = c.getInputStream(); OutputStream out = df.out(tmp)) {
+                    if (c.getContentType() != null && c.getContentType().startsWith("text/html") && it.size > 0
+                            && !it.name.toLowerCase().endsWith(".html")) {
+                        throw new IOException("MediaFire mandó una página en vez del archivo");
+                    }
+                    byte[] buf = new byte[BUF];
+                    int r;
+                    while ((r = in.read(buf)) >= 0) {
+                        check(j);
+                        out.write(buf, 0, r);
+                        sha.update(buf, 0, r);
+                        written += r;
+                        j.doneBytes += r;
+                    }
+                    out.flush();
+                    sync(out);
+                } finally {
+                    c.disconnect();
+                }
+                // verificación: tamaño y huella SHA-256 que guarda MediaFire
+                if (it.size > 0 && written != it.size) throw new IOException("Llegó incompleto: " + it.name);
+                if (it.hash != null && it.hash.length() == 64 && !it.hash.equalsIgnoreCase(MediaFire.hex(sha.digest()))) {
+                    throw new IOException("La verificación falló en " + it.name);
+                }
+                df.rename(tmp, target);
+                if (it.created > 0) df.setModified(target, it.created);
+                j.doneItems++;
+                changed(true);
+                return;
+            } catch (Cancelled c) {
+                cleanup(df, tmp);
+                throw c;
+            } catch (java.security.NoSuchAlgorithmException e) {
+                throw new IOException(e);
+            } catch (IOException e) {
+                last = e;
+                cleanup(df, tmp);
+            }
+        }
+        throw last;
+    }
+
+    private void cloudUp(Job j) throws IOException {
+        MediaFire mf = MediaFire.get(app);
+        for (String s : j.sources) measure(j, s);
+        for (String s : j.sources) cloudUpItem(j, mf, s, j.cloudFolder);
+    }
+
+    private void cloudUpItem(Job j, MediaFire mf, String path, String folderKey) throws IOException {
+        check(j);
+        Fs f = fs(path);
+        Entry e = f.stat(path);
+        if (e == null) return;
+        if (e.dir) {
+            String sub = mf.createFolder(folderKey, e.name);
+            j.doneItems++;
+            for (Entry k : f.list(path)) cloudUpItem(j, mf, k.path, sub);
+            return;
+        }
+        j.current = "Preparando " + e.name;
+        long start = j.doneBytes;
+        // huella SHA-256 (MediaFire la pide y con ella comprueba que llegó bien)
+        String hash;
+        try (InputStream in = f.in(path)) {
+            java.security.MessageDigest sha = java.security.MessageDigest.getInstance("SHA-256");
+            byte[] buf = new byte[BUF];
+            int r;
+            while ((r = in.read(buf)) >= 0) {
+                check(j);
+                sha.update(buf, 0, r);
+            }
+            hash = MediaFire.hex(sha.digest());
+        } catch (java.security.NoSuchAlgorithmException ex) {
+            throw new IOException(ex);
+        }
+        j.current = e.name;
+        MediaFire.UploadCheck uc = mf.check(folderKey, e.name, e.size, hash);
+        if (uc.hashExists) {
+            // MediaFire ya tiene ese contenido: se agrega al instante sin subirlo
+            mf.instant(folderKey, e.name, e.size, hash);
+            j.doneBytes = start + e.size;
+            j.doneItems++;
+            changed(true);
+            return;
+        }
+        String key;
+        if (e.size <= MediaFire.SIMPLE_LIMIT || uc.units <= 0 || uc.unitSize <= 0) {
+            try (InputStream in = f.in(path)) {
+                key = mf.uploadSimple(folderKey, e.name, e.size, hash, in, n -> {
+                    check(j);
+                    j.doneBytes += n;
+                });
+            }
+        } else {
+            key = null;
+            byte[] unitBuf = new byte[(int) uc.unitSize];
+            try (InputStream in = f.in(path)) {
+                for (int u = 0; u < uc.units; u++) {
+                    check(j);
+                    int len = readFully(in, unitBuf);
+                    if (len <= 0) break;
+                    boolean already = u / 16 < uc.bitmap.length && ((uc.bitmap[u / 16] >> (u % 16)) & 1) == 1;
+                    if (already) {
+                        j.doneBytes += len;
+                        continue;
+                    }
+                    IOException last = null;
+                    for (int attempt = 0; attempt < 4; attempt++) {
+                        long before = j.doneBytes;
+                        try {
+                            final int unit = u;
+                            key = mf.uploadUnit(folderKey, e.name, e.size, hash, unit, unitBuf, len, n -> {
+                                check(j);
+                                j.doneBytes += n;
+                            });
+                            last = null;
+                            break;
+                        } catch (Cancelled c) {
+                            throw c;
+                        } catch (IOException ex) {
+                            last = ex;
+                            j.doneBytes = before;
+                        }
+                    }
+                    if (last != null) throw last;
+                }
+            }
+            if (key == null) key = uc.resumeKey;
+            if (key == null) throw new IOException("MediaFire no aceptó las partes del archivo");
+        }
+        j.current = "MediaFire está procesando " + e.name;
+        mf.waitUpload(key);
+        j.doneBytes = start + e.size;
+        j.doneItems++;
+        changed(true);
+    }
+
+    private static int readFully(InputStream in, byte[] buf) throws IOException {
+        int off = 0;
+        while (off < buf.length) {
+            int r = in.read(buf, off, buf.length - off);
+            if (r < 0) break;
+            off += r;
+        }
+        return off;
     }
 
     private static boolean wanted(Job j, String name) {
