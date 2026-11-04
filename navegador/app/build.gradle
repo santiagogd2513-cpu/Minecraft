@@ -1,0 +1,42 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.nocturna.browser'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'com.nocturna.browser'
+        minSdk 29
+        targetSdk 35
+        versionCode (System.getenv('GITHUB_RUN_NUMBER') ?: '1').toInteger()
+        versionName "1.0." + (System.getenv('GITHUB_RUN_NUMBER') ?: '0')
+    }
+
+    signingConfigs {
+        release {
+            // Firma fija para poder instalar cada versión nueva encima de la anterior
+            storeFile file('nocturna.jks')
+            storePassword 'nocturna-navegador'
+            keyAlias 'nocturna'
+            keyPassword 'nocturna-navegador'
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.release
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    implementation 'androidx.webkit:webkit:1.12.1'
+}

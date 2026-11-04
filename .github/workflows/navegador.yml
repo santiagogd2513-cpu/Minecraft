@@ -1,0 +1,57 @@
+name: Navegador Nocturna
+
+on:
+  push:
+    branches: [ "**" ]
+    paths: [ "navegador/**", ".github/workflows/navegador.yml" ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: navegador-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  apk:
+    name: Compilar Nocturna (APK)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: navegador
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.14.3"
+
+      - name: Compilar
+        run: gradle assembleRelease --stacktrace
+
+      - name: Preparar
+        run: |
+          mkdir -p ../dist
+          cp app/build/outputs/apk/release/app-release.apk ../dist/Nocturna.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Nocturna-apk
+          path: dist/Nocturna.apk
+
+      - name: Publicar
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: navegador-${{ github.run_number }}
+          name: "Nocturna #${{ github.run_number }} (navegador para Android)"
+          target_commitish: ${{ github.sha }}
+          make_latest: false
+          body: |
+            **Nocturna**, el navegador nocturno. Descarga `Nocturna.apk` (con Chrome, no desde otra app) e instálalo.
+          files: dist/Nocturna.apk
