@@ -10,6 +10,17 @@ final class FsRouter {
     private FsRouter() {}
 
     static Fs get(Context c, String path) throws Fs.NeedAccess {
+        if (FtpServers.isFtp(path)) {
+            try {
+                return FtpServers.get(c).fsFor(path);
+            } catch (java.io.IOException e) {
+                throw new Fs.NeedAccess(path);
+            }
+        }
+        if (DriveFs.isDrive(path)) {
+            if (!Drive.get(c).connected()) throw new Fs.NeedAccess(path);
+            return DriveFs.get(c);
+        }
         if (!Paths.restricted(path)) return LocalFs.I;
         IFileService s = ShizukuHelper.service();
         if (s != null) return new ShizukuFs(s);

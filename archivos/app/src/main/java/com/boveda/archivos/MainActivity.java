@@ -356,12 +356,17 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
     // ------------------------------------------------------------------ volúmenes
 
     static final class Volume {
-        final String path, name;
+        final String path, name, shortName;
         final boolean removable;
 
         Volume(String path, String name, boolean removable) {
+            this(path, name, removable ? "SD" : "Interno", removable);
+        }
+
+        Volume(String path, String name, String shortName, boolean removable) {
             this.path = path;
             this.name = name;
+            this.shortName = shortName;
             this.removable = removable;
         }
     }
@@ -379,6 +384,14 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
     }
 
     private Volume volumeOf(String p) {
+        // servidores FTP y Google Drive también son "almacenamientos"
+        if (FtpServers.isFtp(p)) {
+            for (FtpServers.Server sv : FtpServers.get(this).all()) {
+                if (Paths.under(p, sv.root())) return new Volume(sv.root(), sv.name, sv.name, false);
+            }
+            return null;
+        }
+        if (DriveFs.isDrive(p)) return new Volume(DriveFs.ROOT, "Google Drive", "Drive", false);
         Volume best = null;
         for (Volume v : volumes()) if (Paths.under(p, v.path) && (best == null || v.path.length() > best.path.length())) best = v;
         return best;
@@ -386,7 +399,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
 
     private String label(String p) {
         Volume v = volumeOf(p);
-        if (v != null && v.path.equals(p)) return v.removable ? "Tarjeta SD" : "Interno";
+        if (v != null && v.path.equals(p)) return v.removable ? "Tarjeta SD" : v.shortName;
         return Paths.name(p);
     }
 
@@ -539,9 +552,25 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         for (String p : favs) box.addView(shortcut(R.drawable.ic_star, Ui.WARN, Paths.name(p), p, p));
 
         if (!picker()) {
-            box.addView(section("Nube"));
+            box.addView(section("Nube y red"));
             MediaFire mf = MediaFire.get(this);
             box.addView(cloudCard(mf.loggedIn() ? mf.email() : "Toca para iniciar sesión"));
+            Drive gd = Drive.get(this);
+            box.addView(netRow("GD", 0xFF34A853, 0xFF4285F4, "Google Drive",
+                    gd.connected() ? (gd.email().isEmpty() ? "Conectado" : gd.email()) : "Toca para conectar",
+                    v -> openDrive(), v -> {
+                        driveMenu();
+                        return true;
+                    }));
+            for (FtpServers.Server sv : FtpServers.get(this).all()) {
+                box.addView(netRow("FTP", 0xFFFFB547, 0xFFF07C2C, sv.name, sv.user + "@" + sv.host + ":" + sv.port,
+                        v -> open(sv.root()), v -> {
+                            ftpMenu(sv);
+                            return true;
+                        }));
+            }
+            box.addView(netRow("+", 0xFF2A3346, 0xFF2A3346, "Añadir servidor FTP", "Xbox 360, PC, NAS, otro celular…",
+                    v -> editFtp(null), null));
             box.addView(section("Shizuku"));
             box.addView(shizukuCard());
         }
@@ -586,6 +615,261 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         lp.setMargins(0, 0, 0, dp(6));
         r.setLayoutParams(lp);
         return r;
+    }
+
+    private View netRow(String badge, int c1, int c2, String name, String sub, View.OnClickListener tap, View.OnLongClickListener hold) {
+        LinearLayout r = Ui.row(this);
+        r.setPadding(dp(14), dp(12), dp(14), dp(12));
+        r.setBackground(Ui.rippleRound(Ui.SURFACE, dp(16)));
+        TextView logo = Ui.text(this, badge, badge.length() > 2 ? 11 : 15, Color.WHITE, true);
+        logo.setGravity(Gravity.CENTER);
+        logo.setBackground(Ui.gradient(dp(12), c1, c2));
+        r.addView(logo, new LinearLayout.LayoutParams(dp(40), dp(40)));
+        LinearLayout texts = Ui.column(this);
+        texts.setPadding(dp(12), 0, 0, 0);
+        texts.addView(Ui.text(this, name, 15, Ui.TEXT, true));
+        TextView sv = Ui.text(this, sub, 12, Ui.SUB, false);
+        sv.setSingleLine(true);
+        sv.setEllipsize(TextUtils.TruncateAt.END);
+        texts.addView(sv);
+        r.addView(texts, Ui.weight(1));
+        r.setOnClickListener(tap);
+        if (hold != null) r.setOnLongClickListener(hold);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, -2);
+        lp.setMargins(0, dp(6), 0, 0);
+        r.setLayoutParams(lp);
+        return r;
+    }
+
+    // ------------------------------------------------------------------ FTP
+
+    private void ftpMenu(FtpServers.Server sv) {
+        new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                .setTitle(sv.name)
+                .setItems(new String[]{"Editar", "Borrar este servidor"}, (d, w) -> {
+                    if (w == 0) editFtp(sv);
+                    else {
+                        FtpServers.get(this).remove(sv.id);
+                        prefs.favorites().stream().filter(p -> Paths.under(p, sv.root())).forEach(prefs::toggleFavorite);
+                        prefs.pinned().stream().filter(p -> Paths.under(p, sv.root())).forEach(prefs::togglePinned);
+                        showHome();
+                    }
+                })
+                .show();
+    }
+
+    private EditText input(String hint, String value, int type) {
+        EditText e = new EditText(this);
+        e.setHint(hint);
+        e.setText(value == null ? "" : value);
+        e.setHintTextColor(0xFF5D6B83);
+        e.setTextColor(Ui.TEXT);
+        e.setSingleLine(true);
+        e.setInputType(type);
+        e.setBackground(Ui.roundStroke(Ui.SURFACE2, dp(14), dp(1), Ui.STROKE));
+        e.setPadding(dp(14), dp(11), dp(14), dp(11));
+        return e;
+    }
+
+    private TextView chip(String text, boolean on, View.OnClickListener l) {
+        TextView t = Ui.text(this, text, 13, on ? 0xFF06101F : Ui.TEXT, true);
+        t.setPadding(dp(12), dp(8), dp(12), dp(8));
+        t.setBackground(on ? Ui.round(Ui.ACCENT2, dp(16)) : Ui.roundStroke(Ui.SURFACE2, dp(16), dp(1), Ui.STROKE));
+        t.setOnClickListener(l);
+        return t;
+    }
+
+    /** Añadir o editar un servidor FTP (con atajo para la Xbox 360). */
+    private void editFtp(FtpServers.Server existing) {
+        FtpServers.Server sv = new FtpServers.Server();
+        if (existing != null) {
+            sv.id = existing.id; sv.name = existing.name; sv.host = existing.host; sv.port = existing.port; sv.user = existing.user;
+            sv.pass = existing.pass; sv.startDir = existing.startDir; sv.maxConnections = existing.maxConnections;
+            sv.passive = existing.passive; sv.latin1 = existing.latin1;
+        }
+        LinearLayout box = Ui.column(this);
+        box.setPadding(dp(20), dp(8), dp(20), dp(4));
+        LinearLayout presets = Ui.row(this);
+        EditText name = input("Nombre (ej. Mi Xbox)", sv.name, android.text.InputType.TYPE_CLASS_TEXT);
+        EditText host = input("Dirección IP (ej. 192.168.1.20)", sv.host, android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_URI);
+        EditText port = input("Puerto", String.valueOf(sv.port), android.text.InputType.TYPE_CLASS_NUMBER);
+        EditText user = input("Usuario (vacío = anónimo)", sv.user, android.text.InputType.TYPE_CLASS_TEXT);
+        EditText pass = input("Contraseña", sv.pass, android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        TextView opts = Ui.text(this, "", 12.5f, Ui.SUB, false);
+        Runnable showOpts = () -> opts.setText((sv.passive ? "Modo pasivo" : "Modo activo") + "  ·  " + sv.maxConnections
+                + (sv.maxConnections == 1 ? " conexión" : " conexiones") + "  ·  " + (sv.latin1 ? "Latin-1" : "UTF-8") + "   (toca para cambiar)");
+        showOpts.run();
+        opts.setPadding(dp(4), dp(10), dp(4), dp(4));
+        opts.setOnClickListener(v -> new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                .setItems(new String[]{"Modo: " + (sv.passive ? "pasivo → activo" : "activo → pasivo"),
+                        "Conexiones a la vez: " + sv.maxConnections + " → " + (sv.maxConnections >= 4 ? 1 : sv.maxConnections * 2),
+                        "Letras: " + (sv.latin1 ? "Latin-1 → UTF-8" : "UTF-8 → Latin-1 (servidores viejos)")}, (d, w) -> {
+                    if (w == 0) sv.passive = !sv.passive;
+                    else if (w == 1) sv.maxConnections = sv.maxConnections >= 4 ? 1 : sv.maxConnections * 2;
+                    else sv.latin1 = !sv.latin1;
+                    showOpts.run();
+                }).show());
+        presets.addView(chip("🎮 Xbox 360", false, v -> {
+            if (name.getText().toString().trim().isEmpty()) name.setText("Xbox 360");
+            port.setText("21");
+            user.setText("xbox");
+            pass.setText("xbox");
+            sv.maxConnections = 1;
+            sv.passive = true;
+            sv.latin1 = true;
+            showOpts.run();
+            Toast.makeText(this, "Pon la IP que muestra Aurora/FSD en la pantalla de la Xbox", Toast.LENGTH_LONG).show();
+        }));
+        TextView sp = new TextView(this);
+        sp.setWidth(dp(8));
+        presets.addView(sp);
+        presets.addView(chip("💻 PC / NAS", false, v -> {
+            port.setText("21");
+            sv.maxConnections = 2;
+            sv.passive = true;
+            sv.latin1 = false;
+            showOpts.run();
+        }));
+        box.addView(presets);
+        for (EditText e : new EditText[]{name, host, port, user, pass}) box.addView(e, topMargin(dp(8)));
+        box.addView(opts);
+        ScrollView scroll = new ScrollView(this);
+        scroll.addView(box);
+        AlertDialog d = new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                .setTitle(existing == null ? "Nuevo servidor FTP" : "Editar servidor")
+                .setView(scroll)
+                .setPositiveButton("Conectar", null)
+                .setNegativeButton("Cancelar", null)
+                .create();
+        d.setOnShowListener(x -> d.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+            String h = host.getText().toString().trim().replaceFirst("^ftp://", "");
+            if (h.isEmpty()) {
+                host.setError("Falta la dirección");
+                return;
+            }
+            sv.host = h;
+            sv.name = name.getText().toString().trim().isEmpty() ? h : name.getText().toString().trim();
+            try {
+                sv.port = Integer.parseInt(port.getText().toString().trim());
+            } catch (NumberFormatException e) {
+                sv.port = 21;
+            }
+            sv.user = user.getText().toString().trim();
+            sv.pass = pass.getText().toString();
+            d.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+            d.getButton(AlertDialog.BUTTON_POSITIVE).setText("Probando…");
+            io.execute(() -> {
+                String err = null;
+                FtpClient c = new FtpClient(sv.host, sv.port, sv.passive,
+                        sv.latin1 ? java.nio.charset.StandardCharsets.ISO_8859_1 : java.nio.charset.StandardCharsets.UTF_8);
+                try {
+                    c.connect(sv.user, sv.pass);
+                    c.list("/");
+                } catch (IOException e) {
+                    err = e.getMessage();
+                } finally {
+                    c.close();
+                }
+                String fe = err;
+                main.post(() -> {
+                    if (fe != null) {
+                        d.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                        d.getButton(AlertDialog.BUTTON_POSITIVE).setText("Conectar");
+                        new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog).setTitle("No se pudo conectar")
+                                .setMessage(fe + "\n\nRevisa la IP, que el celular y el equipo estén en la misma red Wi-Fi y que el servidor FTP esté encendido. "
+                                        + "Si sigue fallando, cambia el modo pasivo/activo.")
+                                .setPositiveButton("Entendido", null).show();
+                        return;
+                    }
+                    FtpServers.get(this).save(sv);
+                    d.dismiss();
+                    open(sv.root());
+                });
+            });
+        }));
+        d.show();
+    }
+
+    // ------------------------------------------------------------------ Google Drive
+
+    private void openDrive() {
+        Drive gd = Drive.get(this);
+        if (gd.connected()) open(DriveFs.ROOT);
+        else showDriveSetup();
+    }
+
+    private void driveMenu() {
+        Drive gd = Drive.get(this);
+        if (!gd.configured()) {
+            showDriveSetup();
+            return;
+        }
+        new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                .setTitle("Google Drive")
+                .setItems(new String[]{"Desconectar la cuenta", "Cambiar el ID de cliente"}, (d, w) -> {
+                    if (w == 0) gd.disconnect();
+                    else gd.forgetClient();
+                    showHome();
+                })
+                .show();
+    }
+
+    private void showDriveSetup() {
+        Drive gd = Drive.get(this);
+        LinearLayout box = Ui.column(this);
+        box.setPadding(dp(20), dp(8), dp(20), dp(4));
+        EditText id = input("ID de cliente (termina en .apps.googleusercontent.com)", gd.clientId(), android.text.InputType.TYPE_CLASS_TEXT);
+        EditText sec = input("Secreto del cliente", "", android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        if (!gd.configured()) {
+            TextView guide = Ui.text(this, "Google pide que cada app esté registrada. Se hace una sola vez, gratis (unos 5 minutos):\n\n"
+                    + "1. Entra a console.cloud.google.com con tu cuenta y crea un proyecto (por ejemplo «Bóveda»).\n"
+                    + "2. «APIs y servicios» → «Biblioteca»: busca «Google Drive API» y actívala.\n"
+                    + "3. «Pantalla de consentimiento de OAuth»: tipo Externo, nombre Bóveda y tu correo. "
+                    + "En «Usuarios de prueba» agrega tu correo. Luego toca «Publicar app» (así no te pide entrar cada semana).\n"
+                    + "4. «Credenciales» → «Crear credenciales» → «ID de cliente de OAuth» → tipo «App de escritorio».\n"
+                    + "5. Copia aquí el ID de cliente y el secreto.\n\n"
+                    + "Al conectar, Google dirá «Google no verificó esta app»: es tu propia app, toca «Continuar».", 13, Ui.SUB, false);
+            guide.setTextIsSelectable(true);
+            box.addView(guide);
+            box.addView(id, topMargin(dp(12)));
+            box.addView(sec, topMargin(dp(8)));
+        } else {
+            box.addView(Ui.text(this, "Se abrirá el navegador para que elijas tu cuenta de Google y le des permiso a Bóveda.", 14, Ui.SUB, false));
+        }
+        ScrollView scroll = new ScrollView(this);
+        scroll.addView(box);
+        AlertDialog d = new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                .setTitle("Conectar Google Drive")
+                .setView(scroll)
+                .setPositiveButton("Conectar", null)
+                .setNegativeButton("Cancelar", null)
+                .create();
+        d.setOnShowListener(x -> d.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+            if (!gd.configured()) {
+                String i = id.getText().toString().trim(), s2 = sec.getText().toString().trim();
+                if (!i.endsWith(".apps.googleusercontent.com")) {
+                    id.setError("Copia el ID de cliente completo");
+                    return;
+                }
+                if (s2.isEmpty()) {
+                    sec.setError("Falta el secreto");
+                    return;
+                }
+                gd.setClient(i, s2);
+            }
+            d.dismiss();
+            Toast.makeText(this, "Elige tu cuenta en el navegador y vuelve aquí", Toast.LENGTH_LONG).show();
+            gd.login(this, err -> {
+                if (err != null) {
+                    new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog).setTitle("No se conectó Google Drive")
+                            .setMessage(err).setPositiveButton("Entendido", null).show();
+                    return;
+                }
+                Toast.makeText(this, "Google Drive conectado", Toast.LENGTH_SHORT).show();
+                open(DriveFs.ROOT);
+            });
+        }));
+        d.show();
     }
 
     private View cloudCard(String sub) {
@@ -702,7 +986,15 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                 if (gen != loadGen || !p.equals(path)) return;
                 loading.setVisibility(View.INVISIBLE);
                 if (error instanceof Fs.NeedAccess) {
-                    showNeedAccess(p);
+                    if (DriveFs.isDrive(p)) {
+                        showHome();
+                        showDriveSetup();
+                    } else if (FtpServers.isFtp(p)) {
+                        showHome();
+                        Toast.makeText(this, "Ese servidor FTP ya no está guardado", Toast.LENGTH_SHORT).show();
+                    } else {
+                        showNeedAccess(p);
+                    }
                     return;
                 }
                 all.clear();
@@ -799,7 +1091,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         for (int i = 0; i < parts.size(); i++) {
             String part = parts.get(i);
             boolean last = i == parts.size() - 1;
-            TextView t = Ui.text(this, i == 0 ? (v != null && v.removable ? "SD" : "Interno") : Paths.name(part), 12.5f,
+            TextView t = Ui.text(this, i == 0 ? (v != null ? v.shortName : "/") : Paths.name(part), 12.5f,
                     last ? Ui.ACCENT2 : Ui.SUB, last);
             t.setPadding(dp(2), dp(2), dp(2), dp(2));
             t.setOnClickListener(x -> open(part));
