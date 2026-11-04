@@ -44,6 +44,9 @@ android {
 
 dependencies {
     implementation 'androidx.core:core:1.13.1'
+    // archivos comprimidos: zip, 7z, tar, gz, bz2, xz, lz4, lzma, Z, cpio, ar, arj
+    implementation 'org.apache.commons:commons-compress:1.27.1'
+    implementation 'org.tukaani:xz:1.10'
     implementation 'dev.rikka.shizuku:api:13.1.5'
     implementation 'dev.rikka.shizuku:provider:13.1.5'
 }

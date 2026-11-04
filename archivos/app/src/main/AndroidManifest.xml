@@ -70,6 +70,11 @@
             </intent-filter>
         </activity>
 
+        <activity
+            android:name=".ArchiveActivity"
+            android:exported="false"
+            android:configChanges="orientation|screenSize|uiMode" />
+
         <service
             android:name=".TransferService"
             android:exported="false"

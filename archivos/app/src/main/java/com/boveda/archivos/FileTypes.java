@@ -12,7 +12,8 @@ final class FileTypes {
             case "jpg", "jpeg", "png", "gif", "webp", "bmp", "heic", "svg": return R.drawable.ic_image;
             case "mp4", "mkv", "webm", "avi", "mov", "3gp", "m4v": return R.drawable.ic_movie;
             case "mp3", "ogg", "wav", "flac", "m4a", "aac", "opus": return R.drawable.ic_music;
-            case "zip", "rar", "7z", "tar", "gz", "xz", "bz2", "obb", "jar": return R.drawable.ic_archive;
+            case "zip", "rar", "7z", "tar", "gz", "tgz", "xz", "txz", "bz2", "tbz2", "lz4", "lzma", "z", "cpio", "arj", "deb", "iso", "obb", "jar", "cbz", "cb7":
+                return R.drawable.ic_archive;
             case "apk", "apks", "xapk", "apkm": return R.drawable.ic_android;
             case "pdf", "doc", "docx", "txt", "md", "odt", "xls", "xlsx", "ppt", "pptx", "csv": return R.drawable.ic_doc;
             case "json", "xml", "html", "js", "java", "kt", "py", "c", "cpp", "sh", "yml", "yaml", "toml", "properties", "cfg", "ini", "log":
@@ -45,8 +46,4 @@ final class FileTypes {
         return "application/octet-stream";
     }
 
-    static boolean isZip(Entry e) {
-        String x = e.extension();
-        return x.equals("zip") || x.equals("jar") || x.equals("xapk") || x.equals("apks");
-    }
 }

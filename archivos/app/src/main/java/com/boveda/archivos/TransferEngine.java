@@ -31,7 +31,7 @@ import java.util.zip.ZipOutputStream;
  * Las tareas se hacen de una en una (así no se pelean por el disco).
  */
 final class TransferEngine {
-    enum Kind { COPY, MOVE, DELETE, ZIP, UNZIP }
+    enum Kind { COPY, MOVE, DELETE, ZIP, EXTRACT }
 
     enum Conflict { REPLACE, KEEP_BOTH, SKIP }
 
@@ -49,6 +49,9 @@ final class TransferEngine {
         volatile double speed;
         long lastBytes;
         final long created = System.currentTimeMillis();
+        /** Al extraer: qué cosas de adentro (vacío = todo) y qué carpeta interna se quita del nombre. */
+        List<String> picks = new ArrayList<>();
+        String innerBase = "";
 
         Job(Kind kind, List<String> sources, String dest, Conflict conflict) {
             this.kind = kind;
@@ -65,7 +68,7 @@ final class TransferEngine {
                 case MOVE -> "Moviendo " + what;
                 case DELETE -> "Borrando " + what;
                 case ZIP -> "Comprimiendo " + what;
-                case UNZIP -> "Extrayendo " + what;
+                case EXTRACT -> "Extrayendo " + what;
             };
         }
 
@@ -151,7 +154,18 @@ final class TransferEngine {
     }
 
     Job submit(Kind kind, List<String> sources, String dest, Conflict conflict) {
-        Job j = new Job(kind, sources, dest, conflict);
+        return submit(new Job(kind, sources, dest, conflict));
+    }
+
+    /** Extraer de un archivo comprimido: todo (picks vacío) o solo lo elegido. */
+    Job submitExtract(String archive, List<String> picks, String innerBase, String dest) {
+        Job j = new Job(Kind.EXTRACT, java.util.Collections.singletonList(archive), dest, Conflict.REPLACE);
+        j.picks = new ArrayList<>(picks);
+        j.innerBase = innerBase == null ? "" : innerBase;
+        return submit(j);
+    }
+
+    private Job submit(Job j) {
         jobs.add(0, j);
         changed(false);
         TransferService.ensure(app);
@@ -174,7 +188,7 @@ final class TransferEngine {
                 case COPY, MOVE -> transfer(j);
                 case DELETE -> delete(j);
                 case ZIP -> zip(j);
-                case UNZIP -> unzip(j);
+                case EXTRACT -> extract(j);
             }
             j.state = j.cancel ? 4 : 2;
         } catch (Cancelled c) {
@@ -474,67 +488,72 @@ final class TransferEngine {
         changed(true);
     }
 
-    private void unzip(Job j) throws IOException {
-        String zipPath = j.sources.get(0);
-        Fs sf = fs(zipPath);
-        Entry ze0 = sf.stat(zipPath);
-        j.totalBytes = ze0 == null ? 0 : ze0.size;
-        Fs df = fs(j.dest);
-        df.mkdir(j.dest);
-        final long[] read = {0};
-        try (InputStream raw = sf.in(zipPath);
-             InputStream counted = new FilterInputStream(new BufferedInputStream(raw, 1 << 20)) {
-                 @Override
-                 public int read(byte[] b, int off, int len) throws IOException {
-                     int r = super.read(b, off, len);
-                     if (r > 0) read[0] += r;
-                     return r;
-                 }
-
-                 @Override
-                 public int read() throws IOException {
-                     int r = super.read();
-                     if (r >= 0) read[0]++;
-                     return r;
-                 }
-             };
-             ZipInputStream zi = new ZipInputStream(counted)) {
-            ZipEntry ze;
-            byte[] buf = new byte[1 << 20];
-            while ((ze = zi.getNextEntry()) != null) {
-                check(j);
-                String name = ze.getName().replace('\\', '/');
-                // protección: nada puede salir de la carpeta destino
-                if (name.startsWith("/") || name.contains("../") || name.equals("..") || name.endsWith("/..")) continue;
-                String out = Paths.join(j.dest, name.endsWith("/") ? name.substring(0, name.length() - 1) : name);
-                if (ze.isDirectory()) {
-                    mkdirs(df, j.dest, out);
-                } else {
-                    mkdirs(df, j.dest, Paths.parent(out));
-                    j.current = Paths.name(out);
-                    String tmp = Paths.join(Paths.parent(out), "." + Paths.name(out) + ".boveda-parte");
-                    try (OutputStream o = df.out(tmp)) {
-                        int r;
-                        while ((r = zi.read(buf)) >= 0) {
-                            check(j);
-                            o.write(buf, 0, r);
-                            j.doneBytes = read[0];
-                        }
-                        o.flush();
-                        sync(o);
-                    } catch (IOException e) {
-                        cleanup(df, tmp);
-                        throw e;
-                    }
-                    if (df.stat(out) != null) df.delete(out);
-                    df.rename(tmp, out);
-                    if (ze.getTime() > 0) df.setModified(out, ze.getTime());
-                }
-                j.doneItems++;
-                changed(true);
+    private void extract(Job j) throws IOException {
+        String arch = j.sources.get(0);
+        Archive.Type type = Archive.type(Paths.name(arch));
+        if (type == null || Archive.isRar(Paths.name(arch))) throw new IOException("Formato no soportado");
+        // para ZIP, 7Z e ISO el índice es rápido de leer: así la barra muestra el total real
+        if (type == Archive.Type.ZIP || type == Archive.Type.SEVEN_Z || type == Archive.Type.ISO) {
+            for (Archive.Item it : Archive.list(app, arch)) {
+                if (!wanted(j, it.name)) continue;
+                j.totalItems++;
+                if (!it.dir) j.totalBytes += Math.max(0, it.size);
             }
         }
-        j.doneBytes = j.totalBytes;
+        Fs df = fs(j.dest);
+        mkdirsAbsolute(df, j.dest);
+        byte[] buf = new byte[1 << 20];
+        Archive.walk(app, arch, (it, data) -> {
+            check(j);
+            if (!wanted(j, it.name)) return true;
+            String rel = it.name;
+            if (!j.innerBase.isEmpty() && rel.startsWith(j.innerBase + "/")) rel = rel.substring(j.innerBase.length() + 1);
+            if (rel.isEmpty() || !Archive.safe(rel)) return true;
+            String out = Paths.join(j.dest, rel);
+            if (it.dir) {
+                mkdirs(df, j.dest, out);
+            } else {
+                mkdirs(df, j.dest, Paths.parent(out));
+                j.current = Paths.name(out);
+                String tmp = Paths.join(Paths.parent(out), "." + Paths.name(out) + ".boveda-parte");
+                try (OutputStream o = df.out(tmp)) {
+                    if (data != null) {
+                        int r;
+                        while ((r = data.read(buf)) >= 0) {
+                            check(j);
+                            o.write(buf, 0, r);
+                            j.doneBytes += r;
+                        }
+                    }
+                    o.flush();
+                    sync(o);
+                } catch (IOException e) {
+                    cleanup(df, tmp);
+                    throw e;
+                }
+                if (df.stat(out) != null) df.delete(out);
+                df.rename(tmp, out);
+                if (it.time > 0) df.setModified(out, it.time);
+            }
+            j.doneItems++;
+            changed(true);
+            return true;
+        });
+        if (j.totalBytes > 0) j.doneBytes = j.totalBytes;
+    }
+
+    private static boolean wanted(Job j, String name) {
+        if (j.picks.isEmpty()) return true;
+        for (String p : j.picks) if (name.equals(p) || name.startsWith(p + "/")) return true;
+        return false;
+    }
+
+    /** Crea una carpeta y las que falten antes de ella. */
+    private static void mkdirsAbsolute(Fs f, String dir) throws IOException {
+        if (f.stat(dir) != null) return;
+        String parent = Paths.parent(dir);
+        if (!parent.equals(dir) && !parent.equals("/") && f.stat(parent) == null) mkdirsAbsolute(f, parent);
+        f.mkdir(dir);
     }
 
     private static void mkdirs(Fs f, String base, String dir) throws IOException {

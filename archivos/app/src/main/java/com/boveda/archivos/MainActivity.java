@@ -68,6 +68,18 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
     private final Map<String, Integer> scroll = new HashMap<>();
     private static final List<String> clip = new ArrayList<>();
     private static boolean clipMove;
+    // «Extraer a…»: qué se va a sacar de qué archivo comprimido
+    private static String extractArchive;
+    private static final List<String> extractPicks = new ArrayList<>();
+    private static String extractBase = "";
+
+    static void setExtractClip(String archive, List<String> picks, String base) {
+        clip.clear();
+        extractArchive = archive;
+        extractPicks.clear();
+        extractPicks.addAll(picks);
+        extractBase = base == null ? "" : base;
+    }
     private String filter = "";
     private int loadGen;
 
@@ -856,7 +868,13 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         }
         if (e.dir) open(e.path);
         else if (picker()) pick(List.of(e.path));
+        else if (Archive.isRar(e.name)) Toast.makeText(this, "Los RAR no son bienvenidos en Bóveda 🦶", Toast.LENGTH_SHORT).show();
+        else if (Archive.opensOnTap(e.name)) openArchive(e.path);
         else openFile(e);
+    }
+
+    private void openArchive(String p) {
+        startActivity(new Intent(this, ArchiveActivity.class).putExtra(ArchiveActivity.EXTRA, p));
     }
 
     private void toggleSelect(Entry e) {
@@ -896,6 +914,31 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         if (path != null) {
             Volume v = volumeOf(path);
             title.setText(v != null && v.path.equals(path) ? v.name : Paths.name(path));
+        }
+        if (path != null && extractArchive != null && !picker()) {
+            String what = extractPicks.isEmpty() ? "todo" : extractPicks.size() + (extractPicks.size() == 1 ? " elemento" : " elementos");
+            TextView info = Ui.text(this, "Extraer " + what + " de «" + Paths.name(extractArchive) + "»", 13.5f, Ui.TEXT, true);
+            info.setPadding(dp(10), 0, 0, 0);
+            info.setMaxLines(2);
+            info.setEllipsize(TextUtils.TruncateAt.MIDDLE);
+            bottom.addView(info, Ui.weight(1));
+            TextView cancel = Ui.text(this, "Cancelar", 14, Ui.SUB, true);
+            cancel.setPadding(dp(14), dp(10), dp(14), dp(10));
+            cancel.setOnClickListener(v -> {
+                extractArchive = null;
+                updateBars();
+            });
+            bottom.addView(cancel);
+            TextView go = bigButton("Extraer aquí", v -> {
+                engine.submitExtract(extractArchive, new ArrayList<>(extractPicks), extractBase, path);
+                extractArchive = null;
+                updateBars();
+                Toast.makeText(this, "Extrayendo…", Toast.LENGTH_SHORT).show();
+            });
+            go.setPadding(dp(16), dp(10), dp(16), dp(10));
+            bottom.addView(go);
+            bottom.setVisibility(View.VISIBLE);
+            return;
         }
         if (path != null && !clip.isEmpty() && !picker()) {
             TextView info = Ui.text(this, (clipMove ? "Mover " : "Copiar ") + clip.size() + (clip.size() == 1 ? " elemento" : " elementos"),
@@ -943,6 +986,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
     // ------------------------------------------------------------------ copiar, mover, pegar, borrar, comprimir
 
     private void toClip(boolean move) {
+        extractArchive = null;
         clip.clear();
         clip.addAll(selected);
         clipMove = move;
@@ -1047,12 +1091,23 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             } else {
                 labels.add("Abrir con…");
                 acts.add(() -> openWith(single, true));
-                if (FileTypes.isZip(single)) {
+                if (Archive.supported(single.name)) {
+                    labels.add("Ver contenido");
+                    acts.add(() -> {
+                        clearSelection();
+                        openArchive(single.path);
+                    });
                     labels.add("Extraer aquí");
                     acts.add(() -> {
-                        engine.submit(TransferEngine.Kind.UNZIP, List.of(single.path), Paths.join(path, stripExt(single.name)),
-                                TransferEngine.Conflict.REPLACE);
+                        engine.submitExtract(single.path, new ArrayList<>(), "", Paths.join(path, Archive.baseName(single.name)));
                         clearSelection();
+                        Toast.makeText(this, "Extrayendo…", Toast.LENGTH_SHORT).show();
+                    });
+                    labels.add("Extraer a…");
+                    acts.add(() -> {
+                        setExtractClip(single.path, new ArrayList<>(), "");
+                        clearSelection();
+                        Toast.makeText(this, "Ve a la carpeta destino y toca «Extraer aquí»", Toast.LENGTH_LONG).show();
                     });
                 }
             }
