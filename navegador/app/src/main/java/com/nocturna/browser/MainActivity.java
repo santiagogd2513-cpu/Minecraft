@@ -354,6 +354,8 @@ public class MainActivity extends Activity {
         s.setJavaScriptCanOpenWindowsAutomatically(false);
         s.setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
         s.setMediaPlaybackRequiresUserGesture(true);
+        // letra al 100 %: con la letra grande del sistema las páginas se desarman
+        s.setTextZoom(100);
         s.setAllowFileAccess(false);
         s.setAllowContentAccess(false);
         s.setOffscreenPreRaster(false);
