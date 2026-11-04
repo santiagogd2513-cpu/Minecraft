@@ -1569,26 +1569,93 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
 
     private void showCreate() {
         if (path == null) return;
-        String[] opts = {"Nueva carpeta", "Nuevo archivo de texto"};
+        String[] opts = {"Nueva carpeta", "Nuevo archivo de texto (.txt)", "Nuevo PDF"};
         new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
-                .setItems(opts, (d, w) -> askName(opts[w], w == 0 ? "Nueva carpeta" : "nuevo.txt", n -> io.execute(() -> {
-                    String target = Paths.join(path, n);
-                    String err = null;
-                    try {
-                        Fs f = FsRouter.get(this, target);
-                        if (f.stat(target) != null) err = "Ya existe algo con ese nombre";
-                        else if (w == 0) f.mkdir(target);
-                        else f.out(target).close();
-                    } catch (IOException ex) {
-                        err = ex.getMessage();
-                    }
-                    String fe = err;
-                    main.post(() -> {
-                        if (fe != null) Toast.makeText(this, fe, Toast.LENGTH_LONG).show();
-                        load(path, true);
-                    });
-                })))
+                .setItems(opts, (d, w) -> {
+                    if (w == 0) askName(opts[0], "Nueva carpeta", n -> create(n, null, false));
+                    else askDocument(w == 2);
+                })
                 .show();
+    }
+
+    /** Nombre y contenido de un .txt o un PDF nuevos. */
+    private void askDocument(boolean pdf) {
+        LinearLayout box = Ui.column(this);
+        box.setPadding(dp(20), dp(8), dp(20), dp(4));
+        EditText name = input("Nombre", pdf ? "Documento" : "nuevo", android.text.InputType.TYPE_CLASS_TEXT);
+        TextView ext = Ui.text(this, pdf ? ".pdf" : ".txt", 15, Ui.SUB, true);
+        ext.setPadding(dp(8), 0, 0, 0);
+        LinearLayout nameRow = Ui.row(this);
+        nameRow.addView(name, Ui.weight(1));
+        nameRow.addView(ext);
+        box.addView(nameRow);
+        EditText title = input("Título (opcional)", "", android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+        if (pdf) box.addView(title, topMargin(dp(8)));
+        EditText body = input(pdf ? "Escribe el contenido del PDF (opcional)" : "Escribe el texto (opcional)", "",
+                android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE
+                        | android.text.InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+        body.setSingleLine(false);
+        body.setMinLines(6);
+        body.setMaxLines(14);
+        body.setGravity(Gravity.TOP | Gravity.START);
+        body.setVerticalScrollBarEnabled(true);
+        box.addView(body, topMargin(dp(8)));
+        ScrollView scroll = new ScrollView(this);
+        scroll.addView(box);
+        AlertDialog d = new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                .setTitle(pdf ? "Nuevo PDF" : "Nuevo archivo de texto")
+                .setView(scroll)
+                .setPositiveButton("Crear", null)
+                .setNegativeButton("Cancelar", null)
+                .create();
+        d.setOnShowListener(x -> d.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+            String n = name.getText().toString().trim();
+            String suffix = pdf ? ".pdf" : ".txt";
+            if (n.toLowerCase().endsWith(suffix)) n = n.substring(0, n.length() - 4);
+            if (!Paths.validName(n + suffix)) {
+                name.setError("Nombre no válido");
+                return;
+            }
+            d.dismiss();
+            String content = body.getText().toString();
+            String t = title.getText().toString().trim();
+            create(n + suffix, out -> {
+                if (pdf) PdfMaker.write(t, content, out);
+                else out.write(content.getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            }, true);
+        }));
+        d.show();
+    }
+
+    private interface Writer {
+        void write(java.io.OutputStream out) throws IOException;
+    }
+
+    /** Crea una carpeta (writer null y file false) o un archivo con su contenido, donde sea (también FTP o Drive). */
+    private void create(String n, Writer writer, boolean file) {
+        String target = Paths.join(path, n);
+        String dir = path;
+        io.execute(() -> {
+            String err = null;
+            try {
+                Fs f = FsRouter.get(this, target);
+                if (f.stat(target) != null) err = "Ya existe algo con ese nombre";
+                else if (!file) f.mkdir(target);
+                else try (java.io.OutputStream o = f.out(target)) {
+                        if (writer != null) writer.write(o);
+                    }
+            } catch (IOException ex) {
+                err = ex.getMessage();
+            } catch (RuntimeException ex) {
+                err = "No se pudo crear: " + ex.getMessage();
+            }
+            String fe = err;
+            main.post(() -> {
+                if (fe != null) Toast.makeText(this, fe, Toast.LENGTH_LONG).show();
+                else if (file) Toast.makeText(this, "«" + n + "» creado", Toast.LENGTH_SHORT).show();
+                if (dir.equals(path)) load(path, true);
+            });
+        });
     }
 
     private void properties(List<String> sel) {
