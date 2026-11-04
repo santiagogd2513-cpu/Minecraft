@@ -109,6 +109,19 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         return false;
     }
 
+    static final int PICK_FILES = 1, PICK_TREE = 2, PICK_CREATE = 3;
+
+    /** Qué pidió la otra app: archivos, una carpeta (con permiso) o dónde guardar un archivo nuevo. */
+    protected int pickMode() {
+        if (!picker()) return 0;
+        String a = getIntent() == null ? null : getIntent().getAction();
+        if (Intent.ACTION_OPEN_DOCUMENT_TREE.equals(a)) return PICK_TREE;
+        if (Intent.ACTION_CREATE_DOCUMENT.equals(a)) return PICK_CREATE;
+        return PICK_FILES;
+    }
+
+    private EditText saveName;
+
     // ------------------------------------------------------------------ inicio
 
     @Override
@@ -493,7 +506,8 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         fab.setVisibility(View.GONE);
         loading.setVisibility(View.INVISIBLE);
         backBtn.setVisibility(View.GONE);
-        title.setText(picker() ? "Elige un archivo" : "Bóveda");
+        title.setText(!picker() ? "Bóveda" : pickMode() == PICK_TREE ? "Elige una carpeta"
+                : pickMode() == PICK_CREATE ? "¿Dónde guardarlo?" : "Elige un archivo");
         crumbs.removeAllViews();
         buildChips();
 
@@ -1213,7 +1227,10 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             return;
         }
         if (e.dir) open(e.path);
-        else if (picker()) pick(List.of(e.path));
+        else if (pickMode() == PICK_TREE) Toast.makeText(this, "Entra a la carpeta y toca «Usar esta carpeta»", Toast.LENGTH_SHORT).show();
+        else if (pickMode() == PICK_CREATE) {
+            if (saveName != null) saveName.setText(e.name);
+        } else if (picker()) pick(List.of(e.path));
         else if (Archive.isRar(e.name)) Toast.makeText(this, "Los RAR no son bienvenidos en Bóveda 🦶", Toast.LENGTH_SHORT).show();
         else if (Archive.opensOnTap(e.name)) openArchive(e.path);
         else openFile(e);
@@ -1224,6 +1241,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
     }
 
     private void toggleSelect(Entry e) {
+        if (pickMode() == PICK_TREE || pickMode() == PICK_CREATE) return;
         if (!selected.remove(e.path)) selected.add(e.path);
         adapter.notifyDataSetChanged();
         updateBars();
@@ -1260,6 +1278,32 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         if (path != null) {
             Volume v = volumeOf(path);
             title.setText(v != null && v.path.equals(path) ? v.name : Paths.name(path));
+        }
+        if (path != null && pickMode() == PICK_TREE) {
+            TextView info = Ui.text(this, "Dar acceso a «" + label(path) + "»", 14, Ui.TEXT, true);
+            info.setPadding(dp(10), 0, 0, 0);
+            info.setSingleLine(true);
+            info.setEllipsize(TextUtils.TruncateAt.MIDDLE);
+            bottom.addView(info, Ui.weight(1));
+            TextView go = bigButton("Usar esta carpeta", v -> returnTree(path));
+            go.setPadding(dp(16), dp(10), dp(16), dp(10));
+            bottom.addView(go);
+            bottom.setVisibility(View.VISIBLE);
+            return;
+        }
+        if (path != null && pickMode() == PICK_CREATE) {
+            String suggested = getIntent().getStringExtra(Intent.EXTRA_TITLE);
+            String current = saveName != null ? saveName.getText().toString() : null;
+            saveName = input("Nombre del archivo", current != null ? current : suggested == null ? "archivo" : suggested,
+                    android.text.InputType.TYPE_CLASS_TEXT);
+            bottom.addView(saveName, Ui.weight(1));
+            TextView go = bigButton("Guardar aquí", v -> createAndReturn(saveName.getText().toString().trim()));
+            go.setPadding(dp(16), dp(10), dp(16), dp(10));
+            LinearLayout.LayoutParams gl = new LinearLayout.LayoutParams(-2, -2);
+            gl.setMargins(dp(8), 0, 0, 0);
+            bottom.addView(go, gl);
+            bottom.setVisibility(View.VISIBLE);
+            return;
         }
         if (path != null && !cloudDownload.isEmpty() && !picker()) {
             TextView info = Ui.text(this, "Descargar " + (cloudDownload.size() == 1 ? "«" + cloudDownload.get(0).name + "»"
@@ -1755,9 +1799,119 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         ClipData cd = ClipData.newRawUri("", first);
         for (int i = 1; i < files.size(); i++) cd.addItem(new ClipData.Item(contentUri(files.get(i))));
         r.setClipData(cd);
-        r.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+        r.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
         setResult(RESULT_OK, r);
         finish();
+    }
+
+    /** Selector de carpetas: la otra app recibe permiso permanente sobre la carpeta y todo lo de adentro. */
+    private void returnTree(String dir) {
+        Uri tree = DocumentsContract.buildTreeDocumentUri(StorageProvider.authority(this), dir);
+        Intent r = new Intent().setData(tree);
+        r.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION | Intent.FLAG_GRANT_PREFIX_URI_PERMISSION);
+        setResult(RESULT_OK, r);
+        finish();
+    }
+
+    /** «Guardar como»: crea el archivo vacío aquí y se lo entrega a la otra app para que escriba. */
+    private void createAndReturn(String name) {
+        if (!Paths.validName(name)) {
+            Toast.makeText(this, "Escribe un nombre válido", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        String dir = path;
+        io.execute(() -> {
+            String err = null, made = null;
+            try {
+                Fs f = FsRouter.get(this, Paths.join(dir, name));
+                String target = Paths.join(dir, name);
+                for (int n = 1; f.stat(target) != null; n++) {
+                    int dot = name.lastIndexOf('.');
+                    target = Paths.join(dir, (dot > 0 ? name.substring(0, dot) : name) + " (" + n + ")" + (dot > 0 ? name.substring(dot) : ""));
+                }
+                f.out(target).close();
+                made = target;
+            } catch (IOException e) {
+                err = e.getMessage();
+            }
+            String fe = err, fm = made;
+            main.post(() -> {
+                if (fe != null) {
+                    Toast.makeText(this, fe, Toast.LENGTH_LONG).show();
+                    return;
+                }
+                Intent r = new Intent().setData(contentUri(fm));
+                r.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                        | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION);
+                setResult(RESULT_OK, r);
+                finish();
+            });
+        });
+    }
+
+    // ------------------------------------------------------------------ gestor predeterminado
+
+    private static final int REQ_DEFAULT_TEST = 41;
+
+    private String handlerOf(Intent i) {
+        android.content.pm.ResolveInfo ri = getPackageManager().resolveActivity(i, PackageManager.MATCH_DEFAULT_ONLY);
+        if (ri == null || ri.activityInfo == null) return null;
+        return ri.activityInfo.packageName;
+    }
+
+    private String appName(String pkg) {
+        try {
+            return String.valueOf(getPackageManager().getApplicationLabel(getPackageManager().getApplicationInfo(pkg, 0)));
+        } catch (Exception e) {
+            return pkg;
+        }
+    }
+
+    /** Guía para que Bóveda quede como gestor de archivos para todo (Android no tiene un ajuste único para esto). */
+    private void showDefaultSetup() {
+        Intent[] tests = {
+                new Intent(Intent.ACTION_GET_CONTENT).setType("*/*").addCategory(Intent.CATEGORY_OPENABLE),
+                new Intent(Intent.ACTION_OPEN_DOCUMENT).setType("*/*").addCategory(Intent.CATEGORY_OPENABLE),
+                new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE),
+                new Intent(Intent.ACTION_VIEW).setDataAndType(Uri.parse("content://x/y"), "resource/folder"),
+        };
+        String[] what = {"Adjuntar / elegir archivos", "Abrir documentos", "Elegir carpetas (emuladores…)", "Abrir carpetas"};
+        String[] rows = new String[tests.length];
+        String[] owners = new String[tests.length];
+        for (int k = 0; k < tests.length; k++) {
+            String p = handlerOf(tests[k]);
+            owners[k] = p;
+            String state;
+            if (p == null) state = "nadie (las apps se cierran) → toca para probar";
+            else if (p.equals(getPackageName())) state = "✓ Bóveda";
+            else if (p.equals("android") || p.contains("resolver")) state = "sin predeterminado → toca y elige Bóveda + «Siempre»";
+            else state = appName(p) + " → toca para quitarlo";
+            rows[k] = what[k] + "\n" + state;
+        }
+        new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                .setTitle("Hacer a Bóveda el predeterminado")
+                .setItems(rows, (d, w) -> {
+                    String p = owners[w];
+                    if (p != null && !p.equals(getPackageName()) && !p.equals("android") && !p.contains("resolver")) {
+                        // otra app está puesta como predeterminada: hay que quitarla desde sus ajustes
+                        Toast.makeText(this, "Toca «Abrir de forma predeterminada» → «Borrar valores predeterminados» y vuelve",
+                                Toast.LENGTH_LONG).show();
+                        startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + p)));
+                    } else if (p == null || !p.equals(getPackageName())) {
+                        Toast.makeText(this, "Elige «Bóveda» y toca «Siempre»", Toast.LENGTH_LONG).show();
+                        try {
+                            startActivityForResult(tests[w], REQ_DEFAULT_TEST);
+                        } catch (Exception e) {
+                            Toast.makeText(this, "Android no dejó probarlo", Toast.LENGTH_SHORT).show();
+                        }
+                    } else {
+                        Toast.makeText(this, "Bóveda ya es el predeterminado para esto", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .setPositiveButton("Listo", null)
+                .show();
     }
 
     // ------------------------------------------------------------------ menús
@@ -1792,6 +1946,8 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             });
             labels.add("Shizuku: " + ShizukuHelper.status());
             acts.add(this::useShizuku);
+            labels.add("Hacer a Bóveda el gestor predeterminado");
+            acts.add(this::showDefaultSetup);
             labels.add("Dar carpetas a otras apps (emuladores…)");
             acts.add(this::explainProvider);
         }
