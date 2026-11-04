@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <external-path name="almacenamiento" path="." />
+    <cache-path name="temporal" path="." />
+    <root-path name="raiz" path="." />
+</paths>

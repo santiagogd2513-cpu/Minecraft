@@ -1,0 +1,49 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.boveda.archivos'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'com.boveda.archivos'
+        minSdk 29
+        targetSdk 35
+        versionCode Integer.parseInt(System.getenv('GITHUB_RUN_NUMBER') ?: '1')
+        versionName "1.0." + (System.getenv('GITHUB_RUN_NUMBER') ?: '0')
+    }
+
+    buildFeatures {
+        aidl true
+        buildConfig true
+    }
+
+    signingConfigs {
+        release {
+            // firma fija: cada versión se instala encima de la anterior
+            storeFile file('boveda.jks')
+            storePassword 'boveda-archivos'
+            keyAlias 'boveda'
+            keyPassword 'boveda-archivos'
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.release
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}
+
+dependencies {
+    implementation 'androidx.core:core:1.13.1'
+    implementation 'dev.rikka.shizuku:api:13.1.5'
+    implementation 'dev.rikka.shizuku:provider:13.1.5'
+}
