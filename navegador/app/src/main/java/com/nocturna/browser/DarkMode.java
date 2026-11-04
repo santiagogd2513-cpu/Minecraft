@@ -11,12 +11,12 @@ import androidx.webkit.WebViewFeature;
  * - FORCED: el motor de Chrome oscurece toda página que no tenga modo oscuro propio (respeta
  *   las fotos y los videos). Si una página sigue clara (porque el motor no la oscureció),
  *   un script de respaldo la invierte con cuidado, devolviendo imágenes y videos a su color.
- * - MAX: además reescribe los colores de todo el contenido: fondo casi negro y texto claro,
- *   en cualquier página, sin excepción.
+ * - MAX: oscurece todo, elemento por elemento, invirtiendo solo la claridad de cada color (nunca
+ *   el tono ni la fuente): la página conserva su estilo, pero en oscuro.
  */
 final class DarkMode {
     static final int OFF = 0, FORCED = 1, MAX = 2;
-    static final String[] NAMES = {"Apagado", "Forzado (recomendado)", "Máximo (todo oscuro sí o sí)"};
+    static final String[] NAMES = {"Apagado", "Forzado (recomendado)", "Máximo (oscurece todo y conserva los colores)"};
 
     private DarkMode() {}
 
@@ -31,35 +31,25 @@ final class DarkMode {
 
     /** Script que se ejecuta al cargar la página. */
     static String script(int mode) {
-        if (mode == MAX) return MAX_JS;
+        if (mode == MAX) return maxJs;
         if (mode == FORCED) return FALLBACK_JS;
         return "";
     }
 
-    /** Hoja de estilo del modo máximo: todo con fondo oscuro y letras claras. */
-    private static final String MAX_CSS =
-            "html,body{background:#0b0f17!important;color:#dfe5ee!important}"
-                    + "*:not(img):not(video):not(picture):not(canvas):not(svg):not(svg *):not(iframe){"
-                    + "background-color:transparent!important;color:#dfe5ee!important;border-color:#2a3242!important;"
-                    + "box-shadow:none!important;text-shadow:none!important}"
-                    + "header,nav,footer,aside,main,section,article,div,table,td,th,ul,li,form,dialog,[role=dialog],[role=menu]{"
-                    + "background-color:#0e131d!important}"
-                    + "input,textarea,select,button,[contenteditable]{background-color:#182030!important;color:#eef2f8!important;"
-                    + "border:1px solid #33405a!important}"
-                    + "a,a *{color:#7cb4ff!important}a:visited,a:visited *{color:#b49cff!important}"
-                    + "::placeholder{color:#8b97ab!important}"
-                    + "img,video,picture{filter:brightness(.88) contrast(1.05)!important}"
-                    + "::-webkit-scrollbar{background:#0b0f17}::-webkit-scrollbar-thumb{background:#2a3242}";
+    /** El script del modo máximo vive en assets/oscuro_max.js (se carga una vez). */
+    private static String maxJs = "";
 
-    private static final String MAX_JS =
-            "(function(){if(window.__noctMax)return;window.__noctMax=1;"
-                    + "function add(){var r=document.head||document.documentElement;if(!r)return;"
-                    + "if(!document.getElementById('__noct_max')){var s=document.createElement('style');"
-                    + "s.id='__noct_max';s.textContent=" + jsString(MAX_CSS) + ";r.appendChild(s);}"
-                    + "if(!document.getElementById('__noct_meta')){var m=document.createElement('meta');m.id='__noct_meta';"
-                    + "m.name='color-scheme';m.content='dark';r.appendChild(m);}}"
-                    + "add();document.addEventListener('DOMContentLoaded',add);"
-                    + "new MutationObserver(add).observe(document,{childList:true,subtree:true});})();";
+    static void init(android.content.Context c) {
+        if (!maxJs.isEmpty()) return;
+        try (java.io.InputStream in = c.getAssets().open("oscuro_max.js")) {
+            java.io.ByteArrayOutputStream bo = new java.io.ByteArrayOutputStream();
+            byte[] buf = new byte[8192];
+            int r;
+            while ((r = in.read(buf)) > 0) bo.write(buf, 0, r);
+            maxJs = bo.toString("UTF-8");
+        } catch (java.io.IOException ignored) {
+        }
+    }
 
     /**
      * Respaldo del modo forzado: mira el color real del fondo en varios puntos de la pantalla;

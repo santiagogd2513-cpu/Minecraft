@@ -69,6 +69,8 @@ public class MainActivity extends Activity {
         boolean incognito;
         boolean desktop;
         ScriptHandler darkScript;
+        /** Idioma al que está traducida la página actual (null = original). */
+        String translated;
     }
 
     private Store store;
@@ -91,6 +93,8 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle b) {
         super.onCreate(b);
         store = new Store(this);
+        DarkMode.init(this);
+        Translator.init(this);
         Window w = getWindow();
         w.setStatusBarColor(Ui.BG);
         w.setNavigationBarColor(Ui.BG);
@@ -388,6 +392,7 @@ public class MainActivity extends Activity {
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
                 t.url = url;
+                t.translated = null;
                 if (t == current) {
                     showUrl();
                     progress.setVisibility(View.VISIBLE);
@@ -770,6 +775,8 @@ public class MainActivity extends Activity {
         addTile(grid, R.drawable.ic_copy, "Copiar\nenlace", Ui.TEXT, () -> {
             if (current != null && !isInternal(current.url)) copy(current.url);
         }, d);
+        addTile(grid, R.drawable.ic_translate, current != null && current.translated != null ? "Traducida" : "Traducir",
+                0xFF7CE0B8, this::showTranslate, d);
         addTile(grid, R.drawable.ic_shield, store.adBlock() ? "Bloqueo:\nsí" : "Bloqueo:\nno", Ui.GOOD, () -> {
             store.setAdBlock(!store.adBlock());
             if (current != null) current.web.reload();
@@ -990,6 +997,143 @@ public class MainActivity extends Activity {
         al.setMargins(0, dp(10), 0, 0);
         box.addView(add, al);
         d.show();
+    }
+
+    // ------------------------------------------------------------------ traductor
+
+    private void showTranslate() {
+        Tab t = current;
+        if (t == null || isInternal(t.url)) {
+            Toast.makeText(this, "Abre una página para traducirla", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if (t.translated != null) {
+            String[] opts = {"Traducir lo nuevo de la página", "Traducir a otro idioma", "Ver el original"};
+            new AlertDialog.Builder(this, R.style.Theme_Nocturna_Dialog)
+                    .setTitle("Página traducida al " + Translator.name(t.translated))
+                    .setItems(opts, (dd, w) -> {
+                        if (w == 0) translatePage(t, t.translated);
+                        else if (w == 1) chooseLanguage(t);
+                        else restoreOriginal(t);
+                    })
+                    .show();
+            return;
+        }
+        chooseLanguage(t);
+    }
+
+    private void chooseLanguage(Tab t) {
+        String[] names = new String[Translator.TARGETS.length];
+        int sel = 0;
+        String last = getSharedPreferences("nocturna", MODE_PRIVATE).getString("idioma", "es");
+        for (int i = 0; i < names.length; i++) {
+            names[i] = Translator.TARGETS[i][1];
+            if (Translator.TARGETS[i][0].equals(last)) sel = i;
+        }
+        new AlertDialog.Builder(this, R.style.Theme_Nocturna_Dialog)
+                .setTitle("Traducir la página al…")
+                .setSingleChoiceItems(names, sel, (dd, w) -> {
+                    dd.dismiss();
+                    String code = Translator.TARGETS[w][0];
+                    getSharedPreferences("nocturna", MODE_PRIVATE).edit().putString("idioma", code).apply();
+                    if (t.translated != null) {
+                        restoreOriginal(t);
+                    }
+                    translatePage(t, code);
+                })
+                .show();
+    }
+
+    private void restoreOriginal(Tab t) {
+        t.web.evaluateJavascript("window.__noctTr&&window.__noctTr.restore()", null);
+        t.translated = null;
+    }
+
+    /** Junta los textos de la página, los traduce por tandas y los cambia ahí mismo (sin recargar). */
+    private void translatePage(Tab t, String target) {
+        Toast.makeText(this, "Traduciendo al " + Translator.name(target) + "…", Toast.LENGTH_SHORT).show();
+        progress.setVisibility(View.VISIBLE);
+        progress.setProgress(5);
+        t.web.evaluateJavascript(Translator.script() + ";window.__noctTr.collect()", value -> {
+            int start;
+            List<String> texts = new ArrayList<>();
+            try {
+                String json = new org.json.JSONArray("[" + value + "]").getString(0);
+                org.json.JSONObject o = new org.json.JSONObject(json);
+                start = o.getInt("start");
+                org.json.JSONArray a = o.getJSONArray("texts");
+                for (int i = 0; i < a.length(); i++) texts.add(a.getString(i));
+            } catch (Exception e) {
+                progress.setVisibility(View.INVISIBLE);
+                Toast.makeText(this, "No se pudo leer el texto de la página", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (texts.isEmpty()) {
+                progress.setVisibility(View.INVISIBLE);
+                t.translated = target;
+                Toast.makeText(this, "No hay texto nuevo para traducir", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            final int base = start;
+            new Thread(() -> {
+                String[] detected = {null};
+                String error = null;
+                int i = 0, done = 0;
+                while (i < texts.size()) {
+                    // tandas de hasta 90 textos o ~4500 letras
+                    List<String> batch = new ArrayList<>();
+                    int chars = 0, from = i;
+                    while (i < texts.size() && batch.size() < 90 && (batch.isEmpty() || chars + texts.get(i).length() < 4500)) {
+                        String s = texts.get(i);
+                        if (s.length() > 4500) s = s.substring(0, 4500);
+                        batch.add(s);
+                        chars += s.length();
+                        i++;
+                    }
+                    try {
+                        List<String> tr = Translator.translate(batch, target, detected);
+                        org.json.JSONArray arr = new org.json.JSONArray();
+                        for (String s : tr) arr.put(s);
+                        String code = "window.__noctTr&&window.__noctTr.apply(" + (base + from) + "," + arr + ")";
+                        done += batch.size();
+                        int pct = 5 + 95 * done / texts.size();
+                        runOnUiThread(() -> {
+                            t.web.evaluateJavascript(code, null);
+                            if (t == current) progress.setProgress(pct);
+                        });
+                    } catch (java.io.IOException e) {
+                        error = e.getMessage();
+                        break;
+                    }
+                }
+                String err = error, from = detected[0];
+                final int translatedCount = done;
+                runOnUiThread(() -> {
+                    if (t == current) progress.setVisibility(View.INVISIBLE);
+                    if (err != null && translatedCount == 0) {
+                        translateFailed(t, target, err);
+                        return;
+                    }
+                    t.translated = target;
+                    if (from != null && from.split("-")[0].equals(target.split("-")[0]) && !target.contains("-")) {
+                        Toast.makeText(this, "La página ya estaba en " + Translator.name(target), Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(this, "Traducido" + (from != null ? " del " + Translator.name(from) : "") + " al "
+                                + Translator.name(target) + (err != null ? " (en parte)" : ""), Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }, "traductor").start();
+        });
+    }
+
+    private void translateFailed(Tab t, String target, String err) {
+        String proxy = Translator.proxyUrl(t.url, target);
+        AlertDialog.Builder b = new AlertDialog.Builder(this, R.style.Theme_Nocturna_Dialog)
+                .setTitle("No se pudo traducir")
+                .setMessage((err == null ? "" : err + "\n\n") + "Puedes abrir la página traducida por Google (se abre en otra dirección).")
+                .setNegativeButton("Cerrar", null);
+        if (proxy != null) b.setPositiveButton("Abrir traducida", (dd, w) -> load(t, proxy));
+        b.show();
     }
 
     /** Aviso corto abajo, con un botón. */
