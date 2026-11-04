@@ -1041,6 +1041,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                     return;
                 }
                 all.clear();
+                counts.clear();
                 if (res != null) {
                     boolean hidden = prefs.showHidden();
                     for (Entry e : res) {
@@ -2307,7 +2308,9 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                 h.icon.setAlpha(e.hidden() ? 0.55f : 1f);
                 h.name.setText(e.name);
                 h.name.setTextColor(e.hidden() ? Ui.SUB : Ui.TEXT);
-                h.info.setText(e.dir ? (appsFolder && e.name.contains(".") ? "App no instalada  ·  " : "") + Ui.date(e.modified)
+                String n = e.dir ? countOf(e.path) : null;
+                h.info.setText(e.dir ? (appsFolder && e.name.contains(".") ? "App no instalada  ·  " : "")
+                        + (n != null && !n.isEmpty() ? n + "  ·  " : "") + Ui.date(e.modified)
                         : Ui.size(e.size) + "  ·  " + Ui.date(e.modified));
             }
             h.check.setVisibility(sel ? View.VISIBLE : View.GONE);
@@ -2318,6 +2321,64 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             v.setBackground(sel ? Ui.round(0xFF16264A, dp(14)) : Ui.rippleRound(0x00000000, dp(14)));
             return v;
         }
+    }
+
+    // ------------------------------------------------------------------ cuántos elementos tiene cada carpeta
+
+    private final Map<String, String> counts = new java.util.concurrent.ConcurrentHashMap<>();
+    private final Set<String> counting = new java.util.HashSet<>();
+    private final ExecutorService counter = Executors.newFixedThreadPool(2);
+    private boolean countRefresh;
+
+    /** «3 carpetas · 12 archivos» (se calcula aparte, sin frenar la lista). */
+    private String countOf(String dir) {
+        String c = counts.get(dir);
+        if (c != null || FtpServers.isFtp(dir) || DriveFs.isDrive(dir)) return c;
+        if (!counting.add(dir)) return null;
+        final boolean hidden = prefs.showHidden();
+        counter.execute(() -> {
+            String txt = "";
+            try {
+                int d = 0, f = 0;
+                java.io.File[] kids = Paths.restricted(dir) ? null : new java.io.File(dir).listFiles();
+                if (kids != null) {
+                    for (java.io.File k : kids) {
+                        if (!hidden && k.getName().startsWith(".")) continue;
+                        if (k.isDirectory()) d++;
+                        else f++;
+                    }
+                } else {
+                    for (Entry k : FsRouter.get(this, dir).list(dir)) {
+                        if (k.name.endsWith(".boveda-parte") || (!hidden && k.hidden())) continue;
+                        if (k.dir) d++;
+                        else f++;
+                    }
+                }
+                txt = countText(d, f);
+            } catch (Exception ignored) {
+            }
+            final String t = txt;
+            main.post(() -> {
+                counts.put(dir, t);
+                counting.remove(dir);
+                if (!countRefresh) {
+                    countRefresh = true;
+                    main.postDelayed(() -> {
+                        countRefresh = false;
+                        adapter.notifyDataSetChanged();
+                    }, 80);
+                }
+            });
+        });
+        return null;
+    }
+
+    static String countText(int d, int f) {
+        if (d == 0 && f == 0) return "Vacía";
+        StringBuilder b = new StringBuilder();
+        if (d > 0) b.append(d).append(d == 1 ? " carpeta" : " carpetas");
+        if (f > 0) b.append(b.length() > 0 ? " · " : "").append(f).append(f == 1 ? " archivo" : " archivos");
+        return b.toString();
     }
 
     /** La carpeta actual guarda una carpeta por app (Android/data, obb, media). */
