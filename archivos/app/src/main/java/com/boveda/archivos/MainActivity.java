@@ -345,10 +345,126 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         fl.setMargins(0, 0, dp(18), dp(22));
         fab = plus;
         root.addView(plus, fl);
+        buildFloat(root);
         setContentView(root);
     }
 
+    // ------------------------------------------------------------------ tarjeta flotante de progreso
+
+    private LinearLayout floatCard;
+    private TextView floatTitle, floatPct, floatInfo;
+    private ProgressBar floatBar;
+    private TransferEngine.Job floatJob;
+    private boolean floatHidden;   // la cerró con la X: vuelve a salir con la próxima tarea
+
+    private void buildFloat(FrameLayout root) {
+        floatCard = Ui.column(this);
+        floatCard.setPadding(dp(16), dp(12), dp(8), dp(14));
+        floatCard.setBackground(Ui.roundStroke(0xF2182033, dp(18), dp(1), 0xFF2E3A55));
+        floatCard.setElevation(dp(10));
+        floatCard.setVisibility(View.GONE);
+        floatCard.setOnClickListener(v -> showTransfers());
+
+        LinearLayout top = Ui.row(this);
+        floatTitle = Ui.text(this, "", 14.5f, Ui.TEXT, true);
+        floatTitle.setSingleLine(true);
+        floatTitle.setEllipsize(TextUtils.TruncateAt.MIDDLE);
+        top.addView(floatTitle, Ui.weight(1));
+        floatPct = Ui.text(this, "", 15, Ui.ACCENT2, true);
+        floatPct.setPadding(dp(8), 0, dp(4), 0);
+        top.addView(floatPct);
+        top.addView(Ui.iconButton(this, R.drawable.ic_close, 34, v -> {
+            floatHidden = true;
+            floatCard.setVisibility(View.GONE);
+        }));
+        floatCard.addView(top);
+
+        floatBar = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
+        floatBar.setMax(1000);
+        floatBar.setProgressTintList(android.content.res.ColorStateList.valueOf(Ui.ACCENT));
+        floatBar.setProgressBackgroundTintList(android.content.res.ColorStateList.valueOf(0xFF2A3346));
+        floatBar.setIndeterminateTintList(android.content.res.ColorStateList.valueOf(Ui.ACCENT));
+        LinearLayout.LayoutParams bl = new LinearLayout.LayoutParams(-1, dp(8));
+        bl.setMargins(0, dp(6), dp(8), dp(6));
+        floatCard.addView(floatBar, bl);
+
+        floatInfo = Ui.text(this, "", 12.5f, Ui.SUB, false);
+        floatInfo.setMaxLines(2);
+        floatInfo.setEllipsize(TextUtils.TruncateAt.MIDDLE);
+        floatCard.addView(floatInfo);
+
+        FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(-1, -2, Gravity.BOTTOM);
+        lp.setMargins(dp(12), 0, dp(12), dp(92));
+        root.addView(floatCard, lp);
+    }
+
+    private void updateFloat() {
+        if (floatCard == null || picker()) return;
+        TransferEngine.Job run = null;
+        int waiting = 0;
+        for (TransferEngine.Job j : engine.jobs()) {
+            if (j.state == 1 && run == null) run = j;
+            else if (j.state == 0) waiting++;
+        }
+        if (run == null) {
+            for (TransferEngine.Job j : engine.jobs()) if (j.state == 0) { run = j; waiting--; break; }
+        }
+        if (run == null) {
+            // terminó: un momento con el resultado y se va
+            TransferEngine.Job last = floatJob;
+            floatJob = null;
+            if (last != null && floatCard.getVisibility() == View.VISIBLE) {
+                floatTitle.setText(last.title());
+                boolean ok = last.state == 2;
+                floatPct.setText(ok ? "100%" : "");
+                floatBar.setIndeterminate(false);
+                floatBar.setProgress(ok ? 1000 : floatBar.getProgress());
+                floatBar.setProgressTintList(android.content.res.ColorStateList.valueOf(ok ? Ui.GOOD : Ui.BAD));
+                floatInfo.setText(ok ? "Listo ✓" : last.state == 4 ? "Cancelado" : "Error: " + last.error);
+                main.postDelayed(() -> {
+                    if (floatJob == null) floatCard.animate().alpha(0).setDuration(250)
+                            .withEndAction(() -> { floatCard.setVisibility(View.GONE); floatCard.setAlpha(1); }).start();
+                }, ok ? 1600 : 3500);
+            }
+            return;
+        }
+        if (run != floatJob) {
+            floatJob = run;
+            floatHidden = false;
+            floatBar.setProgressTintList(android.content.res.ColorStateList.valueOf(Ui.ACCENT));
+        }
+        if (floatHidden) return;
+        if (floatCard.getVisibility() != View.VISIBLE) {
+            floatCard.animate().cancel();
+            floatCard.setAlpha(0);
+            floatCard.setTranslationY(dp(20));
+            floatCard.setVisibility(View.VISIBLE);
+            floatCard.animate().alpha(1).translationY(0).setDuration(200).start();
+        }
+        floatTitle.setText(run.title() + (waiting > 0 ? "  (+" + waiting + " en cola)" : ""));
+        float prog = run.totalBytes > 0 ? (float) run.doneBytes / run.totalBytes
+                : run.totalItems > 0 ? (float) run.doneItems / run.totalItems : -1;
+        if (run.state == 0 || prog < 0) {
+            floatBar.setIndeterminate(true);
+            floatPct.setText("");
+        } else {
+            floatBar.setIndeterminate(false);
+            int pm = Math.round(Math.max(0, Math.min(1, prog)) * 1000);
+            floatBar.setProgress(pm);
+            floatPct.setText((pm / 10) + "%");
+        }
+        String info;
+        if (run.state == 0) info = "En cola…";
+        else if (run.totalBytes > 0) {
+            info = Ui.size(run.doneBytes) + " de " + Ui.size(run.totalBytes) + "  ·  " + Ui.speed(run.speed);
+            if (run.speed > 1) info += "  ·  faltan " + Ui.eta((long) ((run.totalBytes - run.doneBytes) / run.speed));
+        } else info = run.doneItems + " de " + run.totalItems + " elementos";
+        if (run.current != null && !run.current.isEmpty()) info += "\n" + run.current;
+        floatInfo.setText(info);
+    }
+
     private void updateTransfersBadge() {
+        updateFloat();
         int active = 0;
         for (TransferEngine.Job j : engine.jobs()) if (j.state <= 1) active++;
         transfersBadge.setText(String.valueOf(active));
