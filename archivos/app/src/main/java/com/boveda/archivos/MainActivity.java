@@ -784,7 +784,8 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
 
         String base = Paths.under(p, Paths.OBB) ? Paths.OBB : Paths.under(p, Paths.DATA) ? Paths.DATA : p;
         box.addView(section("1 · Con el selector del sistema"));
-        TextView d1 = Ui.text(this, "Se abre el selector de archivos de Android en esa carpeta: toca «Usar esta carpeta» y «Permitir». "
+        TextView d1 = Ui.text(this, "Se abre el selector de Android dentro de la carpeta «Android»: entra a «" + Paths.name(base)
+                + "», toca «Usar esta carpeta» y «Permitir». "
                 + "Funciona en Android 11 y 12 (y en algunos 13). En Android 13–14 a veces sí deja con la carpeta de una app.", 13, Ui.SUB, false);
         box.addView(d1);
         box.addView(bigButton("Dar acceso a " + Paths.name(base), v -> requestTree(base)), topMargin(dp(12)));
@@ -797,7 +798,10 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
 
     private void requestTree(String folder) {
         Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-        String docId = FsRouter.docIdFor(folder);
+        // para Android/data y Android/obb el selector se abre dentro de la carpeta «Android»
+        // (ahí ya se ven data y obb, y Android no deja abrir el selector directamente en ellas)
+        String start = folder.equals(Paths.DATA) || folder.equals(Paths.OBB) ? Paths.ROOT + "/Android" : folder;
+        String docId = FsRouter.docIdFor(start);
         if (docId != null) i.putExtra(DocumentsContract.EXTRA_INITIAL_URI, DocumentsContract.buildDocumentUri(SafFs.AUTHORITY, docId));
         i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION
                 | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION | Intent.FLAG_GRANT_PREFIX_URI_PERMISSION);
