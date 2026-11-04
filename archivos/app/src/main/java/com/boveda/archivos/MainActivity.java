@@ -94,6 +94,12 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
     private int loadGen;
 
     private FrameLayout content;
+    // tres pestañas: cada una recuerda su carpeta (null = inicio); se cambia deslizando
+    private static final int TABS = 3;
+    private int tab;
+    private final String[] tabPath = new String[TABS];
+    private LinearLayout tabStrip;
+    private final TextView[] tabViews = new TextView[TABS];
     private ListView list;
     private Adapter adapter;
     private TextView title, empty, transfersBadge;
@@ -276,13 +282,32 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         chipScroll.addView(chips);
         col.addView(chipScroll);
 
+        // pestañas 1 · 2 · 3
+        tabStrip = Ui.row(this);
+        tabStrip.setPadding(dp(10), 0, dp(10), dp(4));
+        for (int i = 0; i < TABS; i++) {
+            final int t = i;
+            TextView tv = Ui.text(this, "", 12.5f, Ui.SUB, true);
+            tv.setGravity(Gravity.CENTER);
+            tv.setSingleLine(true);
+            tv.setEllipsize(TextUtils.TruncateAt.END);
+            tv.setPadding(dp(8), dp(6), dp(8), dp(6));
+            tv.setOnClickListener(v -> switchTab(t));
+            LinearLayout.LayoutParams tl = new LinearLayout.LayoutParams(0, -2, 1);
+            if (i > 0) tl.setMargins(dp(6), 0, 0, 0);
+            tabStrip.addView(tv, tl);
+            tabViews[i] = tv;
+        }
+        tabStrip.setVisibility(picker() ? View.GONE : View.VISIBLE);
+        col.addView(tabStrip);
+
         loading = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
         loading.setIndeterminate(true);
         loading.setIndeterminateTintList(android.content.res.ColorStateList.valueOf(Ui.ACCENT));
         loading.setVisibility(View.INVISIBLE);
         col.addView(loading, new LinearLayout.LayoutParams(-1, dp(3)));
 
-        content = new FrameLayout(this);
+        content = new SwipeFrame();
         list = new ListView(this);
         list.setDivider(null);
         list.setSelector(new android.graphics.drawable.ColorDrawable(0));
@@ -494,6 +519,8 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
 
     private void showHome() {
         path = null;
+        tabPath[tab] = null;
+        updateTabs();
         selected.clear();
         updateBars();
         if (!hasStorage()) {
@@ -981,6 +1008,8 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         loading.setVisibility(View.VISIBLE);
         Volume v = volumeOf(p);
         title.setText(v != null && v.path.equals(p) ? v.name : Paths.name(p));
+        tabPath[tab] = p;
+        updateTabs();
         buildCrumbs(p);
         buildChips();
         updateBars();
@@ -2067,6 +2096,107 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, -2);
             lp.setMargins(0, dp(10), 0, 0);
             transfersList.addView(c, lp);
+        }
+    }
+
+    // ------------------------------------------------------------------ pestañas
+
+    private String tabName(int t) {
+        String p = tabPath[t];
+        if (p == null) return "Inicio";
+        Volume v = volumeOf(p);
+        return v != null && v.path.equals(p) ? v.name : Paths.name(p);
+    }
+
+    private void updateTabs() {
+        if (tabStrip == null) return;
+        for (int i = 0; i < TABS; i++) {
+            TextView tv = tabViews[i];
+            boolean on = i == tab;
+            tv.setText((i + 1) + " · " + tabName(i));
+            tv.setTextColor(on ? 0xFF06101F : Ui.SUB);
+            tv.setBackground(on ? Ui.round(Ui.ACCENT, dp(14)) : Ui.roundStroke(Ui.SURFACE, dp(14), dp(1), Ui.STROKE));
+        }
+    }
+
+    /** Cambia de pestaña; lo copiado o cortado sigue listo para pegar en la otra. */
+    private void switchTab(int t) {
+        if (picker() || t < 0 || t >= TABS || t == tab) return;
+        int dir = t > tab ? 1 : -1;
+        if (path != null) scroll.put(path, list.getFirstVisiblePosition());
+        tabPath[tab] = path;
+        tab = t;
+        selected.clear();
+        search.setText("");
+        search.setVisibility(View.GONE);
+        String p = tabPath[t];
+        if (p == null || !hasStorage()) showHome();
+        else {
+            path = p;
+            load(p, false);
+        }
+        updateTabs();
+        content.animate().cancel();
+        content.setTranslationX(dir * content.getWidth() * 0.35f);
+        content.setAlpha(0.3f);
+        content.animate().translationX(0).alpha(1).setDuration(180).start();
+        if (!clip.isEmpty()) {
+            Toast.makeText(this, "Pestaña " + (t + 1) + ": entra a la carpeta y pega", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /** Contenedor de la lista que reconoce el deslizamiento horizontal para cambiar de pestaña. */
+    private final class SwipeFrame extends FrameLayout {
+        private float downX, downY;
+        private boolean swiping;
+        private final int slop = android.view.ViewConfiguration.get(MainActivity.this).getScaledTouchSlop();
+
+        SwipeFrame() {
+            super(MainActivity.this);
+        }
+
+        @Override
+        public boolean onInterceptTouchEvent(android.view.MotionEvent e) {
+            if (picker()) return false;
+            switch (e.getActionMasked()) {
+                case android.view.MotionEvent.ACTION_DOWN:
+                    downX = e.getX();
+                    downY = e.getY();
+                    swiping = false;
+                    break;
+                case android.view.MotionEvent.ACTION_MOVE:
+                    float dx = e.getX() - downX, dy = e.getY() - downY;
+                    if (Math.abs(dx) > slop * 2 && Math.abs(dx) > Math.abs(dy) * 2) {
+                        swiping = true;
+                        return true;
+                    }
+                    break;
+            }
+            return false;
+        }
+
+        @Override
+        public boolean onTouchEvent(android.view.MotionEvent e) {
+            if (!swiping) return super.onTouchEvent(e);
+            float dx = e.getX() - downX;
+            switch (e.getActionMasked()) {
+                case android.view.MotionEvent.ACTION_MOVE:
+                    setTranslationX(dx * 0.35f);
+                    break;
+                case android.view.MotionEvent.ACTION_UP:
+                case android.view.MotionEvent.ACTION_CANCEL:
+                    swiping = false;
+                    int target = dx < 0 ? tab + 1 : tab - 1;
+                    if (e.getActionMasked() == android.view.MotionEvent.ACTION_UP && Math.abs(dx) > dp(70)
+                            && target >= 0 && target < TABS) {
+                        setTranslationX(0);
+                        switchTab(target);
+                    } else {
+                        animate().translationX(0).setDuration(150).start();
+                    }
+                    break;
+            }
+            return true;
         }
     }
 
