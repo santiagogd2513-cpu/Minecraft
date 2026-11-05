@@ -95,11 +95,9 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
 
     private FrameLayout content;
     // tres pestañas: cada una recuerda su carpeta (null = inicio); se cambia deslizando
-    private static final int TABS = 3;
-    private int tab;
-    private final String[] tabPath = new String[TABS];
     private LinearLayout tabStrip;
-    private final TextView[] tabViews = new TextView[TABS];
+    private final TextView[] tabViews = new TextView[Tabs.COUNT];
+    private Tabs.SwipeFrame swipe;
     private ListView list;
     private Adapter adapter;
     private TextView title, empty, transfersBadge;
@@ -179,8 +177,15 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         ShizukuHelper.addListener(shizukuListener);
         updateTransfersBadge();
         if (!hasStorage()) showPermissionGate();
-        else if (path == null) showHome();
+        else if (!picker() && !java.util.Objects.equals(Tabs.path[Tabs.current], path)) {
+            // se cambió de pestaña o se salió de MediaFire
+            String want = Tabs.path[Tabs.current];
+            if (Tabs.MEDIAFIRE.equals(want)) want = Tabs.path[Tabs.current] = Tabs.mfReturn[Tabs.current];
+            selected.clear();
+            showTab(want);
+        } else if (path == null) showHome();
         else load(path, false);
+        updateTabs();
     }
 
     @Override
@@ -282,22 +287,8 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         chipScroll.addView(chips);
         col.addView(chipScroll);
 
-        // pestañas 1 · 2 · 3
-        tabStrip = Ui.row(this);
-        tabStrip.setPadding(dp(10), 0, dp(10), dp(4));
-        for (int i = 0; i < TABS; i++) {
-            final int t = i;
-            TextView tv = Ui.text(this, "", 12.5f, Ui.SUB, true);
-            tv.setGravity(Gravity.CENTER);
-            tv.setSingleLine(true);
-            tv.setEllipsize(TextUtils.TruncateAt.END);
-            tv.setPadding(dp(8), dp(6), dp(8), dp(6));
-            tv.setOnClickListener(v -> switchTab(t));
-            LinearLayout.LayoutParams tl = new LinearLayout.LayoutParams(0, -2, 1);
-            if (i > 0) tl.setMargins(dp(6), 0, 0, 0);
-            tabStrip.addView(tv, tl);
-            tabViews[i] = tv;
-        }
+        // pestañas 1 · 2 · 3 (compartidas con MediaFire)
+        tabStrip = Tabs.strip(this, tabViews, this::switchTab);
         tabStrip.setVisibility(picker() ? View.GONE : View.VISIBLE);
         col.addView(tabStrip);
 
@@ -307,7 +298,9 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         loading.setVisibility(View.INVISIBLE);
         col.addView(loading, new LinearLayout.LayoutParams(-1, dp(3)));
 
-        content = new SwipeFrame();
+        swipe = new Tabs.SwipeFrame(this, dir -> switchTab(Tabs.current + dir));
+        swipe.enabled = !picker();
+        content = swipe;
         list = new ListView(this);
         list.setDivider(null);
         list.setSelector(new android.graphics.drawable.ColorDrawable(0));
@@ -635,7 +628,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
 
     private void showHome() {
         path = null;
-        tabPath[tab] = null;
+        if (!picker()) Tabs.path[Tabs.current] = null;
         updateTabs();
         selected.clear();
         updateBars();
@@ -1048,7 +1041,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         ImageView ch = new ImageView(this);
         ch.setImageDrawable(Ui.icon(this, R.drawable.ic_chevron, 0xFF4A5670));
         r.addView(ch, new LinearLayout.LayoutParams(dp(20), dp(20)));
-        r.setOnClickListener(v -> startActivity(new Intent(this, CloudActivity.class)));
+        r.setOnClickListener(v -> openMediaFire());
         return r;
     }
 
@@ -1124,7 +1117,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         loading.setVisibility(View.VISIBLE);
         Volume v = volumeOf(p);
         title.setText(v != null && v.path.equals(p) ? v.name : Paths.name(p));
-        tabPath[tab] = p;
+        if (!picker()) Tabs.path[Tabs.current] = p;
         updateTabs();
         buildCrumbs(p);
         buildChips();
@@ -1686,7 +1679,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             CloudActivity.pendingUpload.addAll(sel);
             clearSelection();
             Toast.makeText(this, "Elige la carpeta de MediaFire y toca «Subir aquí»", Toast.LENGTH_LONG).show();
-            startActivity(new Intent(this, CloudActivity.class));
+            openMediaFire();
         });
         labels.add("Propiedades");
         acts.add(() -> properties(sel));
@@ -2219,40 +2212,46 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
     // ------------------------------------------------------------------ pestañas
 
     private String tabName(int t) {
-        String p = tabPath[t];
-        if (p == null) return "Inicio";
+        String p = Tabs.path[t];
+        if (p == null || Tabs.MEDIAFIRE.equals(p)) return Tabs.label(p);
         Volume v = volumeOf(p);
-        return v != null && v.path.equals(p) ? v.name : Paths.name(p);
+        return v != null && v.path.equals(p) ? v.name : Tabs.label(p);
     }
 
     private void updateTabs() {
-        if (tabStrip == null) return;
-        for (int i = 0; i < TABS; i++) {
-            TextView tv = tabViews[i];
-            boolean on = i == tab;
-            tv.setText((i + 1) + " · " + tabName(i));
-            tv.setTextColor(on ? 0xFF06101F : Ui.SUB);
-            tv.setBackground(on ? Ui.round(Ui.ACCENT, dp(14)) : Ui.roundStroke(Ui.SURFACE, dp(14), dp(1), Ui.STROKE));
-        }
+        if (tabStrip == null || picker()) return;
+        String[] names = new String[Tabs.COUNT];
+        for (int i = 0; i < Tabs.COUNT; i++) names[i] = tabName(i);
+        Tabs.paint(this, tabViews, names);
     }
 
-    /** Cambia de pestaña; lo copiado o cortado sigue listo para pegar en la otra. */
+    /** Abre MediaFire en la pestaña actual (vuelve a donde estaba con «atrás»). */
+    private void openMediaFire() {
+        if (!picker()) {
+            Tabs.mfReturn[Tabs.current] = path;
+            Tabs.path[Tabs.current] = Tabs.MEDIAFIRE;
+            Tabs.mfStack[Tabs.current] = null;
+        }
+        startActivity(new Intent(this, CloudActivity.class));
+    }
+
+    /** Cambia de pestaña; lo copiado o cortado sigue listo para pegar en la otra (también en MediaFire). */
     private void switchTab(int t) {
-        if (picker() || t < 0 || t >= TABS || t == tab) return;
-        int dir = t > tab ? 1 : -1;
+        if (picker() || t < 0 || t >= Tabs.COUNT || t == Tabs.current) return;
+        int dir = t > Tabs.current ? 1 : -1;
         if (path != null) scroll.put(path, list.getFirstVisiblePosition());
-        tabPath[tab] = path;
-        tab = t;
+        Tabs.path[Tabs.current] = path;
+        Tabs.current = t;
         selected.clear();
         search.setText("");
         search.setVisibility(View.GONE);
-        String p = tabPath[t];
-        if (p == null || !hasStorage()) showHome();
-        else {
-            path = p;
-            load(p, false);
+        if (Tabs.isMediaFire(t)) {
+            updateTabs();
+            startActivity(new Intent(this, CloudActivity.class).putExtra(CloudActivity.EXTRA_DIR, dir));
+            overridePendingTransition(0, 0);
+            return;
         }
-        updateTabs();
+        showTab(Tabs.path[t]);
         content.animate().cancel();
         content.setTranslationX(dir * content.getWidth() * 0.35f);
         content.setAlpha(0.3f);
@@ -2262,59 +2261,20 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         }
     }
 
-    /** Contenedor de la lista que reconoce el deslizamiento horizontal para cambiar de pestaña. */
-    private final class SwipeFrame extends FrameLayout {
-        private float downX, downY;
-        private boolean swiping;
-        private final int slop = android.view.ViewConfiguration.get(MainActivity.this).getScaledTouchSlop();
-
-        SwipeFrame() {
-            super(MainActivity.this);
+    private void showTab(String p) {
+        if (p == null || !hasStorage()) showHome();
+        else {
+            path = p;
+            load(p, false);
         }
+        updateTabs();
+    }
 
-        @Override
-        public boolean onInterceptTouchEvent(android.view.MotionEvent e) {
-            if (picker()) return false;
-            switch (e.getActionMasked()) {
-                case android.view.MotionEvent.ACTION_DOWN:
-                    downX = e.getX();
-                    downY = e.getY();
-                    swiping = false;
-                    break;
-                case android.view.MotionEvent.ACTION_MOVE:
-                    float dx = e.getX() - downX, dy = e.getY() - downY;
-                    if (Math.abs(dx) > slop * 2 && Math.abs(dx) > Math.abs(dy) * 2) {
-                        swiping = true;
-                        return true;
-                    }
-                    break;
-            }
-            return false;
-        }
-
-        @Override
-        public boolean onTouchEvent(android.view.MotionEvent e) {
-            if (!swiping) return super.onTouchEvent(e);
-            float dx = e.getX() - downX;
-            switch (e.getActionMasked()) {
-                case android.view.MotionEvent.ACTION_MOVE:
-                    setTranslationX(dx * 0.35f);
-                    break;
-                case android.view.MotionEvent.ACTION_UP:
-                case android.view.MotionEvent.ACTION_CANCEL:
-                    swiping = false;
-                    int target = dx < 0 ? tab + 1 : tab - 1;
-                    if (e.getActionMasked() == android.view.MotionEvent.ACTION_UP && Math.abs(dx) > dp(70)
-                            && target >= 0 && target < TABS) {
-                        setTranslationX(0);
-                        switchTab(target);
-                    } else {
-                        animate().translationX(0).setDuration(150).start();
-                    }
-                    break;
-            }
-            return true;
-        }
+    /** Lo copiado o cortado en el explorador, para subirlo a MediaFire desde otra pestaña (se usa una vez). */
+    static List<String> takeClipForCloud() {
+        List<String> out = new ArrayList<>(clip);
+        clip.clear();
+        return out;
     }
 
     // ------------------------------------------------------------------ atrás

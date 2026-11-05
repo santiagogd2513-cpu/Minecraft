@@ -68,6 +68,9 @@ public class CloudActivity extends Activity implements TransferEngine.Listener {
     private ProgressBar loading;
     private View fab;
     private int lastDone;
+    static final String EXTRA_DIR = "dir";
+    private final TextView[] tabViews = new TextView[Tabs.COUNT];
+    private LinearLayout tabStrip;
 
     @Override
     protected void onCreate(Bundle b) {
@@ -76,19 +79,74 @@ public class CloudActivity extends Activity implements TransferEngine.Listener {
         getWindow().setStatusBarColor(Ui.BG);
         getWindow().setNavigationBarColor(Ui.BG);
         buildUi();
-        if (mf.loggedIn()) openRoot();
-        else showLogin();
+        if (!Tabs.isMediaFire(Tabs.current)) {
+            // se abrió MediaFire desde otro lado: esta pestaña pasa a MediaFire
+            Tabs.mfReturn[Tabs.current] = Tabs.path[Tabs.current];
+            Tabs.path[Tabs.current] = Tabs.MEDIAFIRE;
+        }
+        enterTab(getIntent().getIntExtra(EXTRA_DIR, 0));
+    }
+
+    // ------------------------------------------------------------------ pestañas
+
+    private void paintTabs() {
+        String[] names = new String[Tabs.COUNT];
+        for (int i = 0; i < Tabs.COUNT; i++) names[i] = Tabs.label(Tabs.path[i]);
+        Tabs.paint(this, tabViews, names);
+    }
+
+    /** Muestra la carpeta de MediaFire que tenía la pestaña actual. */
+    private void enterTab(int dir) {
+        paintTabs();
+        selected.clear();
+        // lo copiado o cortado en el explorador queda listo para «Subir aquí»
+        if (pendingUpload.isEmpty()) pendingUpload.addAll(MainActivity.takeClipForCloud());
+        if (!mf.loggedIn()) {
+            showLogin();
+        } else {
+            List<String[]> saved = Tabs.mfStack[Tabs.current];
+            if (saved != null && !saved.isEmpty()) {
+                stack.clear();
+                stack.addAll(saved);
+                load(true);
+                loadAccount();
+            } else {
+                openRoot();
+            }
+        }
+        if (dir != 0 && body != null) {
+            body.animate().cancel();
+            body.setTranslationX(dir * getResources().getDisplayMetrics().widthPixels * 0.35f);
+            body.setAlpha(0.3f);
+            body.animate().translationX(0).alpha(1).setDuration(180).start();
+        }
+    }
+
+    private void switchTab(int t) {
+        if (t < 0 || t >= Tabs.COUNT || t == Tabs.current) return;
+        int dir = t > Tabs.current ? 1 : -1;
+        Tabs.mfStack[Tabs.current] = new ArrayList<>(stack);
+        Tabs.current = t;
+        if (Tabs.isMediaFire(t)) {
+            enterTab(dir);
+        } else {
+            // el explorador muestra la pestaña al volver
+            finish();
+            overridePendingTransition(0, 0);
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         TransferEngine.get(this).addListener(this);
+        paintTabs();
         updateBottom();
     }
 
     @Override
     protected void onPause() {
+        if (Tabs.isMediaFire(Tabs.current) && !stack.isEmpty()) Tabs.mfStack[Tabs.current] = new ArrayList<>(stack);
         TransferEngine.get(this).removeListener(this);
         super.onPause();
     }
@@ -134,6 +192,9 @@ public class CloudActivity extends Activity implements TransferEngine.Listener {
         head.addView(Ui.iconButton(this, R.drawable.ic_menu, 44, v -> accountMenu()));
         col.addView(head);
 
+        tabStrip = Tabs.strip(this, tabViews, this::switchTab);
+        col.addView(tabStrip);
+
         loading = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
         loading.setIndeterminate(true);
         loading.setIndeterminateTintList(android.content.res.ColorStateList.valueOf(MF_COLOR));
@@ -143,7 +204,7 @@ public class CloudActivity extends Activity implements TransferEngine.Listener {
         accountBox = Ui.column(this);
         col.addView(accountBox);
 
-        body = new FrameLayout(this);
+        body = new Tabs.SwipeFrame(this, d -> switchTab(Tabs.current + d));
         list = new ListView(this);
         list.setDivider(null);
         list.setSelector(new android.graphics.drawable.ColorDrawable(0));
@@ -566,6 +627,13 @@ public class CloudActivity extends Activity implements TransferEngine.Listener {
         MainActivity.setCloudDownloadClip(items);
         clearSelection();
         Toast.makeText(this, "Elige la carpeta y toca «Descargar aquí»", Toast.LENGTH_LONG).show();
+        for (int i = 1; i < Tabs.COUNT; i++) {
+            int t = (Tabs.current + i) % Tabs.COUNT;
+            if (!Tabs.isMediaFire(t)) {
+                switchTab(t);
+                return;
+            }
+        }
         startActivity(new Intent(this, MainActivity.class).setAction("elegir_destino"));
     }
 
@@ -785,6 +853,9 @@ public class CloudActivity extends Activity implements TransferEngine.Listener {
             stack.remove(stack.size() - 1);
             load(true);
         } else {
+            // sale de MediaFire: la pestaña vuelve a donde estaba
+            Tabs.path[Tabs.current] = Tabs.mfReturn[Tabs.current];
+            Tabs.mfStack[Tabs.current] = null;
             super.onBackPressed();
         }
     }
