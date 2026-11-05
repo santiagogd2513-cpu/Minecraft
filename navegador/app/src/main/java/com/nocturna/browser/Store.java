@@ -37,6 +37,9 @@ final class Store {
     boolean adBlock() { return p.getBoolean("adblock", true); }
     void setAdBlock(boolean b) { p.edit().putBoolean("adblock", b).apply(); }
 
+    boolean captchaDodge() { return p.getBoolean("captcha_dodge", true); }
+    void setCaptchaDodge(boolean b) { p.edit().putBoolean("captcha_dodge", b).apply(); }
+
     int connections() { return p.getInt("conns", 8); }
     void setConnections(int n) { p.edit().putInt("conns", n).apply(); }
 

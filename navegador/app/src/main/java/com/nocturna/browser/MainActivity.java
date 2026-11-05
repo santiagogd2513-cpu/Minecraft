@@ -370,6 +370,7 @@ public class MainActivity extends Activity {
         s.setAllowContentAccess(false);
         s.setOffscreenPreRaster(false);
         if (t.incognito) s.setCacheMode(WebSettings.LOAD_NO_CACHE);
+        s.setUserAgentString(mobileUa(s));
         CookieManager.getInstance().setAcceptThirdPartyCookies(w, true);
         w.setOverScrollMode(View.OVER_SCROLL_NEVER);
         applyDark(t, w);
@@ -391,6 +392,14 @@ public class MainActivity extends Activity {
 
             @Override
             public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                // Google pide CAPTCHA: la misma búsqueda en otro buscador, sin pelear con el robot
+                String alt = store.captchaDodge() ? Captcha.alternative(url) : null;
+                if (alt != null) {
+                    view.stopLoading();
+                    view.loadUrl(alt);
+                    Toast.makeText(MainActivity.this, "Google pidió verificación: busqué en " + Captcha.NAME, Toast.LENGTH_SHORT).show();
+                    return;
+                }
                 t.url = url;
                 t.translated = null;
                 if (t == current) {
@@ -834,11 +843,26 @@ public class MainActivity extends Activity {
                 .show();
     }
 
+    /**
+     * El navegador del sistema se presenta como «WebView» («; wv», «Version/4.0»), y a Google eso
+     * le parece más sospechoso; se presenta como el Chrome normal del celular.
+     */
+    private static String cleanUa;
+
+    private static String mobileUa(WebSettings s) {
+        if (cleanUa == null) {
+            String ua = s.getUserAgentString();
+            cleanUa = ua.replace("; wv)", ")").replaceAll("Version/\\d+(\\.\\d+)* ", "");
+        }
+        return cleanUa;
+    }
+
     private void toggleDesktop() {
         if (current == null) return;
         current.desktop = !current.desktop;
         WebSettings s = current.web.getSettings();
-        s.setUserAgentString(current.desktop ? DESKTOP_UA : null);
+        s.setUserAgentString(null);
+        s.setUserAgentString(current.desktop ? DESKTOP_UA : mobileUa(s));
         s.setUseWideViewPort(true);
         s.setLoadWithOverviewMode(true);
         current.web.reload();
@@ -850,6 +874,7 @@ public class MainActivity extends Activity {
                 "Buscador: " + Store.ENGINES[store.engine()][0],
                 "Conexiones por descarga: " + store.connections(),
                 "Bloquear anuncios: " + (store.adBlock() ? "sí" : "no"),
+                "Si Google pide CAPTCHA, buscar en " + Captcha.NAME + ": " + (store.captchaDodge() ? "sí" : "no"),
                 "Borrar historial",
                 "Borrar cookies, caché y datos de páginas",
         };
@@ -878,11 +903,12 @@ public class MainActivity extends Activity {
                                     }).show();
                         }
                         case 3 -> store.setAdBlock(!store.adBlock());
-                        case 4 -> {
+                        case 4 -> store.setCaptchaDodge(!store.captchaDodge());
+                        case 5 -> {
                             store.clearHistory();
                             Toast.makeText(this, "Historial borrado", Toast.LENGTH_SHORT).show();
                         }
-                        case 5 -> {
+                        case 6 -> {
                             CookieManager.getInstance().removeAllCookies(null);
                             WebStorage.getInstance().deleteAllData();
                             for (Tab t : tabs) t.web.clearCache(true);
