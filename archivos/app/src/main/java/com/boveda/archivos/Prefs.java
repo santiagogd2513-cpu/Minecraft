@@ -37,6 +37,9 @@ final class Prefs {
     boolean floatingProgress() { return p.getBoolean("float_progress", true); }
     void setFloatingProgress(boolean b) { p.edit().putBoolean("float_progress", b).apply(); }
 
+    boolean thumbnails() { return p.getBoolean("thumbs", true); }
+    void setThumbnails(boolean b) { p.edit().putBoolean("thumbs", b).apply(); }
+
     boolean appIcons() { return p.getBoolean("app_icons", true); }
     void setAppIcons(boolean b) { p.edit().putBoolean("app_icons", b).apply(); }
     void setVerify(boolean b) { p.edit().putBoolean("verify", b).apply(); }

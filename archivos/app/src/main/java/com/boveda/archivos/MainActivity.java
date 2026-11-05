@@ -8,6 +8,7 @@ import android.content.ClipData;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
@@ -2003,6 +2004,8 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                     prefs.setShowCounts(b);
                     counts.clear();
                 });
+        settingsSwitch(col, "Miniaturas", "Vista previa de fotos y videos, e ícono de cada APK",
+                prefs.thumbnails(), b -> prefs.setThumbnails(b));
         settingsSwitch(col, "Íconos de apps en Android/data", "Muestra el ícono y el nombre de la app dueña de cada carpeta",
                 prefs.appIcons(), b -> prefs.setAppIcons(b));
 
@@ -2407,6 +2410,20 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                 h.iconBox = new FrameLayout(MainActivity.this);
                 h.icon = new ImageView(MainActivity.this);
                 h.iconBox.addView(h.icon, new FrameLayout.LayoutParams(dp(22), dp(22), Gravity.CENTER));
+                // las miniaturas con esquinas redondeadas
+                h.icon.setOutlineProvider(new android.view.ViewOutlineProvider() {
+                    @Override
+                    public void getOutline(View view, android.graphics.Outline o) {
+                        o.setRoundRect(0, 0, view.getWidth(), view.getHeight(), Math.min(view.getWidth(), view.getHeight()) * 0.28f);
+                    }
+                });
+                h.icon.setClipToOutline(true);
+                h.play = new ImageView(MainActivity.this);
+                h.play.setImageDrawable(Ui.icon(MainActivity.this, R.drawable.ic_play, Color.WHITE));
+                h.play.setBackground(Ui.round(0x99000000, dp(9)));
+                h.play.setPadding(dp(3), dp(3), dp(3), dp(3));
+                h.play.setVisibility(View.GONE);
+                h.iconBox.addView(h.play, new FrameLayout.LayoutParams(dp(18), dp(18), Gravity.CENTER));
                 h.check = new ImageView(MainActivity.this);
                 h.check.setImageDrawable(Ui.icon(MainActivity.this, R.drawable.ic_check, 0xFF06101F));
                 h.check.setBackground(Ui.round(Ui.ACCENT2, dp(10)));
@@ -2436,6 +2453,11 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             // en Android/data, obb y media: el ícono y el nombre de la app dueña de cada carpeta
             AppIcons.App app = e.dir && appsFolder ? AppIcons.of(MainActivity.this, e.name) : null;
             FrameLayout.LayoutParams ilp = (FrameLayout.LayoutParams) h.icon.getLayoutParams();
+            int tk = app == null && prefs.thumbnails() ? Thumbs.kind(e) : Thumbs.NONE;
+            Bitmap thumb = tk != Thumbs.NONE ? Thumbs.cached(e) : null;
+            h.icon.setTag(e.path);
+            h.play.setVisibility(View.GONE);
+            h.icon.setScaleType(ImageView.ScaleType.FIT_CENTER);
             int want = app != null ? dp(40) : dp(22);
             if (ilp.width != want) {
                 ilp.width = want;
@@ -2459,6 +2481,17 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                 h.info.setText(e.dir ? (appsFolder && e.name.contains(".") ? "App no instalada  ·  " : "")
                         + (n != null && !n.isEmpty() ? n + "  ·  " : "") + Ui.date(e.modified)
                         : Ui.size(e.size) + "  ·  " + Ui.date(e.modified));
+                if (tk != Thumbs.NONE) {
+                    if (thumb != null) showThumb(h, thumb, tk, e.hidden());
+                    else if (!Thumbs.failedBefore(e) && Thumbs.local(e.path)) {
+                        final String p = e.path;
+                        final int kk = tk;
+                        final boolean hid = e.hidden();
+                        Thumbs.load(MainActivity.this, e, dp(88), bmp -> {
+                            if (p.equals(h.icon.getTag())) showThumb(h, bmp, kk, hid);
+                        });
+                    }
+                }
             }
             h.check.setVisibility(sel ? View.VISIBLE : View.GONE);
             boolean fav = e.dir && (prefs.isPinned(e.path) || prefs.isFavorite(e.path));
@@ -2532,9 +2565,25 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
     /** La carpeta actual guarda una carpeta por app (Android/data, obb, media). */
     private boolean appsFolder;
 
+    /** Pone la miniatura en lugar del ícono del tipo de archivo. */
+    private void showThumb(Holder h, Bitmap b, int kind, boolean hidden) {
+        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) h.icon.getLayoutParams();
+        int size = kind == Thumbs.APK ? dp(40) : dp(44);
+        if (lp.width != size) {
+            lp.width = size;
+            lp.height = size;
+            h.icon.setLayoutParams(lp);
+        }
+        h.icon.setScaleType(kind == Thumbs.APK ? ImageView.ScaleType.FIT_CENTER : ImageView.ScaleType.CENTER_CROP);
+        h.icon.setImageBitmap(b);
+        h.icon.setAlpha(hidden ? 0.55f : 1f);
+        h.iconBox.setBackground(null);
+        h.play.setVisibility(kind == Thumbs.VIDEO ? View.VISIBLE : View.GONE);
+    }
+
     private static final class Holder {
         FrameLayout iconBox;
-        ImageView icon, check, star;
+        ImageView icon, check, star, play;
         TextView name, info;
     }
 
