@@ -211,14 +211,13 @@ public final class Cinematic {
             double radius = 4.8 * (1 - smooth(Math.min(1f, u * 3f)));
             double height = 1.3 + 2200 * Math.pow(u, 2.6);
             Vec3 pos = eye.add(-Math.sin(ang) * radius, height, Math.cos(ang) * radius);
-            // mira al jugador al principio; después se endereza hacia el horizonte para ver cómo
-            // el cielo pasa del azul al negro, y al final levanta la vista hacia las estrellas
-            Pose start = lookAt(pos, eye, 0f, 70f);
-            float level = smooth(Math.min(1f, Math.max(0f, (u - 0.12f) / 0.3f)));
-            float upward = smooth(Math.max(0f, (u - 0.72f) / 0.28f));
-            float yaw = lerpAngle(start.yaw(), (float) Math.toDegrees(ang) + 180f, level);
-            float pitch = Mth.lerp(level, start.pitch(), 14f) - 48f * upward;
-            return new Pose(pos, yaw, pitch, (float) Math.sin(u * 3.0) * 4f, 70f + u * 12f);
+            // mira al jugador al principio y enseguida queda mirando al piso, sin girar,
+            // durante toda la subida: el suelo se aleja hasta que se sale de la Tierra
+            double ang0 = baseYaw + Math.PI + Math.toRadians(140);
+            Pose start = lookAt(eye.add(-Math.sin(ang0) * 4.8, 1.3, Math.cos(ang0) * 4.8), eye, 0f, 70f);
+            float down = smooth(Math.min(1f, u / 0.18f));
+            float pitch = Mth.lerp(down, start.pitch(), 90f);
+            return new Pose(pos, start.yaw(), pitch, 0f, 70f + u * 12f);
         }
         if (t < Timeline.SPACE_END) {
             // En el espacio no se ve el mundo: la cámara descansa cerca del jugador (más barato)
@@ -473,11 +472,7 @@ public final class Cinematic {
             StarDirector.ambientSounds(t, tick);
             return;
         }
-        if (t >= Timeline.SPACE_START && t < Timeline.A5_END) {
-            // zumbido grave del espacio
-            if (tick % 60 == 0) play(com.amatista.arsenal.registry.ModSounds.MACHINE_HUM.get(), 0.5f, 1.0f);
-            if (tick % 140 == 70) play(com.amatista.arsenal.registry.ModSounds.VOID_DRONE.get(), 0.5f, 0.35f);
-        }
+        // en el espacio no hay sonido de fondo: silencio total, solo los sonidos de cada momento
         if (t >= Timeline.A4_END && t < Timeline.A5_END) {
             // la carga sube de tono
             float u = (t - Timeline.A4_END) / (Timeline.A5_END - Timeline.A4_END);

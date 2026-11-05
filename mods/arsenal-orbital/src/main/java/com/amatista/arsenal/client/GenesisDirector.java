@@ -261,7 +261,6 @@ final class GenesisDirector {
     }
 
     static void ambientSounds(float t, long tick) {
-        if (t >= SPACE_START && t < SPACE_END && tick % 70 == 0) Cinematic.play(com.amatista.arsenal.registry.ModSounds.MACHINE_HUM.get(), 0.4f, 1.0f);
         if (t >= EDGE_END && t < LAUNCH_END && tick % 50 == 25) Cinematic.play(com.amatista.arsenal.registry.ModSounds.CRYSTAL_RESONANCE.get(), 0.5f + 0.3f * (float) Math.sin(tick * 0.1), 0.6f);
         if (warp(t) > 0.5f && tick % 12 == 0) Cinematic.play(com.amatista.arsenal.registry.ModSounds.RUSH_WIND.get(), 1.3f + warp(t) * 0.5f, 0.45f);
         if (t >= HARVEST_END && t < FORGE_END) {

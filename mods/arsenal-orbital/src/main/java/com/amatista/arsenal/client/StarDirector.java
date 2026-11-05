@@ -269,7 +269,6 @@ final class StarDirector {
     }
 
     static void ambientSounds(float t, long tick) {
-        if (t >= SPACE_START && t < SPACE_END && t < FIELD_END && tick % 60 == 0) Cinematic.play(com.amatista.arsenal.registry.ModSounds.MACHINE_HUM.get(), 0.45f, 1.0f);
         if (warp(t) > 0.5f && tick % 12 == 0) Cinematic.play(com.amatista.arsenal.registry.ModSounds.RUSH_WIND.get(), 1.3f + warp(t) * 0.5f, 0.45f);
         if (t >= VOID_END && t < CHARGE_END && tick % 40 == 0) Cinematic.play(com.amatista.arsenal.registry.ModSounds.THRUSTER_BURN.get(), 0.4f, 0.6f);
         if (t >= STATION_END && t < CHARGE_END) {

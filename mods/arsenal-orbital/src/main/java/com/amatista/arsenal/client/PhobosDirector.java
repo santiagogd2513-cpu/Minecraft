@@ -338,9 +338,6 @@ final class PhobosDirector {
     }
 
     static void ambientSounds(float t, long tick) {
-        if (t >= PhobosTimeline.SPACE_START && t < PhobosTimeline.SPACE_END && tick % 60 == 0) {
-            Cinematic.play(com.amatista.arsenal.registry.ModSounds.MACHINE_HUM.get(), 0.45f, 1.0f);
-        }
         if (warp(t) > 0.4f && tick % 12 == 0) Cinematic.play(com.amatista.arsenal.registry.ModSounds.RUSH_WIND.get(), 1.2f + warp(t) * 0.5f, 0.5f);
         if (t >= PhobosTimeline.MISSILE_END && t < PhobosTimeline.SLING_END) {
             float u = slingProgress(t);
