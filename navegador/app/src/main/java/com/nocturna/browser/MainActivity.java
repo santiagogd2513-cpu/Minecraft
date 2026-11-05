@@ -438,6 +438,11 @@ public class MainActivity extends Activity {
             }
 
             @Override
+            public void onReceivedIcon(WebView view, Bitmap icon) {
+                if (!t.incognito) Favicons.save(MainActivity.this, view.getUrl(), icon);
+            }
+
+            @Override
             public boolean onCreateWindow(WebView view, boolean dialog, boolean userGesture, Message msg) {
                 Tab n = new Tab();
                 n.incognito = t.incognito;
@@ -893,7 +898,7 @@ public class MainActivity extends Activity {
         List<Store.Entry> list = bookmarks ? store.bookmarks() : store.history();
         Dialog d = sheet();
         LinearLayout box = sheetBox(d);
-        TextView title = Ui.text(this, bookmarks ? "Favoritos" : "Historial", 20, Ui.TEXT, true);
+        TextView title = Ui.text(this, (bookmarks ? "Favoritos" : "Historial") + (list.isEmpty() ? "" : "  ·  " + list.size()), 20, Ui.TEXT, true);
         title.setPadding(dp(4), 0, 0, dp(10));
         box.addView(title);
         ScrollView sv = new ScrollView(this);
@@ -906,11 +911,20 @@ public class MainActivity extends Activity {
             LinearLayout r = Ui.row(this);
             r.setPadding(dp(10), dp(10), dp(4), dp(10));
             r.setBackground(Ui.rippleRound(0x00000000, dp(14)));
+            if (bookmarks) {
+                // ícono de la página (o una letra de color si no tiene)
+                android.widget.ImageView ic = new android.widget.ImageView(this);
+                ic.setScaleType(android.widget.ImageView.ScaleType.FIT_CENTER);
+                Favicons.into(this, ic, e.url(), e.title());
+                LinearLayout.LayoutParams il = new LinearLayout.LayoutParams(dp(32), dp(32));
+                il.setMargins(0, 0, dp(14), 0);
+                r.addView(ic, il);
+            }
             LinearLayout texts = Ui.column(this);
             TextView t = Ui.text(this, e.title(), 14.5f, Ui.TEXT, true);
             t.setSingleLine(true);
             t.setEllipsize(TextUtils.TruncateAt.END);
-            TextView u = Ui.text(this, e.url(), 12, Ui.SUB, false);
+            TextView u = Ui.text(this, e.url(), 11.5f, Ui.SUB, false);
             u.setSingleLine(true);
             u.setEllipsize(TextUtils.TruncateAt.MIDDLE);
             texts.addView(t);
@@ -928,7 +942,8 @@ public class MainActivity extends Activity {
             });
             col.addView(r);
         }
-        box.addView(sv, new LinearLayout.LayoutParams(-1, Math.min(dp(460), dp(64) * Math.max(1, list.size()) + dp(8))));
+        int maxH = (int) (getResources().getDisplayMetrics().heightPixels * 0.72f);
+        box.addView(sv, new LinearLayout.LayoutParams(-1, Math.min(maxH, dp(66) * Math.max(1, list.size()) + dp(8))));
         d.show();
     }
 
