@@ -35,7 +35,11 @@ jobs:
           set -euo pipefail
           echo "Archivos de las versiones de Limbo:"
           gh api repos/limboemu/limbo/releases --jq '.[] | .tag_name + "  " + ([.assets[].name] | join("  "))' | head -20
-          URL=$(gh api repos/limboemu/limbo/releases --jq '[.[] | .assets[] | select(.name | test("\\.apk$")) | select(.name | test("x86"; "i")) | select(.name | test("arm64|aarch64"; "i")) | .browser_download_url][0] // empty')
+          # 6.x: limbo-android-x86-6.0.1-qemu-5.1.0.apk (trae qemu64 y sirve para arm64)
+          URL=$(gh api repos/limboemu/limbo/releases --jq '[.[] | .assets[] | select(.name | test("^limbo-android-x86-[0-9.]+-qemu-5[0-9.]*\\.apk$")) | .browser_download_url][0] // empty')
+          if [ -z "$URL" ]; then
+            URL=$(gh api repos/limboemu/limbo/releases --jq '[.[] | .assets[] | select(.name | test("\\.apk$")) | select(.name | test("x86"; "i")) | select(.name | test("arm64|aarch64"; "i")) | .browser_download_url][0] // empty')
+          fi
           if [ -z "$URL" ]; then
             URL=$(gh api repos/limboemu/limbo/releases --jq '[.[] | .assets[] | select(.name | test("\\.apk$")) | select(.name | test("arm64|aarch64"; "i")) | .browser_download_url][0] // empty')
           fi
