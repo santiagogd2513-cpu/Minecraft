@@ -117,7 +117,76 @@ final class DownloadEngine {
         return d;
     }
 
-    /** Guarda unos bytes que ya tenemos (enlaces data: y blob:). */
+    /** Guarda un archivo temporal que ya tenemos (enlaces blob: grandes), copiándolo por partes. */
+    void saveFile(File src, String name, String mime) {
+        pool.execute(() -> {
+            DownloadItem d = new DownloadItem();
+            d.id = System.currentTimeMillis();
+            d.url = "data:";
+            d.name = name;
+            d.mime = mime == null || mime.isEmpty() ? guessMime(name) : mime;
+            d.created = System.currentTimeMillis();
+            d.total = src.length();
+            items.add(0, d);
+            changed(true);
+            try {
+                createFile(d);
+                byte[] buf = new byte[1 << 20];
+                long pos = 0;
+                try (Sink sink = openSink(d); java.io.FileInputStream in = new java.io.FileInputStream(src)) {
+                    int r;
+                    while ((r = in.read(buf)) > 0) {
+                        writeFully(sink.channel, buf, r, pos);
+                        pos += r;
+                        d.done.set(pos);
+                    }
+                    sink.channel.force(false);
+                }
+                finish(d);
+            } catch (Exception e) {
+                d.status = DownloadItem.FAILED;
+                d.error = e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage();
+            } finally {
+                //noinspection ResultOfMethodCallIgnored
+                src.delete();
+            }
+            changed(true);
+        });
+    }
+
+    /**
+     * Nombre del archivo sin cambiarle la extensión (URLUtil.guessFileName a veces la cambia
+     * según el tipo que manda el servidor). Si no tiene extensión, se le pone la de su tipo.
+     */
+    static String fileName(String url, String disposition, String mime) {
+        String name = null;
+        if (disposition != null) {
+            java.util.regex.Matcher m = java.util.regex.Pattern
+                    .compile("filename\\*\\s*=\\s*(?:UTF-8|utf-8)?''([^;]+)", java.util.regex.Pattern.CASE_INSENSITIVE).matcher(disposition);
+            if (m.find()) {
+                name = Uri.decode(m.group(1).trim());
+            } else {
+                m = java.util.regex.Pattern.compile("filename\\s*=\\s*\"?([^\";]+)\"?", java.util.regex.Pattern.CASE_INSENSITIVE).matcher(disposition);
+                if (m.find()) name = m.group(1).trim();
+            }
+        }
+        if (name == null || name.isEmpty()) {
+            try {
+                String last = Uri.parse(url).getLastPathSegment();
+                if (last != null) name = last;
+            } catch (Exception ignored) {
+            }
+        }
+        if (name == null || name.isEmpty()) name = "descarga";
+        name = name.replaceAll("[\\\\/:*?\"<>|]", "_");
+        if (name.lastIndexOf('.') <= 0 && mime != null && !mime.isEmpty() && !mime.equals("application/octet-stream")) {
+            String ext = MimeTypeMap.getSingleton().getExtensionFromMimeType(mime.split(";")[0].trim());
+            if (ext != null) name += "." + ext;
+        }
+        return name;
+    }
+
+    /** Guarda unos bytes que ya tenemos (enlaces data: pequeños). */
     void saveBytes(byte[] data, String name, String mime) {
         pool.execute(() -> {
             DownloadItem d = new DownloadItem();
@@ -544,10 +613,25 @@ final class DownloadEngine {
         ContentResolver r = app.getContentResolver();
         ContentValues v = new ContentValues();
         v.put(MediaStore.Downloads.DISPLAY_NAME, d.name);
-        v.put(MediaStore.Downloads.MIME_TYPE, d.mime == null ? "application/octet-stream" : d.mime);
+        // el tipo se toma de la extensión, para que Android no rechace ni renombre el archivo
+        // (.jar, .mcpack, .iso, lo que sea); si aun así no le gusta, como archivo genérico
+        v.put(MediaStore.Downloads.MIME_TYPE, guessMime(d.name));
         v.put(MediaStore.Downloads.RELATIVE_PATH, "Download/Nocturna");
         v.put(MediaStore.Downloads.IS_PENDING, 1);
-        Uri uri = r.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, v);
+        Uri uri;
+        try {
+            uri = r.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, v);
+        } catch (Exception e) {
+            uri = null;
+        }
+        if (uri == null) {
+            v.put(MediaStore.Downloads.MIME_TYPE, "application/octet-stream");
+            try {
+                uri = r.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, v);
+            } catch (Exception e) {
+                throw new IOException("Android no dejó crear el archivo: " + e.getMessage());
+            }
+        }
         if (uri == null) throw new IOException("No se pudo crear el archivo en Descargas");
         // Android puede renombrarlo si ya existía uno igual
         try (Cursor cur = r.query(uri, new String[]{MediaStore.Downloads.DISPLAY_NAME}, null, null, null)) {

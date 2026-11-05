@@ -16,6 +16,7 @@ import android.os.Bundle;
 import android.os.Message;
 import android.text.TextUtils;
 import android.util.Base64;
+import java.io.File;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
@@ -508,12 +509,14 @@ public class MainActivity extends Activity {
         });
 
         w.setDownloadListener((url, ua, disposition, mime, length) -> {
-            if (url.startsWith("blob:")) {
-                saveBlob(w, url, URLUtil.guessFileName(url, disposition, mime));
-            } else if (url.startsWith("data:")) {
-                saveDataUrl(url, URLUtil.guessFileName(url, disposition, mime));
-            } else {
-                askDownload(url, URLUtil.guessFileName(url, disposition, mime), mime, ua, t.url, length);
+            try {
+                String name = url.startsWith("blob:") || url.startsWith("data:")
+                        ? URLUtil.guessFileName(url, disposition, mime) : DownloadEngine.fileName(url, disposition, mime);
+                if (url.startsWith("blob:")) saveBlob(w, url, name);
+                else if (url.startsWith("data:")) saveDataUrl(url, name);
+                else askDownload(url, name, mime, ua, t.url, length);
+            } catch (Exception e) {
+                Toast.makeText(this, "No se pudo empezar la descarga: " + e.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
 
@@ -658,12 +661,41 @@ public class MainActivity extends Activity {
         }
     }
 
+    /**
+     * Archivos que la página arma en memoria (blob:). Antes se pasaban enteros como texto y se
+     * decodificaban en la pantalla: con archivos grandes (un .jar, un .zip) la app se colgaba.
+     * Ahora llegan por pedazos de 768 KB a un archivo temporal, fuera de la pantalla.
+     */
     private void saveBlob(WebView w, String url, String name) {
-        String js = "(function(){fetch(" + DarkMode.jsString(url) + ").then(function(r){return r.blob()}).then(function(b){"
-                + "var f=new FileReader();f.onloadend=function(){NocturnaDescargas.save(f.result," + DarkMode.jsString(name)
-                + ")};f.readAsDataURL(b)}).catch(function(){NocturnaDescargas.fail()})})();";
+        long id = System.nanoTime();
+        String js = "(function(){var id='" + id + "';fetch(" + DarkMode.jsString(url) + ").then(function(r){return r.blob()}).then(function(b){"
+                + "NocturnaDescargas.begin(id," + DarkMode.jsString(name) + ",b.type||'',b.size);"
+                + "var CH=786432,off=0;"
+                + "function next(){if(off>=b.size){NocturnaDescargas.end(id);return;}"
+                + "var f=new FileReader();f.onloadend=function(){var s=f.result||'';NocturnaDescargas.chunk(id,s.substring(s.indexOf(',')+1));off+=CH;next();};"
+                + "f.onerror=function(){NocturnaDescargas.fail()};f.readAsDataURL(b.slice(off,off+CH));}"
+                + "next();}).catch(function(){NocturnaDescargas.fail()})})();";
         w.evaluateJavascript(js, null);
         Toast.makeText(this, "Preparando archivo…", Toast.LENGTH_SHORT).show();
+    }
+
+    private void confirmFile(File tmp, String name, String mime) {
+        new AlertDialog.Builder(this, R.style.Theme_Nocturna_Dialog)
+                .setTitle("¿Guardar archivo?")
+                .setMessage(name + "  ·  " + Ui.size(tmp.length()))
+                .setPositiveButton("Guardar", (dlg, w) -> {
+                    DownloadEngine.get(this).saveFile(tmp, name, mime);
+                    snack("Guardando " + name, "Ver", () -> startActivity(new Intent(this, DownloadsActivity.class)));
+                })
+                .setNegativeButton("Cancelar", (dlg, w) -> {
+                    //noinspection ResultOfMethodCallIgnored
+                    tmp.delete();
+                })
+                .setOnCancelListener(dlg -> {
+                    //noinspection ResultOfMethodCallIgnored
+                    tmp.delete();
+                })
+                .show();
     }
 
     private void confirmBytes(byte[] data, String name, String mime) {
@@ -680,6 +712,59 @@ public class MainActivity extends Activity {
 
     /** Recibe los archivos que la página arma en memoria (enlaces blob:). Siempre pide confirmación. */
     private final class BlobBridge {
+        private final java.util.Map<String, Object[]> open = new java.util.HashMap<>();   // id → {archivo, salida, nombre, tipo}
+
+        @JavascriptInterface
+        public void begin(String id, String name, String mime, double size) {
+            try {
+                File tmp = new File(getCacheDir(), "blob_" + id);
+                synchronized (open) {
+                    open.put(id, new Object[]{tmp, new java.io.FileOutputStream(tmp), name, mime});
+                }
+            } catch (Exception e) {
+                fail();
+            }
+        }
+
+        @JavascriptInterface
+        public void chunk(String id, String base64) {
+            Object[] o;
+            synchronized (open) {
+                o = open.get(id);
+            }
+            if (o == null) return;
+            try {
+                ((java.io.FileOutputStream) o[1]).write(Base64.decode(base64, Base64.DEFAULT));
+            } catch (Exception e) {
+                synchronized (open) {
+                    open.remove(id);
+                }
+                try {
+                    ((java.io.FileOutputStream) o[1]).close();
+                } catch (Exception ignored) {
+                }
+                //noinspection ResultOfMethodCallIgnored
+                ((File) o[0]).delete();
+                fail();
+            }
+        }
+
+        @JavascriptInterface
+        public void end(String id) {
+            Object[] o;
+            synchronized (open) {
+                o = open.remove(id);
+            }
+            if (o == null) return;
+            try {
+                ((java.io.FileOutputStream) o[1]).close();
+            } catch (Exception ignored) {
+            }
+            File tmp = (File) o[0];
+            String name = (String) o[2], mime = (String) o[3];
+            runOnUiThread(() -> confirmFile(tmp, name, mime));
+        }
+
         @JavascriptInterface
         public void save(String dataUrl, String name) {
             runOnUiThread(() -> saveDataUrl(dataUrl, name));
