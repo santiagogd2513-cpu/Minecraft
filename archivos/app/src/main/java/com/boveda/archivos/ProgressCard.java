@@ -102,6 +102,10 @@ final class ProgressCard implements TransferEngine.Listener {
     }
 
     void update() {
+        if (!new Prefs(a).floatingProgress()) {
+            card.setVisibility(View.GONE);
+            return;
+        }
         TransferEngine.Job run = null;
         int waiting = 0;
         for (TransferEngine.Job j : engine.jobs()) {

@@ -30,6 +30,15 @@ final class Prefs {
 
     /** Volver a leer cada archivo copiado y compararlo con el original. */
     boolean verify() { return p.getBoolean("verify", true); }
+
+    boolean showCounts() { return p.getBoolean("counts", true); }
+    void setShowCounts(boolean b) { p.edit().putBoolean("counts", b).apply(); }
+
+    boolean floatingProgress() { return p.getBoolean("float_progress", true); }
+    void setFloatingProgress(boolean b) { p.edit().putBoolean("float_progress", b).apply(); }
+
+    boolean appIcons() { return p.getBoolean("app_icons", true); }
+    void setAppIcons(boolean b) { p.edit().putBoolean("app_icons", b).apply(); }
     void setVerify(boolean b) { p.edit().putBoolean("verify", b).apply(); }
 
     List<String> favorites() { return list("favs"); }

@@ -256,6 +256,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         transfersBadge.setVisibility(View.GONE);
         tbox.addView(transfersBadge, new FrameLayout.LayoutParams(dp(16), dp(16), Gravity.TOP | Gravity.END));
         head.addView(tbox, new LinearLayout.LayoutParams(dp(44), dp(44)));
+        if (!picker()) head.addView(Ui.iconButton(this, R.drawable.ic_settings, 44, v -> showSettings()));
         head.addView(Ui.iconButton(this, R.drawable.ic_menu, 44, v -> showMainMenu()));
         col.addView(head);
 
@@ -1049,7 +1050,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                         all.add(e);
                     }
                     sort(all);
-                    appsFolder = AppIcons.isAppsFolder(p);
+                    appsFolder = prefs.appIcons() && AppIcons.isAppsFolder(p);
                     if (appsFolder) {
                         // las apps instaladas primero, por su nombre; luego las carpetas sobrantes
                         all.sort((x, y) -> {
@@ -1945,9 +1946,189 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
 
     // ------------------------------------------------------------------ menús
 
+    // ------------------------------------------------------------------ ajustes
+
+    /** Pantalla de ajustes: todo lo que se puede configurar de Bóveda, ordenado por secciones. */
+    private void showSettings() {
+        android.app.Dialog d = new android.app.Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
+        android.view.Window win = d.getWindow();
+        if (win != null) {
+            win.setStatusBarColor(Ui.BG);
+            win.setNavigationBarColor(Ui.BG);
+        }
+        LinearLayout root = Ui.column(this);
+        root.setBackgroundColor(Ui.BG);
+        root.setFitsSystemWindows(true);
+        LinearLayout head = Ui.row(this);
+        head.setPadding(dp(4), dp(8), dp(12), dp(6));
+        head.addView(Ui.iconButton(this, R.drawable.ic_back, 46, v -> d.dismiss()));
+        head.addView(Ui.text(this, "Ajustes", 21, Ui.TEXT, true), Ui.weight(1));
+        root.addView(head);
+        ScrollView sv = new ScrollView(this);
+        LinearLayout col = Ui.column(this);
+        col.setPadding(dp(14), dp(4), dp(14), dp(32));
+        sv.addView(col);
+        root.addView(sv, new LinearLayout.LayoutParams(-1, 0, 1));
+        d.setContentView(root);
+        fillSettings(col, d);
+        d.setOnDismissListener(x -> {
+            if (path != null) load(path, true);
+            else showHome();
+            updateTransfersBadge();
+        });
+        d.show();
+    }
+
+    private void fillSettings(LinearLayout col, android.app.Dialog d) {
+        col.removeAllViews();
+        Runnable refresh = () -> fillSettings(col, d);
+
+        settingsSection(col, "Vista");
+        settingsSwitch(col, "Mostrar archivos ocultos", "Los que empiezan con un punto (.nomedia, .thumbnails…)",
+                prefs.showHidden(), b -> prefs.setShowHidden(b));
+        settingsRow(col, "Ordenar por", Prefs.SORT_NAMES[prefs.sort()] + (prefs.sortDesc() ? " (descendente)" : " (ascendente)"),
+                () -> new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                        .setTitle("Ordenar por")
+                        .setSingleChoiceItems(Prefs.SORT_NAMES, prefs.sort(), (dd, w) -> {
+                            if (w == prefs.sort()) prefs.setSortDesc(!prefs.sortDesc());
+                            else {
+                                prefs.setSort(w);
+                                prefs.setSortDesc(w == Prefs.SORT_DATE || w == Prefs.SORT_SIZE);
+                            }
+                            dd.dismiss();
+                            refresh.run();
+                        }).show());
+        settingsSwitch(col, "Contar elementos de las carpetas", "«3 carpetas · 12 archivos» debajo de cada carpeta",
+                prefs.showCounts(), b -> {
+                    prefs.setShowCounts(b);
+                    counts.clear();
+                });
+        settingsSwitch(col, "Íconos de apps en Android/data", "Muestra el ícono y el nombre de la app dueña de cada carpeta",
+                prefs.appIcons(), b -> prefs.setAppIcons(b));
+
+        settingsSection(col, "Transferencias");
+        settingsSwitch(col, "Verificar cada copia", "Vuelve a leer cada archivo copiado y lo compara con el original. Más seguro, un poco más lento",
+                prefs.verify(), b -> prefs.setVerify(b));
+        settingsSwitch(col, "Barra de progreso flotante", "Porcentaje, velocidad y tiempo al copiar, mover, borrar, comprimir o subir",
+                prefs.floatingProgress(), b -> prefs.setFloatingProgress(b));
+        settingsRow(col, "Ver transferencias", "Tareas en curso y terminadas", this::showTransfers);
+
+        settingsSection(col, "Acceso a carpetas");
+        settingsRow(col, "Shizuku", ShizukuHelper.status(), () -> {
+            useShizuku();
+            refresh.run();
+        });
+        settingsRow(col, "Gestor de archivos predeterminado", "Que Bóveda abra las carpetas y elija archivos para otras apps", this::showDefaultSetup);
+        settingsRow(col, "Dar carpetas a otras apps", "Emuladores y apps que piden una carpeta (Dolphin, Limbo…)", this::explainProvider);
+
+        settingsSection(col, "Nube y red");
+        settingsRow(col, "MediaFire", MediaFire.get(this).loggedIn() ? "Sesión iniciada" : "Iniciar sesión", () -> {
+            d.dismiss();
+            openMediaFire();
+        });
+        settingsRow(col, "Google Drive", Drive.get(this).connected() ? "Conectado" : "Conectar", () -> {
+            d.dismiss();
+            if (Drive.get(this).connected()) driveMenu();
+            else showDriveSetup();
+        });
+        settingsRow(col, "Añadir servidor FTP", "Xbox 360, PC, otro celular…", () -> {
+            d.dismiss();
+            editFtp(null);
+        });
+
+        settingsSection(col, "Almacenamiento");
+        settingsRow(col, "Borrar archivos temporales", Ui.size(dirSize(getCacheDir())) + " en caché (vistas previas, descargas de FTP y Drive)", () -> {
+            deleteChildren(getCacheDir());
+            Toast.makeText(this, "Archivos temporales borrados", Toast.LENGTH_SHORT).show();
+            refresh.run();
+        });
+
+        settingsSection(col, "Acerca de");
+        settingsRow(col, "Bóveda " + BuildConfig.VERSION_NAME, "Gestor de archivos · compilación " + BuildConfig.VERSION_CODE, null);
+    }
+
+    private static long dirSize(java.io.File f) {
+        if (f == null || !f.exists()) return 0;
+        if (f.isFile()) return f.length();
+        long s = 0;
+        java.io.File[] k = f.listFiles();
+        if (k != null) for (java.io.File c : k) s += dirSize(c);
+        return s;
+    }
+
+    private static void deleteChildren(java.io.File dir) {
+        java.io.File[] k = dir.listFiles();
+        if (k == null) return;
+        for (java.io.File c : k) {
+            if (c.isDirectory()) deleteChildren(c);
+            //noinspection ResultOfMethodCallIgnored
+            c.delete();
+        }
+    }
+
+    private void settingsSection(LinearLayout col, String title) {
+        TextView t = Ui.text(this, title.toUpperCase(), 12, Ui.ACCENT2, true);
+        t.setLetterSpacing(0.08f);
+        t.setPadding(dp(6), dp(20), 0, dp(8));
+        col.addView(t);
+    }
+
+    private LinearLayout settingsCard(String title, String sub) {
+        LinearLayout r = Ui.row(this);
+        r.setPadding(dp(16), dp(13), dp(12), dp(13));
+        r.setBackground(Ui.ripple(Ui.roundStroke(Ui.SURFACE, dp(16), dp(1), Ui.STROKE), Ui.round(Color.WHITE, dp(16))));
+        LinearLayout texts = Ui.column(this);
+        texts.addView(Ui.text(this, title, 15, Ui.TEXT, true));
+        if (sub != null && !sub.isEmpty()) {
+            TextView s = Ui.text(this, sub, 12.5f, Ui.SUB, false);
+            s.setPadding(0, dp(2), 0, 0);
+            texts.addView(s);
+        }
+        r.addView(texts, Ui.weight(1));
+        return r;
+    }
+
+    private void addCard(LinearLayout col, View card) {
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, -2);
+        lp.setMargins(0, 0, 0, dp(8));
+        col.addView(card, lp);
+    }
+
+    private void settingsRow(LinearLayout col, String title, String sub, Runnable action) {
+        LinearLayout r = settingsCard(title, sub);
+        if (action != null) {
+            ImageView ch = new ImageView(this);
+            ch.setImageDrawable(Ui.icon(this, R.drawable.ic_chevron, 0xFF4A5670));
+            r.addView(ch, new LinearLayout.LayoutParams(dp(20), dp(20)));
+            r.setOnClickListener(v -> action.run());
+        } else {
+            r.setBackground(Ui.roundStroke(Ui.SURFACE, dp(16), dp(1), Ui.STROKE));
+        }
+        addCard(col, r);
+    }
+
+    private void settingsSwitch(LinearLayout col, String title, String sub, boolean on, java.util.function.Consumer<Boolean> set) {
+        LinearLayout r = settingsCard(title, sub);
+        android.widget.Switch sw = new android.widget.Switch(this);
+        sw.setChecked(on);
+        sw.setThumbTintList(android.content.res.ColorStateList.valueOf(Color.WHITE));
+        sw.setTrackTintList(new android.content.res.ColorStateList(
+                new int[][]{{android.R.attr.state_checked}, {}}, new int[]{Ui.ACCENT, 0xFF3A4458}));
+        sw.setOnCheckedChangeListener((b, c) -> set.accept(c));
+        LinearLayout.LayoutParams sl = new LinearLayout.LayoutParams(-2, -2);
+        sl.setMargins(dp(10), 0, 0, 0);
+        r.addView(sw, sl);
+        r.setOnClickListener(v -> sw.toggle());
+        addCard(col, r);
+    }
+
     private void showMainMenu() {
         List<String> labels = new ArrayList<>();
         List<Runnable> acts = new ArrayList<>();
+        if (!picker()) {
+            labels.add("⚙  Ajustes");
+            acts.add(this::showSettings);
+        }
         labels.add((prefs.showHidden() ? "✓ " : "") + "Mostrar archivos ocultos");
         acts.add(() -> {
             prefs.setShowHidden(!prefs.showHidden());
@@ -2298,6 +2479,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
 
     /** «3 carpetas · 12 archivos» (se calcula aparte, sin frenar la lista). */
     private String countOf(String dir) {
+        if (!prefs.showCounts()) return null;
         String c = counts.get(dir);
         if (c != null || FtpServers.isFtp(dir) || DriveFs.isDrive(dir)) return c;
         if (!counting.add(dir)) return null;
