@@ -347,18 +347,25 @@ final class SpaceRenderer {
     static void drawSky(BufferBuilder bb, Matrix4f view, Vector3f eye, Vector3f right, Vector3f up, float time) {
         buildDeepSky();
         float dist = 9000f;
+        // solo lo que cae dentro de la pantalla (las estrellas de atrás no se calculan)
+        Vector3f f = Lod.forward(view);
+        float fx = f.x, fy = f.y, fz = f.z;
+        float vis = Lod.viewCos(0.06f), visBig = Lod.viewCos(0.3f);
         // nebulosas (lo más tenue, primero)
         for (int i = 0; i < nebula.length; i += 8) {
+            if (nebula[i] * fx + nebula[i + 1] * fy + nebula[i + 2] * fz < visBig) continue;
             RenderUtil.softDisc(bb, view, eye.x + nebula[i] * dist, eye.y + nebula[i + 1] * dist, eye.z + nebula[i + 2] * dist,
                     right, up, nebula[i + 3], 12, nebula[i + 4], nebula[i + 5], nebula[i + 6], nebula[i + 7], 0f);
         }
         for (int i = 0; i < dust.length; i += 6) {
+            if (dust[i] * fx + dust[i + 1] * fy + dust[i + 2] * fz < visBig) continue;
             float cx = eye.x + dust[i] * dist, cy = eye.y + dust[i + 1] * dist, cz = eye.z + dust[i + 2] * dist;
             float tone = dust[i + 5];
             RenderUtil.softDisc(bb, view, cx, cy, cz, right, up, dust[i + 3], 14, 0.55f + tone * 0.4f, 0.45f + tone * 0.2f, 0.75f - tone * 0.2f, dust[i + 4], 0f);
         }
         // galaxias lejanas
         for (int i = 0; i < galaxy.length; i += 11) {
+            if (galaxy[i] * fx + galaxy[i + 1] * fy + galaxy[i + 2] * fz < visBig) continue;
             float cx = eye.x + galaxy[i] * dist, cy = eye.y + galaxy[i + 1] * dist, cz = eye.z + galaxy[i + 2] * dist;
             Vector3f ax = new Vector3f(galaxy[i + 3], galaxy[i + 4], galaxy[i + 5]);
             Vector3f bx = new Vector3f(galaxy[i + 6], galaxy[i + 7], galaxy[i + 8]);
@@ -370,17 +377,20 @@ final class SpaceRenderer {
         }
         // estrellas tenues de fondo
         for (int i = 0; i < faint.length; i += 5) {
+            if (faint[i] * fx + faint[i + 1] * fy + faint[i + 2] * fz < vis) continue;
             RenderUtil.billboard(bb, view, eye.x + faint[i] * dist, eye.y + faint[i + 1] * dist, eye.z + faint[i + 2] * dist,
                     right, up, faint[i + 3], 0.85f, 0.88f, 1f, faint[i + 4]);
         }
         // cúmulos
         for (int i = 0; i < cluster.length; i += 5) {
+            if (cluster[i] * fx + cluster[i + 1] * fy + cluster[i + 2] * fz < vis) continue;
             float tw = 0.8f + 0.2f * (float) Math.sin(time * 3f + i);
             RenderUtil.billboard(bb, view, eye.x + cluster[i] * dist, eye.y + cluster[i + 1] * dist, eye.z + cluster[i + 2] * dist,
                     right, up, cluster[i + 3], 0.8f, 0.9f, 1f, cluster[i + 4] * tw);
         }
         int total = STAR_COUNT + BAND_COUNT;
         for (int i = 0; i < total; i++) {
+            if (starDir[i * 3] * fx + starDir[i * 3 + 1] * fy + starDir[i * 3 + 2] * fz < vis) continue;
             float cx = eye.x + starDir[i * 3] * dist, cy = eye.y + starDir[i * 3 + 1] * dist, cz = eye.z + starDir[i * 3 + 2] * dist;
             float size = starInfo[i * 6];
             float twinkle = 0.75f + 0.25f * (float) Math.sin(time * 2.3f + starInfo[i * 6 + 5]);
@@ -465,15 +475,27 @@ final class SpaceRenderer {
     }
 
     static void drawMoon(BufferBuilder bb, Matrix4f view, Vector3f moon) {
-        for (int i = 0; i < MOON_LAT; i++) {
-            for (int j = 0; j < MOON_LON; j++) {
-                int k0 = i * (MOON_LON + 1) + j, k1 = k0 + 1, k2 = k0 + MOON_LON + 2, k3 = k0 + MOON_LON + 1;
+        Vector3f cam = Lod.cameraPos(view).sub(moon);
+        float dist = cam.length();
+        boolean cull = dist > MOON_RADIUS * 1.001f;
+        float lim = MOON_RADIUS * 0.985f;
+        int step = Lod.step(MOON_RADIUS, dist);
+        for (int i = 0; i < MOON_LAT; i += step) {
+            int i2 = Math.min(MOON_LAT, i + step);
+            for (int j = 0; j < MOON_LON; j += step) {
+                int j2 = Math.min(MOON_LON, j + step);
+                int k0 = i * (MOON_LON + 1) + j, k1 = i * (MOON_LON + 1) + j2, k2 = i2 * (MOON_LON + 1) + j2, k3 = i2 * (MOON_LON + 1) + j;
+                if (cull && moonDot(k0, cam) <= lim && moonDot(k1, cam) <= lim && moonDot(k2, cam) <= lim && moonDot(k3, cam) <= lim) continue;
                 moonVertex(bb, view, moon, k0);
                 moonVertex(bb, view, moon, k3);
                 moonVertex(bb, view, moon, k2);
                 moonVertex(bb, view, moon, k1);
             }
         }
+    }
+
+    private static float moonDot(int k, Vector3f c) {
+        return moonN[k * 3] * c.x + moonN[k * 3 + 1] * c.y + moonN[k * 3 + 2] * c.z;
     }
 
     private static void moonVertex(BufferBuilder bb, Matrix4f view, Vector3f moon, int k) {

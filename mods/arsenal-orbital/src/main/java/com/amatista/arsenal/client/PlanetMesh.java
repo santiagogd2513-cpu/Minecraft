@@ -32,12 +32,17 @@ final class PlanetMesh {
     private static boolean cull;
 
     /** ¿Algún vértice del cuadro mira hacia la cámara? (ojo = cámara en coordenadas del planeta) */
-    private static boolean faces(float radius, float cx, float cy, float cz, int... ks) {
+    private static boolean faces(float radius, float cx, float cy, float cz, int k0, int k1, int k2, int k3) {
         if (!cull) return true;
         float lim = radius * 0.985f;
-        for (int k : ks) if (nx[k] * cx + ny[k] * cy + nz[k] * cz > lim) return true;
-        return false;
+        return nx[k0] * cx + ny[k0] * cy + nz[k0] * cz > lim || nx[k1] * cx + ny[k1] * cy + nz[k1] * cz > lim
+                || nx[k2] * cx + ny[k2] * cy + nz[k2] * cz > lim || nx[k3] * cx + ny[k3] * cy + nz[k3] * cz > lim;
     }
+
+    // color de cada vértice calculado una sola vez por cuadro (cada vértice lo comparten 4 cuadritos)
+    private static float[] sr, sg, sb;
+    private static int[] stamp;
+    private static int frame;
 
     private PlanetMesh() {}
 
@@ -101,9 +106,18 @@ final class PlanetMesh {
     static void renderSurface(BufferBuilder bb, Matrix4f m, float radius, Vector3f sun, Vector3f eye) {
         ex = eye.x; ey = eye.y; ez = eye.z;
         cull = eye.length() > radius * 1.001f;
-        for (int i = 0; i < LAT; i++) {
-            for (int j = 0; j < LON; j++) {
-                int k0 = i * (LON + 1) + j, k1 = k0 + 1, k2 = k0 + LON + 2, k3 = k0 + LON + 1;
+        lod = Lod.step(radius, eye.length());
+        if (stamp == null) {
+            int n = (LAT + 1) * (LON + 1);
+            sr = new float[n]; sg = new float[n]; sb = new float[n]; stamp = new int[n];
+        }
+        frame++;
+        int step = lod;
+        for (int i = 0; i < LAT; i += step) {
+            int i2 = Math.min(LAT, i + step);
+            for (int j = 0; j < LON; j += step) {
+                int j2 = Math.min(LON, j + step);
+                int k0 = i * (LON + 1) + j, k1 = i * (LON + 1) + j2, k2 = i2 * (LON + 1) + j2, k3 = i2 * (LON + 1) + j;
                 if (!faces(radius, ex, ey, ez, k0, k1, k2, k3)) continue;
                 vertexSurface(bb, m, radius, k0, sun, eye);
                 vertexSurface(bb, m, radius, k3, sun, eye);
@@ -113,7 +127,18 @@ final class PlanetMesh {
         }
     }
 
+    private static int lod = 1;
+
     private static void vertexSurface(BufferBuilder bb, Matrix4f m, float radius, int k, Vector3f sun, Vector3f eye) {
+        float x = nx[k], y = ny[k], z = nz[k];
+        if (stamp[k] != frame) {
+            surfaceColor(radius, k, sun, eye);
+            stamp[k] = frame;
+        }
+        bb.vertex(m, x * radius, y * radius, z * radius).color(sr[k], sg[k], sb[k], 1f).endVertex();
+    }
+
+    private static void surfaceColor(float radius, int k, Vector3f sun, Vector3f eye) {
         float x = nx[k], y = ny[k], z = nz[k];
         float d = x * sun.x + y * sun.y + z * sun.z;
         float light = 0.02f + 0.80f * smoothstep(-0.06f, 0.6f, d) + 0.10f * smoothstep(0.35f, 0.95f, d);
@@ -130,7 +155,8 @@ final class PlanetMesh {
             float vx0 = eye.x - px0, vy0 = eye.y - py0, vz0 = eye.z - pz0;
             float vl0 = (float) Math.sqrt(vx0 * vx0 + vy0 * vy0 + vz0 * vz0) + 1e-3f;
             float cosv = Math.max(0f, (x * vx0 + y * vy0 + z * vz0) / vl0);
-            float fres = (float) Math.pow(1f - cosv, 5) * 0.25f * smoothstep(-0.1f, 0.4f, d);
+            float om = 1f - cosv;
+            float fres = om * om * om * om * om * 0.25f * smoothstep(-0.1f, 0.4f, d);
             r += fres * 0.35f; g += fres * 0.55f; b += fres;
         }
         if (water[k] > 0f && d > 0f) {
@@ -140,10 +166,15 @@ final class PlanetMesh {
             float vl = (float) Math.sqrt(vx * vx + vy * vy + vz * vz);
             float hx = sun.x + vx / vl, hy = sun.y + vy / vl, hz = sun.z + vz / vl;
             float hl = (float) Math.sqrt(hx * hx + hy * hy + hz * hz);
-            float spec = (float) Math.pow(Math.max(0f, (x * hx + y * hy + z * hz) / hl), 120) * 0.45f * water[k];
-            r += spec; g += spec * 0.92f; b += spec * 0.8f;
+            float base = Math.max(0f, (x * hx + y * hy + z * hz) / hl);
+            if (base > 0.88f) {
+                // base^120 sin Math.pow: 120 = 64 + 32 + 16 + 8
+                float b2 = base * base, b4 = b2 * b2, b8 = b4 * b4, b16 = b8 * b8, b32 = b16 * b16, b64 = b32 * b32;
+                float spec = b64 * b32 * b16 * b8 * 0.45f * water[k];
+                r += spec; g += spec * 0.92f; b += spec * 0.8f;
+            }
         }
-        bb.vertex(m, x * radius, y * radius, z * radius).color(Math.min(1f, r), Math.min(1f, g), Math.min(1f, b), 1f).endVertex();
+        sr[k] = Math.min(1f, r); sg[k] = Math.min(1f, g); sb[k] = Math.min(1f, b);
     }
 
     /** Nubes (transparencia normal), giran lentamente. */
@@ -151,9 +182,12 @@ final class PlanetMesh {
         float cos = (float) Math.cos(rotation), sin = (float) Math.sin(rotation);
         // la cámara girada al revés, para comparar con las normales sin girar
         float rx = ex * cos + ez * sin, rz = -ex * sin + ez * cos;
-        for (int i = 0; i < LAT; i++) {
-            for (int j = 0; j < LON; j++) {
-                int k0 = i * (LON + 1) + j, k1 = k0 + 1, k2 = k0 + LON + 2, k3 = k0 + LON + 1;
+        int step = lod;
+        for (int i = 0; i < LAT; i += step) {
+            int i2 = Math.min(LAT, i + step);
+            for (int j = 0; j < LON; j += step) {
+                int j2 = Math.min(LON, j + step);
+                int k0 = i * (LON + 1) + j, k1 = i * (LON + 1) + j2, k2 = i2 * (LON + 1) + j2, k3 = i2 * (LON + 1) + j;
                 if (cloud[k0] + cloud[k1] + cloud[k2] + cloud[k3] < 0.02f) continue;
                 if (!faces(radius, rx, ey, rz, k0, k1, k2, k3)) continue;
                 vertexCloud(bb, m, radius, k0, sun, cos, sin);
@@ -184,7 +218,7 @@ final class PlanetMesh {
         float eyeDist = eye.length();
         float fade = smoothstep(radius * 1.01f, radius * 1.12f, eyeDist);
         if (fade <= 0.01f) return;
-        int step = 2;
+        int step = Math.max(2, lod * 2);
         for (int i = 0; i < LAT; i += step) {
             for (int j = 0; j < LON; j += step) {
                 int i2 = Math.min(LAT, i + step), j2 = Math.min(LON, j + step);
@@ -212,6 +246,9 @@ final class PlanetMesh {
     }
 
     /** Luces de ciudades en el lado de noche (aditivo). */
+    private static final Vector3f T1 = new Vector3f(), T2 = new Vector3f();
+    private static final Vector3f UP_Y = new Vector3f(0, 1, 0), UP_X = new Vector3f(1, 0, 0);
+
     static void renderCityLights(BufferBuilder bb, Matrix4f m, float radius, Vector3f sun, float time) {
         renderLightning(bb, m, radius, sun, time);
         renderAuroras(bb, m, radius, sun, time);
@@ -223,9 +260,9 @@ final class PlanetMesh {
             if (night <= 0.01f) continue;
             if (cull && x * ex + y * ey + z * ez < radius * 0.99f) continue;
             float flicker = 0.75f + 0.25f * (float) Math.sin(time * 3 + i);
-            Vector3f n = new Vector3f(x, y, z);
-            Vector3f t1 = new Vector3f(n).cross(Math.abs(y) < 0.9f ? new Vector3f(0, 1, 0) : new Vector3f(1, 0, 0)).normalize();
-            Vector3f t2 = new Vector3f(n).cross(t1).normalize();
+            // sin crear vectores nuevos por cada luz (eran miles por cuadro)
+            Vector3f t1 = T1.set(x, y, z).cross(Math.abs(y) < 0.9f ? UP_Y : UP_X).normalize();
+            Vector3f t2 = T2.set(x, y, z).cross(t1).normalize();
             float s = 2.4f;
             float cx = x * (radius + 2.5f), cy = y * (radius + 2.5f), cz = z * (radius + 2.5f);
             RenderUtil.streak(bb, m, cx, cy, cz, t1, s, t2, s, 1.0f, 0.75f, 0.35f, 0.8f * night * flicker);

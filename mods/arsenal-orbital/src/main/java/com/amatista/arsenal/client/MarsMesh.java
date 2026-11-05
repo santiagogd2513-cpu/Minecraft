@@ -103,15 +103,28 @@ final class MarsMesh {
     }
 
     static void renderMars(BufferBuilder bb, Matrix4f view, Vector3f center, float radius, Vector3f sun) {
-        for (int i = 0; i < LAT; i++) {
-            for (int j = 0; j < LON; j++) {
-                int k0 = i * (LON + 1) + j, k1 = k0 + 1, k2 = k0 + LON + 2, k3 = k0 + LON + 1;
+        // la cámara vista desde el centro de Marte: solo se dibuja la cara que mira hacia ella
+        Vector3f cam = Lod.cameraPos(view).sub(center);
+        float dist = cam.length();
+        boolean cull = dist > radius * 1.001f;
+        float lim = radius * 0.985f;
+        int step = Lod.step(radius, dist);
+        for (int i = 0; i < LAT; i += step) {
+            int i2 = Math.min(LAT, i + step);
+            for (int j = 0; j < LON; j += step) {
+                int j2 = Math.min(LON, j + step);
+                int k0 = i * (LON + 1) + j, k1 = i * (LON + 1) + j2, k2 = i2 * (LON + 1) + j2, k3 = i2 * (LON + 1) + j;
+                if (cull && dot(k0, cam) <= lim && dot(k1, cam) <= lim && dot(k2, cam) <= lim && dot(k3, cam) <= lim) continue;
                 marsVertex(bb, view, center, radius, k0, sun);
                 marsVertex(bb, view, center, radius, k3, sun);
                 marsVertex(bb, view, center, radius, k2, sun);
                 marsVertex(bb, view, center, radius, k1, sun);
             }
         }
+    }
+
+    private static float dot(int k, Vector3f c) {
+        return mn[k * 3] * c.x + mn[k * 3 + 1] * c.y + mn[k * 3 + 2] * c.z;
     }
 
     private static void marsVertex(BufferBuilder bb, Matrix4f view, Vector3f c, float radius, int k, Vector3f sun) {

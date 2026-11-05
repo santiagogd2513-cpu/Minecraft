@@ -189,14 +189,29 @@ final class StarRenderer {
         return dim;
     }
 
+    private static float sdot(int idx, Vector3f e) {
+        return sn[idx * 3] * e.x + sn[idx * 3 + 1] * e.y + sn[idx * 3 + 2] * e.z;
+    }
+
     private static void drawStar(BufferBuilder bb, Matrix4f view, Vector3f eye, float time, float bright, float siphon) {
         float R = StarDirector.STAR_R;
         Vector3f sip = v(StarDirector.SIPHON).normalize();
         float phase = 0.5f + 0.5f * (float) Math.sin(time * 0.35f);
-        for (int i = 0; i < LAT; i++) {
-            for (int j = 0; j < LON; j++) {
+        // solo la cara que mira a la cámara, y menos detalle cuando la estrella se ve pequeña
+        float ed = eye.length();
+        boolean cull = ed > R * 1.001f;
+        float lim = R * 0.985f;
+        int step = Lod.step(R, ed);
+        for (int i = 0; i < LAT; i += step) {
+            int i2 = Math.min(LAT, i + step);
+            for (int j = 0; j < LON; j += step) {
+                int j2 = Math.min(LON, j + step);
+                if (cull) {
+                    int a = i * (LON + 1) + j, b = i2 * (LON + 1) + j, c = i2 * (LON + 1) + j2, d = i * (LON + 1) + j2;
+                    if (sdot(a, eye) <= lim && sdot(b, eye) <= lim && sdot(c, eye) <= lim && sdot(d, eye) <= lim) continue;
+                }
                 for (int k = 0; k < 4; k++) {
-                    int ii = i + (k == 1 || k == 2 ? 1 : 0), jj = j + (k >= 2 ? 1 : 0);
+                    int ii = (k == 1 || k == 2) ? i2 : i, jj = k >= 2 ? j2 : j;
                     int idx = ii * (LON + 1) + jj;
                     float x = sn[idx * 3], y = sn[idx * 3 + 1], z = sn[idx * 3 + 2];
                     float px = x * R, py = y * R, pz = z * R;

@@ -114,11 +114,19 @@ final class BlackHoleRenderer {
                 RenderUtil.softDisc(bb, view, p.x, p.y, p.z, right, up, clumps[i + 3] * sizeScale, 10,
                         clumps[i + 4], clumps[i + 5], clumps[i + 6], clumps[i + 7] * brightness, 0f);
             }
-            // estrellas
+            // estrellas: una galaxia que se ve pequeña usa menos puntos; las que quedan detrás de la cámara no se dibujan
+            float cd = core.distance(eye);
+            float auto = cd <= radius ? 1f : (radius * sizeScale / cd) / Lod.tanV();
+            int st = Math.max(step, auto > 0.35f ? 1 : auto > 0.15f ? 2 : auto > 0.06f ? 4 : 8);
+            Vector3f f = Lod.forward(view);
+            float vis = Lod.viewCos(0.05f);
             Vector3f p = new Vector3f();
-            for (int i = 0; i < pos.length / 3; i += step) {
+            for (int i = 0; i < pos.length / 3; i += st) {
                 model.transformPosition(p.set(pos[i * 3], pos[i * 3 + 1], pos[i * 3 + 2]));
-                float s = col[i * 5 + 4] * sizeScale * (step > 1 ? 1.6f : 1f);
+                float dx = p.x - eye.x, dy = p.y - eye.y, dz = p.z - eye.z;
+                float along = dx * f.x + dy * f.y + dz * f.z;
+                if (along <= 0f || (vis > 0f && along * along < vis * vis * (dx * dx + dy * dy + dz * dz))) continue;
+                float s = col[i * 5 + 4] * sizeScale * (st > 1 ? 1.6f : 1f);
                 RenderUtil.billboard(bb, view, p.x, p.y, p.z, right, up, s, col[i * 5], col[i * 5 + 1], col[i * 5 + 2], col[i * 5 + 3] * brightness);
             }
         }
