@@ -49,6 +49,7 @@ final class TransferEngine {
         volatile double speed;
         long lastBytes;
         final long created = System.currentTimeMillis();
+        volatile long started, finished;
         /** Al extraer: qué cosas de adentro (vacío = todo) y qué carpeta interna se quita del nombre. */
         List<String> picks = new ArrayList<>();
         String innerBase = "";
@@ -204,6 +205,7 @@ final class TransferEngine {
             changed(false);
             return;
         }
+        j.started = System.currentTimeMillis();
         j.state = 1;
         changed(false);
         try {
@@ -223,6 +225,7 @@ final class TransferEngine {
             j.error = e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage();
         }
         j.current = "";
+        j.finished = System.currentTimeMillis();
         changed(false);
     }
 

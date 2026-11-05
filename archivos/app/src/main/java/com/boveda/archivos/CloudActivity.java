@@ -71,6 +71,7 @@ public class CloudActivity extends Activity implements TransferEngine.Listener {
     static final String EXTRA_DIR = "dir";
     private final TextView[] tabViews = new TextView[Tabs.COUNT];
     private LinearLayout tabStrip;
+    private ProgressCard progressCard;
 
     @Override
     protected void onCreate(Bundle b) {
@@ -140,6 +141,7 @@ public class CloudActivity extends Activity implements TransferEngine.Listener {
     protected void onResume() {
         super.onResume();
         TransferEngine.get(this).addListener(this);
+        progressCard.start();
         paintTabs();
         updateBottom();
     }
@@ -148,6 +150,7 @@ public class CloudActivity extends Activity implements TransferEngine.Listener {
     protected void onPause() {
         if (Tabs.isMediaFire(Tabs.current) && !stack.isEmpty()) Tabs.mfStack[Tabs.current] = new ArrayList<>(stack);
         TransferEngine.get(this).removeListener(this);
+        progressCard.stop();
         super.onPause();
     }
 
@@ -243,6 +246,7 @@ public class CloudActivity extends Activity implements TransferEngine.Listener {
         fab = plus;
         fab.setVisibility(View.GONE);
         root.addView(plus, fl);
+        progressCard = new ProgressCard(this, root, 92, null);
         setContentView(root);
     }
 

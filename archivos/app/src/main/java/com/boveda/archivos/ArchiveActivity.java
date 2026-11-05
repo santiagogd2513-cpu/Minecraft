@@ -125,7 +125,26 @@ public class ArchiveActivity extends Activity {
         bottom.setPadding(dp(10), dp(8), dp(10), dp(10));
         bottom.setBackground(Ui.roundStroke(Ui.SURFACE, 0, dp(1), Ui.STROKE));
         col.addView(bottom);
-        setContentView(col);
+        FrameLayout frame = new FrameLayout(this);
+        frame.setBackgroundColor(Ui.BG);
+        frame.setFitsSystemWindows(true);
+        frame.addView(col);
+        progressCard = new ProgressCard(this, frame, 84, null);
+        setContentView(frame);
+    }
+
+    private ProgressCard progressCard;
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        progressCard.start();
+    }
+
+    @Override
+    protected void onPause() {
+        progressCard.stop();
+        super.onPause();
     }
 
     // ------------------------------------------------------------------ leer
