@@ -1,0 +1,83 @@
+name: Limbo para Bóveda
+
+# Limbo x86 (de limboemu, GPLv2) con un parche: acepta archivos y carpetas
+# de cualquier selector (Bóveda), no solo del selector de Android.
+
+on:
+  push:
+    branches: [ "**" ]
+    paths: [ "limbo/**", ".github/workflows/limbo.yml" ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: limbo-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  apk:
+    name: Parchar Limbo (APK)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Descargar Limbo y apktool
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          echo "Archivos de las versiones de Limbo:"
+          gh api repos/limboemu/limbo/releases --jq '.[] | .tag_name + "  " + ([.assets[].name] | join("  "))' | head -20
+          URL=$(gh api repos/limboemu/limbo/releases --jq '[.[] | .assets[] | select(.name | test("\\.apk$")) | select(.name | test("x86"; "i")) | select(.name | test("arm64|aarch64"; "i")) | .browser_download_url][0] // empty')
+          if [ -z "$URL" ]; then
+            URL=$(gh api repos/limboemu/limbo/releases --jq '[.[] | .assets[] | select(.name | test("\\.apk$")) | select(.name | test("arm64|aarch64"; "i")) | .browser_download_url][0] // empty')
+          fi
+          if [ -z "$URL" ]; then echo "No encontré el APK de Limbo para arm64"; exit 1; fi
+          echo "Usando: $URL"
+          echo "LIMBO_URL=$URL" >> "$GITHUB_ENV"
+          curl -sSL -o limbo-original.apk "$URL"
+          curl -sSL -o apktool.jar https://github.com/iBotPeaches/Apktool/releases/download/v2.10.0/apktool_2.10.0.jar
+          ls -la limbo-original.apk apktool.jar
+
+      - name: Parchar
+        run: |
+          set -euo pipefail
+          APKTOOL="$PWD/apktool.jar" bash limbo/parchar.sh limbo-original.apk sin-firma.apk
+
+      - name: Firmar
+        run: |
+          set -euo pipefail
+          BT="$ANDROID_HOME/build-tools/$(ls "$ANDROID_HOME/build-tools" | sort -V | tail -1)"
+          mkdir -p dist
+          "$BT/zipalign" -p -f 4 sin-firma.apk alineado.apk
+          "$BT/apksigner" sign --ks limbo/limbo.jks --ks-pass pass:limbo-boveda --key-pass pass:limbo-boveda \
+            --ks-key-alias limbo --out dist/Limbo-Boveda.apk alineado.apk
+          "$BT/apksigner" verify --print-certs dist/Limbo-Boveda.apk | head -3
+          ls -la dist
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Limbo-Boveda.apk
+          path: dist/Limbo-Boveda.apk
+
+      - name: Publicar
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: limbo-${{ github.run_number }}
+          name: "Limbo para Bóveda #${{ github.run_number }}"
+          target_commitish: ${{ github.sha }}
+          files: dist/Limbo-Boveda.apk
+          body: |
+            **Limbo x86 PC Emulator** (de [limboemu](https://github.com/limboemu/limbo), licencia GPLv2) con un solo cambio:
+            acepta archivos y carpetas elegidos con **Bóveda** u otro selector, no solo con el selector de Android.
+
+            Antes de instalar, **desinstala el Limbo de F-Droid** (la firma es distinta). Descarga `Limbo-Boveda.apk` e instálalo.
+
+            Original usado: ${{ env.LIMBO_URL }}
