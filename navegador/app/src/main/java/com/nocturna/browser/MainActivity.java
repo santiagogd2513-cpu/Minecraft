@@ -380,7 +380,17 @@ public class MainActivity extends Activity {
         w.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest req) {
-                return handleSpecialUrl(t, req.getUrl().toString());
+                String u = req.getUrl().toString();
+                if (req.isForMainFrame() && (u.startsWith("http:") || u.startsWith("https:")) && DownloadEngine.looksLikeDownload(u)) {
+                    // es un archivo: se descarga directamente (el motor sigue las redirecciones)
+                    try {
+                        askDownload(u, DownloadEngine.fileName(u, null, null), null, view.getSettings().getUserAgentString(), t.url, -1);
+                    } catch (Exception e) {
+                        Toast.makeText(MainActivity.this, "No se pudo empezar la descarga: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                    }
+                    return true;
+                }
+                return handleSpecialUrl(t, u);
             }
 
             @Override

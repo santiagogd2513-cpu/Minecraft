@@ -154,6 +154,34 @@ final class DownloadEngine {
         });
     }
 
+    private static final java.util.Set<String> DOWNLOAD_EXT = new java.util.HashSet<>(java.util.Arrays.asList(
+            "apk", "xapk", "apks", "apkm", "jar", "zip", "7z", "rar", "tar", "gz", "tgz", "xz", "bz2", "zst",
+            "iso", "img", "exe", "msi", "dmg", "deb", "rpm", "appimage", "bin", "torrent",
+            "mcpack", "mcworld", "mcaddon", "mctemplate", "mrpack", "litemod", "schematic", "schem", "litematic",
+            "cia", "nsp", "xci", "wbfs", "rvz", "gcm", "wad", "nds", "3ds", "gba", "gbc", "nes", "sfc", "smc", "n64", "z64",
+            "chd", "cso", "pbp", "obb", "ttf", "otf"));
+
+    /**
+     * ¿La dirección es claramente un archivo para descargar? Así no se depende de que la página
+     * avise que es una descarga (GitHub, por ejemplo, a veces no llega a avisar y no pasaba nada).
+     */
+    static boolean looksLikeDownload(String url) {
+        try {
+            Uri u = Uri.parse(url);
+            String host = u.getHost() == null ? "" : u.getHost().toLowerCase();
+            String path = u.getPath() == null ? "" : u.getPath();
+            if (host.equals("release-assets.githubusercontent.com") || host.equals("objects.githubusercontent.com")) return true;
+            if (host.endsWith("github.com") && path.contains("/releases/download/")) return true;
+            if (u.getQueryParameter("response-content-disposition") != null) return true;
+            String last = u.getLastPathSegment();
+            if (last == null) return false;
+            int dot = last.lastIndexOf('.');
+            return dot > 0 && DOWNLOAD_EXT.contains(last.substring(dot + 1).toLowerCase());
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     /**
      * Nombre del archivo sin cambiarle la extensión (URLUtil.guessFileName a veces la cambia
      * según el tipo que manda el servidor). Si no tiene extensión, se le pone la de su tipo.
@@ -168,6 +196,14 @@ final class DownloadEngine {
             } else {
                 m = java.util.regex.Pattern.compile("filename\\s*=\\s*\"?([^\";]+)\"?", java.util.regex.Pattern.CASE_INSENSITIVE).matcher(disposition);
                 if (m.find()) name = m.group(1).trim();
+            }
+        }
+        if ((name == null || name.isEmpty()) && disposition == null) {
+            // direcciones firmadas (GitHub, S3): el nombre viene en el parámetro de la dirección
+            try {
+                String rcd = Uri.parse(url).getQueryParameter("response-content-disposition");
+                if (rcd != null) return fileName(url, rcd, mime);
+            } catch (Exception ignored) {
             }
         }
         if (name == null || name.isEmpty()) {
