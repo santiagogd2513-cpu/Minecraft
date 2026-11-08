@@ -616,6 +616,83 @@ final class DownloadEngine {
         return new Sink(fos.getChannel(), fos, pfd);
     }
 
+    /** Resultado de borrar el archivo del celular. */
+    static final class DeleteResult {
+        final boolean ok;
+        final String error;
+        /** Android pide que la persona confirme (archivos de Descargas que la app ya no reconoce como suyos). */
+        final android.content.IntentSender confirm;
+
+        DeleteResult(boolean ok, String error, android.content.IntentSender confirm) {
+            this.ok = ok;
+            this.error = error;
+            this.confirm = confirm;
+        }
+    }
+
+    /** Borra el archivo del celular ahora mismo (llamar fuera de la pantalla) y dice si se pudo. */
+    DeleteResult deleteFileNow(DownloadItem d) {
+        if (d.uri == null) return new DeleteResult(true, null, null);   // nunca llegó a crearse
+        ContentResolver r = app.getContentResolver();
+        Uri target;
+        if (isPlainFile(d)) {
+            File f = fileOf(d);
+            if (!f.exists() || f.delete()) {
+                forgetInMediaStore(f);
+                return new DeleteResult(true, null, null);
+            }
+            // sin permiso sobre la carpeta: se intenta por la base de archivos de Android
+            target = mediaStoreUriOf(f);
+            if (target == null) return new DeleteResult(false, "Android no dejó borrar el archivo (¿quitaste el permiso de archivos a Nocturna?)", null);
+        } else {
+            target = Uri.parse(d.uri);
+        }
+        try {
+            if (r.delete(target, null, null) > 0 || !exists(target)) return new DeleteResult(true, null, null);
+            return new DeleteResult(false, "No se pudo borrar el archivo", null);
+        } catch (SecurityException e) {
+            try {
+                if (android.os.Build.VERSION.SDK_INT >= 30) {
+                    return new DeleteResult(false, null, MediaStore.createDeleteRequest(r, java.util.Collections.singletonList(target)).getIntentSender());
+                }
+                if (e instanceof android.app.RecoverableSecurityException rse) {
+                    return new DeleteResult(false, null, rse.getUserAction().getActionIntent().getIntentSender());
+                }
+            } catch (Exception ignored) {
+            }
+            return new DeleteResult(false, "Android no dejó borrar el archivo: " + e.getMessage(), null);
+        } catch (Exception e) {
+            return new DeleteResult(false, "No se pudo borrar el archivo: " + e.getMessage(), null);
+        }
+    }
+
+    private boolean exists(Uri uri) {
+        try (Cursor c = app.getContentResolver().query(uri, new String[]{MediaStore.MediaColumns._ID}, null, null, null)) {
+            return c != null && c.moveToFirst();
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private Uri mediaStoreUriOf(File f) {
+        Uri files = MediaStore.Files.getContentUri("external");
+        try (Cursor c = app.getContentResolver().query(files, new String[]{MediaStore.MediaColumns._ID},
+                MediaStore.MediaColumns.DATA + "=?", new String[]{f.getAbsolutePath()}, null)) {
+            if (c != null && c.moveToFirst()) return android.content.ContentUris.withAppendedId(files, c.getLong(0));
+        } catch (Exception ignored) {
+        }
+        return null;
+    }
+
+    /** Que la galería y los gestores de archivos no sigan mostrando un archivo ya borrado. */
+    private void forgetInMediaStore(File f) {
+        try {
+            app.getContentResolver().delete(MediaStore.Files.getContentUri("external"),
+                    MediaStore.MediaColumns.DATA + "=?", new String[]{f.getAbsolutePath()});
+        } catch (Exception ignored) {
+        }
+    }
+
     private void deleteFile(DownloadItem d) {
         try {
             if (isPlainFile(d)) {

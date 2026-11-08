@@ -309,11 +309,66 @@ public class DownloadsActivity extends Activity implements DownloadEngine.Listen
         startActivity(Intent.createChooser(i, "Compartir " + d.name));
     }
 
+    private static final int REQ_DELETE = 41;
+    private DownloadItem pendingDelete;
+
     private void askDelete(DownloadItem d) {
         new AlertDialog.Builder(this, R.style.Theme_Nocturna_Dialog)
                 .setTitle(d.name)
-                .setItems(new String[]{"Quitar de la lista", "Borrar el archivo también"}, (dlg, which) -> engine.remove(d, which == 1))
+                .setItems(new String[]{"Borrar solo del historial", "Borrar del celular y del historial"}, (dlg, which) -> {
+                    if (which == 0) {
+                        engine.remove(d, false);
+                        Toast.makeText(this, "Quitado del historial (el archivo sigue en el celular)", Toast.LENGTH_SHORT).show();
+                    } else {
+                        confirmDeleteFile(d);
+                    }
+                })
                 .show();
+    }
+
+    private void confirmDeleteFile(DownloadItem d) {
+        new AlertDialog.Builder(this, R.style.Theme_Nocturna_Dialog)
+                .setTitle("¿Borrar del celular?")
+                .setMessage("«" + d.name + "» se borrará del almacenamiento y del historial. No se puede deshacer.")
+                .setPositiveButton("Borrar", (dlg, w) -> new Thread(() -> {
+                    DownloadEngine.DeleteResult r = engine.deleteFileNow(d);
+                    runOnUiThread(() -> {
+                        if (r.ok) {
+                            engine.remove(d, false);
+                            Toast.makeText(this, "Borrado del celular y del historial", Toast.LENGTH_SHORT).show();
+                        } else if (r.confirm != null) {
+                            // Android muestra su propia ventanita para confirmar
+                            pendingDelete = d;
+                            try {
+                                startIntentSenderForResult(r.confirm, REQ_DELETE, null, 0, 0, 0);
+                            } catch (Exception e) {
+                                pendingDelete = null;
+                                Toast.makeText(this, "No se pudo pedir permiso para borrar: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                            }
+                        } else {
+                            new AlertDialog.Builder(this, R.style.Theme_Nocturna_Dialog)
+                                    .setTitle("No se pudo borrar")
+                                    .setMessage(r.error + "\n\nEl archivo sigue en la lista.")
+                                    .setPositiveButton("Entendido", null).show();
+                        }
+                    });
+                }).start())
+                .setNegativeButton("Cancelar", null)
+                .show();
+    }
+
+    @Override
+    protected void onActivityResult(int req, int res, Intent data) {
+        super.onActivityResult(req, res, data);
+        if (req != REQ_DELETE || pendingDelete == null) return;
+        DownloadItem d = pendingDelete;
+        pendingDelete = null;
+        if (res == RESULT_OK) {
+            engine.remove(d, false);
+            Toast.makeText(this, "Borrado del celular y del historial", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(this, "No se borró: el archivo sigue en el celular y en la lista", Toast.LENGTH_SHORT).show();
+        }
     }
 
     static int[] typeColor(String ext) {
