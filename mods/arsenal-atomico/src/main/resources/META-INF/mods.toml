@@ -1,0 +1,27 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="All rights reserved"
+
+[[mods]]
+modId="arsenalatomico"
+version="1.0.0"
+displayName="Arsenal Atómico"
+authors="santiagogd2513-cpu (idea, diseño y pruebas), Claude de Anthropic (código)"
+description='''
+Misiles en el mundo de Minecraft, con cinemáticas: marca un objetivo con el Marcador de
+objetivos, elige el arma con la tecla J y mira el lanzamiento desde la batería o el silo.
+'''
+
+[[dependencies.arsenalatomico]]
+    modId="forge"
+    mandatory=true
+    versionRange="[47,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.arsenalatomico]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.20.1,1.20.2)"
+    ordering="NONE"
+    side="BOTH"

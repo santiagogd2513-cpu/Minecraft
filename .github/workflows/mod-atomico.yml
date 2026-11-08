@@ -1,0 +1,69 @@
+name: Mod Arsenal Atómico
+
+on:
+  push:
+    branches: [ "**" ]
+    paths: [ "mods/arsenal-atomico/**", ".github/workflows/mod-atomico.yml" ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mod-atomico-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Compilar el mod (Forge 1.20.1)
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: mods/arsenal-atomico
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.8"
+
+      - name: Compilar
+        run: gradle build --stacktrace
+
+      - name: Probar la Lluvia de Acero en un servidor de Minecraft
+        run: |
+          mkdir -p run
+          echo "eula=true" > run/eula.txt
+          printf "online-mode=false\nlevel-seed=arsenal-atomico\nspawn-protection=0\nmax-tick-time=-1\nview-distance=3\nsimulation-distance=3\n" > run/server.properties
+          timeout 1500 gradle runServer --no-daemon > run/server.log 2>&1 || true
+          sed -n '/==== PRUEBA DE ARSENAL ATÓMICO ====/,/==== FIN ====/p' run/server.log | sed 's/^\[.*\] \[.*\]: //'
+          if ! grep -q "RESULTADO OK" run/server.log; then
+            echo "---- últimas líneas del servidor ----"; tail -80 run/server.log; exit 1
+          fi
+
+      - name: Preparar
+        run: |
+          mkdir -p ../../dist
+          ls -la build/libs
+          cp build/libs/ArsenalAtomico-1.20.1-1.0.0.jar ../../dist/ArsenalAtomico-1.20.1.jar
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ArsenalAtomico-jar
+          path: dist/ArsenalAtomico-1.20.1.jar
+
+      - name: Publicar
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: mod-atomico-${{ github.run_number }}
+          name: "Mod Arsenal Atómico #${{ github.run_number }} (Forge 1.20.1)"
+          target_commitish: ${{ github.sha }}
+          make_latest: false
+          body: |
+            **Arsenal Atómico** para **Forge 1.20.1**. Copia `ArsenalAtomico-1.20.1.jar` en la carpeta `mods`.
+          files: dist/ArsenalAtomico-1.20.1.jar
