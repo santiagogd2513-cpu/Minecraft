@@ -37,9 +37,13 @@ jobs:
           VER=${TAG#v}
           echo "Ventoy $VER"
           echo "VENTOY_VER=$VER" >> "$GITHUB_ENV"
-          curl -sSL -o /tmp/ventoy.tgz "https://github.com/ventoy/Ventoy/releases/download/$TAG/ventoy-$VER-linux.tar.gz"
+          gh api repos/ventoy/Ventoy/releases/latest --jq '.assets[].name'
+          URL=$(gh api repos/ventoy/Ventoy/releases/latest --jq '[.assets[] | select(.name | test("linux\\.tar\\.gz$"))][0].browser_download_url')
+          echo "Bajando $URL"
+          curl -fsSL -o /tmp/ventoy.tgz "$URL"
           mkdir -p /tmp/vt && tar xzf /tmp/ventoy.tgz -C /tmp/vt
-          SRC=/tmp/vt/ventoy-$VER
+          SRC=$(dirname "$(find /tmp/vt -path '*/boot/boot.img' | head -1)")/..
+          ls "$SRC"
           A=app/src/main/assets/ventoy
           mkdir -p $A
           cp $SRC/boot/boot.img $A/boot.img
