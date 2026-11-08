@@ -8,6 +8,7 @@ public final class Config {
     public static final ForgeConfigSpec.BooleanValue CINEMATIC_ENABLED;
     public static final ForgeConfigSpec.IntValue CINEMATIC_SECONDS;
     public static final ForgeConfigSpec.IntValue CRATER_RADIUS;
+    public static final ForgeConfigSpec.DoubleValue CRATER_SCALE;
     public static final ForgeConfigSpec.BooleanValue DESTROY_BLOCKS;
     public static final ForgeConfigSpec.BooleanValue PIERCE_BEDROCK;
     public static final ForgeConfigSpec.IntValue SHAFT_RADIUS;
@@ -24,6 +25,9 @@ public final class Config {
                 .defineInRange("duracionCinematicaSegundos", 180, 40, 180);
         CRATER_RADIUS = b.comment("Radio del cráter en bloques")
                 .defineInRange("radioCrater", 22, 3, 48);
+        CRATER_SCALE = b.comment("Multiplicador del tamaño de todos los cráteres (1 = como antes, 2 = el doble de radio, 4 = máximo).",
+                        "Los cráteres grandes se excavan durante unos segundos, de arriba hacia abajo, para no congelar el juego")
+                .defineInRange("tamanoCrateres", 2.0, 1.0, 4.0);
         DESTROY_BLOCKS = b.comment("Si el impacto destruye bloques (false = solo daño y efectos)")
                 .define("destruirBloques", true);
         PIERCE_BEDROCK = b.comment("El rayo perfora todo hasta el fondo del mundo, incluida la roca madre (bedrock)")
@@ -38,6 +42,11 @@ public final class Config {
                 .defineInRange("alcance", 160, 16, 400);
         b.pop();
         SPEC = b.build();
+    }
+
+    /** Radio del cráter de un arma: el radio base por el multiplicador, con un tope para no colgar el juego. */
+    public static int crater(float factor, int cap) {
+        return Math.max(3, Math.min(cap, Math.round(CRATER_RADIUS.get() * factor * CRATER_SCALE.get().floatValue())));
     }
 
     private Config() {}

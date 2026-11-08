@@ -32,7 +32,7 @@ public final class ImpactEffects {
 
     public static void impact(ServerLevel level, BlockPos target, @Nullable ServerPlayer owner) {
         Vec3 c = Vec3.atCenterOf(target).add(0, 0.5, 0);
-        int r = Config.CRATER_RADIUS.get();
+        int r = Config.crater(1f, 110);
         boolean destroy = Config.DESTROY_BLOCKS.get();
         RandomSource rnd = level.getRandom();
 
@@ -46,7 +46,7 @@ public final class ImpactEffects {
 
         if (destroy) {
             carveCrater(level, target, r, rnd);
-            if (Config.PIERCE_BEDROCK.get()) drillShaft(level, target, Config.SHAFT_RADIUS.get(), rnd);
+            if (Config.PIERCE_BEDROCK.get()) drillShaft(level, target, shaftRadius(1f), rnd);
         }
         // Explosión central (también hace el sonido y empuje de ítems)
         level.explode(null, c.x, c.y, c.z, Math.min(10f, r * 0.55f),
@@ -73,7 +73,7 @@ public final class ImpactEffects {
      */
     public static void moonImpact(ServerLevel level, BlockPos target, @Nullable ServerPlayer owner) {
         Vec3 c = Vec3.atCenterOf(target).add(0, 0.5, 0);
-        int r = Math.min(56, Math.round(Config.CRATER_RADIUS.get() * 1.6f));
+        int r = Config.crater(1.6f, 120);
         boolean destroy = Config.DESTROY_BLOCKS.get();
         RandomSource rnd = level.getRandom();
 
@@ -125,7 +125,7 @@ public final class ImpactEffects {
     public static void singularityPull(ServerLevel level, BlockPos target, float progress, @Nullable ServerPlayer owner) {
         Vec3 c = Vec3.atCenterOf(target).add(0, SINGULARITY_HEIGHT, 0);
         RandomSource rnd = level.getRandom();
-        int maxR = Math.min(48, Math.round(Config.CRATER_RADIUS.get() * 1.3f));
+        int maxR = Config.crater(1.3f, 100);
         float reachR = 4f + maxR * Math.min(1f, progress * 1.3f);
         boolean destroy = Config.DESTROY_BLOCKS.get();
         long time = level.getGameTime();
@@ -192,7 +192,7 @@ public final class ImpactEffects {
     /** La singularidad colapsa: todo lo que absorbió sale en una explosión enorme y deja un cráter esférico. */
     public static void singularityCollapse(ServerLevel level, BlockPos target, @Nullable ServerPlayer owner) {
         Vec3 c = Vec3.atCenterOf(target).add(0, SINGULARITY_HEIGHT, 0);
-        int r = Math.min(52, Math.round(Config.CRATER_RADIUS.get() * 1.4f));
+        int r = Config.crater(1.4f, 110);
         boolean destroy = Config.DESTROY_BLOCKS.get();
         RandomSource rnd = level.getRandom();
         // limpiar lo que quedaba girando
@@ -270,7 +270,7 @@ public final class ImpactEffects {
     /** Explosión final del rayo de Prometeo: el cráter más grande, pozo ancho hasta el fondo del mundo. */
     public static void starImpact(ServerLevel level, BlockPos target, @Nullable ServerPlayer owner) {
         Vec3 c = Vec3.atCenterOf(target).add(0, 0.5, 0);
-        int r = Math.min(46, Math.round(Config.CRATER_RADIUS.get() * 2f));
+        int r = Config.crater(2f, 120);
         boolean destroy = Config.DESTROY_BLOCKS.get();
         RandomSource rnd = level.getRandom();
         level.playSound(null, c.x, c.y, c.z, com.amatista.arsenal.registry.ModSounds.EXPLOSION.get(), SoundSource.BLOCKS, 20f, 0.25f);
@@ -279,7 +279,7 @@ public final class ImpactEffects {
         damageEntities(level, c, r, owner);
         if (destroy) {
             carveCrater(level, target, r, rnd);
-            if (Config.PIERCE_BEDROCK.get()) drillShaft(level, target, Math.min(24, Config.SHAFT_RADIUS.get() * 2), rnd);
+            if (Config.PIERCE_BEDROCK.get()) drillShaft(level, target, shaftRadius(2f), rnd);
         }
         level.explode(null, c.x, c.y, c.z, 16f, destroy ? Level.ExplosionInteraction.TNT : Level.ExplosionInteraction.NONE);
         for (int i = 0; i < 14; i++) {
@@ -339,7 +339,7 @@ public final class ImpactEffects {
     /** Supernova de Génesis: el cráter más grande, revestido de cristales que brillan. */
     public static void genesisImpact(ServerLevel level, BlockPos target, @Nullable ServerPlayer owner) {
         Vec3 c = Vec3.atCenterOf(target).add(0, 0.5, 0);
-        int r = Math.min(48, Math.round(Config.CRATER_RADIUS.get() * 2.1f));
+        int r = Config.crater(2.1f, 120);
         boolean destroy = Config.DESTROY_BLOCKS.get();
         RandomSource rnd = level.getRandom();
         level.playSound(null, c.x, c.y, c.z, com.amatista.arsenal.registry.ModSounds.EXPLOSION.get(), SoundSource.BLOCKS, 20f, 0.25f);
@@ -410,60 +410,113 @@ public final class ImpactEffects {
         }
     }
 
-    private static void carveCrater(ServerLevel level, BlockPos target, int r, RandomSource rnd) {
-        int debrisLeft = Config.DEBRIS_COUNT.get();
-        boolean pierce = Config.PIERCE_BEDROCK.get();
-        int rr = r + 2;
-        BlockState air = Blocks.AIR.defaultBlockState();
-        List<BlockPos> floor = new ArrayList<>();
-        for (int dx = -rr; dx <= rr; dx++) {
-            for (int dz = -rr; dz <= rr; dz++) {
-                for (int dy = -rr; dy <= rr; dy++) {
-                    double dist = Math.sqrt(dx * dx + dz * dz + (dy * 1.5) * (dy * 1.5));
-                    // borde irregular
-                    double edge = r * (0.88 + 0.24 * hashNoise(dx, dy, dz));
-                    BlockPos pos = target.offset(dx, dy, dz);
-                    if (level.isOutsideBuildHeight(pos)) continue;
-                    BlockState state = level.getBlockState(pos);
-                    if (state.isAir()) continue;
-                    boolean unbreakable = state.getDestroySpeed(level, pos) < 0; // roca madre, etc.
-                    if (unbreakable && !pierce) continue;
-                    if (dist <= edge) {
-                        boolean canFly = debrisLeft > 0 && !unbreakable && level.getBlockEntity(pos) == null
-                                && state.getFluidState().isEmpty() && dist > r * 0.35
-                                && rnd.nextFloat() < 0.18f;
-                        if (canFly) {
-                            debrisLeft--;
-                            FallingBlockEntity fb = FallingBlockEntity.fall(level, pos, state);
-                            fb.dropItem = false;
-                            Vec3 out = new Vec3(dx, Math.abs(dy) + 2, dz).normalize();
-                            double speed = 0.9 + rnd.nextDouble() * 1.6;
-                            fb.setDeltaMovement(out.x * speed, 0.8 + rnd.nextDouble() * 1.4, out.z * speed);
-                        } else {
-                            if (level.getBlockEntity(pos) != null) level.removeBlockEntity(pos);
-                            level.setBlock(pos, air, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
+    /** Radio del pozo que abre el rayo, crece con el tamaño de los cráteres. */
+    private static int shaftRadius(float factor) {
+        return Math.max(2, Math.min(28, Math.round(Config.SHAFT_RADIUS.get() * factor * (float) Math.sqrt(Config.CRATER_SCALE.get()))));
+    }
+
+    /**
+     * Un cráter que se está excavando: se rompe capa por capa, de arriba hacia abajo, unos
+     * cuantos miles de bloques por tick, para que los cráteres enormes no congelen el juego.
+     */
+    private static final class CraterJob {
+        final ServerLevel level;
+        final BlockPos target;
+        final int r, reach, dyMax;
+        final boolean pierce;
+        final RandomSource rnd;
+        final List<BlockPos> floor = new ArrayList<>();
+        int debrisLeft, dy;
+
+        CraterJob(ServerLevel level, BlockPos target, int r, RandomSource rnd) {
+            this.level = level;
+            this.target = target.immutable();
+            this.r = r;
+            this.rnd = rnd;
+            this.pierce = Config.PIERCE_BEDROCK.get();
+            this.debrisLeft = Config.DEBRIS_COUNT.get();
+            // el borde irregular llega hasta r * 1.12, y el borde quemado 2 bloques más
+            this.reach = (int) Math.ceil(r * 1.12 + 3);
+            this.dyMax = (int) Math.ceil(reach / 1.5) + 1;
+            this.dy = dyMax;
+        }
+
+        /** Excava capas hasta gastar el presupuesto; true cuando terminó. */
+        boolean step(int budget) {
+            BlockState air = Blocks.AIR.defaultBlockState();
+            int side = 2 * reach + 1;
+            BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
+            while (dy >= -dyMax && budget > 0) {
+                for (int dx = -reach; dx <= reach; dx++) {
+                    for (int dz = -reach; dz <= reach; dz++) {
+                        double dist = Math.sqrt(dx * dx + dz * dz + (dy * 1.5) * (dy * 1.5));
+                        double edge = r * (0.88 + 0.24 * hashNoise(dx, dy, dz));
+                        if (dist > edge + 2.2) continue;
+                        pos.set(target.getX() + dx, target.getY() + dy, target.getZ() + dz);
+                        if (level.isOutsideBuildHeight(pos)) continue;
+                        BlockState state = level.getBlockState(pos);
+                        if (state.isAir()) continue;
+                        boolean unbreakable = state.getDestroySpeed(level, pos) < 0; // roca madre, etc.
+                        if (unbreakable && !pierce) continue;
+                        if (dist <= edge) {
+                            boolean canFly = debrisLeft > 0 && !unbreakable && level.getBlockEntity(pos) == null
+                                    && state.getFluidState().isEmpty() && dist > r * 0.35
+                                    && rnd.nextFloat() < 0.18f * Math.min(1f, 22f / r);
+                            BlockPos at = pos.immutable();
+                            if (canFly) {
+                                debrisLeft--;
+                                FallingBlockEntity fb = FallingBlockEntity.fall(level, at, state);
+                                fb.dropItem = false;
+                                Vec3 out = new Vec3(dx, Math.abs(dy) + 2, dz).normalize();
+                                double speed = 0.9 + rnd.nextDouble() * 1.6;
+                                fb.setDeltaMovement(out.x * speed, 0.8 + rnd.nextDouble() * 1.4, out.z * speed);
+                            } else {
+                                if (level.getBlockEntity(at) != null) level.removeBlockEntity(at);
+                                level.setBlock(at, air, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
+                            }
+                            if (dy <= -r / 3 + 1 && rnd.nextFloat() < 0.2f) floor.add(at);
+                        } else if (!unbreakable && state.getFluidState().isEmpty()
+                                && level.getBlockEntity(pos) == null && rnd.nextFloat() < 0.55f) {
+                            // borde quemado: piedra negra, basalto y magma
+                            float p = rnd.nextFloat();
+                            BlockState scorched = p < 0.45f ? Blocks.BLACKSTONE.defaultBlockState()
+                                    : p < 0.75f ? Blocks.BASALT.defaultBlockState()
+                                    : p < 0.9f ? Blocks.MAGMA_BLOCK.defaultBlockState()
+                                    : Blocks.COBBLED_DEEPSLATE.defaultBlockState();
+                            level.setBlock(pos.immutable(), scorched, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
                         }
-                        if (dy <= -r / 2 + 1) floor.add(pos);
-                    } else if (!unbreakable && dist <= edge + 2.2 && state.getFluidState().isEmpty()
-                            && level.getBlockEntity(pos) == null && rnd.nextFloat() < 0.55f) {
-                        // borde quemado: piedra negra, basalto y magma
-                        float p = rnd.nextFloat();
-                        BlockState scorched = p < 0.45f ? Blocks.BLACKSTONE.defaultBlockState()
-                                : p < 0.75f ? Blocks.BASALT.defaultBlockState()
-                                : p < 0.9f ? Blocks.MAGMA_BLOCK.defaultBlockState()
-                                : Blocks.COBBLED_DEEPSLATE.defaultBlockState();
-                        level.setBlock(pos, scorched, Block.UPDATE_CLIENTS | Block.UPDATE_KNOWN_SHAPE);
                     }
                 }
+                budget -= side * side;
+                dy--;
             }
+            if (dy >= -dyMax) return false;
+            // fuego en el fondo del cráter
+            for (BlockPos f : floor) {
+                BlockPos below = f.below();
+                if (level.getBlockState(f).isAir() && level.getBlockState(below).isSolidRender(level, below)) {
+                    level.setBlock(f, BaseFireBlock.getState(level, f), Block.UPDATE_ALL);
+                }
+            }
+            return true;
         }
-        // fuego en el fondo del cráter
-        for (BlockPos pos : floor) {
-            if (rnd.nextFloat() > 0.2f) continue;
-            BlockPos below = pos.below();
-            if (level.getBlockState(pos).isAir() && level.getBlockState(below).isSolidRender(level, below)) {
-                level.setBlock(pos, BaseFireBlock.getState(level, pos), Block.UPDATE_ALL);
-            }
+    }
+
+    private static final List<CraterJob> CRATERS = new ArrayList<>();
+
+    private static void carveCrater(ServerLevel level, BlockPos target, int r, RandomSource rnd) {
+        CraterJob job = new CraterJob(level, target, r, rnd);
+        // los cráteres pequeños se hacen al instante, como antes
+        if (!job.step(r <= 26 ? Integer.MAX_VALUE : 60_000)) CRATERS.add(job);
+    }
+
+    /** Sigue excavando los cráteres grandes (lo llama el tick del servidor). */
+    static void tickCraters() {
+        if (CRATERS.isEmpty()) return;
+        Iterator<CraterJob> it = CRATERS.iterator();
+        while (it.hasNext()) {
+            CraterJob j = it.next();
+            if (j.step(60_000)) it.remove();
         }
     }
 

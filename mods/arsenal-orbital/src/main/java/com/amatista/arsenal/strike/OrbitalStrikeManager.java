@@ -128,6 +128,7 @@ public final class OrbitalStrikeManager {
     public static void onServerTick(TickEvent.ServerTickEvent event) {
         if (event.phase != TickEvent.Phase.END) return;
         ImpactEffects.tickLingering();
+        ImpactEffects.tickCraters();
         if (ACTIVE.isEmpty()) return;
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
         if (server == null) return;
