@@ -1909,6 +1909,8 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
     }
 
     private void openFile(Entry e) {
+        // música, video, texto/código y PDF se abren con los visores de Bóveda
+        if (!picker() && prefs.ownViewers() && Viewers.open(this, e, all)) return;
         openWith(e, false);
     }
 
@@ -2141,6 +2143,8 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                 prefs.verify(), b -> prefs.setVerify(b));
         settingsSwitch(col, "Barra de progreso flotante", "Porcentaje, velocidad y tiempo al copiar, mover, borrar, comprimir o subir",
                 prefs.floatingProgress(), b -> prefs.setFloatingProgress(b));
+        settingsSwitch(col, "Abrir con los visores de Bóveda", "Música y video con el reproductor, texto y código con el editor, y PDF con el visor. Apagado: con otras apps",
+                prefs.ownViewers(), b -> prefs.setOwnViewers(b));
         settingsRow(col, "Ver transferencias", "Tareas en curso y terminadas", this::showTransfers);
 
         settingsSection(col, "Acceso a carpetas");

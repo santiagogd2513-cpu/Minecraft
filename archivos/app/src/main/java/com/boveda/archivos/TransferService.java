@@ -18,6 +18,9 @@ public class TransferService extends Service implements TransferEngine.Listener 
     private TransferEngine engine;
     private PowerManager.WakeLock wake;
     private long last;
+    /** Ya se llamó a startForeground: antes de eso no se puede detener (Android cierra la app). */
+    private boolean started;
+    private int lastStartId;
 
     static void ensure(Context c) {
         try {
@@ -44,13 +47,19 @@ public class TransferService extends Service implements TransferEngine.Listener 
         if (intent != null && "cancelar".equals(intent.getAction())) {
             for (TransferEngine.Job j : engine.jobs()) if (j.state <= 1) j.cancel = true;
         }
+        // siempre primero: cada startForegroundService exige esta llamada, aunque la tarea ya terminó
         startForeground(ID, build(), ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC);
+        started = true;
+        lastStartId = startId;
         if (!engine.busy()) stop();
         return START_NOT_STICKY;
     }
 
     @Override
     public void onChanged() {
+        // una tarea muy rápida (borrar algo en Android/data) puede terminar antes de que el
+        // servicio arranque: se espera a onStartCommand para detenerlo
+        if (!started) return;
         if (!engine.busy()) {
             stop();
             return;
@@ -63,7 +72,8 @@ public class TransferService extends Service implements TransferEngine.Listener 
 
     private void stop() {
         stopForeground(STOP_FOREGROUND_REMOVE);
-        stopSelf();
+        // solo si no llegó otro pedido de arranque mientras tanto
+        stopSelfResult(lastStartId);
     }
 
     private Notification build() {
