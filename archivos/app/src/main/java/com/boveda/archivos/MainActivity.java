@@ -416,12 +416,25 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
 
     private ProgressCard progressCard;
 
+    private boolean transferring;
+
     private void updateTransfersBadge() {
         if (progressCard != null) progressCard.update();
         int active = 0;
         for (TransferEngine.Job j : engine.jobs()) if (j.state <= 1) active++;
+        if ((active > 0) != transferring) {
+            transferring = active > 0;
+            applyKeepScreen();
+            updateBars();
+        }
         transfersBadge.setText(String.valueOf(active));
         transfersBadge.setVisibility(active > 0 ? View.VISIBLE : View.GONE);
+    }
+
+    /** Pantalla encendida mientras hay transferencias, si así lo eligió. */
+    private void applyKeepScreen() {
+        if (transferring && prefs.keepScreenOn()) getWindow().addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        else getWindow().clearFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
     private void toggleSearch() {
@@ -1466,6 +1479,27 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             bottom.setVisibility(View.VISIBLE);
             return;
         }
+        if (transferring && !picker()) {
+            // mientras copia o mueve: en vez de Pegar/Cancelar, la opción de no apagar la pantalla
+            TextView info = Ui.text(this, "Mantener la pantalla siempre encendida", 14, Ui.TEXT, true);
+            info.setPadding(dp(10), 0, 0, 0);
+            info.setMaxLines(2);
+            bottom.addView(info, Ui.weight(1));
+            android.widget.Switch sw = new android.widget.Switch(this);
+            sw.setChecked(prefs.keepScreenOn());
+            sw.setThumbTintList(android.content.res.ColorStateList.valueOf(Ui.ACCENT2));
+            sw.setTrackTintList(android.content.res.ColorStateList.valueOf(0x663D8BFF));
+            sw.setOnCheckedChangeListener((b, on) -> {
+                prefs.setKeepScreenOn(on);
+                applyKeepScreen();
+                Toast.makeText(this, on ? "La pantalla no se apagará mientras trabaja" : "La pantalla se apagará como siempre",
+                        Toast.LENGTH_SHORT).show();
+            });
+            bottom.addView(sw);
+            info.setOnClickListener(v -> sw.toggle());
+            bottom.setVisibility(View.VISIBLE);
+            return;
+        }
         if (path != null && !clip.isEmpty() && !picker()) {
             TextView info = Ui.text(this, (clipMove ? "Mover " : "Copiar ") + clip.size() + (clip.size() == 1 ? " elemento" : " elementos"),
                     14, Ui.TEXT, true);
@@ -1560,7 +1594,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
 
     private void submitTransfer(boolean move, List<String> src, String dest, TransferEngine.Conflict c) {
         engine.submit(move ? TransferEngine.Kind.MOVE : TransferEngine.Kind.COPY, src, dest, c);
-        if (move) clip.clear();
+        clip.clear();
         updateBars();
         Toast.makeText(this, move ? "Moviendo…" : "Copiando…", Toast.LENGTH_SHORT).show();
     }

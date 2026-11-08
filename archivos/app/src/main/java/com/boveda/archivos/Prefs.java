@@ -44,6 +44,9 @@ final class Prefs {
     void setAppIcons(boolean b) { p.edit().putBoolean("app_icons", b).apply(); }
     void setVerify(boolean b) { p.edit().putBoolean("verify", b).apply(); }
 
+    boolean keepScreenOn() { return p.getBoolean("keep_screen", true); }
+    void setKeepScreenOn(boolean b) { p.edit().putBoolean("keep_screen", b).apply(); }
+
     List<String> favorites() { return list("favs"); }
     List<String> pinned() { return list("pins"); }
 

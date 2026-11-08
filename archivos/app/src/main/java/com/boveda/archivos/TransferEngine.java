@@ -43,6 +43,8 @@ final class TransferEngine {
         volatile int state;         // 0 en cola, 1 trabajando, 2 listo, 3 error, 4 cancelado
         volatile boolean cancel;
         volatile String current = "";
+        /** Lo que está haciendo ahora, en pocas palabras (se muestra encima de la barra). */
+        volatile String phase;
         volatile long totalBytes, doneBytes;
         volatile int totalItems, doneItems;
         volatile String error;
@@ -152,6 +154,13 @@ final class TransferEngine {
 
     void clearFinished() {
         jobs.removeIf(j -> j.state >= 2);
+        changed(false);
+    }
+
+    /** Cambia lo que muestra la tarjeta encima de la barra, y avisa enseguida. */
+    private void phase(Job j, String p) {
+        if (p.equals(j.phase)) return;
+        j.phase = p;
         changed(false);
     }
 
@@ -284,6 +293,7 @@ final class TransferEngine {
             pending.addAll(j.sources);
         }
         if (pending.isEmpty()) return;
+        phase(j, "Contando archivos");
         for (String s : pending) measure(j, s);
         for (String s : pending) {
             check(j);
@@ -292,6 +302,7 @@ final class TransferEngine {
             copyTree(j, s, target);
             if (j.kind == Kind.MOVE) {
                 // el original se borra solo cuando todo quedó copiado y verificado
+                phase(j, "Borrando los originales");
                 j.current = "Borrando el original de " + Paths.name(s);
                 fs(s).delete(s);
             }
@@ -374,6 +385,7 @@ final class TransferEngine {
 
     private void copyFile(Job j, Fs sf, Entry src, Fs df, String dst) throws IOException {
         j.current = src.name;
+        phase(j, j.kind == Kind.MOVE ? "Moviendo" : "Copiando");
         String tmp = Paths.join(Paths.parent(dst), "." + Paths.name(dst) + ".boveda-parte");
         long startBytes = j.doneBytes;
         IOException last = null;
@@ -395,10 +407,12 @@ final class TransferEngine {
                         j.doneBytes += r;
                     }
                     out.flush();
+                    phase(j, "Guardando en la memoria (puede tardar)");
                     sync(out);
                 }
                 if (written != src.size && src.size > 0) throw new IOException("El tamaño no coincide al copiar " + src.name);
                 if (prefs.verify()) {
+                    phase(j, "Verificando que se copió bien");
                     j.current = "Verificando " + src.name;
                     long[] check = checksum(j, df, tmp);
                     if (check[0] != written || check[1] != crc.getValue()) {
@@ -409,6 +423,7 @@ final class TransferEngine {
                 if (existing != null) df.delete(dst);
                 df.rename(tmp, dst);
                 df.setModified(dst, src.modified);
+                phase(j, j.kind == Kind.MOVE ? "Moviendo" : "Copiando");
                 return;
             } catch (Cancelled c) {
                 cleanup(df, tmp);
@@ -584,6 +599,7 @@ final class TransferEngine {
 
     private void cloudDown(Job j) throws IOException {
         MediaFire mf = MediaFire.get(app);
+        phase(j, "Revisando en MediaFire");
         j.current = "Revisando…";
         for (MediaFire.Item it : j.cloudItems) cloudMeasure(j, mf, it);
         Fs df = fs(j.dest);
@@ -602,6 +618,7 @@ final class TransferEngine {
         }
         if (df.stat(target) != null) target = uniqueName(df, target);
         j.current = it.name;
+        phase(j, "Descargando");
         String tmp = Paths.join(dir, "." + Paths.name(target) + ".boveda-parte");
         long start = j.doneBytes;
         IOException last = null;
@@ -630,10 +647,12 @@ final class TransferEngine {
                         j.doneBytes += r;
                     }
                     out.flush();
+                    phase(j, "Guardando en la memoria (puede tardar)");
                     sync(out);
                 } finally {
                     c.disconnect();
                 }
+                phase(j, "Verificando que llegó bien");
                 // verificación: tamaño y huella SHA-256 que guarda MediaFire
                 if (it.size > 0 && written != it.size) throw new IOException("Llegó incompleto: " + it.name);
                 if (it.hash != null && it.hash.length() == 64 && !it.hash.equalsIgnoreCase(MediaFire.hex(sha.digest()))) {
@@ -675,6 +694,7 @@ final class TransferEngine {
             return;
         }
         j.current = "Preparando " + e.name;
+        phase(j, "Preparando la subida");
         long start = j.doneBytes;
         // huella SHA-256 (MediaFire la pide y con ella comprueba que llegó bien)
         String hash;
@@ -691,6 +711,7 @@ final class TransferEngine {
             throw new IOException(ex);
         }
         j.current = e.name;
+        phase(j, "Subiendo");
         MediaFire.UploadCheck uc = mf.check(folderKey, e.name, e.size, hash);
         if (uc.hashExists) {
             // MediaFire ya tiene ese contenido: se agrega al instante sin subirlo
@@ -745,6 +766,7 @@ final class TransferEngine {
             if (key == null) key = uc.resumeKey;
             if (key == null) throw new IOException("MediaFire no aceptó las partes del archivo");
         }
+        phase(j, "MediaFire está procesando el archivo");
         j.current = "MediaFire está procesando " + e.name;
         mf.waitUpload(key);
         j.doneBytes = start + e.size;

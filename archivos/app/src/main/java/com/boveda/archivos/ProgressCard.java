@@ -23,7 +23,7 @@ final class ProgressCard implements TransferEngine.Listener {
     private final TransferEngine engine;
     private final Handler main = new Handler(Looper.getMainLooper());
     private final LinearLayout card;
-    private final TextView title, pct, info;
+    private final TextView stage, title, pct, info;
     private final ProgressBar bar;
     private TransferEngine.Job job;
     private boolean hidden;          // la cerró con la X: vuelve a salir con la próxima tarea
@@ -39,6 +39,14 @@ final class ProgressCard implements TransferEngine.Listener {
         card.setElevation(dp(10));
         card.setVisibility(View.GONE);
         if (onTap != null) card.setOnClickListener(v -> onTap.run());
+
+        // qué está haciendo ahora (Copiando, Guardando, Verificando…), en chiquito encima
+        stage = Ui.text(a, "", 11.5f, Ui.ACCENT2, true);
+        stage.setLetterSpacing(0.06f);
+        stage.setSingleLine(true);
+        stage.setEllipsize(TextUtils.TruncateAt.END);
+        stage.setPadding(0, 0, dp(8), dp(2));
+        card.addView(stage);
 
         LinearLayout top = Ui.row(a);
         title = Ui.text(a, "", 14.5f, Ui.TEXT, true);
@@ -128,6 +136,8 @@ final class ProgressCard implements TransferEngine.Listener {
             if (hidden) return;
             show();
             boolean ok = last.state == 2;
+            stage.setText(ok ? "✓ TERMINADO" : last.state == 4 ? "CANCELADO" : "ERROR");
+            stage.setTextColor(ok ? Ui.GOOD : Ui.BAD);
             title.setText(last.title());
             pct.setText(ok ? "100%" : "");
             bar.setIndeterminate(false);
@@ -156,6 +166,8 @@ final class ProgressCard implements TransferEngine.Listener {
         }
         if (hidden) return;
         show();
+        stage.setTextColor(Ui.ACCENT2);
+        stage.setText(stageText(run));
         title.setText(run.title() + (waiting > 0 ? "  (+" + waiting + " en cola)" : ""));
         float prog = run.totalBytes > 0 ? (float) run.doneBytes / run.totalBytes
                 : run.totalItems > 0 ? (float) run.doneItems / run.totalItems : -1;
@@ -171,12 +183,33 @@ final class ProgressCard implements TransferEngine.Listener {
         String txt;
         if (run.state == 0) txt = "En cola…";
         else if (run.totalBytes > 0) {
-            txt = Ui.size(run.doneBytes) + " de " + Ui.size(run.totalBytes) + "  ·  " + Ui.speed(run.speed);
-            if (run.speed > 1) txt += "  ·  faltan " + Ui.eta((long) ((run.totalBytes - run.doneBytes) / run.speed));
+            boolean waitingDisk = run.phase != null && (run.phase.startsWith("Guardando") || run.phase.startsWith("Verificando")
+                    || run.phase.startsWith("MediaFire"));
+            txt = Ui.size(run.doneBytes) + " de " + Ui.size(run.totalBytes);
+            if (!waitingDisk) {
+                txt += "  ·  " + Ui.speed(run.speed);
+                if (run.speed > 1) txt += "  ·  faltan " + Ui.eta((long) ((run.totalBytes - run.doneBytes) / run.speed));
+            }
         } else txt = run.doneItems + " de " + run.totalItems + " elementos";
         if (run.started > 0) txt += "  ·  " + seconds(System.currentTimeMillis() - run.started);
         if (run.current != null && !run.current.isEmpty()) txt += "\n" + run.current;
         info.setText(txt);
+    }
+
+    /** Qué está haciendo, para que nadie crea que se trabó cuando la velocidad baja a cero. */
+    static String stageText(TransferEngine.Job j) {
+        if (j.state == 0) return "EN COLA";
+        String p = j.phase;
+        if (p == null) p = switch (j.kind) {
+            case COPY -> "Copiando";
+            case MOVE -> "Moviendo";
+            case DELETE -> "Borrando";
+            case ZIP -> "Comprimiendo";
+            case EXTRACT -> "Extrayendo";
+            case CLOUD_DOWN -> "Descargando";
+            case CLOUD_UP -> "Subiendo";
+        };
+        return "● " + p.toUpperCase(java.util.Locale.ROOT) + "…";
     }
 
     private void show() {
