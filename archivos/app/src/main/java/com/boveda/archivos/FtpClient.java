@@ -94,7 +94,19 @@ final class FtpClient {
 
     void connect(String user, String pass) throws IOException {
         ctrl = new Socket();
-        ctrl.connect(new InetSocketAddress(host, port), 12000);
+        try {
+            ctrl.connect(new InetSocketAddress(host, port), 12000);
+        } catch (SocketTimeoutException e) {
+            throw new IOException("El equipo " + host + " no respondió. Revisa que la IP sea la correcta y que el celular "
+                    + "esté en la misma red Wi-Fi (no en datos móviles).");
+        } catch (java.net.ConnectException e) {
+            throw new IOException("El equipo " + host + " rechazó la conexión en el puerto " + port
+                    + ". El servidor FTP no está encendido (en la Xbox: abre Aurora o FreeStyle Dash) o el puerto no es ese.");
+        } catch (java.net.UnknownHostException e) {
+            throw new IOException("No se encontró la dirección «" + host + "». Escribe la IP tal como aparece en el equipo, por ejemplo 192.168.1.20.");
+        } catch (java.net.NoRouteToHostException e) {
+            throw new IOException("No hay camino hasta " + host + ". El celular y el equipo deben estar en la misma red Wi-Fi.");
+        }
         ctrl.setSoTimeout(30000);
         ctrl.setKeepAlive(true);
         open();
@@ -126,12 +138,15 @@ final class FtpClient {
     }
 
     void close() {
+        // se llama también cuando la conexión nunca llegó a abrirse: no debe fallar nunca
+        if (ctrl == null) return;
         try {
-            if (ctrl != null && !ctrl.isClosed()) {
-                send("QUIT");
-                ctrl.close();
-            }
-        } catch (IOException ignored) {
+            if (out != null && ctrl.isConnected() && !ctrl.isClosed()) send("QUIT");
+        } catch (Exception ignored) {
+        }
+        try {
+            ctrl.close();
+        } catch (Exception ignored) {
         }
     }
 

@@ -885,8 +885,8 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                 try {
                     c.connect(sv.user, sv.pass);
                     c.list("/");
-                } catch (IOException e) {
-                    err = e.getMessage();
+                } catch (Exception e) {
+                    err = e.getMessage() != null ? e.getMessage() : e.toString();
                 } finally {
                     c.close();
                 }
