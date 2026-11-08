@@ -13,7 +13,7 @@ import net.minecraft.util.Mth;
 import net.minecraft.world.inventory.InventoryMenu;
 import org.joml.Matrix4f;
 
-/** Misil táctico: cuerpo gris, punta roja, aletas y el fuego de la tobera. */
+/** Misil táctico: cuerpo gris, punta roja, aletas y el fuego de la tobera, que se ve de día y de noche. */
 public class MissileRenderer extends EntityRenderer<MissileEntity> {
     public MissileRenderer(EntityRendererProvider.Context ctx) {
         super(ctx);
@@ -42,11 +42,16 @@ public class MissileRenderer extends EntityRenderer<MissileEntity> {
             Shapes.box(v, fm, -0.02f, 0.18f, -1.3f, 0.02f, 0.5f, -0.75f, 0.3f, 0.32f, 0.35f);
             ps.popPose();
         }
-        // fuego de la tobera (se suma a la luz)
+        // fuego de la tobera: núcleo casi blanco, llama naranja y un halo que brilla (hacia -Z)
+        float t = e.tickCount + partial;
+        float flick = 0.85f + 0.1f * Mth.sin(t * 2.3f) + 0.05f * Mth.sin(t * 7.1f);
+        float z0 = -1.45f;
+        Shapes.tube(v, m, 0.15f, 0.03f, z0, z0 - 1.5f * flick, 10, 1f, 0.97f, 0.82f, 1f);
+        Shapes.tube(v, m, 0.22f, 0.06f, z0 + 0.02f, z0 - 3.0f * flick, 10, 1f, 0.68f, 0.18f, 0.8f);
+        Shapes.tube(v, m, 0.32f, 0.0f, z0 + 0.04f, z0 - 4.6f * flick, 10, 1f, 0.38f, 0.06f, 0.45f);
         VertexConsumer glow = buf.getBuffer(RenderType.lightning());
-        float flick = 0.8f + 0.2f * Mth.sin((e.tickCount + partial) * 2.3f);
-        Shapes.tube(glow, m, 0.16f, 0.0f, -1.45f, -1.45f - 1.6f * flick, 8, 1f, 0.75f, 0.3f, 0.9f);
-        Shapes.tube(glow, m, 0.3f, 0.0f, -1.45f, -1.45f - 0.9f * flick, 8, 1f, 0.45f, 0.1f, 0.5f);
+        Shapes.tube(glow, m, 0.5f, 0.0f, z0 + 0.1f, z0 - 2.4f * flick, 10, 1f, 0.55f, 0.15f, 0.6f);
+        Shapes.tube(glow, m, 0.75f, 0.2f, z0 + 0.2f, z0 - 0.6f, 10, 1f, 0.6f, 0.2f, 0.35f);
         ps.popPose();
         super.render(e, yaw, partial, ps, buf, light);
     }

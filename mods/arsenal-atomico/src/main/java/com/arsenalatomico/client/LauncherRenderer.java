@@ -34,7 +34,10 @@ public final class LauncherRenderer {
         if (site == null || Cinematic.clientTicks() > until) return;
         Vec3 c = cam.getPosition();
         if (c.distanceToSqr(site) > 320 * 320) return;
-        float elev = Cinematic.isActive() ? Cinematic.rackElevation(Cinematic.seconds(partial)) : Launcher.RAISED;
+        // después de la cinemática el camión queda recogido
+        float now = Cinematic.isActive() ? Cinematic.seconds(partial) : 0;
+        float elev = Cinematic.isActive() ? Cinematic.rackElevation(now) : 0;
+        float legs = Cinematic.isActive() ? Cinematic.legDeploy(now) : 0;
 
         ps.pushPose();
         ps.translate(site.x - c.x, site.y - c.y, site.z - c.z);
@@ -56,7 +59,16 @@ public final class LauncherRenderer {
         Shapes.box(bb, m, -1.05f, 1.95f, 3.5f, 1.05f, 2.7f, 3.53f, 0.12f, 0.2f, 0.28f);
         Shapes.box(bb, m, -0.9f, 2.9f, 2.4f, 0.9f, 3.05f, 3.2f, 0.2f, 0.22f, 0.15f);
         // patas estabilizadoras
-        for (float x : new float[]{-1.6f, 1.6f}) Shapes.box(bb, m, x - 0.15f, 0f, -3.2f, x + 0.15f, 0.9f, -2.9f, 0.3f, 0.3f, 0.3f);
+        // patas estabilizadoras: salen hacia los lados y bajan hasta el suelo
+        float reach = 0.35f + 0.45f * Math.min(1, legs * 2), foot = 0.75f * (1 - Math.max(0, legs * 2 - 1));
+        for (float z : new float[]{-3.05f, 1.65f}) {
+            for (int side = -1; side <= 1; side += 2) {
+                float x = side * (1.25f + reach);
+                Shapes.box(bb, m, Math.min(side * 1.2f, x), 0.75f, z - 0.12f, Math.max(side * 1.2f, x), 0.95f, z + 0.12f, 0.25f, 0.27f, 0.2f);
+                Shapes.box(bb, m, x - 0.1f, foot + 0.1f, z - 0.1f, x + 0.1f, 0.95f, z + 0.1f, 0.35f, 0.35f, 0.33f);
+                Shapes.box(bb, m, x - 0.3f, foot, z - 0.3f, x + 0.3f, foot + 0.1f, z + 0.3f, 0.2f, 0.2f, 0.2f);
+            }
+        }
         // batería de 12 tubos que se levanta
         ps.pushPose();
         ps.translate(0, Launcher.PIVOT_UP, -Launcher.PIVOT_BACK);

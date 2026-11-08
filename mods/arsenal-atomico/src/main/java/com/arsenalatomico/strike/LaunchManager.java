@@ -16,8 +16,6 @@ import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.sounds.SoundEvents;
-import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
@@ -160,10 +158,8 @@ public final class LaunchManager {
             long t = level.getGameTime() - s.start;
             SalvoPlan p = s.plan;
             while (s.launched < SalvoPlan.COUNT && t >= p.launchTick[s.launched]) {
-                MissileEntity.launch(level, p.paths[s.launched], 1f, 3.2f);
-                Vec3 m = p.paths[s.launched].p0;
-                level.playSound(null, m.x, m.y, m.z, SoundEvents.FIREWORK_ROCKET_LAUNCH, SoundSource.HOSTILE, 6f, 0.55f);
-                if (s.launched % 3 == 0) level.playSound(null, m.x, m.y, m.z, SoundEvents.GENERIC_EXPLODE, SoundSource.HOSTILE, 2f, 1.7f);
+                // el rugido del despegue y del motor lo pone el propio misil en cada jugador
+                MissileEntity.launch(level, p.paths[s.launched], 1.3f, 3.2f);
                 s.launched++;
             }
             if (level.getGameTime() >= s.end) {

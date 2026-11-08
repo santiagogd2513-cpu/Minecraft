@@ -3,6 +3,7 @@ package com.arsenalatomico;
 import com.arsenalatomico.net.Network;
 import com.arsenalatomico.registry.ModEntities;
 import com.arsenalatomico.registry.ModItems;
+import com.arsenalatomico.registry.ModSounds;
 import com.arsenalatomico.registry.ModTabs;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -23,6 +24,7 @@ public class ArsenalAtomico {
         ModItems.ITEMS.register(bus);
         ModEntities.ENTITIES.register(bus);
         ModTabs.TABS.register(bus);
+        ModSounds.SOUNDS.register(bus);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
         Network.register();
     }

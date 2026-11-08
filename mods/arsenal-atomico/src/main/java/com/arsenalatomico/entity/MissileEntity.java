@@ -28,6 +28,7 @@ public class MissileEntity extends Entity implements IEntityAdditionalSpawnData 
     private float scale = 1f;
     /** Fuerza de la explosión al llegar. */
     private float power = 4f;
+    private boolean soundStarted, boomed;
 
     public MissileEntity(EntityType<? extends MissileEntity> type, Level level) {
         super(type, level);
@@ -76,6 +77,14 @@ public class MissileEntity extends Entity implements IEntityAdditionalSpawnData 
         setPos(p.x, p.y, p.z);
         aim(d);
         if (level().isClientSide) {
+            if (!soundStarted) {
+                soundStarted = true;
+                com.arsenalatomico.client.MissileSounds.start(this);
+            }
+            if (!boomed && age >= path.flightTicks - 1) {
+                boomed = true;
+                com.arsenalatomico.client.MissileSounds.impact(path.p3);
+            }
             trail(p, d);
         } else if (age >= path.flightTicks) {
             Impacts.missile((ServerLevel) level(), path.p3, power);
@@ -83,22 +92,29 @@ public class MissileEntity extends Entity implements IEntityAdditionalSpawnData 
         }
     }
 
-    /** Estela: fuego en la tobera y humo que se queda en el aire. */
+    /** Estela: fuego que sale de la tobera y una columna de humo blanco que se queda en el aire. */
     private void trail(Vec3 p, Vec3 d) {
-        Vec3 tail = p.subtract(d.scale(1.2 * scale));
+        Vec3 tail = p.subtract(d.scale(1.45 * scale));
         Level l = level();
-        for (int i = 0; i < 2; i++) {
-            Vec3 q = tail.subtract(d.scale(i * 0.5));
-            l.addAlwaysVisibleParticle(ParticleTypes.CAMPFIRE_COSY_SMOKE, true, q.x, q.y, q.z,
-                    (random.nextDouble() - 0.5) * 0.02, 0.01, (random.nextDouble() - 0.5) * 0.02);
+        // llamas que salen disparadas hacia atrás
+        for (int i = 0; i < 3; i++) {
+            double k = 0.35 + random.nextDouble() * 0.35;
+            l.addAlwaysVisibleParticle(ParticleTypes.FLAME, true, tail.x, tail.y, tail.z,
+                    -d.x * k + (random.nextDouble() - 0.5) * 0.06, -d.y * k + (random.nextDouble() - 0.5) * 0.06,
+                    -d.z * k + (random.nextDouble() - 0.5) * 0.06);
         }
-        l.addAlwaysVisibleParticle(ParticleTypes.FLAME, true, tail.x, tail.y, tail.z, -d.x * 0.2, -d.y * 0.2, -d.z * 0.2);
-        if (age < 12) {
-            // el humo del despegue
-            for (int i = 0; i < 4; i++) {
+        if (age % 2 == 0) l.addAlwaysVisibleParticle(ParticleTypes.LAVA, true, tail.x, tail.y, tail.z, 0, 0, 0);
+        Vec3 q = tail.subtract(d.scale(2.5 * scale));
+        l.addAlwaysVisibleParticle(ParticleTypes.CAMPFIRE_COSY_SMOKE, true, q.x, q.y, q.z,
+                (random.nextDouble() - 0.5) * 0.02, 0.01, (random.nextDouble() - 0.5) * 0.02);
+        if (age < 14) {
+            // la nube del despegue, que se esparce por el suelo
+            for (int i = 0; i < 5; i++) {
                 l.addAlwaysVisibleParticle(ParticleTypes.CLOUD, true, tail.x, tail.y, tail.z,
-                        (random.nextDouble() - 0.5) * 0.4, random.nextDouble() * 0.1, (random.nextDouble() - 0.5) * 0.4);
+                        (random.nextDouble() - 0.5) * 0.5, random.nextDouble() * 0.08, (random.nextDouble() - 0.5) * 0.5);
             }
+            l.addAlwaysVisibleParticle(ParticleTypes.LARGE_SMOKE, true, tail.x, tail.y, tail.z,
+                    (random.nextDouble() - 0.5) * 0.2, 0.05, (random.nextDouble() - 0.5) * 0.2);
         }
     }
 

@@ -1,0 +1,56 @@
+{
+  "missile_launch": {
+    "subtitle": "subtitles.arsenalatomico.missile_launch",
+    "sounds": [
+      {
+        "name": "arsenalatomico:missile_launch",
+        "attenuation_distance": 64
+      }
+    ]
+  },
+  "missile_loop": {
+    "subtitle": "subtitles.arsenalatomico.missile_loop",
+    "sounds": [
+      {
+        "name": "arsenalatomico:missile_loop",
+        "attenuation_distance": 32
+      }
+    ]
+  },
+  "alarm": {
+    "subtitle": "subtitles.arsenalatomico.alarm",
+    "sounds": [
+      {
+        "name": "arsenalatomico:alarm",
+        "attenuation_distance": 48
+      }
+    ]
+  },
+  "beep": {
+    "subtitle": "subtitles.arsenalatomico.beep",
+    "sounds": [
+      {
+        "name": "arsenalatomico:beep",
+        "attenuation_distance": 24
+      }
+    ]
+  },
+  "hydraulic": {
+    "subtitle": "subtitles.arsenalatomico.hydraulic",
+    "sounds": [
+      {
+        "name": "arsenalatomico:hydraulic",
+        "attenuation_distance": 24
+      }
+    ]
+  },
+  "far_boom": {
+    "subtitle": "subtitles.arsenalatomico.far_boom",
+    "sounds": [
+      {
+        "name": "arsenalatomico:far_boom",
+        "attenuation_distance": 96
+      }
+    ]
+  }
+}
