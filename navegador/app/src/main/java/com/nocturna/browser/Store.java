@@ -40,6 +40,9 @@ final class Store {
     boolean captchaDodge() { return p.getBoolean("captcha_dodge", true); }
     void setCaptchaDodge(boolean b) { p.edit().putBoolean("captcha_dodge", b).apply(); }
 
+    boolean pwOffer() { return p.getBoolean("pw_offer", true); }
+    void setPwOffer(boolean b) { p.edit().putBoolean("pw_offer", b).apply(); }
+
     int connections() { return p.getInt("conns", 8); }
     void setConnections(int n) { p.edit().putInt("conns", n).apply(); }
 

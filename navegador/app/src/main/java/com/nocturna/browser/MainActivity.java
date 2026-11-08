@@ -63,7 +63,7 @@ public class MainActivity extends Activity {
     private static final int REQ_FILE = 11;
 
     /** Una pestaña. */
-    private static final class Tab {
+    static final class Tab {
         WebView web;
         String title = "Nueva pestaña";
         String url = HomePage.URL;
@@ -72,6 +72,10 @@ public class MainActivity extends Activity {
         ScriptHandler darkScript;
         /** Idioma al que está traducida la página actual (null = original). */
         String translated;
+        /** Usuario y contraseña recién escritos, esperando para ofrecer guardarlos. */
+        PasswordUi.Pending pwPending;
+        /** Dirección anterior: lo que avisa la página al irse puede llegar después del cambio. */
+        String prevUrl;
     }
 
     private Store store;
@@ -87,6 +91,7 @@ public class MainActivity extends Activity {
     private View customView;
     private WebChromeClient.CustomViewCallback customCallback;
     private ValueCallback<Uri[]> fileCallback;
+    private PasswordUi pwUi;
 
     // ------------------------------------------------------------------ inicio
 
@@ -94,6 +99,7 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle b) {
         super.onCreate(b);
         store = new Store(this);
+        pwUi = new PasswordUi(this);
         DarkMode.init(this);
         Translator.init(this);
         Window w = getWindow();
@@ -155,6 +161,25 @@ public class MainActivity extends Activity {
 
     private int dp(float v) {
         return Ui.dp(this, v);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        pwUi.lock();     // al volver, las contraseñas piden la huella otra vez
+    }
+
+    // para el gestor de contraseñas
+    Store store() {
+        return store;
+    }
+
+    Tab currentTab() {
+        return current;
+    }
+
+    void openInCurrent(String url) {
+        load(current, url);
     }
 
     // ------------------------------------------------------------------ interfaz
@@ -297,6 +322,7 @@ public class MainActivity extends Activity {
 
     private void select(Tab t) {
         current = t;
+        pwUi.hideFillBar();
         content.removeAllViews();
         if (t.web.getParent() != null) ((ViewGroup) t.web.getParent()).removeView(t.web);
         content.addView(t.web, new FrameLayout.LayoutParams(-1, -1));
@@ -376,6 +402,10 @@ public class MainActivity extends Activity {
         w.setOverScrollMode(View.OVER_SCROLL_NEVER);
         applyDark(t, w);
         w.addJavascriptInterface(new BlobBridge(), "NocturnaDescargas");
+        w.addJavascriptInterface(new PwBridge(t), "NocturnaClaves");
+        if (WebViewFeature.isFeatureSupported(WebViewFeature.DOCUMENT_START_SCRIPT)) {
+            WebViewCompat.addDocumentStartJavaScript(w, PwScript.JS, Collections.singleton("*"));
+        }
 
         w.setWebViewClient(new WebViewClient() {
             @Override
@@ -411,6 +441,8 @@ public class MainActivity extends Activity {
                     Toast.makeText(MainActivity.this, "Google pidió verificación: busqué en " + Captcha.NAME, Toast.LENGTH_SHORT).show();
                     return;
                 }
+                pwUi.pageStarted(t);
+                t.prevUrl = t.url;
                 t.url = url;
                 t.translated = null;
                 if (t == current) {
@@ -430,6 +462,7 @@ public class MainActivity extends Activity {
             public void onPageFinished(WebView view, String url) {
                 t.url = url;
                 injectDark(view);
+                if (!isInternal(url)) view.evaluateJavascript(PwScript.JS, null);
                 if (!t.incognito && !isInternal(url)) store.addHistory(view.getTitle(), url);
                 if (t == current) {
                     showUrl();
@@ -720,6 +753,25 @@ public class MainActivity extends Activity {
                 .show();
     }
 
+    /** Lo que avisa el script de contraseñas de la página (ver PwScript). */
+    private final class PwBridge {
+        private final Tab t;
+
+        PwBridge(Tab t) {
+            this.t = t;
+        }
+
+        @JavascriptInterface
+        public void candidate(String user, String pass, boolean submitted, String pageUrl) {
+            runOnUiThread(() -> pwUi.candidate(t, user, pass, submitted, pageUrl));
+        }
+
+        @JavascriptInterface
+        public void found(boolean hasPassword) {
+            runOnUiThread(() -> pwUi.found(t, hasPassword));
+        }
+    }
+
     /** Recibe los archivos que la página arma en memoria (enlaces blob:). Siempre pide confirmación. */
     private final class BlobBridge {
         private final java.util.Map<String, Object[]> open = new java.util.HashMap<>();   // id → {archivo, salida, nombre, tipo}
@@ -826,7 +878,7 @@ public class MainActivity extends Activity {
 
     // ------------------------------------------------------------------ hojas inferiores
 
-    private Dialog sheet() {
+    Dialog sheet() {
         Dialog d = new Dialog(this);
         d.requestWindowFeature(Window.FEATURE_NO_TITLE);
         Window w = d.getWindow();
@@ -838,7 +890,7 @@ public class MainActivity extends Activity {
         return d;
     }
 
-    private LinearLayout sheetBox(Dialog d) {
+    LinearLayout sheetBox(Dialog d) {
         LinearLayout box = Ui.column(this);
         box.setPadding(dp(18), dp(12), dp(18), dp(22));
         android.graphics.drawable.GradientDrawable bg = Ui.round(Ui.SURFACE, 0);
@@ -876,6 +928,7 @@ public class MainActivity extends Activity {
         }, d);
         addTile(grid, R.drawable.ic_star, "Favoritos", Ui.WARN, () -> showList(true), d);
         addTile(grid, R.drawable.ic_history, "Historial", Ui.SUB, () -> showList(false), d);
+        addTile(grid, R.drawable.ic_key, "Contraseñas", Ui.WARN, pwUi::showManager, d);
         addTile(grid, R.drawable.ic_desktop, current != null && current.desktop ? "Versión\nmóvil" : "Versión\nescritorio",
                 Ui.TEXT, this::toggleDesktop, d);
         addTile(grid, R.drawable.ic_share, "Compartir", Ui.TEXT, () -> {
@@ -970,6 +1023,8 @@ public class MainActivity extends Activity {
                 "Conexiones por descarga: " + store.connections(),
                 "Bloquear anuncios: " + (store.adBlock() ? "sí" : "no"),
                 "Si Google pide CAPTCHA, buscar en " + Captcha.NAME + ": " + (store.captchaDodge() ? "sí" : "no"),
+                "Ofrecer guardar contraseñas: " + (store.pwOffer() ? "sí" : "no"),
+                "Contraseñas guardadas",
                 "Borrar historial",
                 "Borrar cookies, caché y datos de páginas",
         };
@@ -999,11 +1054,13 @@ public class MainActivity extends Activity {
                         }
                         case 3 -> store.setAdBlock(!store.adBlock());
                         case 4 -> store.setCaptchaDodge(!store.captchaDodge());
-                        case 5 -> {
+                        case 5 -> store.setPwOffer(!store.pwOffer());
+                        case 6 -> pwUi.showManager();
+                        case 7 -> {
                             store.clearHistory();
                             Toast.makeText(this, "Historial borrado", Toast.LENGTH_SHORT).show();
                         }
-                        case 6 -> {
+                        case 8 -> {
                             CookieManager.getInstance().removeAllCookies(null);
                             WebStorage.getInstance().deleteAllData();
                             for (Tab t : tabs) t.web.clearCache(true);
@@ -1334,6 +1391,10 @@ public class MainActivity extends Activity {
     @Override
     protected void onActivityResult(int req, int res, Intent data) {
         super.onActivityResult(req, res, data);
+        if (req == PasswordUi.REQ_IMPORT || req == PasswordUi.REQ_EXPORT) {
+            pwUi.onResult(req, res, data);
+            return;
+        }
         if (req == REQ_FILE && fileCallback != null) {
             fileCallback.onReceiveValue(WebChromeClient.FileChooserParams.parseResult(res, data));
             fileCallback = null;
