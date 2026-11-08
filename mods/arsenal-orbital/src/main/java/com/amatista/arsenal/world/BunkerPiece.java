@@ -6,6 +6,7 @@ import com.amatista.arsenal.registry.ModItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
@@ -234,7 +235,11 @@ public class BunkerPiece extends StructurePiece {
         if (clip.isInside(p) && lvl.getBlockEntity(p) instanceof SignBlockEntity s) {
             SignText t = new SignText();
             for (int i = 0; i < Math.min(4, lines.length); i++) t = t.setMessage(i, Component.literal(lines[i]));
-            s.setText(t.setColor(color).setHasGlowingText(true), true);
+            // durante la generación el letrero todavía no está en un mundo: el texto se carga como datos
+            CompoundTag tag = s.saveWithoutMetadata();
+            final SignText text = t.setColor(color).setHasGlowingText(true);
+            SignText.DIRECT_CODEC.encodeStart(NbtOps.INSTANCE, text).result().ifPresent(n -> tag.put("front_text", n));
+            s.load(tag);
         }
     }
 
