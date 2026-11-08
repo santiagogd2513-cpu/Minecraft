@@ -33,6 +33,23 @@ public class FileService extends IFileService.Stub {
     }
 
     @Override
+    public String listPage(String path, int start, int count) {
+        File[] files = new File(path).listFiles();
+        if (files == null) return null;
+        java.util.Arrays.sort(files, (x, y) -> x.getName().compareTo(y.getName()));
+        JSONArray a = new JSONArray();
+        try {
+            for (int i = start; i < files.length && i < start + count; i++) {
+                File f = files[i];
+                boolean d = f.isDirectory();
+                a.put(new JSONObject().put("n", f.getName()).put("d", d).put("s", d ? 0 : f.length()).put("m", f.lastModified()));
+            }
+        } catch (Exception ignored) {
+        }
+        return a.toString();
+    }
+
+    @Override
     public String stat(String path) {
         File f = new File(path);
         if (!f.exists()) return null;

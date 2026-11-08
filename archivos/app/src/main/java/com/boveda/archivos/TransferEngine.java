@@ -220,9 +220,12 @@ final class TransferEngine {
             j.state = j.cancel ? 4 : 2;
         } catch (Cancelled c) {
             j.state = 4;
-        } catch (Exception e) {
+        } catch (Throwable e) {
+            // cualquier error (incluso falta de memoria) deja la tarea en error, sin cerrar la app
             j.state = j.cancel ? 4 : 3;
-            j.error = e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage();
+            j.error = e instanceof OutOfMemoryError ? "Sin memoria suficiente"
+                    : e instanceof StackOverflowError ? "Demasiadas carpetas una dentro de otra"
+                    : e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage();
         }
         j.current = "";
         j.finished = System.currentTimeMillis();

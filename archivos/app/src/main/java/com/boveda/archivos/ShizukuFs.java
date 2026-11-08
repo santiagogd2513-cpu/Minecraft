@@ -23,6 +23,14 @@ final class ShizukuFs implements Fs {
         this.s = s;
     }
 
+    private static void addAll(List<Entry> out, String dir, JSONArray a) throws org.json.JSONException {
+        for (int i = 0; i < a.length(); i++) {
+            JSONObject o = a.getJSONObject(i);
+            String n = o.getString("n");
+            out.add(new Entry(Paths.join(dir, n), n, o.getBoolean("d"), o.getLong("s"), o.getLong("m")));
+        }
+    }
+
     private static IOException io(RemoteException e) {
         return new IOException("Shizuku se desconectó", e);
     }
@@ -30,16 +38,25 @@ final class ShizukuFs implements Fs {
     @Override
     public List<Entry> list(String dir) throws IOException {
         try {
-            String json = s.list(dir);
-            if (json == null) throw new IOException("No se puede leer esta carpeta");
-            JSONArray a = new JSONArray(json);
-            List<Entry> out = new ArrayList<>(a.length());
-            for (int i = 0; i < a.length(); i++) {
-                JSONObject o = a.getJSONObject(i);
-                String n = o.getString("n");
-                out.add(new Entry(Paths.join(dir, n), n, o.getBoolean("d"), o.getLong("s"), o.getLong("m")));
+            // de a 400 elementos: una carpeta con miles de archivos no cabe en un solo mensaje entre procesos
+            final int page = 400;
+            List<Entry> out = new ArrayList<>();
+            for (int start = 0; ; start += page) {
+                String json;
+                try {
+                    json = s.listPage(dir, start, page);
+                } catch (RuntimeException | RemoteException old) {
+                    if (start > 0) throw old;
+                    json = s.list(dir);   // servicio de una versión anterior
+                    if (json == null) throw new IOException("No se puede leer esta carpeta");
+                    addAll(out, dir, new JSONArray(json));
+                    return out;
+                }
+                if (json == null) throw new IOException("No se puede leer esta carpeta");
+                JSONArray a = new JSONArray(json);
+                addAll(out, dir, a);
+                if (a.length() < page) return out;
             }
-            return out;
         } catch (RemoteException e) {
             throw io(e);
         } catch (org.json.JSONException e) {

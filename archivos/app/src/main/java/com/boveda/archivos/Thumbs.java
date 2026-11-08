@@ -54,8 +54,8 @@ final class Thumbs {
 
     /** Solo archivos que se pueden leer directamente (no FTP, Drive ni carpetas protegidas). */
     static boolean local(String path) {
-        if (path == null || !path.startsWith("/") || FtpServers.isFtp(path) || DriveFs.isDrive(path) || Paths.restricted(path)) return false;
-        return new File(path).canRead();
+        // solo por la ruta: la pantalla no debe esperar al disco (una USB ocupada puede tardar segundos)
+        return path != null && path.startsWith("/") && !FtpServers.isFtp(path) && !DriveFs.isDrive(path) && !Paths.restricted(path);
     }
 
     private static String key(Entry e) {
@@ -79,6 +79,7 @@ final class Thumbs {
             Bitmap b = null;
             try {
                 File f = new File(e.path);
+                if (!f.canRead()) throw new java.io.IOException();
                 if (kind == IMAGE) b = ThumbnailUtils.createImageThumbnail(f, new Size(px, px), null);
                 else if (kind == VIDEO) b = ThumbnailUtils.createVideoThumbnail(f, new Size(px, px), null);
                 else if (kind == APK) b = apkIcon(app, e.path, px);

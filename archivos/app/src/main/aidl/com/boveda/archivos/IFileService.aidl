@@ -12,4 +12,6 @@ interface IFileService {
     boolean rename(String from, String to) = 5;
     ParcelFileDescriptor open(String path, String mode) = 6;
     boolean setModified(String path, long time) = 7;
+    // carpetas enormes: de a pedazos, para no pasar el límite de 1 MB de Android entre procesos
+    String listPage(String path, int start, int count) = 8;
 }

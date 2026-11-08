@@ -21,12 +21,41 @@ final class FsRouter {
             if (!Drive.get(c).connected()) throw new Fs.NeedAccess(path);
             return DriveFs.get(c);
         }
-        if (!Paths.restricted(path)) return LocalFs.I;
+        if (!Paths.restricted(path)) {
+            // USB o SD donde Android no deja escribir directo: por Shizuku o por el permiso de esa carpeta
+            String vol = removableRoot(path);
+            if (vol != null && !directWrite(vol)) {
+                IFileService s = ShizukuHelper.service();
+                if (s != null) return new ShizukuFs(s);
+                SafFs saf = safFor(c, path);
+                if (saf != null) return saf;
+            }
+            return LocalFs.I;
+        }
         IFileService s = ShizukuHelper.service();
         if (s != null) return new ShizukuFs(s);
         SafFs saf = safFor(c, path);
         if (saf != null) return saf;
         throw new Fs.NeedAccess(path);
+    }
+
+    private static final java.util.Map<String, Boolean> writable = new java.util.concurrent.ConcurrentHashMap<>();
+
+    /** "/storage/1234-ABCD/x/y" → "/storage/1234-ABCD" (USB, SD); null para la memoria interna. */
+    static String removableRoot(String path) {
+        if (!path.startsWith("/storage/") || Paths.under(path, Paths.ROOT) || path.startsWith("/storage/emulated")) return null;
+        int i = path.indexOf('/', 9);
+        return i < 0 ? path : path.substring(0, i);
+    }
+
+    /** ¿Se puede escribir directo en ese volumen? (se pregunta una vez por volumen) */
+    static boolean directWrite(String volRoot) {
+        Boolean b = writable.get(volRoot);
+        if (b == null) {
+            b = new java.io.File(volRoot).canWrite();
+            writable.put(volRoot, b);
+        }
+        return b;
     }
 
     /** Busca un permiso guardado (del selector del sistema) que cubra esta ruta. Gana el más específico. */

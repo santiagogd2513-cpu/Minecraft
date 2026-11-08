@@ -139,6 +139,74 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         buildUi();
         if (Build.VERSION.SDK_INT >= 33 && !picker()) requestPermissions(new String[]{Manifest.permission.POST_NOTIFICATIONS}, 5);
         handleIntent(getIntent());
+        if (!picker()) main.postDelayed(this::reportLastExit, 600);
+    }
+
+    /**
+     * Si Bóveda se cerró sola la última vez (error, «no responde» o falta de memoria), lo cuenta
+     * con los detalles técnicos para poder copiarlos y arreglarlo.
+     */
+    private void reportLastExit() {
+        try {
+            android.content.SharedPreferences sp = getSharedPreferences("diagnostico", MODE_PRIVATE);
+            List<android.app.ApplicationExitInfo> l = getSystemService(android.app.ActivityManager.class)
+                    .getHistoricalProcessExitReasons(null, 0, 1);
+            if (l.isEmpty()) return;
+            android.app.ApplicationExitInfo x = l.get(0);
+            if (x.getTimestamp() <= sp.getLong("visto", 0)) return;
+            sp.edit().putLong("visto", x.getTimestamp()).apply();
+            String what;
+            switch (x.getReason()) {
+                case android.app.ApplicationExitInfo.REASON_CRASH -> what = "se cerró por un error";
+                case android.app.ApplicationExitInfo.REASON_CRASH_NATIVE -> what = "se cerró por un error interno";
+                case android.app.ApplicationExitInfo.REASON_ANR -> what = "dejó de responder y Android la cerró";
+                case android.app.ApplicationExitInfo.REASON_LOW_MEMORY -> what = "Android la cerró por falta de memoria";
+                case android.app.ApplicationExitInfo.REASON_EXCESSIVE_RESOURCE_USAGE -> what = "Android la cerró por usar demasiados recursos";
+                default -> what = null;
+            }
+            if (what == null) return;
+            StringBuilder det = new StringBuilder();
+            det.append("Bóveda ").append(BuildConfig.VERSION_NAME).append(" · Android ").append(Build.VERSION.RELEASE)
+                    .append(" · ").append(Build.MODEL).append('\n');
+            det.append("Motivo: ").append(what).append(" (").append(x.getReason()).append(")\n");
+            if (x.getDescription() != null) det.append(x.getDescription()).append('\n');
+            java.io.File crash = new java.io.File(getFilesDir(), "ultimo_error.txt");
+            if (x.getReason() == android.app.ApplicationExitInfo.REASON_CRASH && crash.exists()) {
+                det.append('\n').append(new String(java.nio.file.Files.readAllBytes(crash.toPath())));
+            }
+            if (x.getReason() == android.app.ApplicationExitInfo.REASON_ANR) {
+                try (java.io.InputStream in = x.getTraceInputStream()) {
+                    if (in != null) {
+                        java.io.BufferedReader r = new java.io.BufferedReader(new java.io.InputStreamReader(in));
+                        // el hilo principal es lo que importa: dónde se quedó trabado
+                        String line;
+                        boolean mainThread = false;
+                        int n = 0;
+                        while ((line = r.readLine()) != null && n < 60) {
+                            if (line.startsWith("\"main\"")) mainThread = true;
+                            else if (mainThread && line.isEmpty()) break;
+                            if (mainThread) {
+                                det.append(line).append('\n');
+                                n++;
+                            }
+                        }
+                    }
+                }
+            }
+            String text = det.toString();
+            new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                    .setTitle("La última vez Bóveda " + what)
+                    .setMessage("Copia los detalles y mándaselos a quien hizo la app para arreglarlo.\n\n"
+                            + (text.length() > 1800 ? text.substring(0, 1800) + "…" : text))
+                    .setPositiveButton("Copiar detalles", (d, w) -> {
+                        android.content.ClipboardManager cm = getSystemService(android.content.ClipboardManager.class);
+                        cm.setPrimaryClip(android.content.ClipData.newPlainText("Error de Bóveda", text));
+                        Toast.makeText(this, "Copiado", Toast.LENGTH_SHORT).show();
+                    })
+                    .setNegativeButton("Cerrar", null)
+                    .show();
+        } catch (Throwable ignored) {
+        }
     }
 
     @Override
@@ -544,7 +612,6 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
 
         for (Volume v : volumes()) {
             File f = new File(v.path);
-            long total = f.getTotalSpace(), free = f.getUsableSpace();
             LinearLayout card = Ui.column(this);
             card.setPadding(dp(16), dp(16), dp(16), dp(16));
             card.setBackground(Ui.ripple(Ui.gradient(dp(20), 0xFF14284F, 0xFF101A30), Ui.round(Color.WHITE, dp(20))));
@@ -555,12 +622,23 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             TextView n = Ui.text(this, v.name, 16.5f, Ui.TEXT, true);
             n.setPadding(dp(10), 0, 0, 0);
             r.addView(n, Ui.weight(1));
-            r.addView(Ui.text(this, Ui.size(total - free) + " / " + Ui.size(total), 13, Ui.SUB, false));
+            TextView space = Ui.text(this, "…", 13, Ui.SUB, false);
+            r.addView(space);
             card.addView(r);
-            View bar = new UsageBar(this, total > 0 ? (total - free) / (float) total : 0);
+            FrameLayout barBox = new FrameLayout(this);
+            barBox.addView(new UsageBar(this, 0));
             LinearLayout.LayoutParams bl = new LinearLayout.LayoutParams(-1, dp(8));
             bl.setMargins(0, dp(12), 0, 0);
-            card.addView(bar, bl);
+            card.addView(barBox, bl);
+            // el espacio se mide aparte: una USB o SD ocupada copiando puede tardar en contestar
+            new Thread(() -> {
+                long total = f.getTotalSpace(), free = f.getUsableSpace();
+                main.post(() -> {
+                    space.setText(Ui.size(total - free) + " / " + Ui.size(total));
+                    barBox.removeAllViews();
+                    barBox.addView(new UsageBar(this, total > 0 ? (total - free) / (float) total : 0));
+                });
+            }, "espacio").start();
             card.setOnClickListener(x -> open(v.path));
             LinearLayout.LayoutParams cl = new LinearLayout.LayoutParams(-1, -2);
             cl.setMargins(0, 0, 0, dp(10));
