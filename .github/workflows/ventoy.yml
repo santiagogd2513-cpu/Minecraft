@@ -3,7 +3,7 @@ name: Ventoy no oficial
 on:
   push:
     branches: [ "**" ]
-    paths: [ "ventoy/**", ".github/workflows/ventoy.yml" ]
+    paths: [ "ventoy/**", "forja/app/src/main/**", "forja/test/motor_ntfs_pc.sh", ".github/workflows/ventoy.yml" ]
   workflow_dispatch:
 
 permissions:
@@ -57,17 +57,28 @@ jobs:
       - name: Probar la instalación en una USB de mentira
         run: |
           set -euo pipefail
-          sudo apt-get install -y exfatprogs >/dev/null
+          sudo apt-get install -y exfatprogs dosfstools e2fsprogs ntfs-3g >/dev/null
           mkdir -p /tmp/t/out
-          javac -d /tmp/t/out app/src/main/java/com/ventoy/nooficial/{BlockDevice,Progress,Disk,ExFatFormatter,Fat16,VentoyInstaller}.java test/*.java
-          for MB in 1024 40960; do
+          F=../forja/app/src/main/java/com/forja/formateador
+          javac -d /tmp/t/out app/src/main/java/com/ventoy/nooficial/{BlockDevice,Progress,Disk,ExFatFormatter,Fat16,VentoyInstaller}.java \
+            $(ls $F/*.java | grep -v -e MainActivity -e UsbDisk -e Ui.java) test/*.java
+          bash ../forja/test/motor_ntfs_pc.sh /tmp/t/nb
+          for CASO in "1024 EXFAT" "40960 EXFAT" "2048 NTFS" "2048 FAT32" "2048 EXT4" "40960 NTFS"; do
+            set -- $CASO
             rm -f /tmp/t/usb.img
-            java -cp /tmp/t/out Test app/src/main/assets/ventoy /tmp/t/usb.img $MB install | tee /tmp/t/log.txt
+            java -Djava.library.path=/tmp/t/nb -cp /tmp/t/out Test app/src/main/assets/ventoy /tmp/t/usb.img $1 install $2 | tee /tmp/t/log.txt
             grep -q "hasVentoy=true version=$VENTOY_VER" /tmp/t/log.txt
+            grep -q "fs=$2" /tmp/t/log.txt
             P1=$(python3 -c "import struct;d=open('/tmp/t/usb.img','rb').read(512);print(struct.unpack('<I',d[458:462])[0])")
-            dd if=/tmp/t/usb.img of=/tmp/t/p1.img bs=1M skip=1 count=$((P1/2048)) conv=sparse status=none
-            fsck.exfat -n /tmp/t/p1.img
-            java -cp /tmp/t/out Test app/src/main/assets/ventoy /tmp/t/usb.img $MB update | tail -1
+            L=$(sudo losetup -o $((2048*512)) --sizelimit $((P1*512)) -f --show /tmp/t/usb.img)
+            case $2 in
+              EXFAT) sudo fsck.exfat -n $L ;;
+              NTFS) sudo ntfsfix -n $L ;;
+              FAT32) sudo fsck.fat -n $L ;;
+              EXT4) sudo e2fsck -fn $L ;;
+            esac
+            sudo losetup -d $L
+            java -Djava.library.path=/tmp/t/nb -cp /tmp/t/out Test app/src/main/assets/ventoy /tmp/t/usb.img $1 update | tail -1
           done
 
       - uses: gradle/actions/setup-gradle@v4
@@ -96,7 +107,7 @@ jobs:
           make_latest: false
           body: |
             **Ventoy no oficial**: instala **Ventoy ${{ env.VENTOY_VER }}** en una memoria USB desde el celular, sin root, sin anuncios y sin internet.
-            Descarga `Ventoy-no-oficial.apk`, conecta la USB por OTG y toca «Instalar».
+            Descarga `Ventoy-no-oficial.apk`, conecta la USB por OTG, elige el formato de la partición (exFAT, NTFS, FAT32 o ext4) y toca «Instalar».
 
-            Basado en [Ventoy](https://github.com/ventoy/Ventoy) de longpanda (GPLv3); usa sus archivos oficiales de arranque sin modificar. No es una app oficial.
+            Basado en [Ventoy](https://github.com/ventoy/Ventoy) de longpanda (GPLv3); usa sus archivos oficiales de arranque sin modificar. NTFS se crea con `mkntfs` de ntfs-3g (GPLv2+). No es una app oficial.
           files: dist/Ventoy-no-oficial.apk

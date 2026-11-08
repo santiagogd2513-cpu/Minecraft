@@ -33,6 +33,8 @@ public final class VentoyInstaller {
         public boolean gpt;
         public long part1Start, part1Sectors, part2Start, part2Sectors;
         public long diskSectors;
+        /** Formato de la partición «Ventoy» (null si no se reconoce). */
+        public com.forja.formateador.FsType part1Fs;
     }
 
     public static final class Layout {
@@ -82,6 +84,7 @@ public final class VentoyInstaller {
             info.part2Sectors = Disk.le32(mbr, 474);
         }
         info.hasVentoy = info.part1Start == PART1_START && info.part2Sectors == PART2_SECTORS;
+        if (info.part1Start > 0) info.part1Fs = com.forja.formateador.Formatters.detect(new ForjaDev(d), info.part1Start * S);
         if (info.hasVentoy) {
             try {
                 info.version = Fat16.ventoyVersion(d, info.part2Start);
@@ -94,8 +97,13 @@ public final class VentoyInstaller {
 
     // ------------------------------------------------------------------ instalar
 
-    /** Instalación nueva: BORRA todo el disco. */
+    /** Instalación nueva con la partición «Ventoy» en exFAT. */
     public static void install(BlockDevice d, Files f, Progress p) throws IOException {
+        install(d, f, com.forja.formateador.FsType.EXFAT, p);
+    }
+
+    /** Instalación nueva: BORRA todo el disco. fs: formato de la partición «Ventoy». */
+    public static void install(BlockDevice d, Files f, com.forja.formateador.FsType fs, Progress p) throws IOException {
         long n = d.sectors();
         if (n <= PART2_SECTORS + PART1_START + 65536) throw new IOException("La USB es demasiado pequeña para Ventoy");
         if (n > 4294967296L) throw new IOException("La USB pasa de 2 TB: el estilo MBR no sirve");
@@ -113,7 +121,7 @@ public final class VentoyInstaller {
         byte[] sig = new byte[4];
         rnd.nextBytes(sig);
         System.arraycopy(sig, 0, mbr, 440, 4);
-        partEntry(mbr, 446, true, 0x07, l.part1Start, l.part1End - l.part1Start + 1);
+        partEntry(mbr, 446, true, com.forja.formateador.Formatters.mbrType(fs), l.part1Start, l.part1End - l.part1Start + 1);
         partEntry(mbr, 462, false, 0xEF, l.part2Start, PART2_SECTORS);
         mbr[510] = 0x55;
         mbr[511] = (byte) 0xAA;
@@ -121,10 +129,27 @@ public final class VentoyInstaller {
         d.flush();
         check(p);
 
-        // 3) partición 1 en exFAT, etiqueta «Ventoy» (32 KB por cluster hasta 32 GB, si no 128 KB)
-        long diskGb = n / 2097152;
-        int spc = diskGb > 32 ? 256 : 64;
-        ExFatFormatter.format(d, l.part1Start, l.part1End - l.part1Start + 1, spc, "Ventoy", rnd.nextInt() & 0xFFFFFFFFL, p);
+        // 3) partición 1 «Ventoy»: exFAT como Ventoy2Disk (32 KB por cluster hasta 32 GB, si no 128 KB),
+        //    o NTFS / FAT32 / ext4 con los formateadores de Forja
+        if (fs == com.forja.formateador.FsType.EXFAT) {
+            long diskGb = n / 2097152;
+            int spc = diskGb > 32 ? 256 : 64;
+            ExFatFormatter.format(d, l.part1Start, l.part1End - l.part1Start + 1, spc, "Ventoy", rnd.nextInt() & 0xFFFFFFFFL, p);
+        } else {
+            p.update(0.05f, "Creando el sistema de archivos " + fs.title + "…");
+            com.forja.formateador.Formatters.formatPartition(new ForjaDev(d), fs, l.part1Start * S, (l.part1End - l.part1Start + 1) * S, 0,
+                    "Ventoy", new com.forja.formateador.Progress() {
+                        @Override
+                        public void update(float fraction, String step) {
+                            p.update(fraction < 0 ? 0.06f : 0.05f + 0.03f * fraction, step);
+                        }
+
+                        @Override
+                        public boolean cancelled() {
+                            return p.cancelled();
+                        }
+                    });
+        }
         check(p);
 
         // 4) arranque de BIOS: boot.img (446 bytes) y core.img (2047 sectores desde el 1)
@@ -184,6 +209,45 @@ public final class VentoyInstaller {
     }
 
     // ------------------------------------------------------------------ ayudas
+
+    /** La USB vista con la interfaz de disco de Forja (sectores de 512). */
+    static final class ForjaDev implements com.forja.formateador.BlockDevice {
+        private final BlockDevice d;
+
+        ForjaDev(BlockDevice d) {
+            this.d = d;
+        }
+
+        @Override
+        public int sectorSize() {
+            return S;
+        }
+
+        @Override
+        public long sectors() {
+            return d.sectors();
+        }
+
+        @Override
+        public void read(long lba, byte[] buf, int off, int count) throws IOException {
+            d.read(lba, buf, off, count);
+        }
+
+        @Override
+        public void write(long lba, byte[] buf, int off, int count) throws IOException {
+            d.write(lba, buf, off, count);
+        }
+
+        @Override
+        public void flush() throws IOException {
+            d.flush();
+        }
+
+        @Override
+        public int maxTransferBytes() {
+            return d.maxTransfer() * S;
+        }
+    }
 
     private static void check(Progress p) throws IOException {
         if (p.cancelled()) throw new IOException("Cancelado");

@@ -11,8 +11,9 @@ add_library(forjantfs SHARED
     forja_ntfs.c forja_jni.c)
 target_include_directories(forjantfs PRIVATE ntfs-config ${N}/include/ntfs-3g ${N}/ntfsprogs .)
 target_compile_definitions(forjantfs PRIVATE HAVE_CONFIG_H _FILE_OFFSET_BITS=64)
-# en Android, ffs() está en strings.h (en Linux llega por otros encabezados)
-target_compile_options(forjantfs PRIVATE -O2 -w -fno-strict-aliasing -include strings.h)
+# diferencias de la libc de Android (ffs, S_IREAD…): forja_compat.h en todos los archivos
+target_compile_options(forjantfs PRIVATE -O2 -w -fno-strict-aliasing -ferror-limit=0
+    -include ${CMAKE_CURRENT_SOURCE_DIR}/forja_compat.h)
 # mkntfs: su main se llama desde Java, escribe por el puente y guarda los mensajes
 set_source_files_properties(${N}/ntfsprogs/mkntfs.c PROPERTIES COMPILE_DEFINITIONS
     "main=forja_mkntfs_main;ntfs_device_unix_io_ops=forja_io_ops;ntfs_log_handler_outerr=forja_log_handler")

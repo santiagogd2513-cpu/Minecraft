@@ -12,6 +12,24 @@ android {
         targetSdk 35
         versionCode Integer.parseInt(System.getenv('GITHUB_RUN_NUMBER') ?: '1')
         versionName "1.0." + (System.getenv('GITHUB_RUN_NUMBER') ?: '0')
+        ndk {
+            abiFilters 'arm64-v8a', 'armeabi-v7a', 'x86_64'
+        }
+    }
+
+    // los formateadores de Forja (FAT32, NTFS con mkntfs, ext4) para la partición «Ventoy»
+    sourceSets {
+        main {
+            java {
+                srcDir '../../forja/app/src/main/java'
+                exclude '**/formateador/MainActivity.java', '**/formateador/UsbDisk.java', '**/formateador/Ui.java'
+            }
+        }
+    }
+    externalNativeBuild {
+        cmake {
+            path '../../forja/app/src/main/cpp/CMakeLists.txt'
+        }
     }
 
     signingConfigs {

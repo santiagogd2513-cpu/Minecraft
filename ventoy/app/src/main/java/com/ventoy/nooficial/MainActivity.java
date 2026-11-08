@@ -49,6 +49,8 @@ public class MainActivity extends Activity {
     private VentoyInstaller.Info info;
     private String error;
     private boolean busy, checking;
+    /** Formato de la partición «Ventoy» al instalar. */
+    private com.forja.formateador.FsType partFs = com.forja.formateador.FsType.EXFAT;
 
     private LinearLayout deviceCard, actions, progressCard, resultCard;
     private TextView progressStep, progressPct;
@@ -203,7 +205,7 @@ public class MainActivity extends Activity {
         new AlertDialog.Builder(this, R.style.Theme_Ventoy_Dialog)
                 .setTitle("¿Borrar todo e instalar Ventoy?")
                 .setMessage("Se va a BORRAR TODO lo que hay en:\n\n" + deviceName + " · " + size
-                        + "\n\nFotos, documentos, ISOs… todo. Esto no se puede deshacer.")
+                        + "\n\nFotos, documentos, ISOs… todo. Esto no se puede deshacer.\n\nPartición «Ventoy» en " + partFs.title + ".")
                 .setPositiveButton("Borrar e instalar", (d, w) -> new AlertDialog.Builder(this, R.style.Theme_Ventoy_Dialog)
                         .setTitle("Última confirmación")
                         .setMessage("¿Seguro que es la USB correcta?\n" + deviceName + " · " + size)
@@ -229,6 +231,7 @@ public class MainActivity extends Activity {
     private void run(boolean install) {
         UsbDevice d = device;
         if (d == null) return;
+        final com.forja.formateador.FsType fsAtStart = partFs;
         busy = true;
         error = null;
         done = null;
@@ -258,7 +261,7 @@ public class MainActivity extends Activity {
                         return false;
                     }
                 };
-                if (install) VentoyInstaller.install(disk, files, p);
+                if (install) VentoyInstaller.install(disk, files, fsAtStart, p);
                 else VentoyInstaller.update(disk, files, p);
                 after = VentoyInstaller.inspect(disk);
             } catch (Exception e) {
@@ -447,7 +450,7 @@ public class MainActivity extends Activity {
             }
             c.addView(chips);
             if (info.hasVentoy) {
-                TextView parts = Ui.text(this, "Partición 1 «Ventoy» (exFAT): " + Ui.size(info.part1Sectors * 512)
+                TextView parts = Ui.text(this, "Partición 1 «Ventoy» (" + (info.part1Fs == null ? "?" : info.part1Fs.title) + "): " + Ui.size(info.part1Sectors * 512)
                         + "\nPartición 2 «VTOYEFI»: " + Ui.size(info.part2Sectors * 512), 12.5f, Ui.SUB, false);
                 parts.setPadding(0, dp(10), 0, 0);
                 c.addView(parts);
@@ -487,11 +490,46 @@ public class MainActivity extends Activity {
             }
             return;
         }
+        // formato de la partición «Ventoy» (para instalar o reinstalar)
+        TextView fl = Ui.text(this, "FORMATO DE LA PARTICIÓN «VENTOY» AL INSTALAR", 11.5f, Ui.ACCENT2, true);
+        fl.setLetterSpacing(0.06f);
+        fl.setPadding(dp(4), dp(4), 0, dp(8));
+        actions.addView(fl);
+        LinearLayout fsRow = Ui.row(this);
+        com.forja.formateador.FsType[] opts = {com.forja.formateador.FsType.EXFAT, com.forja.formateador.FsType.NTFS,
+                com.forja.formateador.FsType.FAT32, com.forja.formateador.FsType.EXT4};
+        long part1 = (info.diskSectors - VentoyInstaller.PART2_SECTORS - 2048) * 512;
+        for (com.forja.formateador.FsType t : opts) {
+            boolean ok = t.problem(part1, 512) == null;
+            boolean on = t == partFs;
+            TextView c = Ui.text(this, t.title, 14, on ? 0xFF07090F : ok ? Ui.TEXT : 0xFF4E566E, true);
+            c.setGravity(Gravity.CENTER);
+            c.setPadding(dp(6), dp(10), dp(6), dp(10));
+            c.setBackground(on ? Ui.gradient(dp(16), Ui.ACCENT2, Ui.ACCENT) : Ui.roundStroke(Ui.SURFACE, dp(16), dp(1), Ui.STROKE));
+            if (ok) c.setOnClickListener(v -> {
+                partFs = t;
+                render();
+            });
+            LinearLayout.LayoutParams cp = new LinearLayout.LayoutParams(0, -2, 1);
+            if (t != opts[0]) cp.setMargins(dp(8), 0, 0, 0);
+            fsRow.addView(c, cp);
+        }
+        actions.addView(fsRow);
+        String why = switch (partFs) {
+            case EXFAT -> "Recomendado. Archivos de cualquier tamaño. Las PCs con Windows XP sin actualizar no lo leen.";
+            case NTFS -> "Lo lee cualquier Windows desde XP, y admite ISOs de más de 4 GB.";
+            case FAT32 -> "Lo lee cualquier PC, por vieja que sea. Ojo: no admite archivos de más de 4 GB (muchas ISOs de Windows 10/11 pesan más).";
+            case EXT4 -> "Para Linux. Windows no lo lee sin programas extra.";
+        };
+        TextView wt = Ui.text(this, why, 12.5f, partFs == com.forja.formateador.FsType.FAT32 ? Ui.WARN : Ui.SUB, false);
+        wt.setPadding(dp(4), dp(8), 0, dp(14));
+        actions.addView(wt);
+
         if (info.hasVentoy && !info.gpt) {
             actions.addView(bigButton("Actualizar Ventoy a " + files.version(), "No borra tus ISOs", true, this::confirmUpdate));
-            actions.addView(bigButton("Reinstalar desde cero", "Borra todo lo que hay en la USB", false, this::confirmInstall), margins(0, 10, 0, 0));
+            actions.addView(bigButton("Reinstalar desde cero en " + partFs.title, "Borra todo lo que hay en la USB", false, this::confirmInstall), margins(0, 10, 0, 0));
         } else {
-            actions.addView(bigButton("Instalar Ventoy " + files.version(), "Borra todo lo que hay en la USB", true, this::confirmInstall));
+            actions.addView(bigButton("Instalar Ventoy " + files.version(), "Partición «Ventoy» en " + partFs.title + " · borra todo lo que hay en la USB", true, this::confirmInstall));
         }
     }
 

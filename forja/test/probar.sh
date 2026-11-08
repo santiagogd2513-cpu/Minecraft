@@ -7,13 +7,7 @@ W=$(mktemp -d)
 J=$H/../app/src/main/java/com/forja/formateador
 javac -d $W/out $J/{BlockDevice,Progress,Io,Partitioner,FsType,Fat32Formatter,ExFatFormatter,Ext4Formatter,Ntfs,Forja}.java $H/FileDev.java $H/FTest.java
 # el motor NTFS (mkntfs + puente) compilado para esta PC, igual que para el celular
-C=$H/../app/src/main/cpp; V=$C/ntfs-3g
-JH=$(dirname $(dirname $(readlink -f $(which javac))))
-mkdir -p $W/nb
-INC="-I$C/ntfs-config -I$V/include/ntfs-3g -I$V/ntfsprogs -I$C -I$JH/include -I$JH/include/linux -DHAVE_CONFIG_H -D_FILE_OFFSET_BITS=64 -O1 -w -fPIC"
-for f in $V/libntfs-3g/*.c $V/ntfsprogs/{attrdef,boot,sd,utils}.c $C/forja_ntfs.c $C/forja_jni.c; do gcc $INC -c $f -o $W/nb/$(basename $f .c).o; done
-gcc $INC -Dmain=forja_mkntfs_main -Dntfs_device_unix_io_ops=forja_io_ops -Dntfs_log_handler_outerr=forja_log_handler -c $V/ntfsprogs/mkntfs.c -o $W/nb/mkntfs.o
-gcc -shared $W/nb/*.o -o $W/nb/libforjantfs.so
+bash $H/motor_ntfs_pc.sh $W/nb
 G=$((1<<30)); TB=$((1<<40))
 fallas=0
 sudo_() { if [ -n "${USAR_LOOP:-}" ]; then sudo "$@"; else "$@"; fi; }

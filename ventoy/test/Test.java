@@ -13,9 +13,9 @@ public class Test {
             public String version() { return "1.1.10"; }
         };
         Progress p = new Progress() { String last=""; public void update(float fr, String s) { if (!s.equals(last)) { last=s; if (!s.contains("%")) System.out.println(s); } } public boolean cancelled() { return false; } };
-        if (mode.equals("install")) VentoyInstaller.install(d, f, p);
+        if (mode.equals("install")) VentoyInstaller.install(d, f, a.length > 4 ? com.forja.formateador.FsType.valueOf(a[4]) : com.forja.formateador.FsType.EXFAT, p);
         if (mode.equals("update")) VentoyInstaller.update(d, f, p);
         VentoyInstaller.Info i = VentoyInstaller.inspect(d);
-        System.out.println("hasVentoy=" + i.hasVentoy + " version=" + i.version + " gpt=" + i.gpt + " p1=" + i.part1Start + "+" + i.part1Sectors + " p2=" + i.part2Start + "+" + i.part2Sectors);
+        System.out.println("hasVentoy=" + i.hasVentoy + " version=" + i.version + " gpt=" + i.gpt + " p1=" + i.part1Start + "+" + i.part1Sectors + " p2=" + i.part2Start + "+" + i.part2Sectors + " fs=" + i.part1Fs);
     }
 }
