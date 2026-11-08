@@ -381,10 +381,10 @@ final class BlackHoleRenderer {
         float approach = BlackHoleDirector.seg(t, INTERGALACTIC_END, ANDROMEDA_END);
         beginGlow(false);
         begin(bb);
-        drawBackgroundGalaxies(bb, view, eye, right, up, 1f - 0.6f * approach);
+        drawBackgroundGalaxies(bb, view, eye, right, up, atHole ? 0.25f : 1f - 0.7f * approach);
         // dentro de Andrómeda el fondo se llena de sus estrellas
         if (t >= INTERGALACTIC_END && t < ANDROMEDA_END) SpaceRenderer.drawSky(bb, view, eye, right, up, time);
-        andromeda.render(bb, view, andromedaModel(time), eye, right, up, atHole ? 0.1f : Mth.lerp(Cinematic.smooth(approach), 1f, 0.3f));
+        andromeda.render(bb, view, andromedaModel(time), eye, right, up, atHole ? 0.035f : Mth.lerp(Cinematic.smooth(approach), 0.8f, 0.15f));
         drawWarp(bb, view, eye, forward, right, up, BlackHoleDirector.warp(t), time, 0.9f, 0.85f, 1f, t < INTERGALACTIC_END ? 8f : 2f);
         draw(bb);
         if (!atHole && approach < 0.85f) return;
@@ -399,6 +399,10 @@ final class BlackHoleRenderer {
         Vector3f seed = v(BlackHoleDirector.seedPosition(t));
         float extract = BlackHoleDirector.seg(t, HOLE_ORBIT_END, EXTRACT_END);
 
+        // el brillo baja cuando aparece la estación, para que se vea
+        float station = Cinematic.smooth(BlackHoleDirector.seg(t, HOLE_ORBIT_END - 0.03f, HOLE_ORBIT_END));
+        float glow = Mth.lerp(station, 0.6f, 0.38f);
+
         // sólido: horizonte de eventos, anillos de la estación Áncora y la semilla
         beginSolid();
         begin(bb);
@@ -411,10 +415,10 @@ final class BlackHoleRenderer {
 
         beginGlow(true);
         begin(bb);
-        drawAccretionDisk(bb, view, eye, diskRot, n, time);
+        drawAccretionDisk(bb, view, eye, diskRot, n, time, glow);
         // anillo de fotones y la imagen curvada del disco (lente gravitatoria)
-        RenderUtil.softDisc(bb, view, 0, 0, 0, right, up, BlackHoleDirector.HORIZON * 1.13f, 64, 1f, 0.9f, 0.7f, 0f, 0.75f);
-        drawLensedHalo(bb, view, right, up, time);
+        RenderUtil.softDisc(bb, view, 0, 0, 0, right, up, BlackHoleDirector.HORIZON * 1.13f, 64, 1f, 0.9f, 0.7f, 0f, 0.75f * glow);
+        drawLensedHalo(bb, view, right, up, time, glow);
         // chorros relativistas
         for (int s = -1; s <= 1; s += 2) {
             Vector3f dir = new Vector3f(n).mul(s);
@@ -422,18 +426,21 @@ final class BlackHoleRenderer {
             float len = 26000f;
             Vector3f mid = new Vector3f(dir).mul(len * 0.5f + BlackHoleDirector.HORIZON);
             float flick = 0.85f + 0.15f * (float) Math.sin(time * 8 + s);
-            RenderUtil.softBeam(bb, view, mid.x, mid.y, mid.z, dir, len * 0.5f, side, 260f * flick, 0.45f, 0.6f, 1f, 0.22f);
-            RenderUtil.softBeam(bb, view, mid.x, mid.y, mid.z, dir, len * 0.5f, side, 70f, 0.85f, 0.92f, 1f, 0.45f);
+            RenderUtil.softBeam(bb, view, mid.x, mid.y, mid.z, dir, len * 0.5f, side, 260f * flick, 0.45f, 0.6f, 1f, 0.22f * glow);
+            RenderUtil.softBeam(bb, view, mid.x, mid.y, mid.z, dir, len * 0.5f, side, 70f, 0.85f, 0.92f, 1f, 0.45f * glow);
         }
         // estrellas despedazadas que caen en espiral
-        for (int i = 0; i < 260; i++) {
+        for (int i = 0; i < 140; i++) {
             float rr = BlackHoleDirector.DISK_OUT * (0.25f + 1.4f * rnd(i + 200));
             float speed = 9000f / (rr * (float) Math.sqrt(rr / 100f));
             float a = rnd(i + 400) * 6.283f + time * speed;
             Vector3f p = diskRot.transform(new Vector3f((float) Math.cos(a) * rr, (rnd(i + 600) - 0.5f) * 120f, (float) Math.sin(a) * rr));
-            RenderUtil.softDisc(bb, view, p.x, p.y, p.z, right, up, 14f + 20f * rnd(i), 6, 1f, 0.85f, 0.7f, 0.35f, 0f);
+            RenderUtil.softDisc(bb, view, p.x, p.y, p.z, right, up, 14f + 20f * rnd(i), 6, 1f, 0.85f, 0.7f, 0.35f * glow, 0f);
         }
-        if (t >= HOLE_ORBIT_END - 0.01f) drawStationGlow(bb, view, eye, right, up, t, time, gate, portal, seed, extract);
+        if (t >= HOLE_ORBIT_END - 0.01f) {
+            drawStationLights(bb, view, time, portal);
+            drawStationGlow(bb, view, eye, right, up, t, time, gate, portal, seed, extract);
+        }
         draw(bb);
     }
 
@@ -452,7 +459,7 @@ final class BlackHoleRenderer {
     }
 
     /** Disco de acreción: blanco-amarillo por dentro, naranja y rojo por fuera; gira y brilla más del lado que se acerca. */
-    private static void drawAccretionDisk(BufferBuilder bb, Matrix4f view, Vector3f eye, Quaternionf rot, Vector3f n, float time) {
+    private static void drawAccretionDisk(BufferBuilder bb, Matrix4f view, Vector3f eye, Quaternionf rot, Vector3f n, float time, float glow) {
         int rings = 14, segs = 180;
         float rin = BlackHoleDirector.DISK_IN, rout = BlackHoleDirector.DISK_OUT;
         Vector3f p = new Vector3f(), vel = new Vector3f(), toCam = new Vector3f();
@@ -472,7 +479,7 @@ final class BlackHoleRenderer {
                             * (float) Math.sin(a * 3 + time * omega * 0.5f + f * 9);
                     float heat = 1f - f;
                     float cr = 1f, cg = 0.35f + 0.6f * heat, cb = 0.1f + 0.75f * heat * heat;
-                    float alpha = (ii == 0 || ii == rings ? 0f : 0.6f) * swirl * doppler * (0.3f + 0.6f * heat);
+                    float alpha = (ii == 0 || ii == rings ? 0f : 0.6f) * swirl * Math.min(doppler, 1.4f) * (0.3f + 0.6f * heat) * glow;
                     bb.vertex(view, p.x, p.y, p.z).color(cr, cg, cb, Math.min(1f, alpha)).endVertex();
                 }
             }
@@ -480,7 +487,7 @@ final class BlackHoleRenderer {
     }
 
     /** Halo de la lente gravitatoria: la imagen del disco que se curva por encima y por debajo del agujero. */
-    private static void drawLensedHalo(BufferBuilder bb, Matrix4f view, Vector3f right, Vector3f up, float time) {
+    private static void drawLensedHalo(BufferBuilder bb, Matrix4f view, Vector3f right, Vector3f up, float time, float glow) {
         int segs = 128;
         float r0 = BlackHoleDirector.HORIZON * 1.16f, r1 = BlackHoleDirector.HORIZON * 2.4f;
         for (int j = 0; j < segs; j++) {
@@ -489,10 +496,10 @@ final class BlackHoleRenderer {
             float sw = 0.8f + 0.2f * (float) Math.sin(a0 * 9 - time * 6);
             Vector3f d0 = new Vector3f(right).mul((float) Math.cos(a0)).add(new Vector3f(up).mul((float) Math.sin(a0)));
             Vector3f d1 = new Vector3f(right).mul((float) Math.cos(a1)).add(new Vector3f(up).mul((float) Math.sin(a1)));
-            bb.vertex(view, d0.x * r0, d0.y * r0, d0.z * r0).color(1f, 0.85f, 0.55f, 0.6f * w0 * sw).endVertex();
+            bb.vertex(view, d0.x * r0, d0.y * r0, d0.z * r0).color(1f, 0.85f, 0.55f, 0.6f * w0 * sw * glow).endVertex();
             bb.vertex(view, d0.x * r1, d0.y * r1, d0.z * r1).color(1f, 0.45f, 0.15f, 0f).endVertex();
             bb.vertex(view, d1.x * r1, d1.y * r1, d1.z * r1).color(1f, 0.45f, 0.15f, 0f).endVertex();
-            bb.vertex(view, d1.x * r0, d1.y * r0, d1.z * r0).color(1f, 0.85f, 0.55f, 0.6f * w1 * sw).endVertex();
+            bb.vertex(view, d1.x * r0, d1.y * r0, d1.z * r0).color(1f, 0.85f, 0.55f, 0.6f * w1 * sw * glow).endVertex();
         }
     }
 
@@ -511,8 +518,27 @@ final class BlackHoleRenderer {
         for (int i = 0; i < segs; i++) {
             Matrix4f sm = new Matrix4f(m).rotateY((float) (Math.PI * 2 * i / segs));
             float half = (float) (Math.PI * rad / segs) + 4f;
-            RenderUtil.box(bb, sm, rad - 30f, -22f, -half, rad + 30f, 22f, half, 0.42f, 0.42f, 0.48f, 1f);
-            if (i % 5 == 0) RenderUtil.box(bb, sm, rad + 30f, -34f, -half * 0.6f, rad + 70f, 34f, half * 0.6f, 0.25f, 0.25f, 0.3f, 1f);
+            RenderUtil.box(bb, sm, rad - 30f, -22f, -half, rad + 30f, 22f, half, 0.66f, 0.66f, 0.74f, 1f);
+            if (i % 5 == 0) RenderUtil.box(bb, sm, rad + 30f, -34f, -half * 0.6f, rad + 70f, 34f, half * 0.6f, 0.38f, 0.40f, 0.48f, 1f);
+        }
+    }
+
+    /** Luces de posición de la estación Áncora: blancas y rojas que parpadean, para verla contra el disco. */
+    private static void drawStationLights(BufferBuilder bb, Matrix4f view, float time, float portal) {
+        float rad = BlackHoleDirector.GATE_RADIUS;
+        for (int i = 0; i < 3; i++) {
+            Matrix4f m = gateMatrix(view, v(BlackHoleDirector.GATES[i]), time, i, portal);
+            for (int k = 0; k < 8; k++) {
+                float a = (float) (Math.PI * 2 * k / 8);
+                Vector3f wp = m.transformPosition(new Vector3f((float) Math.cos(a) * (rad + 40f), 30f, (float) Math.sin(a) * (rad + 40f)), new Vector3f());
+                boolean red = k % 2 == 1;
+                float blink = red ? (Math.sin(time * 3f + k) > 0.2 ? 1f : 0.15f) : 0.85f + 0.15f * (float) Math.sin(time * 9f + k);
+                // la matriz ya incluye la vista
+                RenderUtil.softDisc(bb, new Matrix4f(), wp.x, wp.y, wp.z, new Vector3f(1, 0, 0), new Vector3f(0, 1, 0), 26f, 10,
+                        1f, red ? 0.25f : 0.95f, red ? 0.2f : 0.9f, 0.95f * blink, 0f);
+            }
+            // contorno azul tenue del anillo: la silueta se distingue del fondo
+            RenderUtil.ring(bb, m, rad + 28f, rad + 36f, 0, 96, 0.55f, 0.75f, 1f, 0.55f);
         }
     }
 
