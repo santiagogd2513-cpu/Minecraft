@@ -23,7 +23,7 @@ public enum FsType {
 
     /** ¿Ya está hecho? (las etapas siguientes agregan NTFS y ext4) */
     public boolean available() {
-        return this == FAT32 || this == EXFAT;
+        return this == FAT32 || this == EXFAT || this == EXT4;
     }
 
     /** «clúster» o, en ext4, «bloque». */

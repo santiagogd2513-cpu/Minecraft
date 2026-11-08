@@ -373,7 +373,7 @@ public class MainActivity extends Activity {
 
         View spacer = new View(this);
         col.addView(spacer, new LinearLayout.LayoutParams(-1, 0, 1));
-        TextView foot = Ui.text(this, "FAT32 · exFAT · próximamente NTFS y ext4\nMBR y GPT · discos de 1 GB a 4 TB · sectores de 512 B y 4 KB", 11.5f, 0xFF6A6474, false);
+        TextView foot = Ui.text(this, "FAT32 · exFAT · ext4 · próximamente NTFS\nMBR y GPT · discos de 1 GB a 4 TB · sectores de 512 B y 4 KB", 11.5f, 0xFF6A6474, false);
         foot.setGravity(Gravity.CENTER);
         col.addView(foot, margins(0, 26, 0, 0));
         setContentView(sv);
@@ -643,10 +643,10 @@ public class MainActivity extends Activity {
         new AlertDialog.Builder(this, R.style.Theme_Forja_Dialog)
                 .setTitle("Forja")
                 .setMessage("Formatea memorias USB, discos externos y tarjetas (por lector USB) desde el celular, sin root y sin anuncios.\n\n"
-                        + "• FAT32 y exFAT, con tabla MBR o GPT y el tamaño de clúster que elijas (solo te deja los que sirven).\n"
+                        + "• FAT32, exFAT y ext4 (Linux), con tabla MBR o GPT y el tamaño de clúster que elijas (solo te deja los que sirven).\n"
                         + "• Discos de 1 GB a 4 TB, con sectores de 512 B o 4 KB.\n"
-                        + "• NTFS y ext4 llegan en las próximas versiones.\n\n"
-                        + "Cada formato se prueba con las herramientas oficiales de Linux (fsck.fat, fsck.exfat, sgdisk) antes de publicarse.\n\n"
+                        + "• NTFS llega en la próxima versión.\n\n"
+                        + "Cada formato se prueba con las herramientas oficiales de Linux (fsck.fat, fsck.exfat, e2fsck, sgdisk) antes de publicarse.\n\n"
                         + "Un disco grande de escritorio necesita su propia fuente de corriente: el celular no puede alimentarlo.")
                 .setPositiveButton("Cerrar", null)
                 .show();

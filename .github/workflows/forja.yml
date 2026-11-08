@@ -30,8 +30,9 @@ jobs:
 
       - name: Probar los formatos con las herramientas oficiales de Linux
         run: |
-          sudo apt-get install -y dosfstools exfatprogs gdisk >/dev/null
-          bash test/probar.sh
+          sudo apt-get install -y dosfstools exfatprogs gdisk e2fsprogs >/dev/null
+          fsck.exfat -V || true
+          USAR_LOOP=1 bash test/probar.sh
 
       - uses: gradle/actions/setup-gradle@v4
         with:
@@ -59,6 +60,6 @@ jobs:
           make_latest: false
           body: |
             **Forja**: formatea memorias USB y discos externos desde el celular, sin root y sin anuncios.
-            FAT32 y exFAT · tabla MBR o GPT · clúster a elección · de 1 GB a 4 TB. NTFS y ext4 en camino.
+            FAT32, exFAT y ext4 · tabla MBR o GPT · clúster a elección · de 1 GB a 4 TB. NTFS en camino.
             Descarga `Forja.apk`, conecta la unidad por OTG y elige cómo formatearla.
           files: dist/Forja.apk

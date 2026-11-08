@@ -8,6 +8,8 @@ if s0[450] == 0xEE:
 else:
     start, count = struct.unpack('<II', s0[454:462])
 a, b = start * ss, (start + count) * ss
+if out == '-':
+    print(start, count); sys.exit(0)
 fd = f.fileno(); o = open(out, 'wb'); o.truncate(b - a)
 pos = a
 while pos < b:
