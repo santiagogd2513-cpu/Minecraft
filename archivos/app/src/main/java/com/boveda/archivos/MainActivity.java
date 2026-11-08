@@ -1097,7 +1097,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         int gen = ++loadGen;
         clearExtraViews();
         list.setVisibility(View.VISIBLE);
-        fab.setVisibility(picker() ? View.GONE : View.VISIBLE);
+        fab.setVisibility(picker() || bottom.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE);
         backBtn.setVisibility(View.VISIBLE);
         loading.setVisibility(View.VISIBLE);
         Volume v = volumeOf(p);
@@ -1380,6 +1380,14 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
 
     /** La barra de abajo: acciones de la selección, o "pegar aquí". */
     private void updateBars() {
+        updateBarsInner();
+        // el botón + no va encima de una barra de abajo (transferencia, pegar, extraer…)
+        if (fab != null) {
+            fab.setVisibility(path != null && !picker() && bottom.getVisibility() != View.VISIBLE ? View.VISIBLE : View.GONE);
+        }
+    }
+
+    private void updateBarsInner() {
         bottom.removeAllViews();
         if (path != null && !selected.isEmpty()) {
             title.setText(selected.size() + (selected.size() == 1 ? " seleccionado" : " seleccionados"));
