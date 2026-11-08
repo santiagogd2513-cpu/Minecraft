@@ -32,6 +32,8 @@ final class DownloadItem {
     long id;
     String url;
     String finalUrl;
+    /** Si las peticiones llevan galletas y página de origen (se apaga si el servidor no las acepta). */
+    transient boolean extras = true;
     String name;
     String mime;
     String userAgent;

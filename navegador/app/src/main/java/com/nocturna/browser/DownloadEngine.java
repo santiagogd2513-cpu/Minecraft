@@ -336,10 +336,26 @@ final class DownloadEngine {
 
     /** Sigue las redirecciones y averigua el tamaño y si el servidor deja bajar por pedazos. */
     private void probe(DownloadItem d) throws IOException {
+        try {
+            probe(d, true);
+        } catch (IOException e) {
+            // último intento: sin galletas ni página de origen (hay servidores que se confunden con eso)
+            probe(d, false);
+        }
+    }
+
+    private void probe(DownloadItem d, boolean extras) throws IOException {
         String current = d.url;
         for (int hop = 0; hop < 10; hop++) {
-            HttpURLConnection c = open(d, current, "bytes=0-0", false);
+            HttpURLConnection c = open(d, current, "bytes=0-0", false, extras);
             int code = c.getResponseCode();
+            if (code >= 400) {
+                // algunos servidores (CurseForge: edge.forgecdn.net) responden 404 si se les pide un
+                // pedazo antes de redirigir; se vuelve a pedir el archivo entero, sin leerlo
+                c.disconnect();
+                c = open(d, current, null, false, extras);
+                code = c.getResponseCode();
+            }
             if (code >= 300 && code < 400) {
                 String loc = c.getHeaderField("Location");
                 c.disconnect();
@@ -380,6 +396,7 @@ final class DownloadEngine {
             }
             c.disconnect();
             d.finalUrl = current;
+            d.extras = extras;
             return;
         }
         throw new IOException("Demasiadas redirecciones");
@@ -551,14 +568,18 @@ final class DownloadEngine {
     }
 
     private HttpURLConnection open(DownloadItem d, String url, String range, boolean follow) throws IOException {
+        return open(d, url, range, follow, d.extras);
+    }
+
+    private HttpURLConnection open(DownloadItem d, String url, String range, boolean follow, boolean extras) throws IOException {
         HttpURLConnection c = (HttpURLConnection) new URL(url).openConnection();
         c.setInstanceFollowRedirects(follow);
         c.setConnectTimeout(15000);
         c.setReadTimeout(30000);
         if (d.userAgent != null) c.setRequestProperty("User-Agent", d.userAgent);
-        if (d.referer != null && !d.referer.isEmpty()) c.setRequestProperty("Referer", d.referer);
-        String cookies = CookieManager.getInstance().getCookie(url);
-        if (cookies == null) cookies = CookieManager.getInstance().getCookie(d.url);
+        if (extras && d.referer != null && !d.referer.isEmpty()) c.setRequestProperty("Referer", d.referer);
+        String cookies = extras ? CookieManager.getInstance().getCookie(url) : null;
+        if (extras && cookies == null) cookies = CookieManager.getInstance().getCookie(d.url);
         if (cookies != null) c.setRequestProperty("Cookie", cookies);
         c.setRequestProperty("Accept-Encoding", "identity");
         if (range != null) c.setRequestProperty("Range", range);
