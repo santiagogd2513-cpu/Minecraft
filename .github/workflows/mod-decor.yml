@@ -33,7 +33,18 @@ jobs:
           gradle-version: "8.8"
 
       - name: Compilar
-        run: gradle build --stacktrace
+        run: |
+          set +e
+          gradle build > build.log 2>&1
+          code=$?
+          if [ $code != 0 ]; then
+            echo "==== ERRORES ===="
+            grep -E "error:|warning: \[removal\]|What went wrong|> " build.log | grep -v "^> Task" | head -120
+            echo "==== CONTEXTO ===="
+            grep -B1 -A4 "error:" build.log | head -200
+            tail -40 build.log
+          fi
+          exit $code
 
       - name: Preparar
         run: |
