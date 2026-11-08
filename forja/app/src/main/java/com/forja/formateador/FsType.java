@@ -36,7 +36,9 @@ public enum FsType {
         List<Integer> out = new ArrayList<>();
         int min, max;
         switch (this) {
-            case FAT32 -> { min = 512; max = 64 * 1024; }
+            // 32 KB es el máximo de la especificación de Microsoft: con 64 KB Android, TVs y
+            // consolas dicen que la memoria está dañada
+            case FAT32 -> { min = 512; max = 32 * 1024; }
             case EXFAT -> { min = 512; max = 32 * 1024 * 1024; }
             case NTFS -> { min = 512; max = 64 * 1024; }
             default -> { min = 1024; max = 4096; }
@@ -50,7 +52,7 @@ public enum FsType {
     boolean valid(long volBytes, int cluster, int sectorSize) {
         long clusters = volBytes / cluster;
         return switch (this) {
-            case FAT32 -> clusters >= 65525 + 64 && clusters <= 0x0FFFFFF5L && volBytes / sectorSize <= 0xFFFFFFFFL;
+            case FAT32 -> cluster <= 32 * 1024 && clusters >= 65525 + 64 && clusters <= 0x0FFFFFF5L && volBytes / sectorSize <= 0xFFFFFFFFL;
             case EXFAT -> clusters >= 64 && clusters <= 0xFFFFFFF5L;
             case NTFS -> clusters >= 1024 && clusters <= 0xFFFFFFFEL;
             case EXT4 -> clusters >= 4096 && clusters <= 0xFFFFFFFFL;
@@ -78,7 +80,7 @@ public enum FsType {
 
     /** Por qué no se puede usar este formato en este volumen, o null si se puede. */
     public String problem(long volBytes, int sectorSize) {
-        if (!available()) return "El motor NTFS no se pudo cargar";
+        if (!available()) return "El motor NTFS no se pudo cargar" + (Ntfs.loadError() == null ? "" : ": " + Ntfs.loadError());
         if (clusterChoices(volBytes, sectorSize).isEmpty()) {
             if (this == FAT32 && volBytes / sectorSize > 0xFFFFFFFFL) return "FAT32 no llega a discos tan grandes";
             return "No sirve para un disco de este tamaño";

@@ -68,6 +68,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
+        installCrashLog();
         um = getSystemService(UsbManager.class);
         getWindow().setStatusBarColor(Ui.BG);
         getWindow().setNavigationBarColor(Ui.BG);
@@ -79,6 +80,85 @@ public class MainActivity extends Activity {
         if (Build.VERSION.SDK_INT >= 33) registerReceiver(usbReceiver, f, Context.RECEIVER_NOT_EXPORTED);
         else registerReceiver(usbReceiver, f);
         handleIntent(getIntent());
+        showLastCrash();
+    }
+
+    // ------------------------------------------------------------------ errores
+
+    private java.io.File crashFile() {
+        return new java.io.File(getFilesDir(), "ultimo_error.txt");
+    }
+
+    /** Si la app se cierra por un error, lo guarda para mostrarlo la próxima vez. */
+    private void installCrashLog() {
+        Thread.UncaughtExceptionHandler prev = Thread.getDefaultUncaughtExceptionHandler();
+        if (prev instanceof CrashLog) return;
+        String ver = "?";
+        try {
+            ver = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+        } catch (Exception ignored) {
+        }
+        Thread.setDefaultUncaughtExceptionHandler(new CrashLog(crashFile(), prev, ver));
+    }
+
+    private static final class CrashLog implements Thread.UncaughtExceptionHandler {
+        private final java.io.File file;
+        private final Thread.UncaughtExceptionHandler prev;
+        private final String version;
+
+        CrashLog(java.io.File file, Thread.UncaughtExceptionHandler prev, String version) {
+            this.file = file;
+            this.prev = prev;
+            this.version = version;
+        }
+
+        @Override
+        public void uncaughtException(Thread t, Throwable e) {
+            try (java.io.PrintWriter w = new java.io.PrintWriter(new java.io.FileWriter(file))) {
+                w.println("Forja " + version + " · Android " + Build.VERSION.RELEASE + " · " + Build.MODEL);
+                w.println("Hilo: " + t.getName());
+                e.printStackTrace(w);
+            } catch (Exception ignored) {
+            }
+            if (prev != null) prev.uncaughtException(t, e);
+        }
+    }
+
+    private void showLastCrash() {
+        java.io.File f = crashFile();
+        if (!f.exists()) return;
+        String text;
+        try {
+            text = new String(java.nio.file.Files.readAllBytes(f.toPath()), java.nio.charset.StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            text = String.valueOf(e);
+        }
+        //noinspection ResultOfMethodCallIgnored
+        f.delete();
+        final String t = text.length() > 6000 ? text.substring(0, 6000) : text;
+        new AlertDialog.Builder(this, R.style.Theme_Forja_Dialog)
+                .setTitle("Forja se cerró la última vez")
+                .setMessage("Copia esto y mándaselo a quien te ayuda con la app:\n\n" + t)
+                .setPositiveButton("Copiar", (d, w) -> {
+                    getSystemService(android.content.ClipboardManager.class)
+                            .setPrimaryClip(android.content.ClipData.newPlainText("error", t));
+                    android.widget.Toast.makeText(this, "Copiado", android.widget.Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton("Cerrar", null)
+                .show();
+    }
+
+    /** Texto de un error para la pantalla: el mensaje, o el tipo y dónde pasó si no trae mensaje. */
+    private static String describeError(Throwable e) {
+        if (e instanceof OutOfMemoryError) return "el celular se quedó sin memoria (" + e.getMessage() + ")";
+        String m = e.getMessage();
+        if (e instanceof java.io.IOException && m != null) return m;
+        StringBuilder b = new StringBuilder(e.getClass().getSimpleName());
+        if (m != null) b.append(": ").append(m);
+        StackTraceElement[] st = e.getStackTrace();
+        for (int i = 0; i < Math.min(3, st.length); i++) b.append("\n  en ").append(st[i].getClassName().replaceFirst(".*\\.", ""))
+                .append('.').append(st[i].getMethodName()).append(':').append(st[i].getLineNumber());
+        return b.toString();
     }
 
     @Override
@@ -188,8 +268,8 @@ public class MainActivity extends Activity {
                 ss = disk.sectorSize();
                 bytes = disk.sectors() * ss;
                 layout = describe(disk);
-            } catch (Exception e) {
-                err = e.getMessage();
+            } catch (Throwable e) {
+                err = describeError(e);
             } finally {
                 if (disk != null) disk.close();
             }
@@ -295,8 +375,8 @@ public class MainActivity extends Activity {
                         return false;
                     }
                 });
-            } catch (Exception e) {
-                err = e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage();
+            } catch (Throwable e) {
+                err = describeError(e);
             } finally {
                 if (disk != null) disk.close();
             }

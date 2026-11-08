@@ -26,6 +26,13 @@ final class Ntfs {
         return loaded;
     }
 
+    /** Por qué no cargó el motor (para mostrarlo), o null. */
+    static String loadError() {
+        if (loadError == null) return null;
+        String m = loadError.getMessage();
+        return m == null ? loadError.getClass().getSimpleName() : m;
+    }
+
     /** Lo que mkntfs lee y escribe: posiciones en bytes dentro de la partición. */
     static final class Device {
         private final Io io;

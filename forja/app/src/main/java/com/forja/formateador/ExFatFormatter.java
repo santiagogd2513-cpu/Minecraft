@@ -68,11 +68,19 @@ final class ExFatFormatter {
             p.update(0.65f + 0.25f * (off + len) / bmBytes, "Escribiendo el mapa de espacio…");
         }
 
-        byte[] up = new byte[(int) (upcaseClusters * clusterBytes)];
+        // tabla de mayúsculas y carpeta raíz: lo que tiene datos se escribe tal cual y el resto del
+        // clúster con ceros por tramos (con clústeres de 32 MB no se reserva un bloque de 32 MB)
+        long upOff = heapOff + (upcaseCluster - 2) * clusterBytes;
+        long upLen = upcaseClusters * clusterBytes;
+        int upHead = (int) Io.roundUp(upcase.length, S);
+        io.zero(upOff + upHead, upLen - upHead);
+        byte[] up = new byte[upHead];
         System.arraycopy(upcase, 0, up, 0, upcase.length);
-        io.write(heapOff + (upcaseCluster - 2) * clusterBytes, up);
+        io.write(upOff, up);
 
-        byte[] root = new byte[clusterBytes];
+        long rootOff = heapOff + (rootCluster - 2) * clusterBytes;
+        io.zero(rootOff, clusterBytes);
+        byte[] root = new byte[S];
         int o = 0;
         String lab = label == null ? "" : label.length() > 11 ? label.substring(0, 11) : label;
         if (!lab.isEmpty()) {
@@ -92,7 +100,7 @@ final class ExFatFormatter {
         Io.put32(root, o + 4, checksum(upcase, upcase.length, false));
         Io.put32(root, o + 20, upcaseCluster);
         Io.put64(root, o + 24, upcase.length);
-        io.write(heapOff + (rootCluster - 2) * clusterBytes, root);
+        io.write(rootOff, root);
 
         // región de arranque al final (principal y respaldo)
         p.update(0.95f, "Escribiendo el arranque exFAT…");

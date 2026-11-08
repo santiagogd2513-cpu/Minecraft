@@ -106,12 +106,15 @@ final class Fat32Formatter {
         }
 
         // carpeta raíz (clúster 2) con la etiqueta
-        byte[] root = new byte[clusterBytes];
+        // (el clúster se llena de ceros por tramos: con clústeres grandes no se reserva un bloque enorme)
+        long rootOff = partStart + dataStart * bps;
+        io.zero(rootOff, clusterBytes);
+        byte[] root = new byte[bps];
         if (label != null && !label.isEmpty()) {
             System.arraycopy(lab11, 0, root, 0, 11);
             root[11] = 0x08;
         }
-        io.write(partStart + dataStart * bps, root);
+        io.write(rootOff, root);
 
         // por último el arranque, para que un formato a medias no parezca válido
         io.write(partStart + 6L * bps, boot);

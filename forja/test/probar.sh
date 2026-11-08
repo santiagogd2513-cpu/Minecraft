@@ -49,6 +49,9 @@ probar $((40*G)) 512 EXFAT GPT 0 Forja
 probar $((40*G)) 4096 EXFAT GPT 0 Forja
 probar $((40*G)) 512 EXFAT MBR 512 Forja
 probar $((4*TB)) 512 EXFAT GPT 0 Discazo
+probar $((16*G)) 512 EXFAT MBR 131072 Grande
+probar $((16*G)) 4096 EXFAT GPT 33554432 Enorme
+probar $((16*G)) 512 FAT32 MBR 32768 MAXIMO
 probar $((4*TB)) 4096 EXFAT GPT 0 Discazo
 probar $G 512 EXT4 MBR 1024 Linux
 probar $G 512 EXT4 GPT 2048 Linux
