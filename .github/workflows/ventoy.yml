@@ -1,0 +1,98 @@
+name: Ventoy no oficial
+
+on:
+  push:
+    branches: [ "**" ]
+    paths: [ "ventoy/**", ".github/workflows/ventoy.yml" ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: ventoy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  apk:
+    name: Compilar Ventoy no oficial (APK)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ventoy
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Bajar Ventoy oficial (última versión)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          TAG=$(gh api repos/ventoy/Ventoy/releases/latest --jq .tag_name)
+          VER=${TAG#v}
+          echo "Ventoy $VER"
+          echo "VENTOY_VER=$VER" >> "$GITHUB_ENV"
+          curl -sSL -o /tmp/ventoy.tgz "https://github.com/ventoy/Ventoy/releases/download/$TAG/ventoy-$VER-linux.tar.gz"
+          mkdir -p /tmp/vt && tar xzf /tmp/ventoy.tgz -C /tmp/vt
+          SRC=/tmp/vt/ventoy-$VER
+          A=app/src/main/assets/ventoy
+          mkdir -p $A
+          cp $SRC/boot/boot.img $A/boot.img
+          xz -dc $SRC/boot/core.img.xz > $A/core.img
+          xz -dc $SRC/ventoy/ventoy.disk.img.xz > $A/ventoy.disk.img
+          cp $SRC/ventoy/version $A/version
+          ls -la $A
+          test "$(stat -c %s $A/core.img)" = "1048064"
+          test "$(stat -c %s $A/ventoy.disk.img)" = "33554432"
+
+      - name: Probar la instalación en una USB de mentira
+        run: |
+          set -euo pipefail
+          sudo apt-get install -y exfatprogs >/dev/null
+          mkdir -p /tmp/t/out
+          javac -d /tmp/t/out app/src/main/java/com/ventoy/nooficial/{BlockDevice,Progress,Disk,ExFatFormatter,Fat16,VentoyInstaller}.java test/*.java
+          for MB in 1024 40960; do
+            rm -f /tmp/t/usb.img
+            java -cp /tmp/t/out Test app/src/main/assets/ventoy /tmp/t/usb.img $MB install | tee /tmp/t/log.txt
+            grep -q "hasVentoy=true version=$VENTOY_VER" /tmp/t/log.txt
+            P1=$(python3 -c "import struct;d=open('/tmp/t/usb.img','rb').read(512);print(struct.unpack('<I',d[458:462])[0])")
+            dd if=/tmp/t/usb.img of=/tmp/t/p1.img bs=1M skip=1 count=$((P1/2048)) conv=sparse status=none
+            fsck.exfat -n /tmp/t/p1.img
+            java -cp /tmp/t/out Test app/src/main/assets/ventoy /tmp/t/usb.img $MB update | tail -1
+          done
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.14.3"
+
+      - name: Compilar
+        run: gradle assembleRelease --stacktrace
+
+      - name: Preparar
+        run: |
+          mkdir -p ../dist
+          cp app/build/outputs/apk/release/app-release.apk ../dist/Ventoy-no-oficial.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Ventoy-no-oficial-apk
+          path: dist/Ventoy-no-oficial.apk
+
+      - name: Publicar
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ventoy-${{ github.run_number }}
+          name: "Ventoy no oficial #${{ github.run_number }} (Ventoy ${{ env.VENTOY_VER }} para Android)"
+          target_commitish: ${{ github.sha }}
+          make_latest: false
+          body: |
+            **Ventoy no oficial**: instala **Ventoy ${{ env.VENTOY_VER }}** en una memoria USB desde el celular, sin root, sin anuncios y sin internet.
+            Descarga `Ventoy-no-oficial.apk`, conecta la USB por OTG y toca «Instalar».
+
+            Basado en [Ventoy](https://github.com/ventoy/Ventoy) de longpanda (GPLv3); usa sus archivos oficiales de arranque sin modificar. No es una app oficial.
+          files: dist/Ventoy-no-oficial.apk

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108">
+    <!-- conector de la USB -->
+    <path android:fillColor="#FFB9C6E8" android:pathData="M44,26 L64,26 Q66,26 66,28 L66,38 L42,38 L42,28 Q42,26 44,26 Z" />
+    <path android:fillColor="#FF2A3358" android:pathData="M48,30 L52,30 L52,34 L48,34 Z M56,30 L60,30 L60,34 L56,34 Z" />
+    <!-- cuerpo de la USB -->
+    <path android:pathData="M38,38 L70,38 Q74,38 74,42 L74,78 Q74,84 68,84 L40,84 Q34,84 34,78 L34,42 Q34,38 38,38 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient android:type="linear" android:startX="34" android:startY="38" android:endX="74" android:endY="84">
+                <item android:offset="0" android:color="#FF46E0D0" />
+                <item android:offset="0.5" android:color="#FF6C8CFF" />
+                <item android:offset="1" android:color="#FF8E5BFF" />
+            </gradient>
+        </aapt:attr>
+    </path>
+    <!-- varias ISOs en una: tres discos -->
+    <path android:fillColor="#E6FFFFFF" android:pathData="M54,52 m-9,0 a9,9 0 1,1 18,0 a9,9 0 1,1 -18,0" />
+    <path android:fillColor="#FF4F63C9" android:pathData="M54,52 m-2.6,0 a2.6,2.6 0 1,1 5.2,0 a2.6,2.6 0 1,1 -5.2,0" />
+    <path android:fillColor="#99FFFFFF" android:pathData="M41,70 L67,70 Q68.5,70 68.5,71.5 L68.5,72.5 Q68.5,74 67,74 L41,74 Q39.5,74 39.5,72.5 L39.5,71.5 Q39.5,70 41,70 Z" />
+</vector>

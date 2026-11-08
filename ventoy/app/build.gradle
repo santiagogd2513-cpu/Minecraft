@@ -1,0 +1,43 @@
+plugins {
+    id 'com.android.application'
+}
+
+android {
+    namespace 'com.ventoy.nooficial'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'com.ventoy.nooficial'
+        minSdk 29
+        targetSdk 35
+        versionCode Integer.parseInt(System.getenv('GITHUB_RUN_NUMBER') ?: '1')
+        versionName "1.0." + (System.getenv('GITHUB_RUN_NUMBER') ?: '0')
+    }
+
+    signingConfigs {
+        release {
+            // Firma fija para poder instalar cada versión nueva encima de la anterior
+            storeFile file('ventoy.jks')
+            storePassword 'ventoy-nooficial'
+            keyAlias 'ventoy'
+            keyPassword 'ventoy-nooficial'
+        }
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.release
+        }
+    }
+
+    // los archivos de Ventoy se guardan sin comprimir dentro del APK para leerlos rápido
+    androidResources {
+        noCompress 'img'
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+}

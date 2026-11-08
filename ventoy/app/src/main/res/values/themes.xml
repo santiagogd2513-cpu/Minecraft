@@ -1,0 +1,17 @@
+<resources>
+    <style name="Theme.Ventoy" parent="@android:style/Theme.Material.NoActionBar">
+        <item name="android:windowBackground">@color/bg</item>
+        <item name="android:colorBackground">@color/bg</item>
+        <item name="android:statusBarColor">@color/bg</item>
+        <item name="android:navigationBarColor">@color/bg</item>
+        <item name="android:colorAccent">@color/accent</item>
+        <item name="android:colorPrimary">@color/accent</item>
+        <item name="android:textColorPrimary">@color/text</item>
+        <item name="android:isLightTheme">false</item>
+        <item name="android:forceDarkAllowed">false</item>
+    </style>
+    <style name="Theme.Ventoy.Dialog" parent="@android:style/Theme.Material.Dialog.Alert">
+        <item name="android:colorAccent">@color/accent</item>
+        <item name="android:colorBackground">@color/surface</item>
+    </style>
+</resources>
