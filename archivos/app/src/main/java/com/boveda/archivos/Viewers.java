@@ -12,17 +12,22 @@ import java.util.Set;
 final class Viewers {
     private Viewers() {}
 
-    static final Set<String> AUDIO = Set.of("mp3", "wav", "ogg", "oga", "opus", "flac", "m4a", "aac", "amr", "awb",
+    static final Set<String> AUDIO = set("mp3", "wav", "ogg", "oga", "opus", "flac", "m4a", "aac", "amr", "awb",
             "mid", "midi", "xmf", "mxmf", "imy", "ota", "rtttl", "rtx", "3ga", "mka", "weba");
-    static final Set<String> VIDEO = Set.of("mp4", "m4v", "mkv", "webm", "3gp", "3g2", "mov", "ts", "m2ts", "mts",
+    static final Set<String> VIDEO = set("mp4", "m4v", "mkv", "webm", "3gp", "3g2", "mov", "ts", "m2ts", "mts",
             "avi", "flv", "wmv", "mpg", "mpeg", "ogv");
-    static final Set<String> TEXT = Set.of("txt", "text", "md", "markdown", "log", "csv", "tsv", "json", "jsonc", "json5",
+    static final Set<String> TEXT = set("txt", "text", "md", "markdown", "log", "csv", "tsv", "json", "jsonc", "json5",
             "xml", "html", "htm", "xhtml", "css", "scss", "less", "js", "mjs", "cjs", "ts", "tsx", "jsx",
             "java", "kt", "kts", "gradle", "groovy", "scala", "py", "pyw", "c", "h", "cpp", "cc", "cxx", "hpp", "hh",
             "cs", "go", "rs", "swift", "dart", "php", "rb", "lua", "pl", "r", "sh", "bash", "zsh", "bat", "cmd", "ps1",
             "yml", "yaml", "toml", "ini", "cfg", "conf", "config", "properties", "prop", "env", "sql", "svg",
             "mcmeta", "lang", "mcfunction", "gitignore", "gitattributes", "editorconfig", "srt", "vtt", "ass", "sub", "nfo",
-            "tex", "rtf", "vbs", "asm", "s", "makefile", "cmake", "dockerfile", "toml", "m3u", "m3u8", "pls", "cue");
+            "tex", "rtf", "vbs", "asm", "s", "makefile", "cmake", "dockerfile", "m3u", "m3u8", "pls", "cue");
+
+    /** Conjunto que tolera repetidos (Set.of se cae si hay uno, y eso tumbaba la app). */
+    private static Set<String> set(String... items) {
+        return java.util.Collections.unmodifiableSet(new java.util.HashSet<>(java.util.Arrays.asList(items)));
+    }
 
     static String ext(String name) {
         String n = name.toLowerCase(Locale.ROOT);
