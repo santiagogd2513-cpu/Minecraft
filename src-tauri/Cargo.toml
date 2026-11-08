@@ -3,6 +3,7 @@ name = "amatista-launcher"
 version = "1.0.0"
 description = "Amatista Launcher: launcher de Minecraft Java en español"
 edition = "2021"
+authors = ["santiagogd2513-cpu", "Claude (Anthropic)"]
 license = "MIT"
 
 [lib]

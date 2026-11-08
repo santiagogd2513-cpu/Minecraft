@@ -605,7 +605,7 @@ function bindSettings(sys) {
   bind("#s-client-id", "ms_client_id");
   memLabels();
   $("#show-snapshots").checked = s.show_snapshots;
-  $("#about").textContent = `Amatista Launcher ${sys.version} · Carpeta por defecto: ${sys.default_game_dir}`;
+  $("#about").textContent = `Amatista Launcher ${sys.version} · Carpeta por defecto: ${sys.default_game_dir} · Hecho por santiagogd2513-cpu (idea, diseño y pruebas) y Claude de Anthropic (código).`;
 
   $("#s-pick-dir").onclick = async () => {
     const dir = await T.dialog.open({ directory: true, title: "Carpeta del juego" });

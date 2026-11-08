@@ -727,7 +727,8 @@ public class MainActivity extends Activity {
                         + "• Discos de 1 GB a 4 TB, con sectores de 512 B o 4 KB.\n"
                         + "• NTFS se crea con mkntfs de ntfs-3g (GPLv2+), el mismo de Linux, compilado dentro de la app.\n\n"
                         + "Cada formato se prueba con las herramientas oficiales de Linux (fsck.fat, fsck.exfat, e2fsck, ntfsfix, sgdisk) antes de publicarse.\n\n"
-                        + "Un disco grande de escritorio necesita su propia fuente de corriente: el celular no puede alimentarlo.")
+                        + "Un disco grande de escritorio necesita su propia fuente de corriente: el celular no puede alimentarlo.\n\n"
+                        + "Hecho por santiagogd2513-cpu (idea, diseño y pruebas) y Claude de Anthropic (código).")
                 .setPositiveButton("Cerrar", null)
                 .show();
     }

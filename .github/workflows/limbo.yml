@@ -81,6 +81,7 @@ jobs:
           body: |
             **Limbo x86 PC Emulator** (de [limboemu](https://github.com/limboemu/limbo), licencia GPLv2) con un solo cambio:
             acepta archivos y carpetas elegidos con **Bóveda** u otro selector, no solo con el selector de Android.
+            Parche: santiagogd2513-cpu (idea y pruebas) y Claude de Anthropic (código).
 
             Antes de instalar, **desinstala el Limbo de F-Droid** (la firma es distinta). Descarga `Limbo-Boveda.apk` e instálalo.
 

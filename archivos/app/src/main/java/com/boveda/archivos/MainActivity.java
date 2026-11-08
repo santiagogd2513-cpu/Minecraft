@@ -2162,6 +2162,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
 
         settingsSection(col, "Acerca de");
         settingsRow(col, "Bóveda " + BuildConfig.VERSION_NAME, "Gestor de archivos · compilación " + BuildConfig.VERSION_CODE, null);
+        settingsRow(col, "Hecho por", "santiagogd2513-cpu (idea, diseño y pruebas) y Claude de Anthropic (código)", null);
     }
 
     private static long dirSize(java.io.File f) {

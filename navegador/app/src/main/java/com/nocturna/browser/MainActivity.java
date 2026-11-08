@@ -1027,6 +1027,7 @@ public class MainActivity extends Activity {
                 "Contraseñas guardadas",
                 "Borrar historial",
                 "Borrar cookies, caché y datos de páginas",
+                "Acerca de Nocturna",
         };
         new AlertDialog.Builder(this, R.style.Theme_Nocturna_Dialog)
                 .setTitle("Ajustes de Nocturna")
@@ -1065,6 +1066,18 @@ public class MainActivity extends Activity {
                             WebStorage.getInstance().deleteAllData();
                             for (Tab t : tabs) t.web.clearCache(true);
                             Toast.makeText(this, "Datos borrados", Toast.LENGTH_SHORT).show();
+                        }
+                        case 9 -> {
+                            String ver = "";
+                            try {
+                                ver = " " + getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+                            } catch (Exception ignored) {
+                            }
+                            new AlertDialog.Builder(this, R.style.Theme_Nocturna_Dialog)
+                                    .setTitle("Nocturna" + ver)
+                                    .setMessage("Navegador oscuro, liviano y sin anuncios, con descargas rápidas y gestor de contraseñas.\n\n"
+                                            + "Hecho por santiagogd2513-cpu (idea, diseño y pruebas) y Claude de Anthropic (código).")
+                                    .setPositiveButton("Cerrar", null).show();
                         }
                         default -> { }
                     }

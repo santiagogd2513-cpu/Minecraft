@@ -556,7 +556,8 @@ public class MainActivity extends Activity {
                 .setMessage("Instala Ventoy " + files.version() + " en una memoria USB desde el celular, sin root, sin anuncios y sin internet.\n\n"
                         + "Hace lo mismo que Ventoy2Disk en la PC (estilo MBR, arranque seguro activado): partición «Ventoy» en exFAT para tus ISOs y partición «VTOYEFI» de 32 MB con los archivos oficiales de arranque, sin modificar.\n\n"
                         + "Ventoy es obra de longpanda y se distribuye con licencia GPLv3. Código y créditos: github.com/ventoy/Ventoy · ventoy.net\n\n"
-                        + "Esta app no es oficial ni está hecha por los autores de Ventoy.")
+                        + "Esta app no es oficial ni está hecha por los autores de Ventoy.\n\n"
+                        + "Adaptación para Android: santiagogd2513-cpu (idea, diseño y pruebas) y Claude de Anthropic (código).")
                 .setPositiveButton("Cerrar", null)
                 .show();
     }
