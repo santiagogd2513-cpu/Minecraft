@@ -1,0 +1,9 @@
+{
+  "parent": "beautifuldecor:block/table_leg_nw_base",
+  "textures": {
+    "particle": "minecraft:block/acacia_planks",
+    "planks": "minecraft:block/acacia_planks",
+    "trim": "minecraft:block/stripped_acacia_log",
+    "knob": "beautifuldecor:block/handle_metal"
+  }
+}

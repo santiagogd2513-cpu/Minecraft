@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "beautifuldecor:block/bookshelf_decor"
+    },
+    "facing=east": {
+      "model": "beautifuldecor:block/bookshelf_decor",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "beautifuldecor:block/bookshelf_decor",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "beautifuldecor:block/bookshelf_decor",
+      "y": 270
+    }
+  }
+}

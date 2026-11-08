@@ -1,0 +1,39 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "particle": "beautifuldecor:block/wood",
+    "wood": "beautifuldecor:block/wood"
+  },
+  "elements": [
+    {"from": [0, 13, 0], "to": [16, 15, 16], "faces": {
+      "north": {"uv": [0,0,16,2], "texture": "#wood"}, "east": {"uv": [0,0,16,2], "texture": "#wood"},
+      "south": {"uv": [0,0,16,2], "texture": "#wood"}, "west": {"uv": [0,0,16,2], "texture": "#wood"},
+      "up": {"uv": [0,0,16,16], "texture": "#wood"}, "down": {"uv": [0,0,16,16], "texture": "#wood"}
+    }},
+    {"from": [1, 0, 1], "to": [3, 13, 3], "faces": {
+      "north": {"uv": [0,0,2,13], "texture": "#wood"}, "east": {"uv": [0,0,2,13], "texture": "#wood"},
+      "south": {"uv": [0,0,2,13], "texture": "#wood"}, "west": {"uv": [0,0,2,13], "texture": "#wood"},
+      "down": {"uv": [0,0,2,2], "texture": "#wood"}
+    }},
+    {"from": [13, 0, 1], "to": [15, 13, 3], "faces": {
+      "north": {"uv": [0,0,2,13], "texture": "#wood"}, "east": {"uv": [0,0,2,13], "texture": "#wood"},
+      "south": {"uv": [0,0,2,13], "texture": "#wood"}, "west": {"uv": [0,0,2,13], "texture": "#wood"},
+      "down": {"uv": [0,0,2,2], "texture": "#wood"}
+    }},
+    {"from": [1, 0, 13], "to": [3, 13, 15], "faces": {
+      "north": {"uv": [0,0,2,13], "texture": "#wood"}, "east": {"uv": [0,0,2,13], "texture": "#wood"},
+      "south": {"uv": [0,0,2,13], "texture": "#wood"}, "west": {"uv": [0,0,2,13], "texture": "#wood"},
+      "down": {"uv": [0,0,2,2], "texture": "#wood"}
+    }},
+    {"from": [13, 0, 13], "to": [15, 13, 15], "faces": {
+      "north": {"uv": [0,0,2,13], "texture": "#wood"}, "east": {"uv": [0,0,2,13], "texture": "#wood"},
+      "south": {"uv": [0,0,2,13], "texture": "#wood"}, "west": {"uv": [0,0,2,13], "texture": "#wood"},
+      "down": {"uv": [0,0,2,2], "texture": "#wood"}
+    }},
+    {"from": [2.5, 4, 2.5], "to": [13.5, 5.5, 13.5], "faces": {
+      "north": {"uv": [0,0,11,1.5], "texture": "#wood"}, "east": {"uv": [0,0,11,1.5], "texture": "#wood"},
+      "south": {"uv": [0,0,11,1.5], "texture": "#wood"}, "west": {"uv": [0,0,11,1.5], "texture": "#wood"},
+      "up": {"uv": [0,0,11,11], "texture": "#wood"}, "down": {"uv": [0,0,11,11], "texture": "#wood"}
+    }}
+  ]
+}

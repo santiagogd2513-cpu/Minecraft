@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "beautifuldecor:block/refined_oak_planks" },
+    "facing=east": { "model": "beautifuldecor:block/refined_oak_planks", "y": 90, "uvlock": true },
+    "facing=south": { "model": "beautifuldecor:block/refined_oak_planks", "y": 180, "uvlock": true },
+    "facing=west": { "model": "beautifuldecor:block/refined_oak_planks", "y": 270, "uvlock": true }
+  }
+}

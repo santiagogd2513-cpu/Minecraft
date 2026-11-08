@@ -1,0 +1,84 @@
+{
+  "parent": "block/block",
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "particle": "beautifuldecor:block/xbox_series_s_white",
+    "shell": "beautifuldecor:block/xbox_series_s_white",
+    "front": "beautifuldecor:block/xbox_series_s_front",
+    "side": "beautifuldecor:block/xbox_series_s_side",
+    "back": "beautifuldecor:block/xbox_series_s_back",
+    "top": "beautifuldecor:block/xbox_series_s_top",
+    "vent": "beautifuldecor:block/xbox_series_s_vent",
+    "power": "beautifuldecor:block/xbox_series_s_power",
+    "port": "beautifuldecor:block/xbox_series_s_port",
+    "vents": "beautifuldecor:block/xbox_series_s_vents"
+  },
+  "elements": [
+    {
+      "from": [3.25, 0.25, 5.65],
+      "to": [12.75, 15.75, 10.35],
+      "faces": {
+        "north": {"uv": [0, 0, 38, 62], "texture": "#front"},
+        "east": {"uv": [0, 0, 19, 62], "texture": "#side"},
+        "south": {"uv": [0, 0, 38, 62], "texture": "#back"},
+        "west": {"uv": [0, 0, 19, 62], "texture": "#side"},
+        "up": {"uv": [0, 0, 38, 19], "texture": "#top"},
+        "down": {"uv": [0, 0, 38, 19], "texture": "#top"}
+      }
+    },
+    {
+      "from": [3.75, 0.08, 6],
+      "to": [12.25, 0.35, 10],
+      "faces": {
+        "north": {"texture": "#shell"},
+        "east": {"texture": "#shell"},
+        "south": {"texture": "#shell"},
+        "west": {"texture": "#shell"},
+        "up": {"texture": "#shell"},
+        "down": {"texture": "#shell"}
+      }
+    },
+    {
+      "from": [4.1, 5, 5.57],
+      "to": [11.9, 12.8, 5.73],
+      "faces": {
+        "north": {"uv": [0, 0, 64, 64], "texture": "#vent"}
+      }
+    },
+    {
+      "from": [4.05, 13.65, 5.56],
+      "to": [5.35, 14.95, 5.73],
+      "faces": {
+        "north": {"uv": [0, 0, 64, 64], "texture": "#power"}
+      }
+    },
+    {
+      "from": [7.1, 1.05, 5.56],
+      "to": [8.85, 1.8, 5.73],
+      "faces": {
+        "north": {"uv": [0, 0, 64, 32], "texture": "#port"}
+      }
+    },
+    {
+      "from": [10.1, 1.15, 5.56],
+      "to": [11.15, 2.05, 5.73],
+      "faces": {
+        "north": {"uv": [0, 0, 64, 48], "texture": "#power"}
+      }
+    },
+    {
+      "from": [12.74, 2.1, 6.15],
+      "to": [12.88, 13.9, 9.85],
+      "faces": {
+        "east": {"uv": [0, 0, 20, 64], "texture": "#vents"}
+      }
+    },
+    {
+      "from": [4.1, 2, 10.27],
+      "to": [11.9, 7.2, 10.43],
+      "faces": {
+        "south": {"uv": [0, 0, 64, 48], "texture": "#back"}
+      }
+    }
+  ]
+}

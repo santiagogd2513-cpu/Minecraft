@@ -1,0 +1,19 @@
+{
+ "variants": {
+  "facing=north": {
+   "model": "beautifuldecor:block/mini_golf"
+  },
+  "facing=east": {
+   "model": "beautifuldecor:block/mini_golf",
+   "y": 90
+  },
+  "facing=south": {
+   "model": "beautifuldecor:block/mini_golf",
+   "y": 180
+  },
+  "facing=west": {
+   "model": "beautifuldecor:block/mini_golf",
+   "y": 270
+  }
+ }
+}

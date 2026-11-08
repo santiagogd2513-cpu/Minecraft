@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "beautifuldecor:block/floor_lamp"
+    },
+    "facing=east": {
+      "model": "beautifuldecor:block/floor_lamp",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "beautifuldecor:block/floor_lamp",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "beautifuldecor:block/floor_lamp",
+      "y": 270
+    }
+  }
+}

@@ -1,0 +1,38 @@
+constantes 0 1 2 3 4 4
+inicial 0 0 "" true 0 false 
+send sin open InvalidStateError: Failed to execute 'send' on 'XMLHttpRequest': The object's state must be OPENED.
+header sin open InvalidStateError: Failed to execute 'setRequestHeader' on 'XMLHttpRequest': The object's state must be OPENED.
+despues de open 1
+send doble InvalidStateError: Failed to execute 'send' on 'XMLHttpRequest': The object's state must be OPENED.
+sync fin
+onreadystatechange 4 200 OK http://test.local/api/json?x=1
+onload 200 {"msg":"hola","n":[1,2,3]} application/json uno, dos null null
+todas las cabeceras "content-type: application/json\r\nx-test: uno, dos\r\n"
+response true
+eventos GET rs1 loadstart rs2 rs3 progress rs4 load
+json {"msg":"hola","n":[1,2,3]} object 3
+responseText con json InvalidStateError: Failed to read the 'responseText' property from 'XMLHttpRequest': The value is only accessible if the object's 'responseType' is '' or 'text' (was 'json').
+404 404 Not Found no existe /api/404
+eventos 404 loadend rs1 loadstart rs2 rs3 progress rs4 load
+[error] XMLHttpRequest failed loading: GET "http://test.local/api/fail" (connection refused)
+onerror 4 0 ""
+eventos error rs1 loadstart loadend rs4 error loadend
+antes de abort 1
+NET cancelled http://test.local/api/slow
+despues de abort 0 0
+eventos abort rs1 loadstart rs4 abort loadend
+NET cancelled http://test.local/api/slow
+ontimeout 4 0
+eventos timeout rs1 loadstart rs4 timeout loadend
+post POST accept=*/*; content-type=application/json; body={"q":1}
+post texto POST accept=*/*; content-type=text/plain;charset=UTF-8; body=hola
+sync 4 200 texto plano ñ
+[error] XMLHttpRequest failed loading: GET "http://test.local/api/fail" (connection refused)
+sync fallo NetworkError: Failed to execute 'send' on 'XMLHttpRequest': Failed to load 'http://test.local/api/fail'. 4
+primera 200
+reabierto 1 0 ""
+segunda 404 no existe /api/404
+[error] XMLHttpRequest cannot load ftp://x/y. Only http and https are supported.
+ftp onerror 0
+FIN
+out=listo

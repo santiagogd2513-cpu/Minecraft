@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "beautifuldecor:block/dish_rack_plates"
+    },
+    "facing=east": {
+      "model": "beautifuldecor:block/dish_rack_plates",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "beautifuldecor:block/dish_rack_plates",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "beautifuldecor:block/dish_rack_plates",
+      "y": 270
+    }
+  }
+}

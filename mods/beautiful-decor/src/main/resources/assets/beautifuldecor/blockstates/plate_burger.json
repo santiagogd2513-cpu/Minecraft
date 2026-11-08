@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "beautifuldecor:block/plate_burger"
+    },
+    "facing=east": {
+      "model": "beautifuldecor:block/plate_burger",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "beautifuldecor:block/plate_burger",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "beautifuldecor:block/plate_burger",
+      "y": 270
+    }
+  }
+}

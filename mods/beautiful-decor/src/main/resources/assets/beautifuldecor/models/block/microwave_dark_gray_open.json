@@ -1,0 +1,11 @@
+{
+  "parent": "beautifuldecor:block/kitchen_microwave_open",
+  "textures": {
+    "body": "beautifuldecor:block/kitchen_body_dark_gray",
+    "glass": "beautifuldecor:block/kitchen_glass",
+    "inside": "beautifuldecor:block/kitchen_micro_inside",
+    "steel": "beautifuldecor:block/handle_metal",
+    "display": "beautifuldecor:block/kitchen_display",
+    "particle": "beautifuldecor:block/kitchen_body_dark_gray"
+  }
+}

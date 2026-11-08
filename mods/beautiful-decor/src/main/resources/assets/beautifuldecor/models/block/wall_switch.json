@@ -1,0 +1,27 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "particle": "minecraft:block/white_concrete",
+    "plate": "minecraft:block/white_concrete",
+    "trim": "minecraft:block/light_gray_concrete",
+    "button": "minecraft:block/stone"
+  },
+  "elements": [
+    {
+      "from": [4, 4, 12], "to": [12, 12, 16],
+      "faces": {
+        "north": {"texture": "#plate"}, "east": {"texture": "#trim"},
+        "south": {"texture": "#plate"}, "west": {"texture": "#trim"},
+        "up": {"texture": "#plate"}, "down": {"texture": "#trim"}
+      }
+    },
+    {
+      "from": [5, 5, 11.5], "to": [11, 11, 13],
+      "faces": {
+        "north": {"texture": "#button"}, "east": {"texture": "#trim"},
+        "south": {"texture": "#button"}, "west": {"texture": "#trim"},
+        "up": {"texture": "#button"}, "down": {"texture": "#button"}
+      }
+    }
+  ]
+}

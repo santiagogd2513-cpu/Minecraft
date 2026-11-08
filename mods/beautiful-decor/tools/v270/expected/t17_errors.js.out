@@ -1,0 +1,152 @@
+u.a => TypeError TypeError: Cannot read properties of undefined (reading 'a')
+n.a => TypeError TypeError: Cannot read properties of null (reading 'a')
+u[0] => TypeError TypeError: Cannot read properties of undefined (reading '0')
+n[Symbol.iterator] => TypeError TypeError: object null is not iterable (cannot read property Symbol(Symbol.iterator))
+o.b.c => TypeError TypeError: Cannot read properties of undefined (reading 'c')
+o.b.c.d => TypeError TypeError: Cannot read properties of undefined (reading 'c')
+u.a.b => TypeError TypeError: Cannot read properties of undefined (reading 'a')
+{ u.a = 1; } => TypeError TypeError: Cannot set properties of undefined (setting 'a')
+{ n.a = 1; } => TypeError TypeError: Cannot set properties of null (setting 'a')
+{ u[0] = 1; } => TypeError TypeError: Cannot set properties of undefined (setting '0')
+u() => TypeError TypeError: u is not a function
+o.b() => TypeError TypeError: o.b is not a function
+o.a() => TypeError TypeError: o.a is not a function
+o["a"]() => TypeError TypeError: o.a is not a function
+(1)() => TypeError TypeError: 1 is not a function
+"s"() => TypeError TypeError: "s" is not a function
+o.a.b.c() => TypeError TypeError: Cannot read properties of undefined (reading 'c')
+new o.a() => TypeError TypeError: o.a is not a constructor
+new (() => 1)() => TypeError TypeError: (intermediate value) is not a constructor
+new Math.max() => TypeError TypeError: Math.max is not a constructor
+new 5 => TypeError TypeError: 5 is not a constructor
+notDefined => ReferenceError ReferenceError: notDefined is not defined
+{ notDefined = 1; return notDefined; } => ok 1
+typeof notDefined2 => ok undefined
+{ const c = 1; c = 2; } => TypeError TypeError: Assignment to constant variable.
+{ const c = 1; c++; } => TypeError TypeError: Assignment to constant variable.
+{ x1 = x1 + 1; let x1; } => ReferenceError ReferenceError: Cannot access 'x1' before initialization
+{ tdz; let tdz = 1; } => ReferenceError ReferenceError: Cannot access 'tdz' before initialization
+{ class A { constructor() { this.x; } } class B extends A { cons => ReferenceError ReferenceError: Must call super constructor in derived class before accessing 'this' or returning from derived constructor
+{ class A {} A(); } => TypeError TypeError: Class constructor A cannot be invoked without 'new'
+{ class A { #p = 1; static g(o) { return o.#p; } } return A.g({} => TypeError TypeError: Cannot read private member #p from an object whose class did not declare it
+[...5] => TypeError TypeError: 5 is not iterable
+[...u] => TypeError TypeError: u is not iterable
+{ const [a] = 5; } => TypeError TypeError: 5 is not iterable
+{ for (const x of 5) { } } => TypeError TypeError: 5 is not iterable
+{ for (const x of {}) { } } => TypeError TypeError: {} is not iterable
+new Map(5) => TypeError TypeError: number 5 is not iterable (cannot read property Symbol(Symbol.iterator))
+new Set(5) => TypeError TypeError: number 5 is not iterable (cannot read property Symbol(Symbol.iterator))
+Array.from(5) => ok []
+Object.fromEntries(5) => TypeError TypeError: number 5 is not iterable (cannot read property Symbol(Symbol.iterator))
+new Array(-1) => RangeError RangeError: Invalid array length
+new Array(1.5) => RangeError RangeError: Invalid array length
+{ const a = []; a.length = -1; } => RangeError RangeError: Invalid array length
+"x".repeat(-1) => RangeError RangeError: Invalid count value: -1
+"x".repeat(Infinity) => RangeError RangeError: Invalid count value: Infinity
+(1).toFixed(101) => RangeError RangeError: toFixed() digits argument must be between 0 and 100
+(1).toString(1) => RangeError RangeError: toString() radix argument must be between 2 and 36
+(1).toPrecision(0) => RangeError RangeError: toPrecision() argument must be between 1 and 100
+JSON.parse("{") => SyntaxError SyntaxError: Expected property name or '}' in JSON at position 1 (line 1 column 2)
+JSON.parse("") => SyntaxError SyntaxError: Unexpected end of JSON input
+JSON.parse("{'a':1}") => SyntaxError SyntaxError: Expected property name or '}' in JSON at position 1 (line 1 column 2)
+JSON.parse("[1,]") => SyntaxError SyntaxError: Unexpected token ']', "[1,]" is not valid JSON
+JSON.parse("undefined") => SyntaxError SyntaxError: "undefined" is not valid JSON
+JSON.parse('{"a":}') => SyntaxError SyntaxError: Unexpected token '}', "{"a":}" is not valid JSON
+JSON.parse("nul") => SyntaxError SyntaxError: Unexpected end of JSON input
+{ const a = {}; a.a = a; JSON.stringify(a); } => TypeError TypeError: Converting circular structure to JSON |     --> starting at object with constructor 'Object' |     --- property 'a' closes the circle
+new RegExp("(") => SyntaxError SyntaxError: Invalid regular expression: /(/: Unterminated group
+new RegExp("[") => SyntaxError SyntaxError: Invalid regular expression: /[/: Unterminated character class
+new RegExp("a", "zz") => SyntaxError SyntaxError: Invalid flags supplied to RegExp constructor 'zz'
+new RegExp("*") => SyntaxError SyntaxError: Invalid regular expression: /*/: Nothing to repeat
+decodeURIComponent("%") => URIError URIError: URI malformed
+encodeURIComponent("\ud800") => URIError URIError: URI malformed
+"a".localeCompare() => ok -1
+Symbol() + "" => TypeError TypeError: Cannot convert a Symbol value to a string
++Symbol() => TypeError TypeError: Cannot convert a Symbol value to a number
+`${Symbol()}` => TypeError TypeError: Cannot convert a Symbol value to a string
+new Symbol() => TypeError TypeError: Symbol is not a constructor
+Symbol.keyFor("x") => TypeError TypeError: x is not a symbol
+Object.defineProperty(1, "a", {}) => TypeError TypeError: Object.defineProperty called on non-object
+{ "use strict"; Object.freeze(o).a = 2; } => TypeError TypeError: Cannot assign to read only property 'a' of object '#<Object>'
+{ "use strict"; const f = Object.freeze({ a: 1 }); delete f.a; } => TypeError TypeError: Cannot delete property 'a' of #<Object>
+{ "use strict"; undefinedVar = 1; } => ReferenceError ReferenceError: undefinedVar is not defined
+Object.setPrototypeOf(Object.preventExtensions({}), {}) => TypeError TypeError: #<Object> is not extensible
+{ const a = {}; Object.defineProperty(a, "x", { value: 1 }); "us => ok 1
+({}) instanceof 5 => TypeError TypeError: Right-hand side of 'instanceof' is not an object
+({}) instanceof (() => 1) => TypeError TypeError: Function has non-object prototype 'undefined' in instanceof check
+"a" in "b" => TypeError TypeError: Cannot use 'in' operator to search for 'a' in b
+1 in 5 => TypeError TypeError: Cannot use 'in' operator to search for '1' in 5
+{ function f() { f(); } f(); } => RangeError RangeError: Maximum call stack size exceeded
+{ function g() { return g() + 1; } return g(); } => RangeError RangeError: Maximum call stack size exceeded
+Reflect.ownKeys(1) => TypeError TypeError: Reflect.ownKeys called on non-object
+Object.keys(null) => TypeError TypeError: Cannot convert undefined or null to object
+Object.entries(undefined) => TypeError TypeError: Cannot convert undefined or null to object
+Object.assign(null) => TypeError TypeError: Cannot convert undefined or null to object
+Object.create(1) => TypeError TypeError: Object prototype may only be an Object or null: 1
+Object.getPrototypeOf(null) => TypeError TypeError: Cannot convert undefined or null to object
+[].reduce((a, b) => a) => TypeError TypeError: Reduce of empty array with no initial value
+[1].forEach() => TypeError TypeError: undefined is not a function
+[3, 1].sort(5) => TypeError TypeError: The comparison function must be either a function or undefined: 5
+new Promise() => TypeError TypeError: Promise resolver undefined is not a function
+new Promise(5) => TypeError TypeError: Promise resolver 5 is not a function
+Promise() => TypeError TypeError: Promise constructor cannot be invoked without 'new'
+new Date(NaN).toISOString() => RangeError RangeError: Invalid time value
+Date.prototype.getTime.call({}) => TypeError TypeError: this is not a Date object.
+({}).x.y.z => TypeError TypeError: Cannot read properties of undefined (reading 'y')
+(void 0)() => TypeError TypeError: (void 0) is not a function
+(null).foo() => TypeError TypeError: Cannot read properties of null (reading 'foo')
+[][0].x => TypeError TypeError: Cannot read properties of undefined (reading 'x')
+({ a: { b: null } }).a.b.c => TypeError TypeError: Cannot read properties of null (reading 'c')
+{ let a = 1; let b = a.b.c; } => TypeError TypeError: Cannot read properties of undefined (reading 'c')
+(() => { })().x => TypeError TypeError: Cannot read properties of undefined (reading 'x')
+o.a.b.c.d => TypeError TypeError: Cannot read properties of undefined (reading 'c')
+{ class A { static #x = 1; static has(o) { return #x in o; } } r => TypeError TypeError: Cannot use 'in' operator to search for '#x' in 1
+{ class A { constructor() { return 1; } } return typeof new A(); => ok object
+{ class A extends 5 { } } => TypeError TypeError: Class extends value 5 is not a constructor or null
+{ function F() { } F.prototype = 5; class B extends F { } return => TypeError TypeError: Class extends value does not have valid prototype property 5
+{ class A { get x() { return 1; } } const a = new A(); "use stri => ok 1
+{ const g = function* () { yield 1; }(); g.next(); g.next(); ret => ok true
+{ function* g() { const x = yield; } const i = g(); i.next(); i. => Error Error: thrown
+{ function* g() { i.next(); yield 1; } var i = g(); i.next(); } => TypeError TypeError: Generator is already running
+eval("1 +") => SyntaxError SyntaxError: Unexpected end of input
+eval("var 1") => SyntaxError SyntaxError: Unexpected number
+eval("let a; let a;") => SyntaxError SyntaxError: Identifier 'a' has already been declared
+eval("foo bar") => SyntaxError SyntaxError: Unexpected identifier 'bar'
+eval("}") => SyntaxError SyntaxError: Unexpected token '}'
+eval("'abc") => SyntaxError SyntaxError: Invalid or unexpected token
+eval("a => ") => SyntaxError SyntaxError: Unexpected end of input
+eval("({a:1,,})") => SyntaxError SyntaxError: Unexpected token ','
+new Function("return (") => SyntaxError SyntaxError: Unexpected token '}'
+eval("break") => SyntaxError SyntaxError: Illegal break statement
+eval("return 1") => SyntaxError SyntaxError: Illegal return statement
+eval("1 = 2") => SyntaxError SyntaxError: Invalid left-hand side in assignment
+eval("for (let x of [], []) ;") => SyntaxError SyntaxError: Unexpected token ','
+eval("const x;") => SyntaxError SyntaxError: Missing initializer in const declaration
+eval("/(/") => SyntaxError SyntaxError: Invalid regular expression: /(/: Unterminated group
+eval("1..a.b") => TypeError TypeError: Cannot read properties of undefined (reading 'b')
+eval("0x") => SyntaxError SyntaxError: Invalid or unexpected token
+eval("1e") => SyntaxError SyntaxError: Invalid or unexpected token
+eval("3in[]") => SyntaxError SyntaxError: Invalid or unexpected token
+eval("super.x") => SyntaxError SyntaxError: 'super' keyword unexpected here
+eval("yield 1") => SyntaxError SyntaxError: Unexpected number
+eval("x = {a:1, a:2}; x.a") => ok 2
+eval("'use strict'; with (a) {}") => SyntaxError SyntaxError: Strict mode code may not include a with statement
+parseInt.call() => ok NaN
+String.fromCodePoint(-1) => RangeError RangeError: Invalid code point -1
+String.fromCodePoint(1.5) => RangeError RangeError: Invalid code point 1.5
+"a".normalize("x") => RangeError RangeError: The normalization form should be one of NFC, NFD, NFKC, NFKD.
+"a".padStart(Infinity) => RangeError RangeError: Invalid string length
+"abc".at() => ok a
+Number("1n") => ok NaN
+{ throw 5; } => Number undefined: undefined
+{ throw { a: 1 }; } => Object undefined: undefined
+{ throw null; } => null null
+{ throw new Error("m", { cause: "c" }); } => Error Error: m
+{ const e = new Error("x"); return e.cause === undefined && !("c => ok true
+{ const e = new RangeError("r"); return [e instanceof Error, e.n => ok [true,"RangeError","RangeError: r","[object Error]",true]
+{ const e = new AggregateError([new Error("a")], "agg"); return  => ok ["AggregateError","agg",1]
+{ const e = new Error("msg"); return [typeof e.stack, e.stack.sp => ok ["string","Error: msg",[],["message","stack"]]
+Error("no new").message => ok no new
+TypeError("tt") instanceof TypeError => ok true
+Error.prototype.toString.call({ name: "N", message: "M" }) => ok N: M
+Error.prototype.toString.call({}) => ok Error

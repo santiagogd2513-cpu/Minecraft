@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "beautifuldecor:block/decorative_vase"
+    },
+    "facing=east": {
+      "model": "beautifuldecor:block/decorative_vase",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "beautifuldecor:block/decorative_vase",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "beautifuldecor:block/decorative_vase",
+      "y": 270
+    }
+  }
+}

@@ -1,0 +1,20 @@
+go http://127.0.0.1:8765/index.html
+click Buscar
+text
+url
+back
+click ana
+type Z
+key End
+type q
+text
+key Enter
+url
+text
+back
+choose Aaa 1
+click Enviar post
+url
+text
+back
+text

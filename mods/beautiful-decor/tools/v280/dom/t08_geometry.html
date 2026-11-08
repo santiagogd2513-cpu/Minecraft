@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html data-page="400,1500" data-viewport="400,300">
+<head><title>Medidas</title>
+<style>#a { color: red; } #w { width: 50%; }</style>
+</head>
+<body data-rect="0,0,400,1500">
+<div id="a" data-rect="10,100,200,50">A</div>
+<div id="b" data-rect="10,600,300,80"><span id="c" data-rect="20,610,60,20">c</span></div>
+<div id="w" data-rect="0,700,200,40">w</div>
+<div id="hidden">sin medidas</div>
+<script>
+var $ = function (id) { return document.getElementById(id); };
+function row(r) { return [r.x, r.y, r.width, r.height, r.top, r.right, r.bottom, r.left].join(','); }
+function report(tag) {
+  console.log('--- ' + tag + ' scrollY=' + window.scrollY + ' scrollTop=' + document.documentElement.scrollTop + '/' + document.body.scrollTop);
+  console.log('a rect=' + row($('a').getBoundingClientRect()));
+  console.log('b rect=' + row($('b').getBoundingClientRect()));
+  console.log('c rect=' + row($('c').getBoundingClientRect()));
+  console.log('hidden rect=' + row($('hidden').getBoundingClientRect()) + ' n=' + $('hidden').getClientRects().length);
+  console.log('html rect=' + row(document.documentElement.getBoundingClientRect()));
+}
+console.log('offset a ' + [$('a').offsetWidth, $('a').offsetHeight, $('a').offsetLeft, $('a').offsetTop, $('a').offsetParent.tagName].join(','));
+console.log('offset hidden ' + [$('hidden').offsetWidth, $('hidden').offsetHeight, $('hidden').offsetParent].join(','));
+console.log('client a ' + [$('a').clientWidth, $('a').clientHeight, $('a').scrollWidth, $('a').scrollHeight].join(','));
+console.log('html ' + [document.documentElement.clientWidth, document.documentElement.clientHeight, document.documentElement.scrollWidth, document.documentElement.scrollHeight].join(','));
+console.log('body ' + [document.body.offsetWidth, document.body.offsetHeight, document.body.scrollHeight, document.body.offsetParent].join(','));
+console.log('computed ' + getComputedStyle($('a')).width + ' ' + getComputedStyle($('a')).height + ' ' + getComputedStyle($('w')).width + ' ' + getComputedStyle($('hidden')).width);
+var d = document.createElement('div');
+console.log('detached ' + row(d.getBoundingClientRect()) + ' ' + d.offsetHeight + ' ' + d.offsetParent);
+console.log('point ' + [document.elementFromPoint(20, 110).id, document.elementFromPoint(25, 615) === null ? null : 'x'].join(','));
+window.addEventListener('scroll', function () { console.log('EVENT scroll y=' + window.scrollY); });
+window.addEventListener('resize', function () { console.log('EVENT resize ' + window.innerWidth + 'x' + window.innerHeight); });
+report('inicio');
+</script>
+</body>
+</html>

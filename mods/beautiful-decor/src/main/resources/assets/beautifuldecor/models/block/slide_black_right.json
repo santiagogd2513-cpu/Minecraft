@@ -1,0 +1,8 @@
+{
+ "parent": "beautifuldecor:block/slide_right",
+ "textures": {
+  "main": "minecraft:block/black_concrete",
+  "rail": "minecraft:block/black_concrete",
+  "particle": "minecraft:block/black_concrete"
+ }
+}

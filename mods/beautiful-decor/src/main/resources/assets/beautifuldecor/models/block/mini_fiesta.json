@@ -1,0 +1,67 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "beautifuldecor:block/fiesta_body",
+    "body": "beautifuldecor:block/fiesta_body",
+    "glass": "beautifuldecor:block/fiesta_glass",
+    "black": "beautifuldecor:block/fiesta_black",
+    "chrome": "beautifuldecor:block/fiesta_chrome",
+    "light": "beautifuldecor:block/fiesta_light"
+  },
+  "elements": [
+    {"name": "chassis", "from": [3, 1, 2], "to": [13, 3.5, 14], "faces": {
+      "north": {"uv": [0,0,16,6], "texture": "#body"}, "east": {"uv": [0,0,16,6], "texture": "#body"},
+      "south": {"uv": [0,0,16,6], "texture": "#body"}, "west": {"uv": [0,0,16,6], "texture": "#body"},
+      "up": {"uv": [0,0,16,16], "texture": "#body"}, "down": {"uv": [0,0,16,16], "texture": "#black"}
+    }},
+    {"name": "cabin", "from": [3.5, 3.5, 5], "to": [12.5, 6.5, 11.5], "faces": {
+      "north": {"uv": [0,0,16,10], "texture": "#glass"}, "east": {"uv": [0,0,12,10], "texture": "#glass"},
+      "south": {"uv": [0,0,16,10], "texture": "#glass"}, "west": {"uv": [0,0,12,10], "texture": "#glass"},
+      "up": {"uv": [0,0,16,12], "texture": "#body"}
+    }},
+    {"name": "hood", "from": [3.5, 3.2, 2.2], "to": [12.5, 4.2, 5], "faces": {
+      "north": {"uv": [0,0,16,4], "texture": "#body"}, "east": {"uv": [0,0,6,4], "texture": "#body"},
+      "west": {"uv": [0,0,6,4], "texture": "#body"}, "up": {"uv": [0,0,16,8], "texture": "#body"}
+    }},
+    {"name": "trunk", "from": [3.5, 3.2, 11.5], "to": [12.5, 4.5, 13.8], "faces": {
+      "east": {"uv": [0,0,6,4], "texture": "#body"}, "south": {"uv": [0,0,16,4], "texture": "#body"},
+      "west": {"uv": [0,0,6,4], "texture": "#body"}, "up": {"uv": [0,0,16,6], "texture": "#body"}
+    }},
+    {"name": "wheel_fl", "from": [2.5, 0, 3.5], "to": [4, 2.5, 6], "faces": {
+      "north": {"uv": [0,0,4,6], "texture": "#black"}, "east": {"uv": [0,0,6,6], "texture": "#black"},
+      "south": {"uv": [0,0,4,6], "texture": "#black"}, "west": {"uv": [0,0,6,6], "texture": "#black"},
+      "up": {"uv": [0,0,4,6], "texture": "#chrome"}, "down": {"uv": [0,0,4,6], "texture": "#black"}
+    }},
+    {"name": "wheel_fr", "from": [12, 0, 3.5], "to": [13.5, 2.5, 6], "faces": {
+      "north": {"uv": [0,0,4,6], "texture": "#black"}, "east": {"uv": [0,0,6,6], "texture": "#black"},
+      "south": {"uv": [0,0,4,6], "texture": "#black"}, "west": {"uv": [0,0,6,6], "texture": "#black"},
+      "up": {"uv": [0,0,4,6], "texture": "#chrome"}, "down": {"uv": [0,0,4,6], "texture": "#black"}
+    }},
+    {"name": "wheel_bl", "from": [2.5, 0, 10], "to": [4, 2.5, 12.5], "faces": {
+      "north": {"uv": [0,0,4,6], "texture": "#black"}, "east": {"uv": [0,0,6,6], "texture": "#black"},
+      "south": {"uv": [0,0,4,6], "texture": "#black"}, "west": {"uv": [0,0,6,6], "texture": "#black"},
+      "up": {"uv": [0,0,4,6], "texture": "#chrome"}, "down": {"uv": [0,0,4,6], "texture": "#black"}
+    }},
+    {"name": "wheel_br", "from": [12, 0, 10], "to": [13.5, 2.5, 12.5], "faces": {
+      "north": {"uv": [0,0,4,6], "texture": "#black"}, "east": {"uv": [0,0,6,6], "texture": "#black"},
+      "south": {"uv": [0,0,4,6], "texture": "#black"}, "west": {"uv": [0,0,6,6], "texture": "#black"},
+      "up": {"uv": [0,0,4,6], "texture": "#chrome"}, "down": {"uv": [0,0,4,6], "texture": "#black"}
+    }},
+    {"name": "headlight_l", "from": [4, 2, 1.85], "to": [6.5, 3.2, 2.1], "faces": {
+      "north": {"uv": [0,0,8,6], "texture": "#light"}
+    }},
+    {"name": "headlight_r", "from": [9.5, 2, 1.85], "to": [12, 3.2, 2.1], "faces": {
+      "north": {"uv": [0,0,8,6], "texture": "#light"}
+    }},
+    {"name": "grille", "from": [6.5, 1.8, 1.9], "to": [9.5, 3, 2.05], "faces": {
+      "north": {"uv": [0,0,12,6], "texture": "#chrome"}
+    }},
+    {"name": "bumper_front", "from": [3.2, 1, 1.7], "to": [12.8, 1.8, 2.2], "faces": {
+      "north": {"uv": [0,0,16,4], "texture": "#chrome"}, "up": {"uv": [0,0,16,2], "texture": "#chrome"},
+      "down": {"uv": [0,0,16,2], "texture": "#black"}
+    }},
+    {"name": "bumper_back", "from": [3.2, 1, 13.8], "to": [12.8, 2, 14.3], "faces": {
+      "south": {"uv": [0,0,16,4], "texture": "#chrome"}, "up": {"uv": [0,0,16,2], "texture": "#chrome"}
+    }}
+  ]
+}

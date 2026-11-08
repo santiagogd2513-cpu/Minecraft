@@ -1,0 +1,39 @@
+ok tag
+ok id
+ok class
+ok classList
+ok dataset
+ok text
+ok innerHTML
+ok children
+ok childNodes
+ok title
+ok body
+ok qs
+ok qsa
+ok nextSib
+ok prevSib
+ok parent
+ok closest
+ok matches
+ok getAttr
+ok hasAttr
+ok append
+ok innerHTML set
+ok outerHTML
+ok removed
+ok insertBefore
+ok style set
+ok style cssText
+ok style get
+ok style remove
+ok computed
+ok computed display
+ok URL
+ok URL parts
+ok searchParams
+ok location
+ok ready
+pass=36
+DCL interactive
+LOAD complete

@@ -1,0 +1,27 @@
+config 0|0.5|1 0px 0px 0px 0px  0
+margin 100px 0px 100px 0px 10% 5px 10% 5px
+TypeError: Failed to construct 'IntersectionObserver': The callback provided as parameter 1 is not a function.
+SyntaxError: Failed to construct 'IntersectionObserver': rootMargin must be specified in pixels or percent.
+RangeError: Failed to construct 'IntersectionObserver': Threshold values must be numbers between 0 and 1.
+TypeError: Failed to execute 'observe' on 'IntersectionObserver': parameter 1 is not of type 'Element'.
+TypeError: Failed to construct 'ResizeObserver': The callback provided as parameter 1 is not a function.
+TypeError: Class constructor IntersectionObserver cannot be invoked without 'new'
+IO t1 int=true ratio=1.00 top=100 ih=100 root=300 true true
+IO t2 int=false ratio=0.00 top=500 ih=0 root=300 true true
+MARGIN t2 int=false rootBounds=-100,500
+RO t1 400x100 400x100
+RO t2 400x200 400x200
+IO t1 int=false ratio=0.00 top=-250 ih=0 root=300 true true
+IO t2 int=true ratio=0.75 top=150 ih=150 root=300 true true
+MARGIN t2 int=true rootBounds=-100,500
+IO t2 int=true ratio=1.00 top=50 ih=200 root=300 true true
+RO t2 400x50 400x50
+--- unobserve t1, disconnect ro
+IO t2 int=false ratio=0.00 top=500 ih=0 root=300 true true
+MARGIN t2 int=false rootBounds=-100,500
+--- nuevo elemento con la disposición vieja
+(nada todavía)
+IO n1 int=true ratio=1.00 top=50 ih=20 root=300 true true
+--- quitado del documento
+IO n1 int=false ratio=0.00 top=0 ih=0 root=300 true true
+fin

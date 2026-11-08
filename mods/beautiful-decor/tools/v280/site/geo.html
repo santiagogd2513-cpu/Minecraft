@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html><head><title>Medidas</title></head><body>
+<h1 id="t">Titulo</h1>
+<p id="p1">Primer parrafo</p>
+<p id="p2">Segundo parrafo</p>
+<p id="p3">Tercer parrafo</p>
+<p id="p4">Cuarto parrafo</p>
+<p id="p5">Quinto parrafo</p>
+<p id="p6">Sexto parrafo</p>
+<p id="p7">Septimo parrafo</p>
+<p id="p8">Octavo parrafo</p>
+<p id="p9">Noveno parrafo</p>
+<p id="p10">Decimo parrafo</p>
+<button id="m" onclick="measure()">Medir</button>
+<script>
+var seen = new IntersectionObserver(function (es) {
+  es.forEach(function (e) { console.log('IO ' + e.target.id + ' ' + e.isIntersecting); });
+});
+seen.observe(document.getElementById('p10'));
+var resized = new ResizeObserver(function (es) {
+  es.forEach(function (e) { console.log('RO ' + e.target.id + ' ' + e.contentRect.width + 'x' + (e.contentRect.height > 0)); });
+});
+resized.observe(document.getElementById('p1'));
+window.addEventListener('resize', function () { console.log('RESIZE ' + window.innerWidth + 'x' + window.innerHeight); });
+window.addEventListener('scroll', function () { console.log('SCROLL ' + window.scrollY); });
+function measure() {
+  var r = document.getElementById('p5').getBoundingClientRect();
+  console.log('RECT left=' + r.left + ' width=' + r.width + ' height>0=' + (r.height > 0) + ' top=' + r.top);
+  console.log('SIZES inner=' + window.innerWidth + 'x' + window.innerHeight + ' scrollH>0=' + (document.documentElement.scrollHeight > 0) +
+      ' offsetTop=' + document.getElementById('p5').offsetTop);
+  var at = document.elementFromPoint(10, r.top + 1);
+  console.log('AT ' + (at ? at.id || at.tagName : null));
+}
+</script>
+</body></html>

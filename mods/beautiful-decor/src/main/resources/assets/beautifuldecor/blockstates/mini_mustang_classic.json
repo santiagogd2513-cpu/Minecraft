@@ -1,0 +1,19 @@
+{
+ "variants": {
+  "facing=north": {
+   "model": "beautifuldecor:block/mini_mustang_classic"
+  },
+  "facing=east": {
+   "model": "beautifuldecor:block/mini_mustang_classic",
+   "y": 90
+  },
+  "facing=south": {
+   "model": "beautifuldecor:block/mini_mustang_classic",
+   "y": 180
+  },
+  "facing=west": {
+   "model": "beautifuldecor:block/mini_mustang_classic",
+   "y": 270
+  }
+ }
+}

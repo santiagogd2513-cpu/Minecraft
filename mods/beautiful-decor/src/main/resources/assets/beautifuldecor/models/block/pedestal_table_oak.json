@@ -1,0 +1,9 @@
+{
+  "parent": "beautifuldecor:block/pedestal_table_base",
+  "textures": {
+    "particle": "minecraft:block/oak_planks",
+    "planks": "minecraft:block/oak_planks",
+    "trim": "minecraft:block/stripped_oak_log",
+    "knob": "beautifuldecor:block/handle_metal"
+  }
+}

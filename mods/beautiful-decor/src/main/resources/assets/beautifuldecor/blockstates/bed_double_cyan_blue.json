@@ -1,0 +1,64 @@
+{
+  "variants": {
+    "facing=north,px=0,pz=0": {
+      "model": "beautifuldecor:block/bed_double_cyan_blue_foot_left"
+    },
+    "facing=north,px=1,pz=0": {
+      "model": "beautifuldecor:block/bed_double_cyan_blue_foot_right"
+    },
+    "facing=north,px=0,pz=1": {
+      "model": "beautifuldecor:block/bed_double_cyan_blue_head_left"
+    },
+    "facing=north,px=1,pz=1": {
+      "model": "beautifuldecor:block/bed_double_cyan_blue_head_right"
+    },
+    "facing=east,px=0,pz=0": {
+      "model": "beautifuldecor:block/bed_double_cyan_blue_foot_left",
+      "y": 90
+    },
+    "facing=east,px=1,pz=0": {
+      "model": "beautifuldecor:block/bed_double_cyan_blue_foot_right",
+      "y": 90
+    },
+    "facing=east,px=0,pz=1": {
+      "model": "beautifuldecor:block/bed_double_cyan_blue_head_left",
+      "y": 90
+    },
+    "facing=east,px=1,pz=1": {
+      "model": "beautifuldecor:block/bed_double_cyan_blue_head_right",
+      "y": 90
+    },
+    "facing=south,px=0,pz=0": {
+      "model": "beautifuldecor:block/bed_double_cyan_blue_foot_left",
+      "y": 180
+    },
+    "facing=south,px=1,pz=0": {
+      "model": "beautifuldecor:block/bed_double_cyan_blue_foot_right",
+      "y": 180
+    },
+    "facing=south,px=0,pz=1": {
+      "model": "beautifuldecor:block/bed_double_cyan_blue_head_left",
+      "y": 180
+    },
+    "facing=south,px=1,pz=1": {
+      "model": "beautifuldecor:block/bed_double_cyan_blue_head_right",
+      "y": 180
+    },
+    "facing=west,px=0,pz=0": {
+      "model": "beautifuldecor:block/bed_double_cyan_blue_foot_left",
+      "y": 270
+    },
+    "facing=west,px=1,pz=0": {
+      "model": "beautifuldecor:block/bed_double_cyan_blue_foot_right",
+      "y": 270
+    },
+    "facing=west,px=0,pz=1": {
+      "model": "beautifuldecor:block/bed_double_cyan_blue_head_left",
+      "y": 270
+    },
+    "facing=west,px=1,pz=1": {
+      "model": "beautifuldecor:block/bed_double_cyan_blue_head_right",
+      "y": 270
+    }
+  }
+}

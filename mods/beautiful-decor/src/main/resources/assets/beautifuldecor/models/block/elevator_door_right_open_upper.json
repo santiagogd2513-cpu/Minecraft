@@ -1,0 +1,78 @@
+{
+  "textures": {
+    "particle": "beautifuldecor:block/elevator_door_upper",
+    "door": "beautifuldecor:block/elevator_door_upper",
+    "leaf": "beautifuldecor:block/elevator_door_leaf_upper",
+    "edge": "beautifuldecor:block/elevator_door_edge"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        6
+      ],
+      "to": [
+        3,
+        16,
+        10
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            3,
+            0,
+            0,
+            16
+          ],
+          "texture": "#leaf"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            3,
+            16
+          ],
+          "texture": "#leaf"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ],
+          "texture": "#edge"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            4,
+            16
+          ],
+          "texture": "#edge"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            3,
+            4
+          ],
+          "texture": "#edge"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            3,
+            4
+          ],
+          "texture": "#edge"
+        }
+      }
+    }
+  ]
+}

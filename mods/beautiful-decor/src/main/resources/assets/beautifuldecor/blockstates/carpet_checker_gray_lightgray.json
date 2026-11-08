@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "beautifuldecor:block/carpet_checker_gray_lightgray"
+    },
+    "facing=east": {
+      "model": "beautifuldecor:block/carpet_checker_gray_lightgray",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "beautifuldecor:block/carpet_checker_gray_lightgray",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "beautifuldecor:block/carpet_checker_gray_lightgray",
+      "y": 270
+    }
+  }
+}

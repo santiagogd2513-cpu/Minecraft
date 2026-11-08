@@ -1,0 +1,71 @@
+{
+ "parent": "minecraft:block/block",
+ "textures": {
+  "particle": "minecraft:block/black_concrete",
+  "screen": "beautifuldecor:block/tv_big_on",
+  "frame": "minecraft:block/black_concrete",
+  "back": "beautifuldecor:block/tv_back",
+  "bar": "beautifuldecor:block/tv_soundbar",
+  "led": "minecraft:block/lime_concrete"
+ },
+ "elements": [
+  {
+   "from": [
+    0,
+    4,
+    7
+   ],
+   "to": [
+    16,
+    16,
+    8.4
+   ],
+   "faces": {
+    "north": {
+     "texture": "#screen",
+     "uv": [
+      10.6667,
+      9.1429,
+      16.0,
+      16.0
+     ]
+    },
+    "south": {
+     "texture": "#back"
+    },
+    "west": {
+     "texture": "#frame"
+    }
+   }
+  },
+  {
+   "from": [
+    0,
+    0,
+    5
+   ],
+   "to": [
+    16,
+    4,
+    10
+   ],
+   "faces": {
+    "north": {
+     "texture": "#bar"
+    },
+    "south": {
+     "texture": "#bar"
+    },
+    "west": {
+     "texture": "#bar"
+    },
+    "up": {
+     "texture": "#bar"
+    },
+    "down": {
+     "texture": "#bar"
+    }
+   }
+  }
+ ]
+}

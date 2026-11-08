@@ -1,0 +1,24 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "particle": "beautifuldecor:block/dishwasher",
+    "panel": "beautifuldecor:block/dishwasher",
+    "metal": "beautifuldecor:block/metal"
+  },
+  "elements": [
+    {"from": [1, 0, 2], "to": [15, 14, 14], "faces": {
+      "north": {"uv": [0,0,14,14], "texture": "#panel"}, "east": {"uv": [0,0,12,14], "texture": "#metal"},
+      "south": {"uv": [0,0,14,14], "texture": "#metal"}, "west": {"uv": [0,0,12,14], "texture": "#metal"},
+      "up": {"uv": [0,0,14,12], "texture": "#metal"}, "down": {"uv": [0,0,14,12], "texture": "#metal"}
+    }},
+    {"from": [2, 11, 1.7], "to": [14, 13, 2], "faces": {
+      "north": {"uv": [0,0,12,2], "texture": "#panel"}
+    }},
+    {"from": [3, 3, 1.7], "to": [13, 10, 2], "faces": {
+      "north": {"uv": [0,0,10,7], "texture": "#panel"}
+    }},
+    {"from": [6, 5.5, 1.5], "to": [10, 7, 1.7], "faces": {
+      "north": {"uv": [0,0,4,1.5], "texture": "#metal"}
+    }}
+  ]
+}

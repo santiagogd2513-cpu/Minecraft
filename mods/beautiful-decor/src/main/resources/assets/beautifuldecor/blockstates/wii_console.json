@@ -1,0 +1,16 @@
+{
+  "variants": {
+    "facing=north,phase=0": { "model": "beautifuldecor:block/wii_family_edition" },
+    "facing=east,phase=0": { "model": "beautifuldecor:block/wii_family_edition", "y": 90 },
+    "facing=south,phase=0": { "model": "beautifuldecor:block/wii_family_edition", "y": 180 },
+    "facing=west,phase=0": { "model": "beautifuldecor:block/wii_family_edition", "y": 270 },
+    "facing=north,phase=1": { "model": "beautifuldecor:block/wii_family_edition_dim" },
+    "facing=east,phase=1": { "model": "beautifuldecor:block/wii_family_edition_dim", "y": 90 },
+    "facing=south,phase=1": { "model": "beautifuldecor:block/wii_family_edition_dim", "y": 180 },
+    "facing=west,phase=1": { "model": "beautifuldecor:block/wii_family_edition_dim", "y": 270 },
+    "facing=north,phase=2": { "model": "beautifuldecor:block/wii_family_edition_active" },
+    "facing=east,phase=2": { "model": "beautifuldecor:block/wii_family_edition_active", "y": 90 },
+    "facing=south,phase=2": { "model": "beautifuldecor:block/wii_family_edition_active", "y": 180 },
+    "facing=west,phase=2": { "model": "beautifuldecor:block/wii_family_edition_active", "y": 270 }
+  }
+}

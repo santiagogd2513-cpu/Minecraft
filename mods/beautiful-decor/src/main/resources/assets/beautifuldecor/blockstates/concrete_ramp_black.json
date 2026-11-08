@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "beautifuldecor:block/concrete_ramp_black"
+    },
+    "facing=east": {
+      "model": "beautifuldecor:block/concrete_ramp_black",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "beautifuldecor:block/concrete_ramp_black",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "beautifuldecor:block/concrete_ramp_black",
+      "y": 270
+    }
+  }
+}

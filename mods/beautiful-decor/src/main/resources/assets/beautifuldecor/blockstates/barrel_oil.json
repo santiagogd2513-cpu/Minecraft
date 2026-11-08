@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "beautifuldecor:block/barrel_oil"
+    },
+    "facing=east": {
+      "model": "beautifuldecor:block/barrel_oil",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "beautifuldecor:block/barrel_oil",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "beautifuldecor:block/barrel_oil",
+      "y": 270
+    }
+  }
+}

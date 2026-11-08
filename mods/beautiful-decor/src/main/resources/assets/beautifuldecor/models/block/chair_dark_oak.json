@@ -1,0 +1,10 @@
+{
+ "parent": "beautifuldecor:block/chair_base",
+ "textures": {
+  "particle": "minecraft:block/dark_oak_planks",
+  "planks": "minecraft:block/dark_oak_planks",
+  "trim": "minecraft:block/stripped_dark_oak_log",
+  "cushion": "minecraft:block/gray_wool",
+  "knob": "beautifuldecor:block/handle_metal"
+ }
+}

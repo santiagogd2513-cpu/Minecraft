@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "beautifuldecor:block/shelf_jungle"
+    },
+    "facing=east": {
+      "model": "beautifuldecor:block/shelf_jungle",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "beautifuldecor:block/shelf_jungle",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "beautifuldecor:block/shelf_jungle",
+      "y": 270
+    }
+  }
+}

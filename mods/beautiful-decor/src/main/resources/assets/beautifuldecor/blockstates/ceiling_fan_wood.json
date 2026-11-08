@@ -1,0 +1,10 @@
+{
+  "variants": {
+    "on=false": {
+      "model": "beautifuldecor:block/ceiling_fan_wood_off"
+    },
+    "on=true": {
+      "model": "beautifuldecor:block/ceiling_fan_wood_on"
+    }
+  }
+}

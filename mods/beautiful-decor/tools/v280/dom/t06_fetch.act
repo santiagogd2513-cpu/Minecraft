@@ -1,0 +1,2 @@
+wait 3000
+eval console.log('out=' + document.getElementById('out').textContent)

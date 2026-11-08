@@ -1,0 +1,51 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "particle": "minecraft:block/light_gray_concrete",
+    "frame": "minecraft:block/iron_block",
+    "housing": "minecraft:block/light_gray_concrete",
+    "diffuser": "minecraft:block/white_concrete"
+  },
+  "elements": [
+    {
+      "from": [3, 15, 3], "to": [13, 16, 13],
+      "faces": {
+        "north": {"texture": "#frame"}, "east": {"texture": "#frame"},
+        "south": {"texture": "#frame"}, "west": {"texture": "#frame"},
+        "up": {"texture": "#frame"}, "down": {"texture": "#frame"}
+      }
+    },
+    {
+      "from": [1, 13.5, 1], "to": [15, 15.5, 15],
+      "faces": {
+        "north": {"texture": "#frame"}, "east": {"texture": "#frame"},
+        "south": {"texture": "#frame"}, "west": {"texture": "#frame"},
+        "up": {"texture": "#housing"}, "down": {"texture": "#frame"}
+      }
+    },
+    {
+      "from": [2, 12.5, 2], "to": [14, 14.25, 14],
+      "faces": {
+        "north": {"texture": "#housing"}, "east": {"texture": "#housing"},
+        "south": {"texture": "#housing"}, "west": {"texture": "#housing"},
+        "up": {"texture": "#frame"}, "down": {"texture": "#diffuser"}
+      }
+    },
+    {
+      "from": [3, 12, 3], "to": [13, 12.8, 13],
+      "faces": {
+        "north": {"texture": "#diffuser"}, "east": {"texture": "#diffuser"},
+        "south": {"texture": "#diffuser"}, "west": {"texture": "#diffuser"},
+        "down": {"texture": "#diffuser"}
+      }
+    },
+    {
+      "from": [5, 14.5, 5], "to": [11, 15.2, 11],
+      "faces": {
+        "north": {"texture": "#frame"}, "east": {"texture": "#frame"},
+        "south": {"texture": "#frame"}, "west": {"texture": "#frame"},
+        "up": {"texture": "#frame"}, "down": {"texture": "#frame"}
+      }
+    }
+  ]
+}

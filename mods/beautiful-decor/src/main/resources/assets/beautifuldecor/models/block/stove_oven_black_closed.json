@@ -1,0 +1,13 @@
+{
+  "parent": "beautifuldecor:block/kitchen_stove_oven_closed",
+  "textures": {
+    "body": "beautifuldecor:block/kitchen_body_black",
+    "top": "beautifuldecor:block/kitchen_cooktop",
+    "glass": "beautifuldecor:block/kitchen_glass",
+    "inside": "beautifuldecor:block/kitchen_oven_inside",
+    "knob": "beautifuldecor:block/handle_metal",
+    "steel": "beautifuldecor:block/handle_metal",
+    "display": "beautifuldecor:block/kitchen_display",
+    "particle": "beautifuldecor:block/kitchen_body_black"
+  }
+}

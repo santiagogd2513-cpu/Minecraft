@@ -1,0 +1,6 @@
+PUBLISHED height=354 items=23
+ANCHOR p#p07 ordinal=0 offset=4
+CLICK Insertar arriba -> button
+RESTORED 200.0 (antes 120, la página pasó de 354 a 434)
+ANCHOR p#p02 ordinal=0 offset=4
+ANCHOR none

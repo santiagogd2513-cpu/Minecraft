@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "beautifuldecor:block/crate_balls"
+    },
+    "facing=east": {
+      "model": "beautifuldecor:block/crate_balls",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "beautifuldecor:block/crate_balls",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "beautifuldecor:block/crate_balls",
+      "y": 270
+    }
+  }
+}

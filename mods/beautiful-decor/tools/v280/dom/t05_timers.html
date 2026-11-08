@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html><head><title>timers</title></head><body>
+<p id="out">0</p>
+<script>
+const L = (...a) => console.log(...a);
+L('typeof', typeof setTimeout, typeof setInterval, typeof clearTimeout, typeof requestAnimationFrame, typeof requestIdleCallback);
+
+// orden: promesas antes que temporizadores; por tiempo y luego por orden de creación
+setTimeout(() => L('t10'), 10);
+setTimeout(() => L('t0 a'), 0);
+const idB = setTimeout((x, y) => L('t5 args', x, y), 5, 'uno', 2);
+setTimeout(() => L('t0 b'), 0);
+Promise.resolve().then(() => L('microtask'));
+queueMicrotask(() => L('queueMicrotask'));
+L('ids', idB, typeof idB);
+L('sync end');
+
+// cancelar
+const c = setTimeout(() => L('NO debe salir'), 3);
+clearTimeout(c);
+clearTimeout(undefined); clearTimeout(null); clearTimeout(99999); clearInterval('x');
+
+// intervalo que se cancela solo
+let n = 0;
+const iv = setInterval(() => {
+  n++;
+  L('interval', n, this === undefined ? 'undef' : (this === window ? 'window' : 'otro'));
+  document.getElementById('out').textContent = String(n);
+  if (n === 3) { clearInterval(iv); L('interval cancelado'); }
+}, 20);
+
+// anidados y texto como código
+setTimeout(() => { L('nivel 1'); setTimeout(() => { L('nivel 2'); setTimeout(() => L('nivel 3'), 0); }, 0); }, 30);
+setTimeout("L('desde texto'); window.fromText = 7", 40);
+
+// un error en un temporizador no mata a los demás
+setTimeout(() => { throw new Error('boom'); }, 50);
+setTimeout(() => L('despues del error'), 51);
+setTimeout(() => { Promise.reject(new Error('rechazada')).catch(e => L('catch', e.message)); }, 52);
+
+// await con sleep
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+(async () => {
+  L('async inicio');
+  await sleep(60);
+  L('async 60');
+  await sleep(10);
+  L('async 70');
+})();
+
+// requestAnimationFrame: todos en el mismo cuadro, en orden; el cancelado no corre; los nuevos van al siguiente
+const f1 = requestAnimationFrame(ts => { L('raf 1', typeof ts, ts > 0); requestAnimationFrame(() => L('raf siguiente cuadro')); });
+const f2 = requestAnimationFrame(() => L('raf cancelado NO'));
+requestAnimationFrame(() => L('raf 3'));
+cancelAnimationFrame(f2);
+L('raf ids', f1, f2);
+
+// requestIdleCallback
+requestIdleCallback(d => L('idle', d.didTimeout, typeof d.timeRemaining(), d.timeRemaining() <= 50));
+const ic = requestIdleCallback(() => L('idle cancelado NO'));
+cancelIdleCallback(ic);
+
+// argumentos raros
+try { requestAnimationFrame('no'); } catch (e) { L(e.name, e.message); }
+setTimeout(() => L('delay NaN corre'), 'abc');
+setTimeout(() => L('delay negativo corre'), -5);
+</script>
+</body></html>

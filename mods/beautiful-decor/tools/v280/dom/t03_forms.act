@@ -1,0 +1,9 @@
+click go
+click gs
+focus q
+key End
+type X
+key Backspace
+key Backspace
+key Enter
+eval console.log('q=' + document.getElementById('q').value)

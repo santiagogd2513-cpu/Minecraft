@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "beautifuldecor:block/sign_stop"
+    },
+    "facing=east": {
+      "model": "beautifuldecor:block/sign_stop",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "beautifuldecor:block/sign_stop",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "beautifuldecor:block/sign_stop",
+      "y": 270
+    }
+  }
+}

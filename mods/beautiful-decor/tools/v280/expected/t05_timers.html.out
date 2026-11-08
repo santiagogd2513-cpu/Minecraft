@@ -1,0 +1,41 @@
+typeof function function function function function
+ids 3 number
+sync end
+async inicio
+raf ids 1 2
+TypeError Failed to execute 'requestAnimationFrame' on 'Window': The callback provided as parameter 1 is not a function.
+microtask
+queueMicrotask
+--- wait 1
+t0 a
+t0 b
+delay NaN corre
+delay negativo corre
+idle false number true
+--- wait 6
+t5 args uno 2
+--- wait 15
+t10
+--- wait 50
+raf 1 number true
+raf 3
+interval 1 window
+nivel 1
+nivel 2
+nivel 3
+raf siguiente cuadro
+desde texto
+interval 2 window
+[error] Uncaught Error: boom
+--- wait 100
+despues del error
+catch rechazada
+async 60
+interval 3 window
+interval cancelado
+async 70
+--- wait 200
+--- fin out=3 fromText=7
+iv2 1
+iv2 2
+k=2

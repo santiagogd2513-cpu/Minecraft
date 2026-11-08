@@ -1,0 +1,11 @@
+{
+  "parent": "beautifuldecor:block/washbasin_wall",
+  "textures": {
+    "ceramic": "beautifuldecor:block/washbasin_ceramic_black",
+    "inner": "beautifuldecor:block/washbasin_inner_black",
+    "floor": "beautifuldecor:block/washbasin_floor_black",
+    "body": "beautifuldecor:block/kitchen_body_black",
+    "chrome": "beautifuldecor:block/handle_metal",
+    "particle": "beautifuldecor:block/washbasin_ceramic_black"
+  }
+}

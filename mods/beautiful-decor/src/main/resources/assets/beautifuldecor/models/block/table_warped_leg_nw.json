@@ -1,0 +1,9 @@
+{
+  "parent": "beautifuldecor:block/table_leg_nw_base",
+  "textures": {
+    "particle": "minecraft:block/warped_planks",
+    "planks": "minecraft:block/warped_planks",
+    "trim": "minecraft:block/stripped_warped_stem",
+    "knob": "beautifuldecor:block/handle_metal"
+  }
+}

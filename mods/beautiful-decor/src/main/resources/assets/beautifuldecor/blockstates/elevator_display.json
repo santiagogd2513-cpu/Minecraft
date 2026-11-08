@@ -1,0 +1,27 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "beautifuldecor:block/elevator_display"
+    },
+    "facing=east": {
+      "model": "beautifuldecor:block/elevator_display",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "beautifuldecor:block/elevator_display",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "beautifuldecor:block/elevator_display",
+      "y": 270
+    },
+    "facing=up": {
+      "model": "beautifuldecor:block/elevator_display",
+      "x": 270
+    },
+    "facing=down": {
+      "model": "beautifuldecor:block/elevator_display",
+      "x": 90
+    }
+  }
+}

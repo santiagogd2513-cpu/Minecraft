@@ -1,0 +1,77 @@
+{
+  "textures": {
+    "particle": "beautifuldecor:block/elevator_display_side",
+    "front": "beautifuldecor:block/elevator_display_front",
+    "side": "beautifuldecor:block/elevator_display_side"
+  },
+  "elements": [
+    {
+      "from": [
+        2,
+        2,
+        13
+      ],
+      "to": [
+        14,
+        14,
+        16
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            2,
+            2,
+            14,
+            14
+          ],
+          "texture": "#front"
+        },
+        "south": {
+          "uv": [
+            2,
+            2,
+            14,
+            14
+          ],
+          "texture": "#side"
+        },
+        "east": {
+          "uv": [
+            0,
+            2,
+            3,
+            14
+          ],
+          "texture": "#side"
+        },
+        "west": {
+          "uv": [
+            0,
+            2,
+            3,
+            14
+          ],
+          "texture": "#side"
+        },
+        "up": {
+          "uv": [
+            2,
+            0,
+            14,
+            3
+          ],
+          "texture": "#side"
+        },
+        "down": {
+          "uv": [
+            2,
+            0,
+            14,
+            3
+          ],
+          "texture": "#side"
+        }
+      }
+    }
+  ]
+}

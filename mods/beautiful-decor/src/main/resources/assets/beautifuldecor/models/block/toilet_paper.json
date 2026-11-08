@@ -1,0 +1,69 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "particle": "beautifuldecor:block/toilet_paper_roll",
+    "holder": "beautifuldecor:block/toilet_paper_holder",
+    "roll": "beautifuldecor:block/toilet_paper_roll",
+    "end": "beautifuldecor:block/toilet_paper_end"
+  },
+  "elements": [
+    {
+      "from": [3, 5, 14.5],
+      "to": [13, 11, 16],
+      "faces": {
+        "north": {"texture": "#holder"},
+        "east": {"texture": "#holder"},
+        "south": {"texture": "#holder"},
+        "west": {"texture": "#holder"},
+        "up": {"texture": "#holder"},
+        "down": {"texture": "#holder"}
+      }
+    },
+    {
+      "from": [4.5, 7.6, 12.8],
+      "to": [11.5, 8.4, 15.1],
+      "faces": {
+        "north": {"texture": "#holder"},
+        "east": {"texture": "#holder"},
+        "south": {"texture": "#holder"},
+        "west": {"texture": "#holder"},
+        "up": {"texture": "#holder"},
+        "down": {"texture": "#holder"}
+      }
+    },
+    {
+      "from": [4, 6, 9.6],
+      "to": [12, 10, 13.5],
+      "faces": {
+        "north": {"uv": [0, 0, 64, 32], "texture": "#roll"},
+        "east": {"uv": [0, 0, 64, 64], "texture": "#end"},
+        "south": {"texture": "#roll"},
+        "west": {"uv": [0, 0, 64, 64], "texture": "#end"},
+        "up": {"texture": "#roll"},
+        "down": {"texture": "#roll"}
+      }
+    },
+    {
+      "from": [7.25, 2.5, 9.3],
+      "to": [8.75, 6.2, 10.1],
+      "faces": {
+        "north": {"uv": [0, 0, 32, 64], "texture": "#roll"},
+        "east": {"texture": "#roll"},
+        "south": {"texture": "#roll"},
+        "west": {"texture": "#roll"},
+        "down": {"texture": "#roll"}
+      }
+    },
+    {
+      "from": [5.8, 5.7, 13.3],
+      "to": [10.2, 6.25, 14.2],
+      "faces": {
+        "north": {"texture": "#holder"},
+        "east": {"texture": "#holder"},
+        "south": {"texture": "#holder"},
+        "west": {"texture": "#holder"},
+        "up": {"texture": "#holder"}
+      }
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "beautifuldecor:block/plate_hotdog"
+    },
+    "facing=east": {
+      "model": "beautifuldecor:block/plate_hotdog",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "beautifuldecor:block/plate_hotdog",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "beautifuldecor:block/plate_hotdog",
+      "y": 270
+    }
+  }
+}

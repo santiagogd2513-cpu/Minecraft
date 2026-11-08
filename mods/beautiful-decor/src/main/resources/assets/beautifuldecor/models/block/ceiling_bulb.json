@@ -1,0 +1,51 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "particle": "minecraft:block/iron_block",
+    "metal": "minecraft:block/iron_block",
+    "socket": "minecraft:block/light_gray_concrete",
+    "glass": "minecraft:block/white_stained_glass"
+  },
+  "elements": [
+    {
+      "from": [6, 15, 6], "to": [10, 16, 10],
+      "faces": {
+        "north": {"texture": "#metal"}, "east": {"texture": "#metal"},
+        "south": {"texture": "#metal"}, "west": {"texture": "#metal"},
+        "up": {"texture": "#metal"}, "down": {"texture": "#metal"}
+      }
+    },
+    {
+      "from": [5, 13, 5], "to": [11, 15.5, 11],
+      "faces": {
+        "north": {"texture": "#socket"}, "east": {"texture": "#metal"},
+        "south": {"texture": "#socket"}, "west": {"texture": "#metal"},
+        "up": {"texture": "#metal"}, "down": {"texture": "#socket"}
+      }
+    },
+    {
+      "from": [6, 10, 6], "to": [10, 13.5, 10],
+      "faces": {
+        "north": {"texture": "#metal"}, "east": {"texture": "#metal"},
+        "south": {"texture": "#metal"}, "west": {"texture": "#metal"},
+        "up": {"texture": "#socket"}, "down": {"texture": "#glass"}
+      }
+    },
+    {
+      "from": [5, 6, 5], "to": [11, 10.5, 11],
+      "faces": {
+        "north": {"texture": "#glass"}, "east": {"texture": "#glass"},
+        "south": {"texture": "#glass"}, "west": {"texture": "#glass"},
+        "up": {"texture": "#glass"}, "down": {"texture": "#glass"}
+      }
+    },
+    {
+      "from": [6, 4, 6], "to": [10, 6.5, 10],
+      "faces": {
+        "north": {"texture": "#glass"}, "east": {"texture": "#glass"},
+        "south": {"texture": "#glass"}, "west": {"texture": "#glass"},
+        "up": {"texture": "#glass"}, "down": {"texture": "#glass"}
+      }
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "parent": "beautifuldecor:block/hs_pc",
+  "textures": {
+    "case": "beautifuldecor:block/hs_pc_case",
+    "screen": "beautifuldecor:block/hs_pc_screen_off",
+    "front": "beautifuldecor:block/hs_pc_front_off",
+    "side": "beautifuldecor:block/hs_pc_side_off",
+    "keys": "beautifuldecor:block/hs_pc_keys",
+    "mouse": "beautifuldecor:block/hs_pc_mouse",
+    "particle": "beautifuldecor:block/hs_pc_case"
+  }
+}

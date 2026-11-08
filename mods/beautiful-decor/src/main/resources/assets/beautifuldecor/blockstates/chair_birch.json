@@ -1,0 +1,19 @@
+{
+ "variants": {
+  "facing=north": {
+   "model": "beautifuldecor:block/chair_birch"
+  },
+  "facing=east": {
+   "model": "beautifuldecor:block/chair_birch",
+   "y": 90
+  },
+  "facing=south": {
+   "model": "beautifuldecor:block/chair_birch",
+   "y": 180
+  },
+  "facing=west": {
+   "model": "beautifuldecor:block/chair_birch",
+   "y": 270
+  }
+ }
+}

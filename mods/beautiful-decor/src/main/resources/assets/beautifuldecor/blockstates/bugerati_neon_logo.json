@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "beautifuldecor:block/bugerati_neon_logo"
+    },
+    "facing=east": {
+      "model": "beautifuldecor:block/bugerati_neon_logo",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "beautifuldecor:block/bugerati_neon_logo",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "beautifuldecor:block/bugerati_neon_logo",
+      "y": 270
+    }
+  }
+}

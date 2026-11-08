@@ -1,0 +1,12 @@
+# el ancla de desplazamiento: lo que se lee se queda en su lugar cuando una pagina cambia arriba
+go http://127.0.0.1:8765/anchor.html
+view 600 100
+publish
+scroll 120
+cap
+click Insertar arriba
+wait 300
+restore
+cap
+scroll 0
+cap

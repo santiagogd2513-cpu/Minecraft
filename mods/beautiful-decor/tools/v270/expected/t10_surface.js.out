@@ -1,0 +1,34 @@
+Object assign:fn2 create:fn2 defineProperties:fn2 defineProperty:fn3 entries:fn1 freeze:fn1 fromEntries:fn1 getOwnPropertyDescriptor:fn2 getOwnPropertyDescriptors:fn1 getOwnPropertyNames:fn1 getOwnPropertySymbols:fn1 getPrototypeOf:fn1 groupBy:fn2 hasOwn:fn2 is:fn2 isExtensible:fn1 isFrozen:fn1 isSealed:fn1 keys:fn1 length:number name:string preventExtensions:fn1 prototype:object seal:fn1 setPrototypeOf:fn2 values:fn1
+Object.prototype constructor:fn1 hasOwnProperty:fn1 isPrototypeOf:fn1 propertyIsEnumerable:fn1 toLocaleString:fn0 toString:fn0 valueOf:fn0
+Function length:number name:string prototype:fn0
+Function.prototype apply:fn2 bind:fn1 call:fn1 constructor:fn1 length:number name:string toString:fn0
+Array from:fn1 isArray:fn1 length:number name:string of:fn0 prototype:object
+Array.prototype at:fn1 concat:fn1 constructor:fn1 copyWithin:fn2 entries:fn0 every:fn1 fill:fn1 filter:fn1 find:fn1 findIndex:fn1 findLast:fn1 findLastIndex:fn1 flat:fn0 flatMap:fn1 forEach:fn1 includes:fn1 indexOf:fn1 join:fn1 keys:fn0 lastIndexOf:fn1 length:number map:fn1 pop:fn0 push:fn1 reduce:fn1 reduceRight:fn1 reverse:fn0 shift:fn0 slice:fn2 some:fn1 sort:fn1 splice:fn2 toLocaleString:fn0 toReversed:fn0 toSorted:fn1 toSpliced:fn2 toString:fn0 unshift:fn1 values:fn0 with:fn2
+String fromCharCode:fn1 fromCodePoint:fn1 length:number name:string prototype:object raw:fn1
+String.prototype anchor:fn1 at:fn1 big:fn0 blink:fn0 bold:fn0 charAt:fn1 charCodeAt:fn1 codePointAt:fn1 concat:fn1 constructor:fn1 endsWith:fn1 fixed:fn0 fontcolor:fn1 fontsize:fn1 includes:fn1 indexOf:fn1 isWellFormed:fn0 italics:fn0 lastIndexOf:fn1 length:number link:fn1 localeCompare:fn1 match:fn1 matchAll:fn1 normalize:fn0 padEnd:fn1 padStart:fn1 repeat:fn1 replace:fn2 replaceAll:fn2 search:fn1 slice:fn2 small:fn0 split:fn2 startsWith:fn1 strike:fn0 sub:fn0 substr:fn2 substring:fn2 sup:fn0 toLocaleLowerCase:fn0 toLocaleUpperCase:fn0 toLowerCase:fn0 toString:fn0 toUpperCase:fn0 toWellFormed:fn0 trim:fn0 trimEnd:fn0 trimLeft:fn0 trimRight:fn0 trimStart:fn0 valueOf:fn0
+Number EPSILON:number MAX_SAFE_INTEGER:number MAX_VALUE:number MIN_SAFE_INTEGER:number MIN_VALUE:number NEGATIVE_INFINITY:number NaN:number POSITIVE_INFINITY:number isFinite:fn1 isInteger:fn1 isNaN:fn1 isSafeInteger:fn1 length:number name:string parseFloat:fn1 parseInt:fn2 prototype:object
+Number.prototype constructor:fn1 toExponential:fn1 toFixed:fn1 toLocaleString:fn0 toPrecision:fn1 toString:fn1 valueOf:fn0
+Boolean length:number name:string prototype:object
+Boolean.prototype constructor:fn1 toString:fn0 valueOf:fn0
+Symbol asyncIterator:symbol for:fn1 hasInstance:symbol isConcatSpreadable:symbol iterator:symbol keyFor:fn1 length:number match:symbol matchAll:symbol name:string prototype:object replace:symbol search:symbol species:symbol split:symbol toPrimitive:symbol toStringTag:symbol unscopables:symbol
+Symbol.prototype constructor:fn0 description:accessor toString:fn0 valueOf:fn0
+Math E:number LN10:number LN2:number LOG10E:number LOG2E:number PI:number SQRT1_2:number SQRT2:number abs:fn1 acos:fn1 acosh:fn1 asin:fn1 asinh:fn1 atan:fn1 atan2:fn2 atanh:fn1 cbrt:fn1 ceil:fn1 clz32:fn1 cos:fn1 cosh:fn1 exp:fn1 expm1:fn1 floor:fn1 fround:fn1 hypot:fn2 imul:fn2 log:fn1 log10:fn1 log1p:fn1 log2:fn1 max:fn2 min:fn2 pow:fn2 random:fn0 round:fn1 sign:fn1 sin:fn1 sinh:fn1 sqrt:fn1 tan:fn1 tanh:fn1 trunc:fn1
+JSON parse:fn2 stringify:fn3
+Promise all:fn1 allSettled:fn1 any:fn1 length:number name:string prototype:object race:fn1 reject:fn1 resolve:fn1 withResolvers:fn0
+Promise.prototype catch:fn1 constructor:fn1 finally:fn1 then:fn2
+RegExp $&:accessor $':accessor $+:accessor $1:accessor $2:accessor $3:accessor $4:accessor $5:accessor $6:accessor $7:accessor $8:accessor $9:accessor $_:accessor $`:accessor input:accessor lastMatch:accessor lastParen:accessor leftContext:accessor length:number name:string prototype:object rightContext:accessor
+RegExp.prototype compile:fn2 constructor:fn2 dotAll:accessor exec:fn1 flags:accessor global:accessor hasIndices:accessor ignoreCase:accessor multiline:accessor source:accessor sticky:accessor test:fn1 toString:fn0 unicode:accessor unicodeSets:accessor
+Date UTC:fn7 length:number name:string now:fn0 parse:fn1 prototype:object
+Date.prototype constructor:fn7 getDate:fn0 getDay:fn0 getFullYear:fn0 getHours:fn0 getMilliseconds:fn0 getMinutes:fn0 getMonth:fn0 getSeconds:fn0 getTime:fn0 getTimezoneOffset:fn0 getUTCDate:fn0 getUTCDay:fn0 getUTCFullYear:fn0 getUTCHours:fn0 getUTCMilliseconds:fn0 getUTCMinutes:fn0 getUTCMonth:fn0 getUTCSeconds:fn0 getYear:fn0 setDate:fn1 setFullYear:fn3 setHours:fn4 setMilliseconds:fn1 setMinutes:fn3 setMonth:fn2 setSeconds:fn2 setTime:fn1 setUTCDate:fn1 setUTCFullYear:fn3 setUTCHours:fn4 setUTCMilliseconds:fn1 setUTCMinutes:fn3 setUTCMonth:fn2 setUTCSeconds:fn2 setYear:fn1 toDateString:fn0 toGMTString:fn0 toISOString:fn0 toJSON:fn1 toLocaleDateString:fn0 toLocaleString:fn0 toLocaleTimeString:fn0 toString:fn0 toTimeString:fn0 toUTCString:fn0 valueOf:fn0
+Map groupBy:fn2 length:number name:string prototype:object
+Map.prototype clear:fn0 constructor:fn0 delete:fn1 entries:fn0 forEach:fn1 get:fn1 has:fn1 keys:fn0 set:fn2 size:accessor values:fn0
+Set length:number name:string prototype:object
+Set.prototype add:fn1 clear:fn0 constructor:fn0 delete:fn1 difference:fn1 entries:fn0 forEach:fn1 has:fn1 intersection:fn1 isDisjointFrom:fn1 isSubsetOf:fn1 isSupersetOf:fn1 keys:fn0 size:accessor symmetricDifference:fn1 union:fn1 values:fn0
+WeakMap length:number name:string prototype:object
+WeakMap.prototype constructor:fn0 delete:fn1 get:fn1 has:fn1 set:fn2
+WeakSet length:number name:string prototype:object
+WeakSet.prototype add:fn1 constructor:fn0 delete:fn1 has:fn1
+Error length:number name:string prototype:object
+Error.prototype constructor:fn1 message:string name:string toString:fn0
+Reflect apply:fn3 construct:fn2 defineProperty:fn3 deleteProperty:fn2 get:fn2 getOwnPropertyDescriptor:fn2 getPrototypeOf:fn1 has:fn2 isExtensible:fn1 ownKeys:fn1 preventExtensions:fn1 set:fn3 setPrototypeOf:fn2
+globals Array Boolean Date Error Function Infinity JSON Map Math NaN Number Object Promise RangeError ReferenceError Reflect RegExp Set String Symbol SyntaxError TypeError WeakMap WeakSet decodeURI decodeURIComponent encodeURI encodeURIComponent eval globalThis isFinite isNaN out parseFloat parseInt undefined

@@ -1,0 +1,8 @@
+wait 600
+eval console.log('sin disposición no hay avisos')
+pagesize 400 1000
+layout
+wait 10
+eval document.getElementById('x').setAttribute('data-rect', '0,10,100,200')
+layout
+wait 10

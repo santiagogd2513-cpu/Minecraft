@@ -1,0 +1,8 @@
+<!DOCTYPE html><html><head><title>Segunda</title></head><body>
+<h1>Segunda</h1><p id="p">pagina dos</p>
+<a href="/index.html" id="back">volver</a>
+<button id="push" onclick="history.pushState({n:1}, '', '/second.html?step=1'); document.getElementById('p').textContent = 'push ' + location.search;">push</button>
+<script>
+window.addEventListener('popstate', function (e) { document.getElementById('p').textContent = 'pop ' + JSON.stringify(e.state) + ' ' + location.search; });
+</script>
+</body></html>

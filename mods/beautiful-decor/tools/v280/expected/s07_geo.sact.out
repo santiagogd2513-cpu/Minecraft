@@ -1,0 +1,13 @@
+PUBLISHED height=221 items=12
+NEW log: RESIZE 600x100
+NEW log: IO p10 false
+NEW log: RO p1 588xtrue
+CLICK Medir -> button
+NEW log: RECT left=6 width=588 height>0=true top=97
+NEW log: SIZES inner=600x100 scrollH>0=true offsetTop=97
+NEW log: AT p5
+NEW log: SCROLL 120
+NEW log: IO p10 true
+NEW log: RESIZE 500x80
+NEW log: SCROLL 0
+NEW log: IO p10 false

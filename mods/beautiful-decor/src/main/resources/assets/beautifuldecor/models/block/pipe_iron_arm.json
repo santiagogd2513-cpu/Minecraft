@@ -1,0 +1,12 @@
+{
+ "parent": "minecraft:block/block",
+ "textures": {"particle": "beautifuldecor:block/pipe_iron", "pipe": "beautifuldecor:block/pipe_iron"},
+ "elements": [
+  {"from":[4.8,6.016,1.4],"to":[11.2,9.984,4.6],"faces":{"north":{"texture":"#pipe","uv":[1,1,7,7]},"east":{"texture":"#pipe","uv":[1,1,7,7]},"south":{"texture":"#pipe","uv":[1,1,7,7]},"west":{"texture":"#pipe","uv":[1,1,7,7]},"up":{"texture":"#pipe","uv":[1,1,7,7]},"down":{"texture":"#pipe","uv":[1,1,7,7]}}},
+  {"from":[6.016,4.8,1.4],"to":[9.984,11.2,4.6],"faces":{"north":{"texture":"#pipe","uv":[1,1,7,7]},"east":{"texture":"#pipe","uv":[1,1,7,7]},"south":{"texture":"#pipe","uv":[1,1,7,7]},"west":{"texture":"#pipe","uv":[1,1,7,7]},"up":{"texture":"#pipe","uv":[1,1,7,7]},"down":{"texture":"#pipe","uv":[1,1,7,7]}}},
+  {"from":[5.184,5.184,1.4],"to":[10.816,10.816,4.6],"faces":{"north":{"texture":"#pipe","uv":[1,1,7,7]},"east":{"texture":"#pipe","uv":[1,1,7,7]},"south":{"texture":"#pipe","uv":[1,1,7,7]},"west":{"texture":"#pipe","uv":[1,1,7,7]},"up":{"texture":"#pipe","uv":[1,1,7,7]},"down":{"texture":"#pipe","uv":[1,1,7,7]}}},
+  {"from":[4.0,4.0,0.0],"to":[12.0,12.0,1.4],"faces":{"north":{"texture":"#pipe","uv":[9,1,15,7]},"east":{"texture":"#pipe","uv":[9,1,15,7]},"south":{"texture":"#pipe","uv":[9,1,15,7]},"west":{"texture":"#pipe","uv":[9,1,15,7]},"up":{"texture":"#pipe","uv":[9,1,15,7]},"down":{"texture":"#pipe","uv":[9,1,15,7]}}},
+  {"from":[4.3,4.3,2.2],"to":[11.7,11.7,2.6],"faces":{"north":{"texture":"#pipe","uv":[9,1,15,7]},"east":{"texture":"#pipe","uv":[9,1,15,7]},"south":{"texture":"#pipe","uv":[9,1,15,7]},"west":{"texture":"#pipe","uv":[9,1,15,7]},"up":{"texture":"#pipe","uv":[9,1,15,7]},"down":{"texture":"#pipe","uv":[9,1,15,7]}}},
+  {"from":[4.3,4.3,3.4],"to":[11.7,11.7,3.8],"faces":{"north":{"texture":"#pipe","uv":[9,1,15,7]},"east":{"texture":"#pipe","uv":[9,1,15,7]},"south":{"texture":"#pipe","uv":[9,1,15,7]},"west":{"texture":"#pipe","uv":[9,1,15,7]},"up":{"texture":"#pipe","uv":[9,1,15,7]},"down":{"texture":"#pipe","uv":[9,1,15,7]}}}
+ ]
+}

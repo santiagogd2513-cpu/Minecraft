@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html><body>
+<form id="f" action="/search" method="get">
+  <input id="q" name="q" type="text" value="hola">
+  <input name="n" type="number" value="5">
+  <input id="cb" name="c" type="checkbox" value="yes" checked>
+  <input name="c2" type="checkbox">
+  <input name="r" type="radio" value="1"><input name="r" type="radio" value="2" checked>
+  <select id="s" name="s"><option value="a">A</option><option value="b" selected>B</option><option>Cc</option></select>
+  <select id="m" name="m" multiple><option value="1" selected>1</option><option value="2" selected>2</option><option value="3">3</option></select>
+  <textarea id="t" name="t">lineas
+dos</textarea>
+  <input type="hidden" name="h" value="oculto">
+  <input type="submit" id="go" name="go" value="Buscar">
+  <button type="button" id="bt" name="bt">nada</button>
+  <input name="dis" value="x" disabled>
+</form>
+<form id="g" method="post" action="/post"><input id="e" name="email" type="email" required><input name="p" value="a&b"><button id="gs">enviar</button></form>
+<script>
+function eq(name, got, exp) {
+  if (got === exp) console.log('ok ' + name);
+  else console.log('FAIL ' + name + ': got ' + JSON.stringify(got) + ' expected ' + JSON.stringify(exp));
+}
+var f = document.getElementById('f');
+eq('q value', f.q.value, 'hola');
+eq("elements", f.elements.length, 13);
+eq('named', f.elements['q'] === document.getElementById('q'), true);
+eq('select value', document.getElementById('s').value, 'b');
+eq('select idx', document.getElementById('s').selectedIndex, 1);
+eq('option text value', document.getElementById('s').options[2].value, 'Cc');
+eq('multi', document.getElementById('m').selectedOptions.length, 2);
+eq('textarea', document.getElementById('t').value, 'lineas\ndos');
+eq('radio group', f.elements['r'].value, '2');
+eq('checkbox', document.getElementById('cb').checked, true);
+document.getElementById('s').value = 'a';
+eq('select set', document.getElementById('s').selectedIndex, 0);
+var fd = new FormData(f);
+eq('FormData q', fd.get('q'), 'hola');
+eq('FormData c2', fd.has('c2'), false);
+eq('FormData getAll m', fd.getAll('m').join(), '1,2');
+eq('FormData dis', fd.has('dis'), false);
+eq('FormData go', fd.has('go'), false);
+var keys = []; fd.forEach(function (v, k) { keys.push(k); });
+eq('FormData order', keys.join(), 'q,n,c,r,s,m,m,t,h');
+eq('URLSearchParams', new URLSearchParams(fd).toString().slice(0, 14), 'q=hola&n=5&c=y');
+var g = document.getElementById('g');
+eq('validity', document.getElementById('e').validity.valid, false);
+eq('checkValidity', g.checkValidity(), false);
+eq('validationMessage', document.getElementById('e').validationMessage.length > 0, true);
+eq('willValidate', document.getElementById('e').willValidate, true);
+document.getElementById('e').value = 'a@b.co';
+eq('now valid', g.checkValidity(), true);
+document.getElementById('e').setCustomValidity('malo');
+eq('custom', document.getElementById('e').validationMessage, 'malo');
+document.getElementById('e').setCustomValidity('');
+g.addEventListener('submit', function (e) { console.log('submit event, submitter=' + (e.submitter && e.submitter.id)); });
+f.addEventListener('submit', function (e) { console.log('f submit'); });
+f.reset();
+eq('reset q', f.q.value, 'hola');
+document.getElementById('q').value = 'cambiado';
+f.reset();
+eq('reset after change', f.q.value, 'hola');
+console.log('done');
+</script>
+</body></html>

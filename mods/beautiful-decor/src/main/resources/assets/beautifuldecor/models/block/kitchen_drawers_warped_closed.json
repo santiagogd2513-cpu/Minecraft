@@ -1,0 +1,10 @@
+{
+  "parent": "beautifuldecor:block/kitchen_drawers_closed_base",
+  "textures": {
+    "particle": "minecraft:block/warped_planks",
+    "planks": "minecraft:block/warped_planks",
+    "trim": "minecraft:block/stripped_warped_stem",
+    "knob": "beautifuldecor:block/handle_metal",
+    "top": "beautifuldecor:block/kitchen_counter"
+  }
+}

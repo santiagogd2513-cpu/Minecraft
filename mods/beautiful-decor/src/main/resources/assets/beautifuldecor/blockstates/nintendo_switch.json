@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "beautifuldecor:block/nintendo_switch" },
+    "facing=east":  { "model": "beautifuldecor:block/nintendo_switch", "y": 90 },
+    "facing=south": { "model": "beautifuldecor:block/nintendo_switch", "y": 180 },
+    "facing=west":  { "model": "beautifuldecor:block/nintendo_switch", "y": 270 }
+  }
+}

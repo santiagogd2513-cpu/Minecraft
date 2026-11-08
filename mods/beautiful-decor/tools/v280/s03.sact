@@ -1,0 +1,10 @@
+go http://127.0.0.1:8765/ajax.html
+wait 650
+text
+click Cargar
+text
+wait 1200
+text
+console
+wait 2000
+text

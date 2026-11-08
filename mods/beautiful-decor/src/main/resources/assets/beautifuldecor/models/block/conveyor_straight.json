@@ -1,0 +1,10 @@
+{
+ "parent": "minecraft:block/block",
+ "textures": {"particle": "beautifuldecor:block/conveyor_frame", "frame": "beautifuldecor:block/conveyor_frame", "belt": "beautifuldecor:block/conveyor_belt"},
+ "elements": [
+  {"from":[0,0,0],"to":[16,3,16],"faces":{"north":{"texture":"#frame","uv":[0,0,16,3]},"east":{"texture":"#frame","uv":[0,0,16,3]},"south":{"texture":"#frame","uv":[0,0,16,3]},"west":{"texture":"#frame","uv":[0,0,16,3]},"up":{"texture":"#frame","uv":[0,0,16,16]},"down":{"texture":"#frame","uv":[0,0,16,16]}}},
+  {"from":[0,3,0],"to":[2,5,16],"faces":{"north":{"texture":"#frame","uv":[0,0,2,2]},"east":{"texture":"#frame","uv":[0,0,16,2]},"south":{"texture":"#frame","uv":[0,0,2,2]},"west":{"texture":"#frame","uv":[0,0,16,2]},"up":{"texture":"#frame","uv":[0,0,2,16]},"down":{"texture":"#frame","uv":[0,0,2,16]}}},
+  {"from":[14,3,0],"to":[16,5,16],"faces":{"north":{"texture":"#frame","uv":[0,0,2,2]},"east":{"texture":"#frame","uv":[0,0,16,2]},"south":{"texture":"#frame","uv":[0,0,2,2]},"west":{"texture":"#frame","uv":[0,0,16,2]},"up":{"texture":"#frame","uv":[0,0,2,16]},"down":{"texture":"#frame","uv":[0,0,2,16]}}},
+  {"from":[2,3,0],"to":[14,4,16],"faces":{"up":{"texture":"#belt","uv":[2,0,14,16]},"north":{"texture":"#belt","uv":[2,0,14,1]},"south":{"texture":"#belt","uv":[2,0,14,1]}}}
+ ]
+}

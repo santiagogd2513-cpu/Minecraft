@@ -1,0 +1,49 @@
+{
+ "variants": {
+  "facing=north,shape=straight": {
+   "model": "beautifuldecor:block/slide_orange"
+  },
+  "facing=north,shape=left": {
+   "model": "beautifuldecor:block/slide_orange_left"
+  },
+  "facing=north,shape=right": {
+   "model": "beautifuldecor:block/slide_orange_right"
+  },
+  "facing=east,shape=straight": {
+   "model": "beautifuldecor:block/slide_orange",
+   "y": 90
+  },
+  "facing=east,shape=left": {
+   "model": "beautifuldecor:block/slide_orange_left",
+   "y": 90
+  },
+  "facing=east,shape=right": {
+   "model": "beautifuldecor:block/slide_orange_right",
+   "y": 90
+  },
+  "facing=south,shape=straight": {
+   "model": "beautifuldecor:block/slide_orange",
+   "y": 180
+  },
+  "facing=south,shape=left": {
+   "model": "beautifuldecor:block/slide_orange_left",
+   "y": 180
+  },
+  "facing=south,shape=right": {
+   "model": "beautifuldecor:block/slide_orange_right",
+   "y": 180
+  },
+  "facing=west,shape=straight": {
+   "model": "beautifuldecor:block/slide_orange",
+   "y": 270
+  },
+  "facing=west,shape=left": {
+   "model": "beautifuldecor:block/slide_orange_left",
+   "y": 270
+  },
+  "facing=west,shape=right": {
+   "model": "beautifuldecor:block/slide_orange_right",
+   "y": 270
+  }
+ }
+}

@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "beautifuldecor:block/sign_no_trucks"
+    },
+    "facing=east": {
+      "model": "beautifuldecor:block/sign_no_trucks",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "beautifuldecor:block/sign_no_trucks",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "beautifuldecor:block/sign_no_trucks",
+      "y": 270
+    }
+  }
+}

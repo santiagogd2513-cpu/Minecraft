@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html data-viewport="400,300">
+<body>
+<div id="x" data-rect="0,10,100,100">x</div>
+<script>
+var io = new IntersectionObserver(function (es) { es.forEach(function (e) { console.log('IO', e.target.id, e.isIntersecting); }); });
+io.observe(document.getElementById('x'));
+var ro = new ResizeObserver(function (es) { es.forEach(function (e) { console.log('RO', e.target.id, e.contentRect.width, e.contentRect.height); }); });
+ro.observe(document.getElementById('x'));
+document.getElementById('x').scrollIntoView();
+console.log('registrado; sin disposición todavía');
+</script>
+</body>
+</html>

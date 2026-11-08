@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html><head><title>Estres</title></head><body>
+<p id="a">a -</p>
+<p id="b">b -</p>
+<button id="btn" onclick="document.getElementById('a').textContent = 'a clic'">Pulsa</button>
+<script>
+var flood = 0;
+setInterval(function () { flood++; }, 0);            // un intervalo de 0 ms no debe tapar los clics
+setTimeout(function () { while (true) { } }, 200);   // un bucle infinito se corta solo
+var bad = setInterval(function () { document.getElementById('b').textContent = 'b ' + (++window.k || (window.k = 1)); while (true) { } }, 50);
+</script>
+</body></html>

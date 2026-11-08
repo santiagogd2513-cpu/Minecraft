@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "beautifuldecor:block/round_bulb"
+    },
+    "facing=east": {
+      "model": "beautifuldecor:block/round_bulb",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "beautifuldecor:block/round_bulb",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "beautifuldecor:block/round_bulb",
+      "y": 270
+    }
+  }
+}

@@ -1,0 +1,44 @@
+package org.lwjgl.glfw;
+public class GLFW {
+    public static final int GLFW_KEY_ENTER = 257;
+    public static final int GLFW_KEY_KP_ENTER = 335;
+    public static final int GLFW_KEY_BACKSPACE = 259;
+    public static final int GLFW_KEY_DELETE = 261;
+    public static final int GLFW_KEY_TAB = 258;
+    public static final int GLFW_KEY_ESCAPE = 256;
+    public static final int GLFW_KEY_LEFT = 263;
+    public static final int GLFW_KEY_RIGHT = 262;
+    public static final int GLFW_KEY_UP = 265;
+    public static final int GLFW_KEY_DOWN = 264;
+    public static final int GLFW_KEY_HOME = 268;
+    public static final int GLFW_KEY_END = 269;
+    public static final int GLFW_KEY_PAGE_UP = 266;
+    public static final int GLFW_KEY_PAGE_DOWN = 267;
+    public static final int GLFW_KEY_INSERT = 260;
+    public static final int GLFW_KEY_SPACE = 32;
+    public static final int GLFW_KEY_F1 = 290;
+    public static final int GLFW_KEY_F12 = 301;
+    public static final int GLFW_KEY_F5 = 294;
+    public static final int GLFW_KEY_A = 65;
+    public static final int GLFW_KEY_Z = 90;
+    public static final int GLFW_KEY_0 = 48;
+    public static final int GLFW_KEY_9 = 57;
+    public static final int GLFW_KEY_L = 76;
+    public static final int GLFW_KEY_J = 74;
+    public static final int GLFW_KEY_K = 75;
+    public static final int GLFW_KEY_H = 72;
+    public static final int GLFW_KEY_R = 82;
+    public static final int GLFW_KEY_V = 86;
+    public static final int GLFW_KEY_C = 67;
+    public static final int GLFW_KEY_X = 88;
+    public static final int GLFW_KEY_EQUAL = 61;
+    public static final int GLFW_KEY_KP_ADD = 334;
+    public static final int GLFW_KEY_MINUS = 45;
+    public static final int GLFW_KEY_KP_SUBTRACT = 333;
+    public static final int GLFW_KEY_KP_0 = 320;
+    public static final int GLFW_MOD_CONTROL = 2;
+    public static final int GLFW_MOD_ALT = 4;
+    public static final int GLFW_MOD_SHIFT = 1;
+    public static final int GLFW_MOD_SUPER = 8;
+    public static String glfwGetKeyName(int k, int s) { return null; }
+}

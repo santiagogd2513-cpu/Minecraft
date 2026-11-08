@@ -1,0 +1,9 @@
+{
+  "parent": "beautifuldecor:block/writing_desk_closed_base",
+  "textures": {
+    "particle": "minecraft:block/bamboo_planks",
+    "planks": "minecraft:block/bamboo_planks",
+    "trim": "minecraft:block/stripped_bamboo_block",
+    "knob": "beautifuldecor:block/handle_metal"
+  }
+}

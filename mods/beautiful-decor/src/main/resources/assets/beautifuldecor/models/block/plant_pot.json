@@ -1,0 +1,34 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "particle": "beautifuldecor:block/pot",
+    "pot": "beautifuldecor:block/pot",
+    "dirt": "beautifuldecor:block/dirt",
+    "leaf": "beautifuldecor:block/leaf"
+  },
+  "elements": [
+    {
+      "from": [4, 0, 4],
+      "to": [12, 8, 12],
+      "faces": {
+        "north": {"uv": [0, 0, 8, 8], "texture": "#pot"},
+        "east": {"uv": [0, 0, 8, 8], "texture": "#pot"},
+        "south": {"uv": [0, 0, 8, 8], "texture": "#pot"},
+        "west": {"uv": [0, 0, 8, 8], "texture": "#pot"},
+        "up": {"uv": [0, 0, 8, 8], "texture": "#dirt"},
+        "down": {"uv": [0, 0, 8, 8], "texture": "#pot"}
+      }
+    },
+    {
+      "from": [6, 8, 6],
+      "to": [10, 14, 10],
+      "faces": {
+        "north": {"uv": [0, 0, 4, 6], "texture": "#leaf"},
+        "east": {"uv": [0, 0, 4, 6], "texture": "#leaf"},
+        "south": {"uv": [0, 0, 4, 6], "texture": "#leaf"},
+        "west": {"uv": [0, 0, 4, 6], "texture": "#leaf"},
+        "up": {"uv": [0, 0, 4, 4], "texture": "#leaf"}
+      }
+    }
+  ]
+}

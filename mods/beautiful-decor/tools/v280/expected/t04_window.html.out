@@ -1,0 +1,57 @@
+ok window
+ok document ref
+ok localStorage
+ok ls prop
+ok ls length
+ok ls keys
+ok ls delete
+ok ls null
+ok ss
+ok matchMedia dark
+ok matchMedia width
+ok matchMedia small
+ok innerWidth
+ok navigator
+ok history len
+HISTORY push http://test.local/new/path?z=1
+ok pushState url
+ok history len2
+ok SecurityError
+HISTORY replace http://test.local/new/path?z=1#frag
+ok replace
+ok btoa
+ok cs display
+ok cs font-size
+ok cs margin
+ok cs padding
+ok cs getPropertyValue
+ok CSS.escape
+ok CSS.supports
+ALERT hola
+CONFIRM seguro
+ok confirm
+PROMPT x
+ok prompt
+SCROLL 0,100
+function function function
+ok crypto uuid
+ok performance
+ok instance MutationObserver
+message hi
+ok postMessage
+ok location tostring
+ok isConnected
+ok isConnected2
+ok hash
+ok document.write
+done
+second script w
+[error] Uncaught TypeError: boom
+after error
+body onload
+inline click d click
+popstate null
+NAV http://test.local/new/path?z=1#abc
+NAV http://test.local/x/y
+HISTORY go -1
+RELOAD

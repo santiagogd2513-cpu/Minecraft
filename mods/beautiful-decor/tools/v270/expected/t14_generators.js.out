@@ -1,0 +1,28 @@
+[0,1,1,2,3,5,8,13,21,34]
+got hello
+cleanup
+{"value":1,"done":false} {"value":2,"done":false} {"value":9,"done":true} {"done":true}
+caught err
+{"value":1,"done":false} {"value":"after","done":false} {"done":true}
+[1,2,"a","ret"]
+1 [2,3] 3 3 [2,4,6]
+["X","Y"] [0,1,2,3]
+function true [object Generator] [object Generator]
+a 1
+b 2
+0 a
+1 b
+set 1
+set 2
+map m 1
+["closed"]
+0 1 ["closed","closed"]
+[0,1,2,3]
+[2,4]
+[1,9,25,49]
+true [object AsyncFunction] AsyncFunction
+asyncgen [1,2]
+[2,4,6]
+p1
+["a","b"]
+p2

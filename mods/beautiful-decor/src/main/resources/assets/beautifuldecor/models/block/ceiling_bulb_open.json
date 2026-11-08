@@ -1,0 +1,9 @@
+{
+  "parent": "beautifuldecor:block/ceiling_bulb",
+  "textures": {
+    "particle": "minecraft:block/iron_block",
+    "metal": "minecraft:block/iron_block",
+    "socket": "minecraft:block/light_gray_concrete",
+    "glass": "minecraft:block/glowstone"
+  }
+}

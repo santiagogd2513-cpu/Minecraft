@@ -1,0 +1,60 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "particle": "beautifuldecor:block/fixture_metal",
+    "metal": "beautifuldecor:block/fixture_metal",
+    "brass": "beautifuldecor:block/fixture_brass",
+    "glass": "beautifuldecor:block/fixture_glass",
+    "shade": "beautifuldecor:block/lamp_shade_cream"
+  },
+  "elements": [
+    {
+      "from": [5, 4, 14.25],
+      "to": [11, 12, 16],
+      "faces": {
+        "north": {"texture": "#metal"},
+        "east": {"texture": "#metal"},
+        "south": {"texture": "#brass"},
+        "west": {"texture": "#metal"},
+        "up": {"texture": "#metal"},
+        "down": {"texture": "#metal"}
+      }
+    },
+    {
+      "from": [6, 5, 11.5],
+      "to": [10, 11, 14.5],
+      "faces": {
+        "north": {"texture": "#brass"},
+        "east": {"texture": "#metal"},
+        "south": {"texture": "#brass"},
+        "west": {"texture": "#metal"},
+        "up": {"texture": "#metal"},
+        "down": {"texture": "#metal"}
+      }
+    },
+    {
+      "from": [4, 5.5, 8.5],
+      "to": [12, 11.5, 12],
+      "faces": {
+        "north": {"texture": "#shade"},
+        "east": {"texture": "#shade"},
+        "south": {"texture": "#shade"},
+        "west": {"texture": "#shade"},
+        "up": {"texture": "#shade"},
+        "down": {"texture": "#glass"}
+      }
+    },
+    {
+      "from": [5, 6.5, 7.5],
+      "to": [11, 10.5, 9.2],
+      "faces": {
+        "north": {"texture": "#shade"},
+        "east": {"texture": "#shade"},
+        "south": {"texture": "#shade"},
+        "west": {"texture": "#shade"},
+        "up": {"texture": "#shade"},
+        "down": {"texture": "#glass"}
+      }
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+modLoader="javafml"
+loaderVersion="[47,)"
+license="All Rights Reserved"
+
+[[mods]]
+modId="beautifuldecor"
+version="${file.jarVersion}"
+displayName="Beautiful Decor"
+authors="Santiago"
+logoFile="logo.png"
+logoBlur=false
+description='''
+Beautiful Decor es un mod de decoración para Minecraft que añade electrónicos, muebles y funcionalidades para aumentar las posibilidades de las construcciones.
+
+Incluye sofás que se unen en línea y en esquina, camas, mesas, cocinas con lavaplatos, estufas y microondas, televisores, computadores HS, consolas, luces, ventiladores, puertas, alfombras, un piano, un dron y mucho más.
+
+Beautiful Decor is a decoration mod for Minecraft that adds electronics, furniture and functional blocks to expand what you can build.
+'''
+
+[[dependencies.beautifuldecor]]
+    modId="forge"
+    mandatory=true
+    versionRange="[47,)"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.beautifuldecor]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.20.1,1.21)"
+    ordering="NONE"
+    side="BOTH"

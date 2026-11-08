@@ -1,0 +1,68 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "particle": "beautifuldecor:block/fixture_metal",
+    "metal": "beautifuldecor:block/fixture_metal",
+    "brass": "beautifuldecor:block/fixture_brass",
+    "glass": "beautifuldecor:block/fixture_glass"
+  },
+  "elements": [
+    {
+      "from": [6, 15, 6],
+      "to": [10, 16, 10],
+      "faces": {
+        "north": {"texture": "#metal"},
+        "east": {"texture": "#metal"},
+        "south": {"texture": "#metal"},
+        "west": {"texture": "#metal"},
+        "up": {"texture": "#brass"},
+        "down": {"texture": "#metal"}
+      }
+    },
+    {
+      "from": [7, 14.25, 7],
+      "to": [9, 15.3, 9],
+      "faces": {
+        "north": {"texture": "#brass"},
+        "east": {"texture": "#metal"},
+        "south": {"texture": "#brass"},
+        "west": {"texture": "#metal"}
+      }
+    },
+    {
+      "from": [2.25, 13.35, 2.25],
+      "to": [13.75, 14.6, 13.75],
+      "faces": {
+        "north": {"texture": "#metal"},
+        "east": {"texture": "#metal"},
+        "south": {"texture": "#metal"},
+        "west": {"texture": "#metal"},
+        "up": {"texture": "#metal"},
+        "down": {"texture": "#brass"}
+      }
+    },
+    {
+      "from": [3.25, 12.3, 3.25],
+      "to": [12.75, 13.5, 12.75],
+      "faces": {
+        "north": {"texture": "#brass"},
+        "east": {"texture": "#brass"},
+        "south": {"texture": "#brass"},
+        "west": {"texture": "#brass"},
+        "up": {"texture": "#metal"},
+        "down": {"uv": [0, 0, 64, 64], "texture": "#glass"}
+      }
+    },
+    {
+      "from": [4, 12, 4],
+      "to": [12, 12.4, 12],
+      "faces": {
+        "north": {"texture": "#glass"},
+        "east": {"texture": "#glass"},
+        "south": {"texture": "#glass"},
+        "west": {"texture": "#glass"},
+        "down": {"texture": "#glass"}
+      }
+    }
+  ]
+}

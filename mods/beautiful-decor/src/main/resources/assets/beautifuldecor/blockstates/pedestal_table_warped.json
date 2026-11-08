@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "beautifuldecor:block/pedestal_table_warped"
+    },
+    "facing=east": {
+      "model": "beautifuldecor:block/pedestal_table_warped",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "beautifuldecor:block/pedestal_table_warped",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "beautifuldecor:block/pedestal_table_warped",
+      "y": 270
+    }
+  }
+}

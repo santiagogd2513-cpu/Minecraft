@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "beautifuldecor:block/fence_carbon"
+    },
+    "facing=east": {
+      "model": "beautifuldecor:block/fence_carbon",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "beautifuldecor:block/fence_carbon",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "beautifuldecor:block/fence_carbon",
+      "y": 270
+    }
+  }
+}

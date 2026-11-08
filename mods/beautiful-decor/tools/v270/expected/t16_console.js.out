@@ -1,0 +1,203 @@
+[log] 1 -0 0 1.5 NaN Infinity str true null undefined Symbol(s)
+[log] [ 1, 'a', null, undefined, -0, true ] { a: 1, b: 'x', c: [ 1, 2 ], d: { e: { f: [Object] } } }
+[log] [ [ 1, [ 2, [Array] ] ] ] { a: { b: { c: [Object] } } }
+[log] [
+  7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+  7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+  7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+  7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+  7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+  7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+  7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+  7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7, 7,
+  7, 7, 7, 7,
+  ... 20 more items
+]
+[log] [
+   0,  3,  6,  9, 12, 15, 18, 21, 24,
+  27, 30, 33, 36, 39, 42, 45, 48, 51,
+  54, 57, 60, 63, 66, 69, 72, 75, 78,
+  81, 84, 87
+]
+[log] [
+  'item0', 'item1',
+  'item2', 'item3',
+  'item4', 'item5',
+  'item6', 'item7',
+  'item8', 'item9'
+]
+[log] [
+  's',     'sx',    'sxx',   'sxxx',
+  'sxxxx', 's',     'sx',    'sxx',
+  'sxxx',  'sxxxx', 's',     'sx',
+  'sxx',   'sxxx',  'sxxxx', 's',
+  'sx',    'sxx',   'sxxx',  'sxxxx',
+  's',     'sx',    'sxx',   'sxxx',
+  'sxxxx', 's',     'sx'
+]
+[log] [ 1, <1 empty item>, 3, <2 empty items>, 6 ] [ <5 empty items> ] [ undefined, <1 empty item>, null ]
+[log] [ 1, 2, extra: 'yes', '-1': 5 ]
+[log] {
+  '3': 4,
+  'a-b': 1,
+  valid_id: 2,
+  'with space': 6,
+  '': 7,
+  [Symbol(k)]: 5
+}
+[log] it's [
+  "it's",
+  'say "hi"',
+  `both ' and "`,
+  'back`tick\'"',
+  'line\nbreak',
+  'tab\t',
+  '\x01',
+  '\\'
+]
+[log] {
+  s: 'multi\nline',
+  t: 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'
+}
+[log] [
+  'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx',
+  'yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy',
+  'zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz'
+]
+[log] Map(3) { 'a' => 1, { k: 1 } => [ 1, 2 ], 1 => Map(1) { 2 => 3 } } Set(4) { 1, 'two', [ 3 ], { four: 4 } }
+[log] Map(0) {} Set(0) {} WeakMap { <items unknown> } WeakSet { <items unknown> }
+[log] 1970-01-01T00:00:00.000Z [ 1970-01-02T00:00:00.000Z ] { d: Invalid Date }
+[log] /ab+c/gi [ /x/ ] { r: /y\/z/m }
+[log] Error: boom
+    at foo (file.js:1:1)
+[log] {
+  err: TypeError: bad
+      at x
+}
+[log] Animal { name: 'rex', legs: 4 } Dog { name: 'rex', legs: 4, tail: true } [class Animal] [class Dog extends Animal] [ [class Animal] ]
+[log] [Function: foo] [Function (anonymous)] [Function (anonymous)] [AsyncFunction: af] [GeneratorFunction: gen] [AsyncFunction (anonymous)] [AsyncGeneratorFunction: ag] [class (anonymous)] [Function: max] [Function: Symbol]
+[log] [Function: named] { prop: 1, other: { x: 1 } }
+[log] [Object: null prototype] {} [Object: null prototype] { a: 1 } {}
+[log] { a: [Getter], b: [Setter], c: [Getter/Setter] }
+[log] {
+  f: [Function: f],
+  g: [Function: g],
+  h: [Function: h],
+  i: [class i],
+  j: Symbol(Symbol.iterator)
+}
+[log] [Number: 3] [String: 'abc'] [Boolean: false] [Symbol: Symbol(q)] [ [Number: -0] ]
+[log] <ref *1> {
+  name: 'c',
+  self: [Circular *1],
+  list: [ [Circular *1], { back: [Circular *1] } ]
+}
+[log] [
+  <ref *1> { a: 1, c2: { b: [Circular *1] } },
+  <ref *2> { b: <ref *1> { a: 1, c2: [Circular *2] } }
+]
+[log] Promise { 5 } Promise { { a: 1 } } Promise { <pending> } [ Promise { 'x' } ]
+[log] [Arguments] { '0': 1, '1': 'two', '2': [ 3 ] }
+[log] Object [Array Iterator] {} [Map Entries] { [ 1, 2 ] } [Map Iterator] { 1 } [Set Iterator] { 5 } [Set Entries] { [ 5, 5 ] }
+[log] Object [Generator] {} Object [String Iterator] {} Object [RegExp String Iterator] {}
+[log] { x: 1, [Symbol(Symbol.toStringTag)]: 'Custom' }
+[log] Tagged [TT] {}
+[log] [Function (anonymous)] { a: 1 } [ 1, 2, k: 'v' ]
+[log] { a: [ { b: [Array] } ] }
+[log] {
+  a: 1,
+  b: 2,
+  c: 3,
+  d: 4,
+  e: 5,
+  f: 6,
+  g: 7,
+  h: 8,
+  i: 9,
+  j: 10,
+  k: 11,
+  l: 12,
+  m: 13,
+  n: 14,
+  o: 15,
+  p: 16,
+  q: 17,
+  r: 18,
+  s: 19,
+  t: 20,
+  u: 21,
+  v: 22,
+  w: 23,
+  x: 24,
+  y: 25,
+  z: 26
+}
+[log] {
+  name: 'Alice',
+  age: 30,
+  address: { street: '123 Main St', city: 'Springfield', zip: '12345' },
+  tags: [ 'a', 'b', 'c' ]
+}
+[log] [
+  { id: 1, name: 'one', tags: [ 'x', 'y' ] },
+  { id: 2, name: 'two', tags: [] },
+  { id: 3, name: 'three', tags: [ 'z' ] }
+]
+[log] [ [ 1, 2, 3 ], [ 4, 5, 6 ], [ 7, 8, 9 ] ] [ [], {}, [ [] ], [ {} ] ]
+[log] Bob is 42.5 years and 42, 3.5; {"a":1} [ 1, [length]: 1 ] { b: { c: {} } } % extra 1
+[log] { a: 1 } %s null undefined
+[log] a Symbol(x) -0 %d z
+[log] 16 NaN NaN %c styled color: red
+[log] 100% 5 % %x
+[log] -0 [ -0 ] 0.30000000000000004 1e+21 1e-7 123456789012345680000 [ 1.5e+300 ]
+[info] info
+[warn] warn 1
+[error] err { a: 1 }
+[debug] dbg
+[log] G1
+[log]   inside
+[log]     { a: 1, b: [ 1, 2 ] } multi
+    line
+[warn]   w
+[log] out
+[log] { a: [Object] }
+[log] {
+  a: { b: { c: { d: 1 } } }
+}
+[log] default: 1
+[log] default: 2
+[log] x: 1
+[log] default: 1
+[error] Assertion failed: yes fmt
+[error] Assertion failed
+[log] 
+[log] 
+[log]  
+[log] a  b
+[log] [ undefined, null ] { u: undefined, n: null } [ [Function (anonymous)] ] [ Symbol(a) ]
+[log] { a: 1 } [ 1 ] [ true ]
+[log] Symbol(x) 1,2,3 [object Object]  null () => 1
+[log] {"a":[1,{"b":2}],"c":"x"} [
+  1,
+  2
+]
+[log] 9007199254740991 5e-324 2.220446049250313e-16 [ 0.000001, 1e-7 ]
+[log] é ñ 日本語 😀 [ 'é', '日本語', '😀' ] { '日本': '語' }
+[log] [
+  { id: 0, label: 'item number 0', active: true },
+  { id: 1, label: 'item number 1', active: false },
+  { id: 2, label: 'item number 2', active: true }
+]
+[log] 101 [
+   0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11,
+  12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23,
+  24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35,
+  36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47,
+  48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59,
+  60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71,
+  72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83,
+  84, 85, 86, 87, 88, 89, 90, 91, 92, 93, 94, 95,
+  96, 97, 98, 99,
+  ... 1 more item
+]
+[log] 105 Map(4) { 0 => 'v0', 1 => 'v1', 2 => 'v2', 3 => 'v3' }

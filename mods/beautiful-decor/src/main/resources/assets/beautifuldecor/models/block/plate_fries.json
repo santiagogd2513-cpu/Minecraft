@@ -1,0 +1,199 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "beautifuldecor:block/plate",
+    "plate": "beautifuldecor:block/plate",
+    "food": "beautifuldecor:block/food_fries"
+  },
+  "elements": [
+    {
+      "name": "plate",
+      "from": [
+        2,
+        0,
+        2
+      ],
+      "to": [
+        14,
+        1,
+        14
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            2
+          ],
+          "texture": "#plate"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            16,
+            2
+          ],
+          "texture": "#plate"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            2
+          ],
+          "texture": "#plate"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            2
+          ],
+          "texture": "#plate"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#plate"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#plate"
+        }
+      }
+    },
+    {
+      "name": "rim",
+      "from": [
+        1.5,
+        0.5,
+        1.5
+      ],
+      "to": [
+        14.5,
+        1.5,
+        14.5
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            2
+          ],
+          "texture": "#plate"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            16,
+            2
+          ],
+          "texture": "#plate"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            2
+          ],
+          "texture": "#plate"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            2
+          ],
+          "texture": "#plate"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#plate"
+        }
+      }
+    },
+    {
+      "name": "food",
+      "from": [
+        4,
+        1.5,
+        4
+      ],
+      "to": [
+        12,
+        4,
+        12
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            12
+          ],
+          "texture": "#food"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            16,
+            12
+          ],
+          "texture": "#food"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            12
+          ],
+          "texture": "#food"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            12
+          ],
+          "texture": "#food"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#food"
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "parent": "minecraft:block/block",
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "particle": "beautifuldecor:block/gd_door_out_b",
+    "ob": "beautifuldecor:block/gd_door_out_b",
+    "oa": "beautifuldecor:block/gd_door_out_a",
+    "ow": "beautifuldecor:block/gd_door_out_win",
+    "oh": "beautifuldecor:block/gd_door_out_hdl",
+    "os": "beautifuldecor:block/gd_door_out_seal",
+    "ib": "beautifuldecor:block/gd_door_in_b",
+    "iw": "beautifuldecor:block/gd_door_in_win",
+    "ih": "beautifuldecor:block/gd_door_in_hw",
+    "is": "beautifuldecor:block/gd_door_in_seal",
+    "hb": "beautifuldecor:block/gd_hdr_b",
+    "ha": "beautifuldecor:block/gd_hdr_a",
+    "hv": "beautifuldecor:block/gd_hdr_vent",
+    "hd": "beautifuldecor:block/gd_hdr_d",
+    "fb": "beautifuldecor:block/gd_frame_b",
+    "jb": "beautifuldecor:block/gd_jamb_b",
+    "ja": "beautifuldecor:block/gd_jamb_a",
+    "seal": "beautifuldecor:block/gd_seal"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        3
+      ],
+      "to": [
+        2,
+        16,
+        13
+      ],
+      "faces": {
+        "north": {
+          "texture": "#jb",
+          "uv": [
+            2,
+            0,
+            0,
+            16
+          ],
+          "tintindex": 2
+        },
+        "south": {
+          "texture": "#jb",
+          "uv": [
+            0,
+            0,
+            2,
+            16
+          ],
+          "tintindex": 2
+        },
+        "east": {
+          "texture": "#fb",
+          "tintindex": 2
+        },
+        "west": {
+          "texture": "#fb",
+          "tintindex": 2
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        0,
+        2.95
+      ],
+      "to": [
+        2,
+        16,
+        13.05
+      ],
+      "faces": {
+        "north": {
+          "texture": "#ja",
+          "uv": [
+            2,
+            0,
+            0,
+            16
+          ],
+          "tintindex": 1
+        },
+        "south": {
+          "texture": "#ja",
+          "uv": [
+            0,
+            0,
+            2,
+            16
+          ],
+          "tintindex": 1
+        }
+      }
+    }
+  ]
+}

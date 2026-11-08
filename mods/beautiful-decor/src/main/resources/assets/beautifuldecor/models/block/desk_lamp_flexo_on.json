@@ -1,0 +1,240 @@
+{
+ "parent": "minecraft:block/block",
+ "textures": {
+  "particle": "beautifuldecor:block/fixture_dark_metal",
+  "dark": "beautifuldecor:block/fixture_dark_metal",
+  "metal": "beautifuldecor:block/fixture_metal",
+  "shade": "minecraft:block/orange_concrete",
+  "bulb": "minecraft:block/glowstone"
+ },
+ "elements": [
+  {
+   "from": [
+    4,
+    0,
+    4
+   ],
+   "to": [
+    10,
+    1.4,
+    10
+   ],
+   "faces": {
+    "north": {
+     "texture": "#dark"
+    },
+    "east": {
+     "texture": "#dark"
+    },
+    "south": {
+     "texture": "#dark"
+    },
+    "west": {
+     "texture": "#dark"
+    },
+    "up": {
+     "texture": "#dark"
+    },
+    "down": {
+     "texture": "#dark"
+    }
+   }
+  },
+  {
+   "from": [
+    6.6,
+    1.4,
+    6.6
+   ],
+   "to": [
+    7.4,
+    7.4,
+    7.4
+   ],
+   "faces": {
+    "north": {
+     "texture": "#metal"
+    },
+    "east": {
+     "texture": "#metal"
+    },
+    "south": {
+     "texture": "#metal"
+    },
+    "west": {
+     "texture": "#metal"
+    },
+    "up": {
+     "texture": "#metal"
+    },
+    "down": {
+     "texture": "#metal"
+    }
+   },
+   "rotation": {
+    "origin": [
+     7,
+     1.4,
+     7
+    ],
+    "axis": "z",
+    "angle": -22.5
+   }
+  },
+  {
+   "from": [
+    8.9,
+    6.4,
+    6.4
+   ],
+   "to": [
+    10.1,
+    7.6,
+    7.6
+   ],
+   "faces": {
+    "north": {
+     "texture": "#dark"
+    },
+    "east": {
+     "texture": "#dark"
+    },
+    "south": {
+     "texture": "#dark"
+    },
+    "west": {
+     "texture": "#dark"
+    },
+    "up": {
+     "texture": "#dark"
+    },
+    "down": {
+     "texture": "#dark"
+    }
+   }
+  },
+  {
+   "from": [
+    9.0,
+    6.9,
+    6.6
+   ],
+   "to": [
+    9.8,
+    12.9,
+    7.4
+   ],
+   "faces": {
+    "north": {
+     "texture": "#metal"
+    },
+    "east": {
+     "texture": "#metal"
+    },
+    "south": {
+     "texture": "#metal"
+    },
+    "west": {
+     "texture": "#metal"
+    },
+    "up": {
+     "texture": "#metal"
+    },
+    "down": {
+     "texture": "#metal"
+    }
+   },
+   "rotation": {
+    "origin": [
+     9.4,
+     6.9,
+     7
+    ],
+    "axis": "z",
+    "angle": 22.5
+   }
+  },
+  {
+   "from": [
+    4.2,
+    10.5,
+    4.6
+   ],
+   "to": [
+    9.8,
+    13.4,
+    9.4
+   ],
+   "faces": {
+    "north": {
+     "texture": "#shade"
+    },
+    "east": {
+     "texture": "#shade"
+    },
+    "south": {
+     "texture": "#shade"
+    },
+    "west": {
+     "texture": "#shade"
+    },
+    "up": {
+     "texture": "#shade"
+    },
+    "down": {
+     "texture": "#shade"
+    }
+   },
+   "rotation": {
+    "origin": [
+     7,
+     12.5,
+     7
+    ],
+    "axis": "x",
+    "angle": 22.5
+   }
+  },
+  {
+   "from": [
+    5.2,
+    10.2,
+    5.4
+   ],
+   "to": [
+    8.8,
+    10.9,
+    8.6
+   ],
+   "faces": {
+    "north": {
+     "texture": "#bulb"
+    },
+    "east": {
+     "texture": "#bulb"
+    },
+    "south": {
+     "texture": "#bulb"
+    },
+    "west": {
+     "texture": "#bulb"
+    },
+    "up": {
+     "texture": "#bulb"
+    },
+    "down": {
+     "texture": "#bulb"
+    }
+   },
+   "rotation": {
+    "origin": [
+     7,
+     12.5,
+     7
+    ],
+    "axis": "x",
+    "angle": 22.5
+   }
+  }
+ ]
+}

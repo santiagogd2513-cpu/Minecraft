@@ -1,0 +1,22 @@
+{
+  "replace": false,
+  "values": [
+    "beautifuldecor:stairs_concrete_white",
+    "beautifuldecor:stairs_concrete_orange",
+    "beautifuldecor:stairs_concrete_magenta",
+    "beautifuldecor:stairs_concrete_light_blue",
+    "beautifuldecor:stairs_concrete_yellow",
+    "beautifuldecor:stairs_concrete_lime",
+    "beautifuldecor:stairs_concrete_pink",
+    "beautifuldecor:stairs_concrete_gray",
+    "beautifuldecor:stairs_concrete_light_gray",
+    "beautifuldecor:stairs_concrete_cyan",
+    "beautifuldecor:stairs_concrete_purple",
+    "beautifuldecor:stairs_concrete_blue",
+    "beautifuldecor:stairs_concrete_brown",
+    "beautifuldecor:stairs_concrete_green",
+    "beautifuldecor:stairs_concrete_red",
+    "beautifuldecor:stairs_concrete_black",
+    "beautifuldecor:stairs_smooth_quartz"
+  ]
+}

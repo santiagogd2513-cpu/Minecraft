@@ -1,0 +1,35 @@
+as1
+exec
+true
+true
+function
+sync end
+a1
+c1
+qm
+as2
+then r
+caught boom
+empty []
+flat
+thenable called
+awcatch aw
+awfin
+TypeError
+wr ok
+c2
+as3
+fin
+all 1,2,3
+settled [{"status":"rejected","reason":"x"},{"status":"fulfilled","value":1}]
+race fast
+any 2
+anyfail AggregateError 1,2 All promises were rejected
+tv tv
+mapasync 2,4
+fin throw
+thrown str
+c3
+b2
+c4
+finally keeps 1

@@ -1,0 +1,61 @@
+offset a 200,50,10,100,BODY
+offset hidden 0,0,
+client a 200,50,200,50
+html 400,300,400,1500
+body 400,1500,1500,
+computed 200px 50px 200px auto
+detached 0,0,0,0,0,0,0,0 0 null
+point a,
+--- inicio scrollY=0 scrollTop=0/0
+a rect=10,100,200,50,100,210,150,10
+b rect=10,600,300,80,600,310,680,10
+c rect=20,610,60,20,610,80,630,20
+hidden rect=0,0,0,0,0,0,0,0 n=0
+html rect=0,0,400,1500,0,400,1500,0
+--- sin mover scrollY=0 scrollTop=0/0
+a rect=10,100,200,50,100,210,150,10
+b rect=10,600,300,80,600,310,680,10
+c rect=20,610,60,20,610,80,630,20
+hidden rect=0,0,0,0,0,0,0,0 n=0
+html rect=0,0,400,1500,0,400,1500,0
+EVENT scroll y=400
+--- scroll 400 scrollY=400 scrollTop=400/400
+a rect=10,-300,200,50,-300,210,-250,10
+b rect=10,200,300,80,200,310,280,10
+c rect=20,210,60,20,210,80,230,20
+hidden rect=0,0,0,0,0,0,0,0 n=0
+html rect=0,-400,400,1500,-400,400,1100,0
+at(20,210)=c at(390,290)=BODY out=null out2=null
+stack=span#c>div#b>body>html
+SCROLL 0,600
+EVENT scroll y=600
+after start: y=600
+SCROLL 0,490
+EVENT scroll y=490
+after center: y=490
+SCROLL 0,380
+EVENT scroll y=380
+after end: y=380
+SCROLL 0,100
+EVENT scroll y=100
+after nearest: y=100
+SCROLL 0,490
+EVENT scroll y=490
+after ifneeded: y=490
+SCROLL 0,5000
+EVENT scroll y=1200
+clamped: y=1200
+SCROLL 0,120
+EVENT scroll y=120
+scrollTop set: y=120 body=120
+SCROLL 0,30
+EVENT scroll y=30
+body.scrollTo: y=30
+inner scrollTop=0
+EVENT resize 320x480
+after resize 320x480
+pedido sin medidas: y=30
+40 ms después: y=30
+SCROLL 0,900
+EVENT scroll y=900
+con la disposición al día: y=900

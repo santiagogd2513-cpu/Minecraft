@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "beautifuldecor:block/painting_circuit_aerial"
+    },
+    "facing=east": {
+      "model": "beautifuldecor:block/painting_circuit_aerial",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "beautifuldecor:block/painting_circuit_aerial",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "beautifuldecor:block/painting_circuit_aerial",
+      "y": 270
+    }
+  }
+}

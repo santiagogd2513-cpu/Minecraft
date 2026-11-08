@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "beautifuldecor:block/neon_bar_white"
+    },
+    "facing=east": {
+      "model": "beautifuldecor:block/neon_bar_white",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "beautifuldecor:block/neon_bar_white",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "beautifuldecor:block/neon_bar_white",
+      "y": 270
+    }
+  }
+}

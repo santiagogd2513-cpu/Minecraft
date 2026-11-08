@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "color=red": { "model": "beautifuldecor:block/traffic_light_red" },
+    "color=yellow": { "model": "beautifuldecor:block/traffic_light_yellow" },
+    "color=green": { "model": "beautifuldecor:block/traffic_light_green" }
+  }
+}

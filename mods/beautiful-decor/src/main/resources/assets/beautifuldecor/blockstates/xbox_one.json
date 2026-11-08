@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "beautifuldecor:block/xbox_one"
+    },
+    "facing=east": {
+      "model": "beautifuldecor:block/xbox_one",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "beautifuldecor:block/xbox_one",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "beautifuldecor:block/xbox_one",
+      "y": 270
+    }
+  }
+}

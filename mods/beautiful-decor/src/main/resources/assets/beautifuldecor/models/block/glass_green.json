@@ -1,0 +1,33 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "particle": "beautifuldecor:block/glass_green",
+    "glass": "beautifuldecor:block/glass_green"
+  },
+  "elements": [
+    {"from": [5, 0, 5], "to": [11, 1, 11], "faces": {
+      "north": {"uv": [0,0,4,1], "texture": "#glass"}, "east": {"uv": [0,0,4,1], "texture": "#glass"},
+      "south": {"uv": [0,0,4,1], "texture": "#glass"}, "west": {"uv": [0,0,4,1], "texture": "#glass"},
+      "up": {"uv": [0,0,4,4], "texture": "#glass"}, "down": {"uv": [0,0,4,4], "texture": "#glass"}
+    }},
+    {"from": [5, 1, 5], "to": [5.8, 7, 11], "faces": {
+      "north": {"uv": [0,0,1,6], "texture": "#glass"}, "east": {"uv": [0,0,4,6], "texture": "#glass"},
+      "south": {"uv": [0,0,1,6], "texture": "#glass"}, "west": {"uv": [0,0,4,6], "texture": "#glass"}
+    }},
+    {"from": [10.2, 1, 5], "to": [11, 7, 11], "faces": {
+      "north": {"uv": [0,0,1,6], "texture": "#glass"}, "east": {"uv": [0,0,4,6], "texture": "#glass"},
+      "south": {"uv": [0,0,1,6], "texture": "#glass"}, "west": {"uv": [0,0,4,6], "texture": "#glass"}
+    }},
+    {"from": [5.8, 1, 5], "to": [10.2, 7, 5.8], "faces": {
+      "north": {"uv": [0,0,3,6], "texture": "#glass"}, "south": {"uv": [0,0,3,6], "texture": "#glass"}
+    }},
+    {"from": [5.8, 1, 10.2], "to": [10.2, 7, 11], "faces": {
+      "north": {"uv": [0,0,3,6], "texture": "#glass"}, "south": {"uv": [0,0,3,6], "texture": "#glass"}
+    }},
+    {"from": [5.5, 7, 5.5], "to": [10.5, 7.6, 10.5], "faces": {
+      "north": {"uv": [0,0,4,0.6], "texture": "#glass"}, "east": {"uv": [0,0,4,0.6], "texture": "#glass"},
+      "south": {"uv": [0,0,4,0.6], "texture": "#glass"}, "west": {"uv": [0,0,4,0.6], "texture": "#glass"},
+      "up": {"uv": [0,0,4,4], "texture": "#glass"}
+    }}
+  ]
+}

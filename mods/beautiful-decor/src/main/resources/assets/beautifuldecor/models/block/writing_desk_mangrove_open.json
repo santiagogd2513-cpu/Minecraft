@@ -1,0 +1,9 @@
+{
+  "parent": "beautifuldecor:block/writing_desk_open_base",
+  "textures": {
+    "particle": "minecraft:block/mangrove_planks",
+    "planks": "minecraft:block/mangrove_planks",
+    "trim": "minecraft:block/stripped_mangrove_log",
+    "knob": "beautifuldecor:block/handle_metal"
+  }
+}

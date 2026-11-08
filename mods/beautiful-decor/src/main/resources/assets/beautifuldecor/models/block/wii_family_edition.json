@@ -1,0 +1,112 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "particle": "beautifuldecor:block/wii_family_shell",
+    "shell": "beautifuldecor:block/wii_family_shell",
+    "top": "beautifuldecor:block/wii_family_top",
+    "front": "beautifuldecor:block/wii_family_front",
+    "back": "beautifuldecor:block/wii_family_back",
+    "side": "beautifuldecor:block/wii_family_side",
+    "vents": "beautifuldecor:block/wii_family_vents",
+    "slot": "beautifuldecor:block/wii_family_slot",
+    "button": "beautifuldecor:block/wii_family_button",
+    "eject": "beautifuldecor:block/wii_family_eject"
+  },
+  "elements": [
+    {
+      "from": [1, 1, 3],
+      "to": [15, 5, 13],
+      "faces": {
+        "north": {"uv": [0, 0, 64, 16], "texture": "#front"},
+        "east": {"uv": [0, 0, 40, 16], "texture": "#side"},
+        "south": {"uv": [0, 0, 64, 16], "texture": "#back"},
+        "west": {"uv": [0, 0, 40, 16], "texture": "#side"},
+        "up": {"uv": [0, 0, 64, 48], "texture": "#top"},
+        "down": {"uv": [0, 0, 64, 48], "texture": "#shell"}
+      }
+    },
+    {
+      "from": [2, 0.45, 3.5],
+      "to": [4.2, 1.1, 5.1],
+      "faces": {
+        "north": {"texture": "#shell"},
+        "east": {"texture": "#shell"},
+        "south": {"texture": "#shell"},
+        "west": {"texture": "#shell"},
+        "up": {"texture": "#shell"},
+        "down": {"texture": "#shell"}
+      }
+    },
+    {
+      "from": [11.8, 0.45, 3.5],
+      "to": [14, 1.1, 5.1],
+      "faces": {
+        "north": {"texture": "#shell"},
+        "east": {"texture": "#shell"},
+        "south": {"texture": "#shell"},
+        "west": {"texture": "#shell"},
+        "up": {"texture": "#shell"},
+        "down": {"texture": "#shell"}
+      }
+    },
+    {
+      "from": [2, 0.45, 10.9],
+      "to": [4.2, 1.1, 12.5],
+      "faces": {
+        "north": {"texture": "#shell"},
+        "east": {"texture": "#shell"},
+        "south": {"texture": "#shell"},
+        "west": {"texture": "#shell"},
+        "up": {"texture": "#shell"},
+        "down": {"texture": "#shell"}
+      }
+    },
+    {
+      "from": [11.8, 0.45, 10.9],
+      "to": [14, 1.1, 12.5],
+      "faces": {
+        "north": {"texture": "#shell"},
+        "east": {"texture": "#shell"},
+        "south": {"texture": "#shell"},
+        "west": {"texture": "#shell"},
+        "up": {"texture": "#shell"},
+        "down": {"texture": "#shell"}
+      }
+    },
+    {
+      "from": [1.7, 5, 3.7],
+      "to": [14.3, 5.18, 12.3],
+      "faces": {
+        "up": {"uv": [0, 0, 64, 48], "texture": "#top"}
+      }
+    },
+    {
+      "from": [4, 2.35, 2.88],
+      "to": [11.8, 2.9, 3.04],
+      "faces": {
+        "north": {"uv": [0, 0, 64, 16], "texture": "#slot"}
+      }
+    },
+    {
+      "from": [2.2, 1.8, 2.86],
+      "to": [3.35, 3, 3.02],
+      "faces": {
+        "north": {"texture": "#button"}
+      }
+    },
+    {
+      "from": [12.35, 1.8, 2.86],
+      "to": [13.5, 3, 3.02],
+      "faces": {
+        "north": {"texture": "#eject"}
+      }
+    },
+    {
+      "from": [3.2, 1.8, 12.98],
+      "to": [12.8, 4.8, 13.1],
+      "faces": {
+        "south": {"uv": [0, 0, 64, 16], "texture": "#vents"}
+      }
+    }
+  ]
+}

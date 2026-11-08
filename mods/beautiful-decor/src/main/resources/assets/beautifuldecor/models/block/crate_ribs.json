@@ -1,0 +1,100 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "beautifuldecor:block/crate_card",
+    "card": "beautifuldecor:block/crate_card",
+    "print": "beautifuldecor:block/crate_print_ribs",
+    "top": "beautifuldecor:block/crate_top_tape",
+    "label": "beautifuldecor:block/crate_label"
+  },
+  "elements": [
+    {
+      "from": [
+        1,
+        0,
+        1
+      ],
+      "to": [
+        15,
+        12,
+        15
+      ],
+      "faces": {
+        "north": {
+          "texture": "#print",
+          "uv": [
+            0,
+            0,
+            14,
+            12
+          ]
+        },
+        "south": {
+          "texture": "#print",
+          "uv": [
+            0,
+            0,
+            14,
+            12
+          ]
+        },
+        "east": {
+          "texture": "#label",
+          "uv": [
+            0,
+            0,
+            12,
+            12
+          ]
+        },
+        "west": {
+          "texture": "#label",
+          "uv": [
+            0,
+            0,
+            12,
+            12
+          ]
+        },
+        "up": {
+          "texture": "#top",
+          "uv": [
+            0,
+            0,
+            14,
+            14
+          ]
+        },
+        "down": {
+          "texture": "#card"
+        }
+      }
+    },
+    {
+      "from": [
+        0.8,
+        10.6,
+        0.8
+      ],
+      "to": [
+        15.2,
+        11,
+        15.2
+      ],
+      "faces": {
+        "north": {
+          "texture": "#card"
+        },
+        "south": {
+          "texture": "#card"
+        },
+        "east": {
+          "texture": "#card"
+        },
+        "west": {
+          "texture": "#card"
+        }
+      }
+    }
+  ]
+}

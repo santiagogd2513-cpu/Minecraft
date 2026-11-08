@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html><head><title>Inicio</title>
+<link rel="stylesheet" href="/style.css">
+<style>.hide{display:none}</style>
+<script src="/lib.js"></script>
+</head><body>
+<h1 id="h">Hola mundo</h1>
+<p id="msg">sin cambios</p>
+<a href="/second.html" id="l2">ir a segunda</a>
+<a href="#bottom" id="lb">al final</a>
+<button id="btn" onclick="document.getElementById('msg').textContent = 'clic ' + (++window.count)">Pulsa</button>
+<form id="f" action="/echo" method="get"><input id="q" name="q" type="text"><input type="submit" value="Buscar"></form>
+<form id="g" action="/echo" method="post"><input name="user" value="ana"><textarea name="note">uno</textarea><select name="sel"><option value="a">Aaa</option><option value="b">Bbb</option></select><input type="checkbox" name="ok" checked><input type="submit" value="Enviar post"></form>
+<p id="bottom">final</p>
+<script>
+window.count = 0;
+console.log('index script, lib=' + (typeof libLoaded) + ' css=' + getComputedStyle(document.getElementById('h')).color);
+document.addEventListener('DOMContentLoaded', function () { document.getElementById('h').textContent = 'Hola DOM ' + libLoaded; });
+</script>
+</body></html>

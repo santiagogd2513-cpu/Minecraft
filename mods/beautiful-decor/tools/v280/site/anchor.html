@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html><head><title>Ancla</title></head><body>
+<p><button id="ins" onclick="insertAbove()">Insertar arriba</button> <button id="del" onclick="removeAnchor()">Quitar el parrafo</button></p>
+<div id="list">
+<p id="p01">Parrafo 01 de la lista</p><p id="p02">Parrafo 02 de la lista</p><p id="p03">Parrafo 03 de la lista</p>
+<p id="p04">Parrafo 04 de la lista</p><p id="p05">Parrafo 05 de la lista</p><p id="p06">Parrafo 06 de la lista</p>
+<p id="p07">Parrafo 07 de la lista</p><p id="p08">Parrafo 08 de la lista</p><p id="p09">Parrafo 09 de la lista</p>
+<p id="p10">Parrafo 10 de la lista</p><p id="p11">Parrafo 11 de la lista</p><p id="p12">Parrafo 12 de la lista</p>
+<p id="p13">Parrafo 13 de la lista</p><p id="p14">Parrafo 14 de la lista</p><p id="p15">Parrafo 15 de la lista</p>
+<p id="p16">Parrafo 16 de la lista</p><p id="p17">Parrafo 17 de la lista</p><p id="p18">Parrafo 18 de la lista</p>
+<p id="p19">Parrafo 19 de la lista</p><p id="p20">Parrafo 20 de la lista</p>
+</div>
+<script>
+function insertAbove() {
+  var list = document.getElementById('list');
+  for (var i = 0; i < 5; i++) {
+    var p = document.createElement('p');
+    p.textContent = 'Nuevo ' + i;
+    list.insertBefore(p, list.firstChild);
+  }
+}
+function removeAnchor() {
+  var p = document.getElementById('p10');
+  if (p) { p.parentNode.removeChild(p); }
+}
+</script>
+</body></html>

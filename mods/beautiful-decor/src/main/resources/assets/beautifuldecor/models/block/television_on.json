@@ -1,0 +1,10 @@
+{
+  "parent": "beautifuldecor:block/television",
+  "textures": {
+    "particle": "beautifuldecor:block/tv_frame",
+    "frame": "beautifuldecor:block/tv_frame",
+    "screen": "beautifuldecor:block/tv_screen_on",
+    "back": "beautifuldecor:block/tv_back",
+    "stand": "beautifuldecor:block/tv_stand"
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "parent": "beautifuldecor:block/office_led_panel",
+  "textures": {
+    "particle": "minecraft:block/light_gray_concrete",
+    "frame": "minecraft:block/iron_block",
+    "housing": "minecraft:block/light_gray_concrete",
+    "diffuser": "minecraft:block/sea_lantern"
+  }
+}

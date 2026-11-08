@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "facing=north,printing=false": {
+      "model": "beautifuldecor:block/printer"
+    },
+    "facing=north,printing=true": {
+      "model": "beautifuldecor:block/printer_printing"
+    },
+    "facing=east,printing=false": {
+      "model": "beautifuldecor:block/printer",
+      "y": 90
+    },
+    "facing=east,printing=true": {
+      "model": "beautifuldecor:block/printer_printing",
+      "y": 90
+    },
+    "facing=south,printing=false": {
+      "model": "beautifuldecor:block/printer",
+      "y": 180
+    },
+    "facing=south,printing=true": {
+      "model": "beautifuldecor:block/printer_printing",
+      "y": 180
+    },
+    "facing=west,printing=false": {
+      "model": "beautifuldecor:block/printer",
+      "y": 270
+    },
+    "facing=west,printing=true": {
+      "model": "beautifuldecor:block/printer_printing",
+      "y": 270
+    }
+  }
+}

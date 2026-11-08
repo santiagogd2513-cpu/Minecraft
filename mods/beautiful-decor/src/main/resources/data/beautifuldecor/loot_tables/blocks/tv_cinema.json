@@ -1,0 +1,27 @@
+{
+ "type": "minecraft:block",
+ "pools": [
+  {
+   "rolls": 1,
+   "entries": [
+    {
+     "type": "minecraft:item",
+     "name": "beautifuldecor:tv_cinema"
+    }
+   ],
+   "conditions": [
+    {
+     "condition": "minecraft:block_state_property",
+     "block": "beautifuldecor:tv_cinema",
+     "properties": {
+      "px": "0",
+      "py": "0"
+     }
+    },
+    {
+     "condition": "minecraft:survives_explosion"
+    }
+   ]
+  }
+ ]
+}

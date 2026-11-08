@@ -1,0 +1,310 @@
+{
+  "printer": {
+    "subtitle": "subtitles.beautifuldecor.printer",
+    "sounds": [
+      {
+        "name": "beautifuldecor:printer",
+        "stream": true
+      }
+    ]
+  },
+  "drone_startup": {
+    "subtitle": "subtitles.beautifuldecor.drone_startup",
+    "sounds": [
+      {
+        "name": "beautifuldecor:drone_startup",
+        "volume": 0.8
+      }
+    ]
+  },
+  "drone_motor": {
+    "subtitle": "subtitles.beautifuldecor.drone_motor",
+    "sounds": [
+      {
+        "name": "beautifuldecor:drone_motor",
+        "stream": true,
+        "loop": true,
+        "volume": 0.8
+      }
+    ]
+  },
+  "doorbell": {
+    "subtitle": "subtitles.beautifuldecor.doorbell",
+    "sounds": [
+      {
+        "name": "beautifuldecor:doorbell",
+        "volume": 1.0
+      }
+    ]
+  },
+  "piano_do": {
+    "subtitle": "subtitles.beautifuldecor.piano",
+    "sounds": [
+      {
+        "name": "beautifuldecor:piano_do",
+        "volume": 1.0
+      }
+    ]
+  },
+  "piano_re": {
+    "subtitle": "subtitles.beautifuldecor.piano",
+    "sounds": [
+      {
+        "name": "beautifuldecor:piano_re",
+        "volume": 1.0
+      }
+    ]
+  },
+  "piano_mi": {
+    "subtitle": "subtitles.beautifuldecor.piano",
+    "sounds": [
+      {
+        "name": "beautifuldecor:piano_mi",
+        "volume": 1.0
+      }
+    ]
+  },
+  "piano_fa": {
+    "subtitle": "subtitles.beautifuldecor.piano",
+    "sounds": [
+      {
+        "name": "beautifuldecor:piano_fa",
+        "volume": 1.0
+      }
+    ]
+  },
+  "piano_sol": {
+    "subtitle": "subtitles.beautifuldecor.piano",
+    "sounds": [
+      {
+        "name": "beautifuldecor:piano_sol",
+        "volume": 1.0
+      }
+    ]
+  },
+  "piano_la": {
+    "subtitle": "subtitles.beautifuldecor.piano",
+    "sounds": [
+      {
+        "name": "beautifuldecor:piano_la",
+        "volume": 1.0
+      }
+    ]
+  },
+  "piano_si": {
+    "subtitle": "subtitles.beautifuldecor.piano",
+    "sounds": [
+      {
+        "name": "beautifuldecor:piano_si",
+        "volume": 1.0
+      }
+    ]
+  },
+  "motorcycle_engine": {
+    "subtitle": "subtitles.beautifuldecor.motorcycle_engine",
+    "sounds": [
+      {
+        "name": "beautifuldecor:motorcycle_engine",
+        "volume": 0.9
+      }
+    ]
+  },
+  "motorcycle_horn": {
+    "subtitle": "subtitles.beautifuldecor.motorcycle_horn",
+    "sounds": [
+      {
+        "name": "beautifuldecor:motorcycle_horn",
+        "volume": 1.0
+      }
+    ]
+  },
+  "motorcycle_start": {
+    "subtitle": "subtitles.beautifuldecor.motorcycle_start",
+    "sounds": [
+      {
+        "name": "beautifuldecor:motorcycle_start",
+        "volume": 1.0
+      }
+    ]
+  },
+  "garage_door": {
+    "subtitle": "subtitles.beautifuldecor.garage_door",
+    "sounds": [
+      {
+        "name": "beautifuldecor:garage_door",
+        "volume": 0.9
+      }
+    ]
+  },
+  "bicycle_bell": {
+    "subtitle": "subtitles.beautifuldecor.bicycle_bell",
+    "sounds": [
+      {
+        "name": "beautifuldecor:bicycle_bell",
+        "volume": 1.0
+      }
+    ]
+  },
+  "pickup_engine": {
+    "subtitle": "subtitles.beautifuldecor.pickup_engine",
+    "sounds": [
+      {
+        "name": "beautifuldecor:pickup_engine",
+        "volume": 0.9
+      }
+    ]
+  },
+  "pickup_horn": {
+    "subtitle": "subtitles.beautifuldecor.pickup_horn",
+    "sounds": [
+      {
+        "name": "beautifuldecor:pickup_horn",
+        "volume": 1.0
+      }
+    ]
+  },
+  "pickup_start": {
+    "subtitle": "subtitles.beautifuldecor.pickup_start",
+    "sounds": [
+      {
+        "name": "beautifuldecor:pickup_start",
+        "volume": 1.0
+      }
+    ]
+  },
+  "elevator_hum": {
+    "subtitle": "subtitles.beautifuldecor.elevator_hum",
+    "sounds": [
+      {
+        "name": "beautifuldecor:elevator_hum",
+        "volume": 1.0
+      }
+    ]
+  },
+  "elevator_ding": {
+    "subtitle": "subtitles.beautifuldecor.elevator_ding",
+    "sounds": [
+      {
+        "name": "beautifuldecor:elevator_ding",
+        "volume": 1.0
+      }
+    ]
+  },
+  "elevator_door": {
+    "subtitle": "subtitles.beautifuldecor.elevator_door",
+    "sounds": [
+      {
+        "name": "beautifuldecor:elevator_door",
+        "volume": 1.0
+      }
+    ]
+  },
+  "delivery_truck_engine": {
+    "subtitle": "subtitles.beautifuldecor.delivery_truck_engine",
+    "sounds": [
+      {
+        "name": "beautifuldecor:delivery_truck_engine",
+        "volume": 0.9
+      }
+    ]
+  },
+  "delivery_truck_horn": {
+    "subtitle": "subtitles.beautifuldecor.delivery_truck_horn",
+    "sounds": [
+      {
+        "name": "beautifuldecor:delivery_truck_horn",
+        "volume": 1.0
+      }
+    ]
+  },
+  "delivery_truck_start": {
+    "subtitle": "subtitles.beautifuldecor.delivery_truck_start",
+    "sounds": [
+      {
+        "name": "beautifuldecor:delivery_truck_start",
+        "volume": 1.0
+      }
+    ]
+  },
+  "helicopter_rotor": {
+    "subtitle": "subtitles.beautifuldecor.helicopter_rotor",
+    "sounds": [
+      {
+        "name": "beautifuldecor:helicopter_rotor",
+        "volume": 1.0
+      }
+    ]
+  },
+  "helicopter_start": {
+    "subtitle": "subtitles.beautifuldecor.helicopter_start",
+    "sounds": [
+      {
+        "name": "beautifuldecor:helicopter_start",
+        "volume": 1.0
+      }
+    ]
+  },
+  "rc_car_motor": {
+    "subtitle": "subtitles.beautifuldecor.rc_car_motor",
+    "sounds": [
+      {
+        "name": "beautifuldecor:rc_car_motor",
+        "volume": 0.8
+      }
+    ]
+  },
+  "rc_car_start": {
+    "subtitle": "subtitles.beautifuldecor.rc_car_start",
+    "sounds": [
+      {
+        "name": "beautifuldecor:rc_car_start",
+        "volume": 0.9
+      }
+    ]
+  },
+  "bugotti_chillon_engine": {
+    "subtitle": "subtitles.beautifuldecor.bugotti_chillon_engine",
+    "sounds": [
+      {
+        "name": "beautifuldecor:bugotti_chillon_engine",
+        "volume": 0.9
+      }
+    ]
+  },
+  "bugotti_chillon_horn": {
+    "subtitle": "subtitles.beautifuldecor.bugotti_chillon_horn",
+    "sounds": [
+      {
+        "name": "beautifuldecor:bugotti_chillon_horn",
+        "volume": 1.0
+      }
+    ]
+  },
+  "bugotti_chillon_start": {
+    "subtitle": "subtitles.beautifuldecor.bugotti_chillon_start",
+    "sounds": [
+      {
+        "name": "beautifuldecor:bugotti_chillon_start",
+        "volume": 1.0
+      }
+    ]
+  },
+  "airliner_engine": {
+    "subtitle": "subtitles.beautifuldecor.airliner_engine",
+    "sounds": [
+      {
+        "name": "beautifuldecor:airliner_engine",
+        "volume": 1.0
+      }
+    ]
+  },
+  "airliner_start": {
+    "subtitle": "subtitles.beautifuldecor.airliner_start",
+    "sounds": [
+      {
+        "name": "beautifuldecor:airliner_start",
+        "volume": 1.0
+      }
+    ]
+  }
+}

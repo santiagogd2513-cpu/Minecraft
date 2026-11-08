@@ -1,0 +1,82 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "facing": "north",
+        "px": "0"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/piano_left"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "px": "1"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/piano_right"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "px": "0"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/piano_left",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "px": "1"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/piano_right",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "px": "0"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/piano_left",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "px": "1"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/piano_right",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "px": "0"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/piano_left",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "px": "1"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/piano_right",
+        "y": 270
+      }
+    }
+  ]
+}

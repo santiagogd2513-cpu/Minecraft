@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "beautifuldecor:block/frying_pan_nonstick"
+    },
+    "facing=east": {
+      "model": "beautifuldecor:block/frying_pan_nonstick",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "beautifuldecor:block/frying_pan_nonstick",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "beautifuldecor:block/frying_pan_nonstick",
+      "y": 270
+    }
+  }
+}

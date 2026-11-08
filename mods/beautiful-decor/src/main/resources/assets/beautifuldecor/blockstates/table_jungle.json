@@ -1,0 +1,69 @@
+{
+  "multipart": [
+    {
+      "apply": {
+        "model": "beautifuldecor:block/table_jungle_top"
+      }
+    },
+    {
+      "when": {
+        "AND": [
+          {
+            "north": "false"
+          },
+          {
+            "west": "false"
+          }
+        ]
+      },
+      "apply": {
+        "model": "beautifuldecor:block/table_jungle_leg_nw"
+      }
+    },
+    {
+      "when": {
+        "AND": [
+          {
+            "north": "false"
+          },
+          {
+            "east": "false"
+          }
+        ]
+      },
+      "apply": {
+        "model": "beautifuldecor:block/table_jungle_leg_ne"
+      }
+    },
+    {
+      "when": {
+        "AND": [
+          {
+            "south": "false"
+          },
+          {
+            "west": "false"
+          }
+        ]
+      },
+      "apply": {
+        "model": "beautifuldecor:block/table_jungle_leg_sw"
+      }
+    },
+    {
+      "when": {
+        "AND": [
+          {
+            "south": "false"
+          },
+          {
+            "east": "false"
+          }
+        ]
+      },
+      "apply": {
+        "model": "beautifuldecor:block/table_jungle_leg_se"
+      }
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "facing=north,talking=false": {
+      "model": "beautifuldecor:block/microphone"
+    },
+    "facing=north,talking=true": {
+      "model": "beautifuldecor:block/microphone_talking"
+    },
+    "facing=east,talking=false": {
+      "model": "beautifuldecor:block/microphone",
+      "y": 90
+    },
+    "facing=east,talking=true": {
+      "model": "beautifuldecor:block/microphone_talking",
+      "y": 90
+    },
+    "facing=south,talking=false": {
+      "model": "beautifuldecor:block/microphone",
+      "y": 180
+    },
+    "facing=south,talking=true": {
+      "model": "beautifuldecor:block/microphone_talking",
+      "y": 180
+    },
+    "facing=west,talking=false": {
+      "model": "beautifuldecor:block/microphone",
+      "y": 270
+    },
+    "facing=west,talking=true": {
+      "model": "beautifuldecor:block/microphone_talking",
+      "y": 270
+    }
+  }
+}

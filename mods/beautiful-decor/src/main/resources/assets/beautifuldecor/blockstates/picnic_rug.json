@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "beautifuldecor:block/picnic_rug" },
+    "facing=east":  { "model": "beautifuldecor:block/picnic_rug" },
+    "facing=south": { "model": "beautifuldecor:block/picnic_rug" },
+    "facing=west":  { "model": "beautifuldecor:block/picnic_rug" }
+  }
+}

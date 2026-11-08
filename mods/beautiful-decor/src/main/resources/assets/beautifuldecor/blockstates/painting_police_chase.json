@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "beautifuldecor:block/painting_police_chase"
+    },
+    "facing=east": {
+      "model": "beautifuldecor:block/painting_police_chase",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "beautifuldecor:block/painting_police_chase",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "beautifuldecor:block/painting_police_chase",
+      "y": 270
+    }
+  }
+}

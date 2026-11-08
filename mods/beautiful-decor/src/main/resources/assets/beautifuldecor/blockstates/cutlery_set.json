@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "beautifuldecor:block/cutlery_set"
+    },
+    "facing=east": {
+      "model": "beautifuldecor:block/cutlery_set",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "beautifuldecor:block/cutlery_set",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "beautifuldecor:block/cutlery_set",
+      "y": 270
+    }
+  }
+}

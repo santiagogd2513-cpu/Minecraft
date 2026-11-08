@@ -1,0 +1,12 @@
+{
+  "parent": "beautifuldecor:block/kitchen_sink",
+  "textures": {
+    "body": "beautifuldecor:block/kitchen_body_white",
+    "top": "beautifuldecor:block/kitchen_body_white",
+    "steel": "beautifuldecor:block/kitchen_steel",
+    "basin": "beautifuldecor:block/kitchen_sink_basin",
+    "drain": "beautifuldecor:block/kitchen_sink_drain",
+    "chrome": "beautifuldecor:block/handle_metal",
+    "particle": "beautifuldecor:block/kitchen_body_white"
+  }
+}

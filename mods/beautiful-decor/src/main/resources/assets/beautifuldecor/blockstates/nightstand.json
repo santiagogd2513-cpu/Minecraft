@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "beautifuldecor:block/nightstand"
+    },
+    "facing=east": {
+      "model": "beautifuldecor:block/nightstand",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "beautifuldecor:block/nightstand",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "beautifuldecor:block/nightstand",
+      "y": 270
+    }
+  }
+}

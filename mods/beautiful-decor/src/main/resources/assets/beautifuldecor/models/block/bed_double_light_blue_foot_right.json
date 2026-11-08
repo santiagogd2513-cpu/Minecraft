@@ -1,0 +1,9 @@
+{
+  "parent": "beautifuldecor:block/bed_double_foot_right",
+  "textures": {
+    "frame": "minecraft:block/oak_planks",
+    "sheet": "minecraft:block/light_blue_wool",
+    "pillow": "minecraft:block/light_blue_wool",
+    "blanket": "minecraft:block/light_blue_wool"
+  }
+}

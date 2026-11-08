@@ -1,0 +1,23 @@
+out([1,2,3].map(x=>x*2), "abc".toUpperCase(), [..."héllo"].length);
+out(JSON.stringify({a:[1,{b:2}],c:"x"}), JSON.stringify([1,"a",null,undefined,function(){}]));
+out(JSON.stringify({a:1,b:[1,2],c:{d:1}}, null, 2));
+out(JSON.parse('{"a":[1,2,{"b":null}],"c":"\\u0041"}'));
+out(new Map([[1,'a'],[2,'b']]).size, [...new Set([1,2,2,3])]);
+const m = new Map(); m.set('x',1).set('y',2); m.delete('x'); out([...m.entries()]);
+out("a-b-c".split("-"), "a1b2c3".replace(/\d/g, d=>d*2), /(\d+)-(\d+)/.exec("10-20").slice(1));
+out("2024-03-05".match(/(?<y>\d+)-(?<m>\d+)/).groups.y);
+out([3,1,2].sort(), [10,9,1].sort(), [10,9,1].sort((a,b)=>a-b));
+out(typeof Symbol(), 0.1+0.2, (1234.5678).toFixed(2), 255..toString(16), parseInt("42px"), Number("0x1f"));
+out(new Date(Date.UTC(2020,0,15,10,20,30)).toISOString());
+out(String(new Date(NaN)), [1,2,3].includes(2), Object.entries({a:1,b:2}));
+class A { #p = 1; get p(){ return this.#p; } static s = 5; } out(new A().p, A.s);
+function* g(){ yield 1; yield* [2,3]; return 4; } out([...g()]);
+out([1,[2,[3,[4]]]].flat(Infinity), Array.from({length:3},(_, i)=>i*i));
+let {a, ...rest} = {a:1,b:2,c:3}; out(a, rest);
+out(`x${1+1}y`, "abc".padStart(5,"*"), "abc".at(-1), "  hi ".trim());
+label: for (let i=0;i<3;i++){ for(let j=0;j<3;j++){ if(j==1) continue label; if(i==2) break label; out(i,j);} }
+out(Math.max(1,5,3), Math.round(2.5), Math.round(-2.5), Math.sign(-3), Math.trunc(-4.7), Math.hypot(3,4));
+out([1,2,3].reduce((a,b)=>a+b,0), "x".repeat(3), encodeURIComponent("a b&c/é"), decodeURIComponent("%E2%82%AC"));
+Promise.resolve(1).then(v=>out("then", v));
+(async()=>{ await null; out("async"); })();
+out("sync end");

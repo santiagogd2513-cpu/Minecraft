@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html><head><title>Ajax</title></head><body>
+<h1 id="h">ajax</h1>
+<p id="tick">tick 0</p>
+<p id="f1">f1 -</p>
+<p id="f2">f2 -</p>
+<p id="x1">x1 -</p>
+<p id="ab">ab -</p>
+<p id="ck">ck -</p>
+<button id="go" onclick="start()">Cargar</button>
+<script>
+var ticks = 0;
+var iv = setInterval(function () {
+  ticks++;
+  document.getElementById('tick').textContent = 'tick ' + ticks;
+  if (ticks >= 5) clearInterval(iv);
+}, 100);
+
+function start() {
+  document.getElementById('f1').textContent = 'f1 cargando';
+  fetch('/api/json').then(function (r) { return r.json(); }).then(function (d) {
+    document.getElementById('f1').textContent = 'f1 ' + d.msg + ' ' + d.n.join(',');
+  });
+  fetch('/api/echo?a=1', { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-Test': 'si' }, body: JSON.stringify({ k: 'ñ' }) })
+    .then(function (r) { return r.json(); })
+    .then(function (d) { document.getElementById('f2').textContent = 'f2 ' + d.method + ' ' + d.type + ' ' + d.xtest + ' ' + d.body + ' ' + d.query; });
+  var x = new XMLHttpRequest();
+  x.open('GET', '/api/redirect');
+  x.onload = function () { document.getElementById('x1').textContent = 'x1 ' + x.status + ' ' + x.responseURL.replace(/^.*\//, '') + ' ' + JSON.parse(x.responseText).msg; };
+  x.send();
+  var ac = new AbortController();
+  fetch('/api/slow?ms=1500', { signal: ac.signal }).catch(function (e) { document.getElementById('ab').textContent = 'ab ' + e.name; });
+  setTimeout(function () { ac.abort(); }, 150);
+  fetch('/api/cookie').then(function () { return fetch('/api/echo'); }).then(function (r) { return r.json(); })
+    .then(function (d) { document.getElementById('ck').textContent = 'ck ' + d.cookie; });
+}
+</script>
+</body></html>

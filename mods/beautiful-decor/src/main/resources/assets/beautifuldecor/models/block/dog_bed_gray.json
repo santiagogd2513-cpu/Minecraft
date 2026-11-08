@@ -1,0 +1,439 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "beautifuldecor:block/dogbed_gray",
+    "fabric": "beautifuldecor:block/dogbed_gray",
+    "wood": "beautifuldecor:block/wood"
+  },
+  "elements": [
+    {
+      "name": "cushion",
+      "from": [
+        1,
+        2,
+        1
+      ],
+      "to": [
+        15,
+        5,
+        15
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            4
+          ],
+          "texture": "#fabric"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            16,
+            4
+          ],
+          "texture": "#fabric"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            4
+          ],
+          "texture": "#fabric"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            4
+          ],
+          "texture": "#fabric"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#fabric"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#fabric"
+        }
+      }
+    },
+    {
+      "name": "rim",
+      "from": [
+        0.5,
+        3,
+        0.5
+      ],
+      "to": [
+        15.5,
+        7,
+        15.5
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            6
+          ],
+          "texture": "#fabric"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            16,
+            6
+          ],
+          "texture": "#fabric"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            6
+          ],
+          "texture": "#fabric"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            16,
+            6
+          ],
+          "texture": "#fabric"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#fabric"
+        }
+      }
+    },
+    {
+      "name": "inner_soft",
+      "from": [
+        2,
+        4.5,
+        2
+      ],
+      "to": [
+        14,
+        5.5,
+        14
+      ],
+      "faces": {
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#fabric"
+        }
+      }
+    },
+    {
+      "name": "foot_fl",
+      "from": [
+        1.5,
+        0,
+        1.5
+      ],
+      "to": [
+        3.5,
+        2,
+        3.5
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#wood"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#wood"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#wood"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#wood"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#wood"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#wood"
+        }
+      }
+    },
+    {
+      "name": "foot_fr",
+      "from": [
+        12.5,
+        0,
+        1.5
+      ],
+      "to": [
+        14.5,
+        2,
+        3.5
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#wood"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#wood"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#wood"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#wood"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#wood"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#wood"
+        }
+      }
+    },
+    {
+      "name": "foot_bl",
+      "from": [
+        1.5,
+        0,
+        12.5
+      ],
+      "to": [
+        3.5,
+        2,
+        14.5
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#wood"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#wood"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#wood"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#wood"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#wood"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#wood"
+        }
+      }
+    },
+    {
+      "name": "foot_br",
+      "from": [
+        12.5,
+        0,
+        12.5
+      ],
+      "to": [
+        14.5,
+        2,
+        14.5
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#wood"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#wood"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#wood"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#wood"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#wood"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            4,
+            4
+          ],
+          "texture": "#wood"
+        }
+      }
+    }
+  ]
+}

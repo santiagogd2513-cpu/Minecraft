@@ -1,0 +1,12 @@
+forawait gen t1 t2 v1 t3 t4 v2 t5 done t6 t7 t8 t9 t10 t11 t12 t13 t14
+forawait array t1 t2 v1 t3 t4 v2 t5 t6 done t7 t8 t9 t10 t11 t12 t13 t14
+gen next t1 t2 n1 t3 n2 n3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14
+gen2 t1 t2 t3 v5 t4 t5 done t6 t7 t8 t9 t10 t11 t12 t13 t14
+await val t1 a1 t2 a2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14
+await promise t1 a1 t2 a2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14
+async return promise t1 t2 t3 r t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14
+async return val t1 r t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14
+then returning promise t1 t2 t3 t4 r t5 t6 t7 t8 t9 t10 t11 t12 t13 t14
+yield* r5 1 t1 t2 t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14
+async gen return t1 t2 ret t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14
+asyncgen yield promise t1 t2 yp t3 t4 t5 t6 t7 t8 t9 t10 t11 t12 t13 t14

@@ -1,0 +1,16 @@
+CLICK Buscar -> input
+PAGE echo GET | query=q= | body= | cookie= | type=
+URL http://127.0.0.1:8765/echo?q=
+CLICK ana -> input
+TYPE used=true
+KEY End used=true
+TYPE used=true
+PAGE Hola DOM lib-ok | sin cambios | ir a segunda |   | al final |   | [Pulsa] | [Buscar] | [anaZq] | [uno] | [Aaa ▾] | [Enviar post] | final
+KEY Enter used=true
+URL http://127.0.0.1:8765/echo
+PAGE echo POST | query= | body=user=anaZq&note=uno&sel=a&ok=on | cookie=seen=1 | type=application/x-www-form-urlencoded
+OPTIONS Aaa,Bbb
+CLICK Enviar post -> input
+URL http://127.0.0.1:8765/echo
+PAGE echo POST | query= | body=user=ana&note=uno&sel=b&ok=on | cookie=seen=1 | type=application/x-www-form-urlencoded
+PAGE Hola DOM lib-ok | sin cambios | ir a segunda |   | al final |   | [Pulsa] | [Buscar] | [ana] | [uno] | [Aaa ▾] | [Enviar post] | final

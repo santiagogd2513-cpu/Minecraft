@@ -1,0 +1,64 @@
+{
+ "variants": {
+  "facing=north,top_open=false,bottom_open=false": {
+   "model": "beautifuldecor:block/nightstand_dark_oak_00"
+  },
+  "facing=north,top_open=false,bottom_open=true": {
+   "model": "beautifuldecor:block/nightstand_dark_oak_01"
+  },
+  "facing=north,top_open=true,bottom_open=false": {
+   "model": "beautifuldecor:block/nightstand_dark_oak_10"
+  },
+  "facing=north,top_open=true,bottom_open=true": {
+   "model": "beautifuldecor:block/nightstand_dark_oak_11"
+  },
+  "facing=east,top_open=false,bottom_open=false": {
+   "model": "beautifuldecor:block/nightstand_dark_oak_00",
+   "y": 90
+  },
+  "facing=east,top_open=false,bottom_open=true": {
+   "model": "beautifuldecor:block/nightstand_dark_oak_01",
+   "y": 90
+  },
+  "facing=east,top_open=true,bottom_open=false": {
+   "model": "beautifuldecor:block/nightstand_dark_oak_10",
+   "y": 90
+  },
+  "facing=east,top_open=true,bottom_open=true": {
+   "model": "beautifuldecor:block/nightstand_dark_oak_11",
+   "y": 90
+  },
+  "facing=south,top_open=false,bottom_open=false": {
+   "model": "beautifuldecor:block/nightstand_dark_oak_00",
+   "y": 180
+  },
+  "facing=south,top_open=false,bottom_open=true": {
+   "model": "beautifuldecor:block/nightstand_dark_oak_01",
+   "y": 180
+  },
+  "facing=south,top_open=true,bottom_open=false": {
+   "model": "beautifuldecor:block/nightstand_dark_oak_10",
+   "y": 180
+  },
+  "facing=south,top_open=true,bottom_open=true": {
+   "model": "beautifuldecor:block/nightstand_dark_oak_11",
+   "y": 180
+  },
+  "facing=west,top_open=false,bottom_open=false": {
+   "model": "beautifuldecor:block/nightstand_dark_oak_00",
+   "y": 270
+  },
+  "facing=west,top_open=false,bottom_open=true": {
+   "model": "beautifuldecor:block/nightstand_dark_oak_01",
+   "y": 270
+  },
+  "facing=west,top_open=true,bottom_open=false": {
+   "model": "beautifuldecor:block/nightstand_dark_oak_10",
+   "y": 270
+  },
+  "facing=west,top_open=true,bottom_open=true": {
+   "model": "beautifuldecor:block/nightstand_dark_oak_11",
+   "y": 270
+  }
+ }
+}

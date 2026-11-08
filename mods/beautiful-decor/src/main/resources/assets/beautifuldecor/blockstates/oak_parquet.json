@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "beautifuldecor:block/oak_parquet" },
+    "facing=east": { "model": "beautifuldecor:block/oak_parquet", "y": 90, "uvlock": true },
+    "facing=south": { "model": "beautifuldecor:block/oak_parquet", "y": 180, "uvlock": true },
+    "facing=west": { "model": "beautifuldecor:block/oak_parquet", "y": 270, "uvlock": true }
+  }
+}

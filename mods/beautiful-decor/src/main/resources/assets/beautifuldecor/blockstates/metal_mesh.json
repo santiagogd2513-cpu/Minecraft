@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "beautifuldecor:block/metal_mesh" },
+    "facing=east": { "model": "beautifuldecor:block/metal_mesh", "y": 90 },
+    "facing=south": { "model": "beautifuldecor:block/metal_mesh", "y": 180 },
+    "facing=west": { "model": "beautifuldecor:block/metal_mesh", "y": 270 }
+  }
+}

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html><head><title>Hola</title></head>
+<body>
+<div id="a" class="x y" data-foo-bar="1">Texto <b>negrita</b> fin</div>
+<ul id="list"><li>uno</li><li class="sel">dos</li><li>tres</li></ul>
+<script>
+var pass = 0;
+function eq(name, got, exp) {
+  if (got === exp) { pass++; console.log('ok ' + name); }
+  else console.log('FAIL ' + name + ': got ' + JSON.stringify(got) + ' expected ' + JSON.stringify(exp));
+}
+var a = document.getElementById('a');
+eq('tag', a.tagName, 'DIV');
+eq('id', a.id, 'a');
+eq('class', a.className, 'x y');
+eq('classList', a.classList.contains('y'), true);
+eq('dataset', a.dataset.fooBar, '1');
+eq('text', a.textContent, 'Texto negrita fin');
+eq('innerHTML', a.innerHTML, 'Texto <b>negrita</b> fin');
+eq('children', a.children.length, 1);
+eq('childNodes', a.childNodes.length, 3);
+eq('title', document.title, 'Hola');
+eq('body', document.body.tagName, 'BODY');
+eq('qs', document.querySelector('li.sel').textContent, 'dos');
+eq('qsa', document.querySelectorAll('#list li').length, 3);
+eq('nextSib', document.querySelector('li.sel').nextElementSibling.textContent, 'tres');
+eq('prevSib', document.querySelector('li.sel').previousElementSibling.textContent, 'uno');
+eq('parent', document.querySelector('li').parentNode.id, 'list');
+eq('closest', document.querySelector('li.sel').closest('ul').id, 'list');
+eq('matches', a.matches('div.x'), true);
+a.setAttribute('title', 'T');
+eq('getAttr', a.getAttribute('title'), 'T');
+eq('hasAttr', a.hasAttribute('nope'), false);
+var d = document.createElement('p');
+d.textContent = 'nuevo';
+document.body.appendChild(d);
+eq('append', document.body.lastElementChild.textContent, 'nuevo');
+d.innerHTML = '<i>x</i>y';
+eq('innerHTML set', d.firstChild.tagName, 'I');
+eq('outerHTML', d.outerHTML, '<p><i>x</i>y</p>');
+d.remove();
+eq('removed', d.parentNode, null);
+var li = document.createElement('li');
+li.textContent = 'cuatro';
+document.getElementById('list').insertBefore(li, document.getElementById('list').firstChild);
+eq('insertBefore', document.querySelectorAll('#list li')[0].textContent, 'cuatro');
+eq('style set', (a.style.color = 'red', a.getAttribute('style')), 'color: red;');
+a.style.marginTop = '4px';
+eq('style cssText', a.style.cssText, 'color: red; margin-top: 4px;');
+eq('style get', a.style.marginTop, '4px');
+a.style.color = '';
+eq('style remove', a.getAttribute('style'), 'margin-top: 4px;');
+eq('computed', getComputedStyle(a).marginTop, '4px');
+eq('computed display', getComputedStyle(a).display, 'block');
+eq('URL', new URL('../x/y?a=1&b=2#h', 'http://e.com/p/q/r').href, 'http://e.com/p/x/y?a=1&b=2#h');
+var u = new URL('http://e.com:8080/a b?q=1');
+eq('URL parts', [u.protocol, u.host, u.hostname, u.port, u.pathname, u.search, u.origin].join('|'), 'http:|e.com:8080|e.com|8080|/a%20b|?q=1|http://e.com:8080');
+u.searchParams.append('z', 'a b');
+eq('searchParams', u.href, 'http://e.com:8080/a%20b?q=1&z=a+b');
+eq('location', location.pathname + location.search + location.hash, '/dir/page.html?x=1#top');
+eq('ready', document.readyState, 'loading');
+document.addEventListener('DOMContentLoaded', function () { console.log('DCL ' + document.readyState); });
+window.addEventListener('load', function () { console.log('LOAD ' + document.readyState); });
+console.log('pass=' + pass);
+</script>
+</body></html>

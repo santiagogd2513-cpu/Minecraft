@@ -1,0 +1,49 @@
+{
+ "variants": {
+  "facing=north,shape=straight": {
+   "model": "beautifuldecor:block/conveyor_straight"
+  },
+  "facing=north,shape=curve_left": {
+   "model": "beautifuldecor:block/conveyor_curve_left"
+  },
+  "facing=north,shape=curve_right": {
+   "model": "beautifuldecor:block/conveyor_curve_right"
+  },
+  "facing=east,shape=straight": {
+   "model": "beautifuldecor:block/conveyor_straight",
+   "y": 90
+  },
+  "facing=east,shape=curve_left": {
+   "model": "beautifuldecor:block/conveyor_curve_left",
+   "y": 90
+  },
+  "facing=east,shape=curve_right": {
+   "model": "beautifuldecor:block/conveyor_curve_right",
+   "y": 90
+  },
+  "facing=south,shape=straight": {
+   "model": "beautifuldecor:block/conveyor_straight",
+   "y": 180
+  },
+  "facing=south,shape=curve_left": {
+   "model": "beautifuldecor:block/conveyor_curve_left",
+   "y": 180
+  },
+  "facing=south,shape=curve_right": {
+   "model": "beautifuldecor:block/conveyor_curve_right",
+   "y": 180
+  },
+  "facing=west,shape=straight": {
+   "model": "beautifuldecor:block/conveyor_straight",
+   "y": 270
+  },
+  "facing=west,shape=curve_left": {
+   "model": "beautifuldecor:block/conveyor_curve_left",
+   "y": 270
+  },
+  "facing=west,shape=curve_right": {
+   "model": "beautifuldecor:block/conveyor_curve_right",
+   "y": 270
+  }
+ }
+}

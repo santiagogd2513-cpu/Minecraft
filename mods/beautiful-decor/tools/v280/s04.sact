@@ -1,0 +1,14 @@
+# los temporizadores esperan mientras el navegador no esta en pantalla y siguen al volver
+go http://127.0.0.1:8765/pausa.html
+wait 350
+mark
+wait 300
+compare
+wait 100
+mark
+pause
+wait 600
+compare
+resume
+wait 400
+compare

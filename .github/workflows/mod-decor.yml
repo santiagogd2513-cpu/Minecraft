@@ -1,0 +1,61 @@
+name: Mod Beautiful Decor
+
+on:
+  push:
+    branches: [ "**" ]
+    paths: [ "mods/beautiful-decor/**", ".github/workflows/mod-decor.yml" ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: mod-decor-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Compilar Beautiful Decor (Forge 1.20.1)
+    runs-on: ubuntu-22.04
+    defaults:
+      run:
+        working-directory: mods/beautiful-decor
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.8"
+
+      - name: Compilar
+        run: gradle build --stacktrace
+
+      - name: Preparar
+        run: |
+          mkdir -p ../../dist
+          ls -la build/libs
+          VERSION=$(grep '^mod_version=' gradle.properties | cut -d= -f2)
+          JAR=$(ls build/libs/*.jar | grep -v -- '-sources' | grep -v -- '-slim' | head -1)
+          cp "$JAR" "../../dist/BeautifulDecor-$VERSION.jar"
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: BeautifulDecor-jar
+          path: dist/BeautifulDecor-*.jar
+
+      - name: Publicar
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: mod-decor-${{ github.run_number }}
+          name: "Beautiful Decor ${{ env.VERSION }} #${{ github.run_number }} (Forge 1.20.1)"
+          target_commitish: ${{ github.sha }}
+          make_latest: false
+          body: |
+            **Beautiful Decor** ${{ env.VERSION }} para **Minecraft 1.20.1 / Forge 47.4.5**. Copia el `.jar` en la carpeta `mods`.
+          files: dist/BeautifulDecor-*.jar

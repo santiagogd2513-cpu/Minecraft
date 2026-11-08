@@ -1,0 +1,40 @@
+eval report('sin mover')
+scroll 400
+eval report('scroll 400')
+eval console.log('at(20,210)=' + document.elementFromPoint(20, 210).id + ' at(390,290)=' + document.elementFromPoint(390, 290).tagName + ' out=' + document.elementFromPoint(-1, 5) + ' out2=' + document.elementFromPoint(5, 300))
+eval console.log('stack=' + document.elementsFromPoint(25, 215).map(function (e) { return e.tagName.toLowerCase() + (e.id ? '#' + e.id : ''); }).join('>'))
+eval $('b').scrollIntoView()
+wait 20
+eval console.log('after start: y=' + window.scrollY)
+eval $('b').scrollIntoView({block: 'center'})
+wait 20
+eval console.log('after center: y=' + window.scrollY)
+eval $('b').scrollIntoView({block: 'end'})
+wait 20
+eval console.log('after end: y=' + window.scrollY)
+eval $('a').scrollIntoView({block: 'nearest'})
+wait 20
+eval console.log('after nearest: y=' + window.scrollY)
+eval $('b').scrollIntoViewIfNeeded()
+wait 20
+eval console.log('after ifneeded: y=' + window.scrollY)
+eval window.scrollTo(0, 5000)
+wait 20
+eval console.log('clamped: y=' + window.scrollY)
+eval document.documentElement.scrollTop = 120
+wait 20
+eval console.log('scrollTop set: y=' + window.scrollY + ' body=' + document.body.scrollTop)
+eval document.body.scrollTo({top: 30})
+wait 20
+eval console.log('body.scrollTo: y=' + window.scrollY)
+eval $('a').scrollTop = 99
+eval console.log('inner scrollTop=' + $('a').scrollTop)
+resize 320 480
+eval console.log('after resize ' + document.documentElement.clientWidth + 'x' + document.documentElement.clientHeight)
+stale
+eval var late = document.createElement('div'); late.id = 'late'; late.setAttribute('data-rect', '0,900,100,50'); late.setAttribute('data-late', ''); document.body.appendChild(late); late.scrollIntoView(); console.log('pedido sin medidas: y=' + window.scrollY);
+wait 40
+eval console.log('40 ms después: y=' + window.scrollY)
+fresh
+wait 100
+eval console.log('con la disposición al día: y=' + window.scrollY)

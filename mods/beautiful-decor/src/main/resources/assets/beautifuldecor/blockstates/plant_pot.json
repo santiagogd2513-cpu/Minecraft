@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "beautifuldecor:block/plant_pot"
+    },
+    "facing=east": {
+      "model": "beautifuldecor:block/plant_pot",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "beautifuldecor:block/plant_pot",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "beautifuldecor:block/plant_pot",
+      "y": 270
+    }
+  }
+}

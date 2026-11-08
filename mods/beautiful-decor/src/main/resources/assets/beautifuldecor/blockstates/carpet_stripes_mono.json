@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "beautifuldecor:block/carpet_stripes_mono"
+    },
+    "facing=east": {
+      "model": "beautifuldecor:block/carpet_stripes_mono",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "beautifuldecor:block/carpet_stripes_mono",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "beautifuldecor:block/carpet_stripes_mono",
+      "y": 270
+    }
+  }
+}

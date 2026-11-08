@@ -1,0 +1,814 @@
+{
+  "variants": {
+    "facing=north,open=false,part=0": {
+      "model": "beautifuldecor:block/cold_room_p0"
+    },
+    "facing=north,open=true,part=0": {
+      "model": "beautifuldecor:block/cold_room_p0"
+    },
+    "facing=north,open=false,part=1": {
+      "model": "beautifuldecor:block/cold_room_p1"
+    },
+    "facing=north,open=true,part=1": {
+      "model": "beautifuldecor:block/cold_room_p1_open"
+    },
+    "facing=north,open=false,part=2": {
+      "model": "beautifuldecor:block/cold_room_p2"
+    },
+    "facing=north,open=true,part=2": {
+      "model": "beautifuldecor:block/cold_room_p2"
+    },
+    "facing=north,open=false,part=3": {
+      "model": "beautifuldecor:block/cold_room_p3"
+    },
+    "facing=north,open=true,part=3": {
+      "model": "beautifuldecor:block/cold_room_p3"
+    },
+    "facing=north,open=false,part=4": {
+      "model": "beautifuldecor:block/cold_room_p4"
+    },
+    "facing=north,open=true,part=4": {
+      "model": "beautifuldecor:block/cold_room_p4_open"
+    },
+    "facing=north,open=false,part=5": {
+      "model": "beautifuldecor:block/cold_room_p5"
+    },
+    "facing=north,open=true,part=5": {
+      "model": "beautifuldecor:block/cold_room_p5"
+    },
+    "facing=north,open=false,part=6": {
+      "model": "beautifuldecor:block/cold_room_p6"
+    },
+    "facing=north,open=true,part=6": {
+      "model": "beautifuldecor:block/cold_room_p6"
+    },
+    "facing=north,open=false,part=7": {
+      "model": "beautifuldecor:block/cold_room_p7"
+    },
+    "facing=north,open=true,part=7": {
+      "model": "beautifuldecor:block/cold_room_p7"
+    },
+    "facing=north,open=false,part=8": {
+      "model": "beautifuldecor:block/cold_room_p8"
+    },
+    "facing=north,open=true,part=8": {
+      "model": "beautifuldecor:block/cold_room_p8"
+    },
+    "facing=north,open=false,part=9": {
+      "model": "beautifuldecor:block/cold_room_p9"
+    },
+    "facing=north,open=true,part=9": {
+      "model": "beautifuldecor:block/cold_room_p9"
+    },
+    "facing=north,open=false,part=10": {
+      "model": "beautifuldecor:block/cold_room_p10"
+    },
+    "facing=north,open=true,part=10": {
+      "model": "beautifuldecor:block/cold_room_p10"
+    },
+    "facing=north,open=false,part=11": {
+      "model": "beautifuldecor:block/cold_room_p11"
+    },
+    "facing=north,open=true,part=11": {
+      "model": "beautifuldecor:block/cold_room_p11"
+    },
+    "facing=north,open=false,part=12": {
+      "model": "beautifuldecor:block/cold_room_p12"
+    },
+    "facing=north,open=true,part=12": {
+      "model": "beautifuldecor:block/cold_room_p12"
+    },
+    "facing=north,open=false,part=13": {
+      "model": "beautifuldecor:block/cold_room_p13"
+    },
+    "facing=north,open=true,part=13": {
+      "model": "beautifuldecor:block/cold_room_p13"
+    },
+    "facing=north,open=false,part=14": {
+      "model": "beautifuldecor:block/cold_room_p14"
+    },
+    "facing=north,open=true,part=14": {
+      "model": "beautifuldecor:block/cold_room_p14"
+    },
+    "facing=north,open=false,part=15": {
+      "model": "beautifuldecor:block/cold_room_p15"
+    },
+    "facing=north,open=true,part=15": {
+      "model": "beautifuldecor:block/cold_room_p15"
+    },
+    "facing=north,open=false,part=16": {
+      "model": "beautifuldecor:block/cold_room_p16"
+    },
+    "facing=north,open=true,part=16": {
+      "model": "beautifuldecor:block/cold_room_p16"
+    },
+    "facing=north,open=false,part=17": {
+      "model": "beautifuldecor:block/cold_room_p17"
+    },
+    "facing=north,open=true,part=17": {
+      "model": "beautifuldecor:block/cold_room_p17"
+    },
+    "facing=north,open=false,part=18": {
+      "model": "beautifuldecor:block/cold_room_p18"
+    },
+    "facing=north,open=true,part=18": {
+      "model": "beautifuldecor:block/cold_room_p18"
+    },
+    "facing=north,open=false,part=19": {
+      "model": "beautifuldecor:block/cold_room_p19"
+    },
+    "facing=north,open=true,part=19": {
+      "model": "beautifuldecor:block/cold_room_p19"
+    },
+    "facing=north,open=false,part=20": {
+      "model": "beautifuldecor:block/cold_room_p20"
+    },
+    "facing=north,open=true,part=20": {
+      "model": "beautifuldecor:block/cold_room_p20"
+    },
+    "facing=north,open=false,part=21": {
+      "model": "beautifuldecor:block/cold_room_p21"
+    },
+    "facing=north,open=true,part=21": {
+      "model": "beautifuldecor:block/cold_room_p21"
+    },
+    "facing=north,open=false,part=22": {
+      "model": "beautifuldecor:block/cold_room_p22"
+    },
+    "facing=north,open=true,part=22": {
+      "model": "beautifuldecor:block/cold_room_p22"
+    },
+    "facing=north,open=false,part=23": {
+      "model": "beautifuldecor:block/cold_room_p23"
+    },
+    "facing=north,open=true,part=23": {
+      "model": "beautifuldecor:block/cold_room_p23"
+    },
+    "facing=north,open=false,part=24": {
+      "model": "beautifuldecor:block/cold_room_p24"
+    },
+    "facing=north,open=true,part=24": {
+      "model": "beautifuldecor:block/cold_room_p24"
+    },
+    "facing=north,open=false,part=25": {
+      "model": "beautifuldecor:block/cold_room_p25"
+    },
+    "facing=north,open=true,part=25": {
+      "model": "beautifuldecor:block/cold_room_p25"
+    },
+    "facing=north,open=false,part=26": {
+      "model": "beautifuldecor:block/cold_room_p26"
+    },
+    "facing=north,open=true,part=26": {
+      "model": "beautifuldecor:block/cold_room_p26"
+    },
+    "facing=east,open=false,part=0": {
+      "model": "beautifuldecor:block/cold_room_p0",
+      "y": 90
+    },
+    "facing=east,open=true,part=0": {
+      "model": "beautifuldecor:block/cold_room_p0",
+      "y": 90
+    },
+    "facing=east,open=false,part=1": {
+      "model": "beautifuldecor:block/cold_room_p1",
+      "y": 90
+    },
+    "facing=east,open=true,part=1": {
+      "model": "beautifuldecor:block/cold_room_p1_open",
+      "y": 90
+    },
+    "facing=east,open=false,part=2": {
+      "model": "beautifuldecor:block/cold_room_p2",
+      "y": 90
+    },
+    "facing=east,open=true,part=2": {
+      "model": "beautifuldecor:block/cold_room_p2",
+      "y": 90
+    },
+    "facing=east,open=false,part=3": {
+      "model": "beautifuldecor:block/cold_room_p3",
+      "y": 90
+    },
+    "facing=east,open=true,part=3": {
+      "model": "beautifuldecor:block/cold_room_p3",
+      "y": 90
+    },
+    "facing=east,open=false,part=4": {
+      "model": "beautifuldecor:block/cold_room_p4",
+      "y": 90
+    },
+    "facing=east,open=true,part=4": {
+      "model": "beautifuldecor:block/cold_room_p4_open",
+      "y": 90
+    },
+    "facing=east,open=false,part=5": {
+      "model": "beautifuldecor:block/cold_room_p5",
+      "y": 90
+    },
+    "facing=east,open=true,part=5": {
+      "model": "beautifuldecor:block/cold_room_p5",
+      "y": 90
+    },
+    "facing=east,open=false,part=6": {
+      "model": "beautifuldecor:block/cold_room_p6",
+      "y": 90
+    },
+    "facing=east,open=true,part=6": {
+      "model": "beautifuldecor:block/cold_room_p6",
+      "y": 90
+    },
+    "facing=east,open=false,part=7": {
+      "model": "beautifuldecor:block/cold_room_p7",
+      "y": 90
+    },
+    "facing=east,open=true,part=7": {
+      "model": "beautifuldecor:block/cold_room_p7",
+      "y": 90
+    },
+    "facing=east,open=false,part=8": {
+      "model": "beautifuldecor:block/cold_room_p8",
+      "y": 90
+    },
+    "facing=east,open=true,part=8": {
+      "model": "beautifuldecor:block/cold_room_p8",
+      "y": 90
+    },
+    "facing=east,open=false,part=9": {
+      "model": "beautifuldecor:block/cold_room_p9",
+      "y": 90
+    },
+    "facing=east,open=true,part=9": {
+      "model": "beautifuldecor:block/cold_room_p9",
+      "y": 90
+    },
+    "facing=east,open=false,part=10": {
+      "model": "beautifuldecor:block/cold_room_p10",
+      "y": 90
+    },
+    "facing=east,open=true,part=10": {
+      "model": "beautifuldecor:block/cold_room_p10",
+      "y": 90
+    },
+    "facing=east,open=false,part=11": {
+      "model": "beautifuldecor:block/cold_room_p11",
+      "y": 90
+    },
+    "facing=east,open=true,part=11": {
+      "model": "beautifuldecor:block/cold_room_p11",
+      "y": 90
+    },
+    "facing=east,open=false,part=12": {
+      "model": "beautifuldecor:block/cold_room_p12",
+      "y": 90
+    },
+    "facing=east,open=true,part=12": {
+      "model": "beautifuldecor:block/cold_room_p12",
+      "y": 90
+    },
+    "facing=east,open=false,part=13": {
+      "model": "beautifuldecor:block/cold_room_p13",
+      "y": 90
+    },
+    "facing=east,open=true,part=13": {
+      "model": "beautifuldecor:block/cold_room_p13",
+      "y": 90
+    },
+    "facing=east,open=false,part=14": {
+      "model": "beautifuldecor:block/cold_room_p14",
+      "y": 90
+    },
+    "facing=east,open=true,part=14": {
+      "model": "beautifuldecor:block/cold_room_p14",
+      "y": 90
+    },
+    "facing=east,open=false,part=15": {
+      "model": "beautifuldecor:block/cold_room_p15",
+      "y": 90
+    },
+    "facing=east,open=true,part=15": {
+      "model": "beautifuldecor:block/cold_room_p15",
+      "y": 90
+    },
+    "facing=east,open=false,part=16": {
+      "model": "beautifuldecor:block/cold_room_p16",
+      "y": 90
+    },
+    "facing=east,open=true,part=16": {
+      "model": "beautifuldecor:block/cold_room_p16",
+      "y": 90
+    },
+    "facing=east,open=false,part=17": {
+      "model": "beautifuldecor:block/cold_room_p17",
+      "y": 90
+    },
+    "facing=east,open=true,part=17": {
+      "model": "beautifuldecor:block/cold_room_p17",
+      "y": 90
+    },
+    "facing=east,open=false,part=18": {
+      "model": "beautifuldecor:block/cold_room_p18",
+      "y": 90
+    },
+    "facing=east,open=true,part=18": {
+      "model": "beautifuldecor:block/cold_room_p18",
+      "y": 90
+    },
+    "facing=east,open=false,part=19": {
+      "model": "beautifuldecor:block/cold_room_p19",
+      "y": 90
+    },
+    "facing=east,open=true,part=19": {
+      "model": "beautifuldecor:block/cold_room_p19",
+      "y": 90
+    },
+    "facing=east,open=false,part=20": {
+      "model": "beautifuldecor:block/cold_room_p20",
+      "y": 90
+    },
+    "facing=east,open=true,part=20": {
+      "model": "beautifuldecor:block/cold_room_p20",
+      "y": 90
+    },
+    "facing=east,open=false,part=21": {
+      "model": "beautifuldecor:block/cold_room_p21",
+      "y": 90
+    },
+    "facing=east,open=true,part=21": {
+      "model": "beautifuldecor:block/cold_room_p21",
+      "y": 90
+    },
+    "facing=east,open=false,part=22": {
+      "model": "beautifuldecor:block/cold_room_p22",
+      "y": 90
+    },
+    "facing=east,open=true,part=22": {
+      "model": "beautifuldecor:block/cold_room_p22",
+      "y": 90
+    },
+    "facing=east,open=false,part=23": {
+      "model": "beautifuldecor:block/cold_room_p23",
+      "y": 90
+    },
+    "facing=east,open=true,part=23": {
+      "model": "beautifuldecor:block/cold_room_p23",
+      "y": 90
+    },
+    "facing=east,open=false,part=24": {
+      "model": "beautifuldecor:block/cold_room_p24",
+      "y": 90
+    },
+    "facing=east,open=true,part=24": {
+      "model": "beautifuldecor:block/cold_room_p24",
+      "y": 90
+    },
+    "facing=east,open=false,part=25": {
+      "model": "beautifuldecor:block/cold_room_p25",
+      "y": 90
+    },
+    "facing=east,open=true,part=25": {
+      "model": "beautifuldecor:block/cold_room_p25",
+      "y": 90
+    },
+    "facing=east,open=false,part=26": {
+      "model": "beautifuldecor:block/cold_room_p26",
+      "y": 90
+    },
+    "facing=east,open=true,part=26": {
+      "model": "beautifuldecor:block/cold_room_p26",
+      "y": 90
+    },
+    "facing=south,open=false,part=0": {
+      "model": "beautifuldecor:block/cold_room_p0",
+      "y": 180
+    },
+    "facing=south,open=true,part=0": {
+      "model": "beautifuldecor:block/cold_room_p0",
+      "y": 180
+    },
+    "facing=south,open=false,part=1": {
+      "model": "beautifuldecor:block/cold_room_p1",
+      "y": 180
+    },
+    "facing=south,open=true,part=1": {
+      "model": "beautifuldecor:block/cold_room_p1_open",
+      "y": 180
+    },
+    "facing=south,open=false,part=2": {
+      "model": "beautifuldecor:block/cold_room_p2",
+      "y": 180
+    },
+    "facing=south,open=true,part=2": {
+      "model": "beautifuldecor:block/cold_room_p2",
+      "y": 180
+    },
+    "facing=south,open=false,part=3": {
+      "model": "beautifuldecor:block/cold_room_p3",
+      "y": 180
+    },
+    "facing=south,open=true,part=3": {
+      "model": "beautifuldecor:block/cold_room_p3",
+      "y": 180
+    },
+    "facing=south,open=false,part=4": {
+      "model": "beautifuldecor:block/cold_room_p4",
+      "y": 180
+    },
+    "facing=south,open=true,part=4": {
+      "model": "beautifuldecor:block/cold_room_p4_open",
+      "y": 180
+    },
+    "facing=south,open=false,part=5": {
+      "model": "beautifuldecor:block/cold_room_p5",
+      "y": 180
+    },
+    "facing=south,open=true,part=5": {
+      "model": "beautifuldecor:block/cold_room_p5",
+      "y": 180
+    },
+    "facing=south,open=false,part=6": {
+      "model": "beautifuldecor:block/cold_room_p6",
+      "y": 180
+    },
+    "facing=south,open=true,part=6": {
+      "model": "beautifuldecor:block/cold_room_p6",
+      "y": 180
+    },
+    "facing=south,open=false,part=7": {
+      "model": "beautifuldecor:block/cold_room_p7",
+      "y": 180
+    },
+    "facing=south,open=true,part=7": {
+      "model": "beautifuldecor:block/cold_room_p7",
+      "y": 180
+    },
+    "facing=south,open=false,part=8": {
+      "model": "beautifuldecor:block/cold_room_p8",
+      "y": 180
+    },
+    "facing=south,open=true,part=8": {
+      "model": "beautifuldecor:block/cold_room_p8",
+      "y": 180
+    },
+    "facing=south,open=false,part=9": {
+      "model": "beautifuldecor:block/cold_room_p9",
+      "y": 180
+    },
+    "facing=south,open=true,part=9": {
+      "model": "beautifuldecor:block/cold_room_p9",
+      "y": 180
+    },
+    "facing=south,open=false,part=10": {
+      "model": "beautifuldecor:block/cold_room_p10",
+      "y": 180
+    },
+    "facing=south,open=true,part=10": {
+      "model": "beautifuldecor:block/cold_room_p10",
+      "y": 180
+    },
+    "facing=south,open=false,part=11": {
+      "model": "beautifuldecor:block/cold_room_p11",
+      "y": 180
+    },
+    "facing=south,open=true,part=11": {
+      "model": "beautifuldecor:block/cold_room_p11",
+      "y": 180
+    },
+    "facing=south,open=false,part=12": {
+      "model": "beautifuldecor:block/cold_room_p12",
+      "y": 180
+    },
+    "facing=south,open=true,part=12": {
+      "model": "beautifuldecor:block/cold_room_p12",
+      "y": 180
+    },
+    "facing=south,open=false,part=13": {
+      "model": "beautifuldecor:block/cold_room_p13",
+      "y": 180
+    },
+    "facing=south,open=true,part=13": {
+      "model": "beautifuldecor:block/cold_room_p13",
+      "y": 180
+    },
+    "facing=south,open=false,part=14": {
+      "model": "beautifuldecor:block/cold_room_p14",
+      "y": 180
+    },
+    "facing=south,open=true,part=14": {
+      "model": "beautifuldecor:block/cold_room_p14",
+      "y": 180
+    },
+    "facing=south,open=false,part=15": {
+      "model": "beautifuldecor:block/cold_room_p15",
+      "y": 180
+    },
+    "facing=south,open=true,part=15": {
+      "model": "beautifuldecor:block/cold_room_p15",
+      "y": 180
+    },
+    "facing=south,open=false,part=16": {
+      "model": "beautifuldecor:block/cold_room_p16",
+      "y": 180
+    },
+    "facing=south,open=true,part=16": {
+      "model": "beautifuldecor:block/cold_room_p16",
+      "y": 180
+    },
+    "facing=south,open=false,part=17": {
+      "model": "beautifuldecor:block/cold_room_p17",
+      "y": 180
+    },
+    "facing=south,open=true,part=17": {
+      "model": "beautifuldecor:block/cold_room_p17",
+      "y": 180
+    },
+    "facing=south,open=false,part=18": {
+      "model": "beautifuldecor:block/cold_room_p18",
+      "y": 180
+    },
+    "facing=south,open=true,part=18": {
+      "model": "beautifuldecor:block/cold_room_p18",
+      "y": 180
+    },
+    "facing=south,open=false,part=19": {
+      "model": "beautifuldecor:block/cold_room_p19",
+      "y": 180
+    },
+    "facing=south,open=true,part=19": {
+      "model": "beautifuldecor:block/cold_room_p19",
+      "y": 180
+    },
+    "facing=south,open=false,part=20": {
+      "model": "beautifuldecor:block/cold_room_p20",
+      "y": 180
+    },
+    "facing=south,open=true,part=20": {
+      "model": "beautifuldecor:block/cold_room_p20",
+      "y": 180
+    },
+    "facing=south,open=false,part=21": {
+      "model": "beautifuldecor:block/cold_room_p21",
+      "y": 180
+    },
+    "facing=south,open=true,part=21": {
+      "model": "beautifuldecor:block/cold_room_p21",
+      "y": 180
+    },
+    "facing=south,open=false,part=22": {
+      "model": "beautifuldecor:block/cold_room_p22",
+      "y": 180
+    },
+    "facing=south,open=true,part=22": {
+      "model": "beautifuldecor:block/cold_room_p22",
+      "y": 180
+    },
+    "facing=south,open=false,part=23": {
+      "model": "beautifuldecor:block/cold_room_p23",
+      "y": 180
+    },
+    "facing=south,open=true,part=23": {
+      "model": "beautifuldecor:block/cold_room_p23",
+      "y": 180
+    },
+    "facing=south,open=false,part=24": {
+      "model": "beautifuldecor:block/cold_room_p24",
+      "y": 180
+    },
+    "facing=south,open=true,part=24": {
+      "model": "beautifuldecor:block/cold_room_p24",
+      "y": 180
+    },
+    "facing=south,open=false,part=25": {
+      "model": "beautifuldecor:block/cold_room_p25",
+      "y": 180
+    },
+    "facing=south,open=true,part=25": {
+      "model": "beautifuldecor:block/cold_room_p25",
+      "y": 180
+    },
+    "facing=south,open=false,part=26": {
+      "model": "beautifuldecor:block/cold_room_p26",
+      "y": 180
+    },
+    "facing=south,open=true,part=26": {
+      "model": "beautifuldecor:block/cold_room_p26",
+      "y": 180
+    },
+    "facing=west,open=false,part=0": {
+      "model": "beautifuldecor:block/cold_room_p0",
+      "y": 270
+    },
+    "facing=west,open=true,part=0": {
+      "model": "beautifuldecor:block/cold_room_p0",
+      "y": 270
+    },
+    "facing=west,open=false,part=1": {
+      "model": "beautifuldecor:block/cold_room_p1",
+      "y": 270
+    },
+    "facing=west,open=true,part=1": {
+      "model": "beautifuldecor:block/cold_room_p1_open",
+      "y": 270
+    },
+    "facing=west,open=false,part=2": {
+      "model": "beautifuldecor:block/cold_room_p2",
+      "y": 270
+    },
+    "facing=west,open=true,part=2": {
+      "model": "beautifuldecor:block/cold_room_p2",
+      "y": 270
+    },
+    "facing=west,open=false,part=3": {
+      "model": "beautifuldecor:block/cold_room_p3",
+      "y": 270
+    },
+    "facing=west,open=true,part=3": {
+      "model": "beautifuldecor:block/cold_room_p3",
+      "y": 270
+    },
+    "facing=west,open=false,part=4": {
+      "model": "beautifuldecor:block/cold_room_p4",
+      "y": 270
+    },
+    "facing=west,open=true,part=4": {
+      "model": "beautifuldecor:block/cold_room_p4_open",
+      "y": 270
+    },
+    "facing=west,open=false,part=5": {
+      "model": "beautifuldecor:block/cold_room_p5",
+      "y": 270
+    },
+    "facing=west,open=true,part=5": {
+      "model": "beautifuldecor:block/cold_room_p5",
+      "y": 270
+    },
+    "facing=west,open=false,part=6": {
+      "model": "beautifuldecor:block/cold_room_p6",
+      "y": 270
+    },
+    "facing=west,open=true,part=6": {
+      "model": "beautifuldecor:block/cold_room_p6",
+      "y": 270
+    },
+    "facing=west,open=false,part=7": {
+      "model": "beautifuldecor:block/cold_room_p7",
+      "y": 270
+    },
+    "facing=west,open=true,part=7": {
+      "model": "beautifuldecor:block/cold_room_p7",
+      "y": 270
+    },
+    "facing=west,open=false,part=8": {
+      "model": "beautifuldecor:block/cold_room_p8",
+      "y": 270
+    },
+    "facing=west,open=true,part=8": {
+      "model": "beautifuldecor:block/cold_room_p8",
+      "y": 270
+    },
+    "facing=west,open=false,part=9": {
+      "model": "beautifuldecor:block/cold_room_p9",
+      "y": 270
+    },
+    "facing=west,open=true,part=9": {
+      "model": "beautifuldecor:block/cold_room_p9",
+      "y": 270
+    },
+    "facing=west,open=false,part=10": {
+      "model": "beautifuldecor:block/cold_room_p10",
+      "y": 270
+    },
+    "facing=west,open=true,part=10": {
+      "model": "beautifuldecor:block/cold_room_p10",
+      "y": 270
+    },
+    "facing=west,open=false,part=11": {
+      "model": "beautifuldecor:block/cold_room_p11",
+      "y": 270
+    },
+    "facing=west,open=true,part=11": {
+      "model": "beautifuldecor:block/cold_room_p11",
+      "y": 270
+    },
+    "facing=west,open=false,part=12": {
+      "model": "beautifuldecor:block/cold_room_p12",
+      "y": 270
+    },
+    "facing=west,open=true,part=12": {
+      "model": "beautifuldecor:block/cold_room_p12",
+      "y": 270
+    },
+    "facing=west,open=false,part=13": {
+      "model": "beautifuldecor:block/cold_room_p13",
+      "y": 270
+    },
+    "facing=west,open=true,part=13": {
+      "model": "beautifuldecor:block/cold_room_p13",
+      "y": 270
+    },
+    "facing=west,open=false,part=14": {
+      "model": "beautifuldecor:block/cold_room_p14",
+      "y": 270
+    },
+    "facing=west,open=true,part=14": {
+      "model": "beautifuldecor:block/cold_room_p14",
+      "y": 270
+    },
+    "facing=west,open=false,part=15": {
+      "model": "beautifuldecor:block/cold_room_p15",
+      "y": 270
+    },
+    "facing=west,open=true,part=15": {
+      "model": "beautifuldecor:block/cold_room_p15",
+      "y": 270
+    },
+    "facing=west,open=false,part=16": {
+      "model": "beautifuldecor:block/cold_room_p16",
+      "y": 270
+    },
+    "facing=west,open=true,part=16": {
+      "model": "beautifuldecor:block/cold_room_p16",
+      "y": 270
+    },
+    "facing=west,open=false,part=17": {
+      "model": "beautifuldecor:block/cold_room_p17",
+      "y": 270
+    },
+    "facing=west,open=true,part=17": {
+      "model": "beautifuldecor:block/cold_room_p17",
+      "y": 270
+    },
+    "facing=west,open=false,part=18": {
+      "model": "beautifuldecor:block/cold_room_p18",
+      "y": 270
+    },
+    "facing=west,open=true,part=18": {
+      "model": "beautifuldecor:block/cold_room_p18",
+      "y": 270
+    },
+    "facing=west,open=false,part=19": {
+      "model": "beautifuldecor:block/cold_room_p19",
+      "y": 270
+    },
+    "facing=west,open=true,part=19": {
+      "model": "beautifuldecor:block/cold_room_p19",
+      "y": 270
+    },
+    "facing=west,open=false,part=20": {
+      "model": "beautifuldecor:block/cold_room_p20",
+      "y": 270
+    },
+    "facing=west,open=true,part=20": {
+      "model": "beautifuldecor:block/cold_room_p20",
+      "y": 270
+    },
+    "facing=west,open=false,part=21": {
+      "model": "beautifuldecor:block/cold_room_p21",
+      "y": 270
+    },
+    "facing=west,open=true,part=21": {
+      "model": "beautifuldecor:block/cold_room_p21",
+      "y": 270
+    },
+    "facing=west,open=false,part=22": {
+      "model": "beautifuldecor:block/cold_room_p22",
+      "y": 270
+    },
+    "facing=west,open=true,part=22": {
+      "model": "beautifuldecor:block/cold_room_p22",
+      "y": 270
+    },
+    "facing=west,open=false,part=23": {
+      "model": "beautifuldecor:block/cold_room_p23",
+      "y": 270
+    },
+    "facing=west,open=true,part=23": {
+      "model": "beautifuldecor:block/cold_room_p23",
+      "y": 270
+    },
+    "facing=west,open=false,part=24": {
+      "model": "beautifuldecor:block/cold_room_p24",
+      "y": 270
+    },
+    "facing=west,open=true,part=24": {
+      "model": "beautifuldecor:block/cold_room_p24",
+      "y": 270
+    },
+    "facing=west,open=false,part=25": {
+      "model": "beautifuldecor:block/cold_room_p25",
+      "y": 270
+    },
+    "facing=west,open=true,part=25": {
+      "model": "beautifuldecor:block/cold_room_p25",
+      "y": 270
+    },
+    "facing=west,open=false,part=26": {
+      "model": "beautifuldecor:block/cold_room_p26",
+      "y": 270
+    },
+    "facing=west,open=true,part=26": {
+      "model": "beautifuldecor:block/cold_room_p26",
+      "y": 270
+    }
+  }
+}

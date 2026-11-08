@@ -1,0 +1,36 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "particle": "minecraft:block/white_concrete",
+    "plate": "minecraft:block/white_concrete",
+    "trim": "minecraft:block/light_gray_concrete",
+    "button": "minecraft:block/stone",
+    "indicator": "minecraft:block/emerald_block"
+  },
+  "elements": [
+    {
+      "from": [4, 4, 12], "to": [12, 12, 16],
+      "faces": {
+        "north": {"texture": "#plate"}, "east": {"texture": "#trim"},
+        "south": {"texture": "#plate"}, "west": {"texture": "#trim"},
+        "up": {"texture": "#plate"}, "down": {"texture": "#trim"}
+      }
+    },
+    {
+      "from": [5, 5, 11.8], "to": [11, 11, 13.3],
+      "faces": {
+        "north": {"texture": "#button"}, "east": {"texture": "#trim"},
+        "south": {"texture": "#button"}, "west": {"texture": "#trim"},
+        "up": {"texture": "#button"}, "down": {"texture": "#button"}
+      }
+    },
+    {
+      "from": [7, 10.7, 11.2], "to": [9, 11.4, 11.8],
+      "faces": {
+        "north": {"texture": "#indicator"}, "east": {"texture": "#indicator"},
+        "south": {"texture": "#indicator"}, "west": {"texture": "#indicator"},
+        "up": {"texture": "#indicator"}, "down": {"texture": "#indicator"}
+      }
+    }
+  ]
+}

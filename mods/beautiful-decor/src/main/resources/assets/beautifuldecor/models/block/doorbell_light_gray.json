@@ -1,0 +1,235 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "plate": "beautifuldecor:block/doorbell_light_gray_plate",
+    "button": "beautifuldecor:block/doorbell_light_gray_button",
+    "led": "beautifuldecor:block/doorbell_led",
+    "particle": "beautifuldecor:block/doorbell_light_gray_plate"
+  },
+  "elements": [
+    {
+      "from": [
+        5.5,
+        4,
+        14.5
+      ],
+      "to": [
+        10.5,
+        12,
+        16
+      ],
+      "faces": {
+        "north": {
+          "texture": "#plate"
+        },
+        "east": {
+          "texture": "#plate"
+        },
+        "south": {
+          "texture": "#plate"
+        },
+        "west": {
+          "texture": "#plate"
+        },
+        "up": {
+          "texture": "#plate"
+        },
+        "down": {
+          "texture": "#plate"
+        }
+      }
+    },
+    {
+      "from": [
+        7.5,
+        5.2,
+        13.6
+      ],
+      "to": [
+        8.5,
+        5.7,
+        14.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#button"
+        },
+        "east": {
+          "texture": "#button"
+        },
+        "south": {
+          "texture": "#button"
+        },
+        "west": {
+          "texture": "#button"
+        },
+        "up": {
+          "texture": "#button"
+        },
+        "down": {
+          "texture": "#button"
+        }
+      }
+    },
+    {
+      "from": [
+        6.5,
+        5.7,
+        13.6
+      ],
+      "to": [
+        9.5,
+        6.7,
+        14.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#button"
+        },
+        "east": {
+          "texture": "#button"
+        },
+        "south": {
+          "texture": "#button"
+        },
+        "west": {
+          "texture": "#button"
+        },
+        "up": {
+          "texture": "#button"
+        },
+        "down": {
+          "texture": "#button"
+        }
+      }
+    },
+    {
+      "from": [
+        6.0,
+        6.7,
+        13.6
+      ],
+      "to": [
+        10.0,
+        7.7,
+        14.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#button"
+        },
+        "east": {
+          "texture": "#button"
+        },
+        "south": {
+          "texture": "#button"
+        },
+        "west": {
+          "texture": "#button"
+        },
+        "up": {
+          "texture": "#button"
+        },
+        "down": {
+          "texture": "#button"
+        }
+      }
+    },
+    {
+      "from": [
+        6.5,
+        7.7,
+        13.6
+      ],
+      "to": [
+        9.5,
+        8.7,
+        14.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#button"
+        },
+        "east": {
+          "texture": "#button"
+        },
+        "south": {
+          "texture": "#button"
+        },
+        "west": {
+          "texture": "#button"
+        },
+        "up": {
+          "texture": "#button"
+        },
+        "down": {
+          "texture": "#button"
+        }
+      }
+    },
+    {
+      "from": [
+        7.5,
+        8.7,
+        13.6
+      ],
+      "to": [
+        8.5,
+        9.2,
+        14.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#button"
+        },
+        "east": {
+          "texture": "#button"
+        },
+        "south": {
+          "texture": "#button"
+        },
+        "west": {
+          "texture": "#button"
+        },
+        "up": {
+          "texture": "#button"
+        },
+        "down": {
+          "texture": "#button"
+        }
+      }
+    },
+    {
+      "from": [
+        7.4,
+        10.0,
+        14.2
+      ],
+      "to": [
+        8.6,
+        11.2,
+        14.5
+      ],
+      "faces": {
+        "north": {
+          "texture": "#led"
+        },
+        "east": {
+          "texture": "#led"
+        },
+        "south": {
+          "texture": "#led"
+        },
+        "west": {
+          "texture": "#led"
+        },
+        "up": {
+          "texture": "#led"
+        },
+        "down": {
+          "texture": "#led"
+        }
+      }
+    }
+  ]
+}

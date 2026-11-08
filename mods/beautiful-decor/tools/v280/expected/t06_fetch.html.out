@@ -1,0 +1,67 @@
+typeof function function function function function function function
+json 200 true OK basic http://test.local/api/json false false application/json uno, dos false
+body null function
+{"msg":"hola","n":[1,2,3]} true
+copia {"msg":"hola","n":[1,2,3]}
+segunda lectura TypeError: Failed to execute 'text' on 'Response': body stream already read
+clone usado TypeError: Failed to execute 'clone' on 'Response': Response body is already used
+text texto plano ñ
+404 404 false Not Found no existe /api/404
+redir true http://test.local/api/json
+[error] Fetch failed loading: GET "http://test.local/api/fail" (connection refused)
+fallo TypeError: Failed to fetch true
+[error] Fetch API cannot load ftp://servidor/x. URL scheme "ftp" is not supported.
+ftp TypeError: Failed to fetch
+[error] Fetch API cannot load data:text/plain,hola. URL scheme "data" is not supported.
+data TypeError: Failed to fetch
+rel http://test.local/dir/api/json 404
+protocolo relativo http://otro.test/api/json cors
+URL http://test.local/api/json?z=1
+post texto: POST accept=*/*; content-type=text/plain;charset=UTF-8; body=hola
+post json: POST accept=*/*; content-type=application/json; x-test=si; body={"a":1}
+put params: PUT accept=*/*; content-type=application/x-www-form-urlencoded;charset=UTF-8; body=a=1&b=%C3%B1+x
+post formdata: POST accept=*/*; content-type=multipart/form-data; boundary=...; body=--BOUNDARY~Content-Disposition: form-data; name="k"~~v~--BOUNDARY~Content-Disposition: form-data; name="n"~~dos~--BOUNDARY--~
+delete: DELETE accept=*/*; body=
+accept propio: GET accept=application/json; body=
+accept por omision: GET accept=*/*; body=
+get con cuerpo TypeError: Failed to construct 'Request': Request with GET/HEAD method cannot have body.
+formData 1 ñ
+arrayBuffer TypeError
+json malo SyntaxError
+Request POST http://test.local/api/echo 1 text/plain;charset=UTF-8 same-origin null false
+fetch(Request): POST a=1; accept=*/*; content-type=text/plain;charset=UTF-8; body=cuerpo
+usado false false cuerpo
+Request() TypeError
+Request+init 200
+Response 201 true Hecho b {"x":1}
+Response vacia 200 true true
+status 99 RangeError
+Response.json {"ok":true} application/json
+Response.error error 0
+toString [object Response] [object Headers] [object Headers]
+Headers 2, 3 true false null accept,content-type,x-b,x-c a|text/plain|2, 3|c
+forEach accept=a;content-type=text/plain;x-b=2, 3
+entries [["accept","a"],["content-type","text/plain"],["x-b","2, 3"]] [["accept","a"],["content-type","text/plain"],["x-b","2, 3"]]
+copia [["accept","a"],["content-type","text/plain"],["x-b","2, 3"]]
+nombre malo TypeError
+valor malo TypeError
+par malo TypeError
+signal false undefined true function
+evento abort abort true
+onabort
+despues true AbortError: signal is aborted without reason true 20
+throwIfAborted AbortError
+fetch abortado antes AbortError: signal is aborted without reason
+NET cancelled http://test.local/api/slow
+abortado en vuelo motivo
+NET cancelled http://test.local/api/slow
+abortado sin motivo AbortError: signal is aborted without reason
+NET cancelled http://test.local/api/slow
+timeout TimeoutError: signal timed out
+timeout ok lento
+AbortSignal.abort true ok: x
+any true dos
+new AbortSignal TypeError
+signal malo TypeError
+FIN
+out=listo

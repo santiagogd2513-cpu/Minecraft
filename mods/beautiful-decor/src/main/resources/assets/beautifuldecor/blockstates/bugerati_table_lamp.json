@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "facing=north,open=false": {
+      "model": "beautifuldecor:block/bugerati_table_lamp"
+    },
+    "facing=north,open=true": {
+      "model": "beautifuldecor:block/bugerati_table_lamp_on"
+    },
+    "facing=east,open=false": {
+      "model": "beautifuldecor:block/bugerati_table_lamp",
+      "y": 90
+    },
+    "facing=east,open=true": {
+      "model": "beautifuldecor:block/bugerati_table_lamp_on",
+      "y": 90
+    },
+    "facing=south,open=false": {
+      "model": "beautifuldecor:block/bugerati_table_lamp",
+      "y": 180
+    },
+    "facing=south,open=true": {
+      "model": "beautifuldecor:block/bugerati_table_lamp_on",
+      "y": 180
+    },
+    "facing=west,open=false": {
+      "model": "beautifuldecor:block/bugerati_table_lamp",
+      "y": 270
+    },
+    "facing=west,open=true": {
+      "model": "beautifuldecor:block/bugerati_table_lamp_on",
+      "y": 270
+    }
+  }
+}

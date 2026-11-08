@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "beautifuldecor:block/pan_lid_stainless"
+    },
+    "facing=east": {
+      "model": "beautifuldecor:block/pan_lid_stainless",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "beautifuldecor:block/pan_lid_stainless",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "beautifuldecor:block/pan_lid_stainless",
+      "y": 270
+    }
+  }
+}

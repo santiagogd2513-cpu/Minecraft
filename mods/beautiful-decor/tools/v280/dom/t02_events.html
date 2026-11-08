@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html><body>
+<div id="outer"><div id="inner"><button id="btn">Ok</button></div></div>
+<a id="lnk" href="/other/page.html#z">enlace</a>
+<a id="js" href="javascript:console.log('js href')">js</a>
+<a id="mail" href="mailto:a@b.c">mail</a>
+<input id="cb" type="checkbox">
+<input id="r1" type="radio" name="g" value="a"><input id="r2" type="radio" name="g" value="b" checked>
+<label id="lb" for="cb">label</label>
+<details id="det"><summary id="sum">sum</summary>contenido</details>
+<script>
+function eq(name, got, exp) {
+  if (got === exp) console.log('ok ' + name);
+  else console.log('FAIL ' + name + ': got ' + JSON.stringify(got) + ' expected ' + JSON.stringify(exp));
+}
+var log = [];
+function L(s) { log.push(s); }
+var outer = document.getElementById('outer'), inner = document.getElementById('inner'), btn = document.getElementById('btn');
+outer.addEventListener('click', function (e) { L('outer-capture:' + e.eventPhase); }, true);
+outer.addEventListener('click', function (e) { L('outer-bubble:' + e.eventPhase + ':' + (e.target === btn) + ':' + (e.currentTarget === outer)); });
+inner.addEventListener('click', function (e) { L('inner'); });
+btn.addEventListener('click', function (e) { L('btn1'); e.stopImmediatePropagation(); });
+btn.addEventListener('click', function (e) { L('btn2'); });
+btn.click();
+eq('order', log.join(','), 'outer-capture:1,btn1');
+log = [];
+btn.addEventListener('click', function f(e) { L('once'); }, { once: true });
+var ev = new Event('custom', { bubbles: true });
+outer.addEventListener('custom', function (e) { L('custom:' + e.type + ':' + e.target.id); });
+inner.dispatchEvent(ev);
+eq('custom', log.join(','), 'custom:custom:inner');
+log = [];
+var ce = new CustomEvent('hello', { detail: { n: 5 } });
+document.addEventListener('hello', function (e) { L('hello' + e.detail.n); });
+document.dispatchEvent(ce);
+eq('CustomEvent', log.join(','), 'hello5');
+log = [];
+// preventDefault en enlace
+var lnk = document.getElementById('lnk');
+lnk.addEventListener('click', function (e) { L('lnk'); e.preventDefault(); });
+lnk.click();
+eq('prevented link', log.join(','), 'lnk');
+// on* handlers
+log = [];
+btn.onclick = function () { L('onclick'); };
+eq('onclick get', typeof btn.onclick, 'function');
+btn.onclick = null;
+eq('onclick null', btn.onclick, null);
+// remover
+function h1() { L('h1'); }
+inner.addEventListener('foo', h1); inner.removeEventListener('foo', h1);
+inner.dispatchEvent(new Event('foo'));
+eq('removed', log.length, 0);
+// checkbox
+var cb = document.getElementById('cb');
+var seen = [];
+cb.addEventListener('change', function () { seen.push('change:' + cb.checked); });
+cb.addEventListener('click', function () { seen.push('click:' + cb.checked); });
+cb.click();
+eq('cb click', seen.join(','), 'click:true,change:true');
+document.getElementById('lb').click();
+eq('label click', cb.checked, false);
+// radio
+var r1 = document.getElementById('r1'), r2 = document.getElementById('r2');
+r1.click();
+eq('radio', [r1.checked, r2.checked].join(), 'true,false');
+// details
+var det = document.getElementById('det');
+document.getElementById('sum').click();
+eq('details open', det.open, true);
+// matches focus
+btn.focus();
+eq('activeElement', document.activeElement, btn);
+btn.blur();
+eq('blur', document.activeElement, document.body);
+// keyboard
+var k = new KeyboardEvent('keydown', { key: 'a', bubbles: true });
+eq('kbd', k.key, 'a');
+eq('kbd type', k.type, 'keydown');
+eq('isTrusted', k.isTrusted, false);
+// event instanceof
+eq('instanceof', ev instanceof Event, true);
+eq('MouseEvent', new MouseEvent('click', { clientX: 3 }).clientX, 3);
+console.log('done');
+</script>
+</body></html>

@@ -1,0 +1,191 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "beautifuldecor:block/xbox_shell",
+    "shell": "beautifuldecor:block/xbox_shell",
+    "front": "beautifuldecor:block/xbox_front",
+    "side": "beautifuldecor:block/xbox_side",
+    "top": "beautifuldecor:block/xbox_top",
+    "vents": "beautifuldecor:block/xbox_vents",
+    "power": "beautifuldecor:block/xbox_power",
+    "tray": "beautifuldecor:block/xbox_disc_tray",
+    "port": "beautifuldecor:block/xbox_port",
+    "eject": "beautifuldecor:block/xbox_eject"
+  },
+  "elements": [
+    {
+      "name": "slim_console_body",
+      "from": [1.0, 0.45, 1.2],
+      "to": [15.0, 6.45, 14.8],
+      "faces": {
+        "north": {"uv": [0, 0, 16, 16], "texture": "#front"},
+        "east": {"uv": [0, 0, 16, 16], "texture": "#side"},
+        "south": {"uv": [0, 0, 16, 16], "texture": "#shell"},
+        "west": {"uv": [0, 0, 16, 16], "texture": "#side"},
+        "up": {"uv": [0, 0, 16, 16], "texture": "#top"},
+        "down": {"uv": [0, 0, 16, 16], "texture": "#shell"}
+      }
+    },
+    {
+      "name": "raised_top_panel",
+      "from": [1.35, 6.35, 1.55],
+      "to": [14.65, 6.8, 14.45],
+      "faces": {
+        "north": {"texture": "#shell"},
+        "east": {"texture": "#shell"},
+        "south": {"texture": "#shell"},
+        "west": {"texture": "#shell"},
+        "up": {"uv": [0, 0, 16, 16], "texture": "#top"},
+        "down": {"texture": "#shell"}
+      }
+    },
+    {
+      "name": "front_faceplate",
+      "from": [1.25, 0.65, 0.95],
+      "to": [14.75, 6.25, 1.25],
+      "faces": {
+        "north": {"uv": [0, 0, 16, 16], "texture": "#front"},
+        "east": {"texture": "#side"},
+        "west": {"texture": "#side"},
+        "up": {"texture": "#shell"},
+        "down": {"texture": "#shell"}
+      }
+    },
+    {
+      "name": "disc_drive_slot",
+      "from": [4.0, 1.35, 0.68],
+      "to": [10.8, 2.25, 0.9],
+      "faces": {
+        "north": {"uv": [0, 0, 16, 16], "texture": "#tray"},
+        "up": {"texture": "#shell"},
+        "down": {"texture": "#shell"},
+        "east": {"texture": "#shell"},
+        "west": {"texture": "#shell"}
+      }
+    },
+    {
+      "name": "front_usb_port_left",
+      "from": [2.0, 4.35, 0.7],
+      "to": [3.15, 5.25, 0.9],
+      "faces": {
+        "north": {"uv": [0, 0, 16, 16], "texture": "#port"},
+        "east": {"texture": "#shell"},
+        "west": {"texture": "#shell"},
+        "up": {"texture": "#shell"},
+        "down": {"texture": "#shell"}
+      }
+    },
+    {
+      "name": "front_usb_port_right",
+      "from": [3.35, 4.35, 0.7],
+      "to": [4.5, 5.25, 0.9],
+      "faces": {
+        "north": {"uv": [0, 0, 16, 16], "texture": "#port"},
+        "east": {"texture": "#shell"},
+        "west": {"texture": "#shell"},
+        "up": {"texture": "#shell"},
+        "down": {"texture": "#shell"}
+      }
+    },
+    {
+      "name": "power_button_ring",
+      "from": [11.8, 3.25, 0.62],
+      "to": [14.2, 5.65, 0.84],
+      "faces": {
+        "north": {"uv": [0, 0, 16, 16], "texture": "#power"},
+        "east": {"texture": "#shell"},
+        "west": {"texture": "#shell"},
+        "up": {"texture": "#shell"},
+        "down": {"texture": "#shell"}
+      }
+    },
+    {
+      "name": "eject_touch_button",
+      "from": [11.1, 1.35, 0.67],
+      "to": [12.1, 2.25, 0.85],
+      "faces": {
+        "north": {"uv": [0, 0, 16, 16], "texture": "#eject"},
+        "east": {"texture": "#shell"},
+        "west": {"texture": "#shell"},
+        "up": {"texture": "#shell"},
+        "down": {"texture": "#shell"}
+      }
+    },
+    {
+      "name": "left_side_vent",
+      "from": [0.8, 1.0, 3.0],
+      "to": [1.05, 5.9, 13.0],
+      "faces": {
+        "west": {"uv": [0, 0, 16, 16], "texture": "#vents"}
+      }
+    },
+    {
+      "name": "right_side_vent",
+      "from": [14.95, 1.0, 3.0],
+      "to": [15.2, 5.9, 13.0],
+      "faces": {
+        "east": {"uv": [0, 0, 16, 16], "texture": "#vents"}
+      }
+    },
+    {
+      "name": "rear_vent_panel",
+      "from": [2.0, 1.0, 14.75],
+      "to": [14.0, 5.8, 15.0],
+      "faces": {
+        "south": {"uv": [0, 0, 16, 16], "texture": "#vents"}
+      }
+    },
+    {
+      "name": "front_left_foot",
+      "from": [2.0, 0.12, 1.7],
+      "to": [4.0, 0.48, 3.7],
+      "faces": {
+        "north": {"texture": "#shell"},
+        "east": {"texture": "#shell"},
+        "south": {"texture": "#shell"},
+        "west": {"texture": "#shell"},
+        "up": {"texture": "#side"},
+        "down": {"texture": "#shell"}
+      }
+    },
+    {
+      "name": "front_right_foot",
+      "from": [12.0, 0.12, 1.7],
+      "to": [14.0, 0.48, 3.7],
+      "faces": {
+        "north": {"texture": "#shell"},
+        "east": {"texture": "#shell"},
+        "south": {"texture": "#shell"},
+        "west": {"texture": "#shell"},
+        "up": {"texture": "#side"},
+        "down": {"texture": "#shell"}
+      }
+    },
+    {
+      "name": "rear_left_foot",
+      "from": [2.0, 0.12, 12.2],
+      "to": [4.0, 0.48, 14.3],
+      "faces": {
+        "north": {"texture": "#shell"},
+        "east": {"texture": "#shell"},
+        "south": {"texture": "#shell"},
+        "west": {"texture": "#shell"},
+        "up": {"texture": "#side"},
+        "down": {"texture": "#shell"}
+      }
+    },
+    {
+      "name": "rear_right_foot",
+      "from": [12.0, 0.12, 12.2],
+      "to": [14.0, 0.48, 14.3],
+      "faces": {
+        "north": {"texture": "#shell"},
+        "east": {"texture": "#shell"},
+        "south": {"texture": "#shell"},
+        "west": {"texture": "#shell"},
+        "up": {"texture": "#side"},
+        "down": {"texture": "#shell"}
+      }
+    }
+  ]
+}

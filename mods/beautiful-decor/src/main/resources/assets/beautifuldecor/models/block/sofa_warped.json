@@ -1,0 +1,10 @@
+{
+ "parent": "beautifuldecor:block/sofa_base",
+ "textures": {
+  "particle": "minecraft:block/warped_planks",
+  "planks": "minecraft:block/warped_planks",
+  "trim": "minecraft:block/stripped_warped_stem",
+  "cushion": "minecraft:block/cyan_wool",
+  "knob": "beautifuldecor:block/handle_metal"
+ }
+}

@@ -1,0 +1,1436 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "#metal"
+  },
+  "elements": [
+    {
+      "from": [
+        0,
+        0,
+        4
+      ],
+      "to": [
+        1.2,
+        16,
+        5.2
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            1.2,
+            16
+          ],
+          "texture": "#metal"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            1.2,
+            16
+          ],
+          "texture": "#metal"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            1.2,
+            16
+          ],
+          "texture": "#metal"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            1.2,
+            16
+          ],
+          "texture": "#metal"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            1.2,
+            1.2
+          ],
+          "texture": "#metal"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            1.2,
+            1.2
+          ],
+          "texture": "#metal"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        0,
+        14.8
+      ],
+      "to": [
+        1.2,
+        16,
+        16.0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            1.2,
+            16
+          ],
+          "texture": "#metal"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            1.2,
+            16
+          ],
+          "texture": "#metal"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            1.2,
+            16
+          ],
+          "texture": "#metal"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            1.2,
+            16
+          ],
+          "texture": "#metal"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            1.2,
+            1.2
+          ],
+          "texture": "#metal"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            1.2,
+            1.2
+          ],
+          "texture": "#metal"
+        }
+      }
+    },
+    {
+      "from": [
+        14.8,
+        0,
+        4
+      ],
+      "to": [
+        16.0,
+        16,
+        5.2
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            1.2,
+            16
+          ],
+          "texture": "#metal"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            1.2,
+            16
+          ],
+          "texture": "#metal"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            1.2,
+            16
+          ],
+          "texture": "#metal"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            1.2,
+            16
+          ],
+          "texture": "#metal"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            1.2,
+            1.2
+          ],
+          "texture": "#metal"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            1.2,
+            1.2
+          ],
+          "texture": "#metal"
+        }
+      }
+    },
+    {
+      "from": [
+        14.8,
+        0,
+        14.8
+      ],
+      "to": [
+        16.0,
+        16,
+        16.0
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            1.2,
+            16
+          ],
+          "texture": "#metal"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            1.2,
+            16
+          ],
+          "texture": "#metal"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            1.2,
+            16
+          ],
+          "texture": "#metal"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            1.2,
+            16
+          ],
+          "texture": "#metal"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            1.2,
+            1.2
+          ],
+          "texture": "#metal"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            1.2,
+            1.2
+          ],
+          "texture": "#metal"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        0.6,
+        4
+      ],
+      "to": [
+        16,
+        1.5,
+        16
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            0.9
+          ],
+          "texture": "#metal"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            0.9
+          ],
+          "texture": "#metal"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            12,
+            0.9
+          ],
+          "texture": "#metal"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            12,
+            0.9
+          ],
+          "texture": "#metal"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            12
+          ],
+          "texture": "#metal"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            12
+          ],
+          "texture": "#metal"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        5.4,
+        4
+      ],
+      "to": [
+        16,
+        6.3,
+        16
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            0.9
+          ],
+          "texture": "#metal"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            0.9
+          ],
+          "texture": "#metal"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            12,
+            0.9
+          ],
+          "texture": "#metal"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            12,
+            0.9
+          ],
+          "texture": "#metal"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            12
+          ],
+          "texture": "#metal"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            12
+          ],
+          "texture": "#metal"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        10.2,
+        4
+      ],
+      "to": [
+        16,
+        11.1,
+        16
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            0.9
+          ],
+          "texture": "#metal"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            0.9
+          ],
+          "texture": "#metal"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            12,
+            0.9
+          ],
+          "texture": "#metal"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            12,
+            0.9
+          ],
+          "texture": "#metal"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            12
+          ],
+          "texture": "#metal"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            12
+          ],
+          "texture": "#metal"
+        }
+      }
+    },
+    {
+      "from": [
+        0,
+        15.0,
+        4
+      ],
+      "to": [
+        16,
+        15.9,
+        16
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            0.9
+          ],
+          "texture": "#metal"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            16,
+            0.9
+          ],
+          "texture": "#metal"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            12,
+            0.9
+          ],
+          "texture": "#metal"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            12,
+            0.9
+          ],
+          "texture": "#metal"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            16,
+            12
+          ],
+          "texture": "#metal"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            16,
+            12
+          ],
+          "texture": "#metal"
+        }
+      }
+    },
+    {
+      "from": [
+        1.2,
+        1.5,
+        15.6
+      ],
+      "to": [
+        14.8,
+        4.8,
+        16
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            13.6,
+            3.3
+          ],
+          "texture": "#metal"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            13.6,
+            3.3
+          ],
+          "texture": "#metal"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            0.4,
+            3.3
+          ],
+          "texture": "#metal"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            0.4,
+            3.3
+          ],
+          "texture": "#metal"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            13.6,
+            0.4
+          ],
+          "texture": "#metal"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            13.6,
+            0.4
+          ],
+          "texture": "#metal"
+        }
+      }
+    },
+    {
+      "from": [
+        1.2,
+        6.3,
+        15.6
+      ],
+      "to": [
+        14.8,
+        9.6,
+        16
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            13.6,
+            3.3
+          ],
+          "texture": "#metal"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            13.6,
+            3.3
+          ],
+          "texture": "#metal"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            0.4,
+            3.3
+          ],
+          "texture": "#metal"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            0.4,
+            3.3
+          ],
+          "texture": "#metal"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            13.6,
+            0.4
+          ],
+          "texture": "#metal"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            13.6,
+            0.4
+          ],
+          "texture": "#metal"
+        }
+      }
+    },
+    {
+      "from": [
+        1.8,
+        1.5,
+        6
+      ],
+      "to": [
+        7.8,
+        5.3,
+        13.5
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            6.0,
+            3.8
+          ],
+          "texture": "minecraft:block/spruce_planks"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            6.0,
+            3.8
+          ],
+          "texture": "minecraft:block/spruce_planks"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            7.5,
+            3.8
+          ],
+          "texture": "minecraft:block/spruce_planks"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            7.5,
+            3.8
+          ],
+          "texture": "minecraft:block/spruce_planks"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            6.0,
+            7.5
+          ],
+          "texture": "minecraft:block/spruce_planks"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            6.0,
+            7.5
+          ],
+          "texture": "minecraft:block/spruce_planks"
+        }
+      }
+    },
+    {
+      "from": [
+        8.4,
+        1.5,
+        6.5
+      ],
+      "to": [
+        14,
+        4.3,
+        13
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            5.6,
+            2.8
+          ],
+          "texture": "minecraft:block/barrel_side"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            5.6,
+            2.8
+          ],
+          "texture": "minecraft:block/barrel_side"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            6.5,
+            2.8
+          ],
+          "texture": "minecraft:block/barrel_side"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            6.5,
+            2.8
+          ],
+          "texture": "minecraft:block/barrel_side"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            5.6,
+            6.5
+          ],
+          "texture": "minecraft:block/barrel_side"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            5.6,
+            6.5
+          ],
+          "texture": "minecraft:block/barrel_side"
+        }
+      }
+    },
+    {
+      "from": [
+        1.8,
+        6.3,
+        6.5
+      ],
+      "to": [
+        3.6,
+        8.9,
+        13
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            1.8,
+            2.6
+          ],
+          "texture": "minecraft:block/purple_concrete"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            1.8,
+            2.6
+          ],
+          "texture": "minecraft:block/purple_concrete"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            6.5,
+            2.6
+          ],
+          "texture": "minecraft:block/purple_concrete"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            6.5,
+            2.6
+          ],
+          "texture": "minecraft:block/purple_concrete"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            1.8,
+            6.5
+          ],
+          "texture": "minecraft:block/purple_concrete"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            1.8,
+            6.5
+          ],
+          "texture": "minecraft:block/purple_concrete"
+        }
+      }
+    },
+    {
+      "from": [
+        3.75,
+        6.3,
+        6.5
+      ],
+      "to": [
+        4.85,
+        8.55,
+        13
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            1.1,
+            2.25
+          ],
+          "texture": "minecraft:block/blue_concrete"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            1.1,
+            2.25
+          ],
+          "texture": "minecraft:block/blue_concrete"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            6.5,
+            2.25
+          ],
+          "texture": "minecraft:block/blue_concrete"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            6.5,
+            2.25
+          ],
+          "texture": "minecraft:block/blue_concrete"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            1.1,
+            6.5
+          ],
+          "texture": "minecraft:block/blue_concrete"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            1.1,
+            6.5
+          ],
+          "texture": "minecraft:block/blue_concrete"
+        }
+      }
+    },
+    {
+      "from": [
+        5.0,
+        6.3,
+        6.5
+      ],
+      "to": [
+        6.45,
+        9.6,
+        13
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            1.45,
+            3.3
+          ],
+          "texture": "minecraft:block/white_concrete"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            1.45,
+            3.3
+          ],
+          "texture": "minecraft:block/white_concrete"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            6.5,
+            3.3
+          ],
+          "texture": "minecraft:block/white_concrete"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            6.5,
+            3.3
+          ],
+          "texture": "minecraft:block/white_concrete"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            1.45,
+            6.5
+          ],
+          "texture": "minecraft:block/white_concrete"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            1.45,
+            6.5
+          ],
+          "texture": "minecraft:block/white_concrete"
+        }
+      }
+    },
+    {
+      "from": [
+        7.45,
+        6.3,
+        6.5
+      ],
+      "to": [
+        9.25,
+        9.25,
+        13
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            1.8,
+            2.95
+          ],
+          "texture": "minecraft:block/brown_concrete"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            1.8,
+            2.95
+          ],
+          "texture": "minecraft:block/brown_concrete"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            6.5,
+            2.95
+          ],
+          "texture": "minecraft:block/brown_concrete"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            6.5,
+            2.95
+          ],
+          "texture": "minecraft:block/brown_concrete"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            1.8,
+            6.5
+          ],
+          "texture": "minecraft:block/brown_concrete"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            1.8,
+            6.5
+          ],
+          "texture": "minecraft:block/brown_concrete"
+        }
+      }
+    },
+    {
+      "from": [
+        9.4,
+        6.3,
+        6.5
+      ],
+      "to": [
+        10.5,
+        8.9,
+        13
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            1.1,
+            2.6
+          ],
+          "texture": "minecraft:block/green_concrete"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            1.1,
+            2.6
+          ],
+          "texture": "minecraft:block/green_concrete"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            6.5,
+            2.6
+          ],
+          "texture": "minecraft:block/green_concrete"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            6.5,
+            2.6
+          ],
+          "texture": "minecraft:block/green_concrete"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            1.1,
+            6.5
+          ],
+          "texture": "minecraft:block/green_concrete"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            1.1,
+            6.5
+          ],
+          "texture": "minecraft:block/green_concrete"
+        }
+      }
+    },
+    {
+      "from": [
+        10.65,
+        6.3,
+        6.5
+      ],
+      "to": [
+        12.1,
+        8.55,
+        13
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            1.45,
+            2.25
+          ],
+          "texture": "minecraft:block/orange_concrete"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            1.45,
+            2.25
+          ],
+          "texture": "minecraft:block/orange_concrete"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            6.5,
+            2.25
+          ],
+          "texture": "minecraft:block/orange_concrete"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            6.5,
+            2.25
+          ],
+          "texture": "minecraft:block/orange_concrete"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            1.45,
+            6.5
+          ],
+          "texture": "minecraft:block/orange_concrete"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            1.45,
+            6.5
+          ],
+          "texture": "minecraft:block/orange_concrete"
+        }
+      }
+    },
+    {
+      "from": [
+        12.25,
+        6.3,
+        6.5
+      ],
+      "to": [
+        14.05,
+        9.6,
+        13
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            1.8,
+            3.3
+          ],
+          "texture": "minecraft:block/red_concrete"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            1.8,
+            3.3
+          ],
+          "texture": "minecraft:block/red_concrete"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            6.5,
+            3.3
+          ],
+          "texture": "minecraft:block/red_concrete"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            6.5,
+            3.3
+          ],
+          "texture": "minecraft:block/red_concrete"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            1.8,
+            6.5
+          ],
+          "texture": "minecraft:block/red_concrete"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            1.8,
+            6.5
+          ],
+          "texture": "minecraft:block/red_concrete"
+        }
+      }
+    },
+    {
+      "from": [
+        2.5,
+        11.1,
+        6
+      ],
+      "to": [
+        9,
+        14.5,
+        13
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            6.5,
+            3.4
+          ],
+          "texture": "minecraft:block/white_concrete"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            6.5,
+            3.4
+          ],
+          "texture": "minecraft:block/white_concrete"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            7,
+            3.4
+          ],
+          "texture": "minecraft:block/white_concrete"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            7,
+            3.4
+          ],
+          "texture": "minecraft:block/white_concrete"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            6.5,
+            7
+          ],
+          "texture": "minecraft:block/white_concrete"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            6.5,
+            7
+          ],
+          "texture": "minecraft:block/white_concrete"
+        }
+      }
+    },
+    {
+      "from": [
+        9.6,
+        11.1,
+        6.5
+      ],
+      "to": [
+        13.6,
+        13.1,
+        12.5
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            4.0,
+            2.0
+          ],
+          "texture": "minecraft:block/orange_concrete"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            4.0,
+            2.0
+          ],
+          "texture": "minecraft:block/orange_concrete"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            6.0,
+            2.0
+          ],
+          "texture": "minecraft:block/orange_concrete"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            6.0,
+            2.0
+          ],
+          "texture": "minecraft:block/orange_concrete"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            4.0,
+            6.0
+          ],
+          "texture": "minecraft:block/orange_concrete"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            4.0,
+            6.0
+          ],
+          "texture": "minecraft:block/orange_concrete"
+        }
+      }
+    }
+  ]
+}

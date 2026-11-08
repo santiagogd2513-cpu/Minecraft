@@ -1,0 +1,1 @@
+var libLoaded = 'lib-ok';

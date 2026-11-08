@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "beautifuldecor:block/mini_f150"
+    },
+    "facing=east": {
+      "model": "beautifuldecor:block/mini_f150",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "beautifuldecor:block/mini_f150",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "beautifuldecor:block/mini_f150",
+      "y": 270
+    }
+  }
+}

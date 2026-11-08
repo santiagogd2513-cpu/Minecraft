@@ -1,0 +1,16 @@
+eval console.log('--- wait 1')
+wait 1
+eval console.log('--- wait 6')
+wait 5
+eval console.log('--- wait 15')
+wait 9
+eval console.log('--- wait 50')
+wait 35
+eval console.log('--- wait 100')
+wait 50
+eval console.log('--- wait 200')
+wait 100
+eval console.log('--- fin out=' + document.getElementById('out').textContent + ' fromText=' + window.fromText)
+eval var k = 0; var iv2 = setInterval(function () { k++; if (k >= 2) clearInterval(iv2); console.log('iv2', k); }, 10)
+wait 100
+eval console.log('k=' + k)

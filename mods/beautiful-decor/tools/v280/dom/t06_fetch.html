@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html><head><title>fetch</title></head><body>
+<p id="out">-</p>
+<script>
+const L = (...a) => console.log(...a);
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const show = e => (e && e.name) + ': ' + (e && e.message);
+
+(async () => {
+  L('typeof', typeof fetch, typeof Headers, typeof Request, typeof Response, typeof XMLHttpRequest, typeof AbortController, typeof AbortSignal);
+
+  // --- respuesta JSON
+  let r = await fetch('/api/json');
+  L('json', r.status, r.ok, r.statusText, r.type, r.url, r.redirected, r.bodyUsed, r.headers.get('Content-Type'), r.headers.get('x-test'), r.headers.has('set-cookie'));
+  L('body', r.body, typeof r.clone);
+  const copy = r.clone();
+  L(JSON.stringify(await r.json()), r.bodyUsed);
+  L('copia', await copy.text());
+  try { await r.text(); } catch (e) { L('segunda lectura', show(e)); }
+  try { r.clone(); } catch (e) { L('clone usado', show(e)); }
+
+  // --- texto con caracteres no ASCII
+  r = await fetch('/api/text');
+  L('text', await r.text());
+
+  // --- 404 no rechaza
+  r = await fetch('/api/404');
+  L('404', r.status, r.ok, r.statusText, await r.text());
+
+  // --- redirección
+  r = await fetch('/api/redirected');
+  L('redir', r.redirected, r.url);
+
+  // --- error de red
+  try { await fetch('/api/fail'); } catch (e) { L('fallo', show(e), e instanceof TypeError); }
+
+  // --- esquema no admitido
+  try { await fetch('ftp://servidor/x'); } catch (e) { L('ftp', show(e)); }
+  try { await fetch('data:text/plain,hola'); } catch (e) { L('data', show(e)); }
+
+  // --- direcciones relativas (la página es http://test.local/dir/page.html?x=1#top)
+  r = await fetch('api/json'); L('rel', r.url, r.status);
+  r = await fetch('//otro.test/api/json'); L('protocolo relativo', r.url, r.type);
+  r = await fetch(new URL('/api/json?z=1', 'http://test.local')); L('URL', r.url);
+
+  // --- POST con texto, JSON, URLSearchParams y FormData
+  r = await fetch('/api/echo', { method: 'POST', body: 'hola' });
+  L('post texto:', await r.text());
+  r = await fetch('/api/echo', { method: 'post', headers: { 'Content-Type': 'application/json', 'X-Test': 'si' }, body: JSON.stringify({ a: 1 }) });
+  L('post json:', await r.text());
+  r = await fetch('/api/echo', { method: 'PUT', body: new URLSearchParams({ a: '1', b: 'ñ x' }) });
+  L('put params:', await r.text());
+  const fd = new FormData(); fd.append('k', 'v'); fd.append('n', 'dos');
+  r = await fetch('/api/echo', { method: 'POST', body: fd });
+  L('post formdata:', await r.text());
+  r = await fetch('/api/echo', { method: 'DELETE' });
+  L('delete:', await r.text());
+  r = await fetch('/api/echo', { headers: new Headers([['Accept', 'application/json']]) });
+  L('accept propio:', await r.text());
+  r = await fetch('/api/echo');
+  L('accept por omision:', await r.text());
+  try { await fetch('/api/echo', { method: 'GET', body: 'x' }); } catch (e) { L('get con cuerpo', show(e)); }
+
+  // --- formData() y métodos no admitidos
+  r = await fetch('/api/form');
+  const got = await r.formData(); L('formData', got.get('a'), got.get('b'));
+  r = await fetch('/api/json');
+  try { await r.arrayBuffer(); } catch (e) { L('arrayBuffer', e.name); }
+  r = await fetch('/api/text');
+  try { await r.json(); } catch (e) { L('json malo', e.name); }
+
+  // --- Request
+  const q = new Request('/api/echo', { method: 'POST', body: 'cuerpo', headers: { A: '1' } });
+  L('Request', q.method, q.url, q.headers.get('a'), q.headers.get('content-type'), q.credentials, q.signal, q.bodyUsed);
+  const q2 = q.clone();
+  r = await fetch(q); L('fetch(Request):', await r.text());
+  L('usado', q.bodyUsed, q2.bodyUsed, await q2.text());
+  try { new Request(); } catch (e) { L('Request()', e.name); }
+  r = await fetch(new Request('/api/json'), { method: 'GET' }); L('Request+init', r.status);
+
+  // --- Response construida a mano
+  const mine = new Response('{"x":1}', { status: 201, statusText: 'Hecho', headers: { 'Content-Type': 'application/json', 'X-A': 'b' } });
+  L('Response', mine.status, mine.ok, mine.statusText, mine.headers.get('x-a'), JSON.stringify(await mine.json()));
+  L('Response vacia', new Response().status, await new Response().text() === '', new Response(null, { status: 204 }).ok);
+  try { new Response('x', { status: 99 }); } catch (e) { L('status 99', e.name); }
+  L('Response.json', await Response.json({ ok: true }).text(), Response.json([1]).headers.get('content-type'));
+  L('Response.error', Response.error().type, Response.error().status);
+  L('toString', Object.prototype.toString.call(mine), String(new Headers()), String(new Request('/x').headers));
+
+  // --- Headers
+  const h = new Headers({ 'Content-Type': 'text/plain', 'X-B': '2' });
+  h.append('x-b', '3'); h.append('Accept', 'a'); h.set('X-C', 'c');
+  L('Headers', h.get('X-B'), h.has('accept'), h.has('nope'), h.get('nope'), [...h.keys()].join(), [...h.values()].join('|'));
+  h.delete('x-c');
+  const seen = []; h.forEach((v, k) => seen.push(k + '=' + v)); L('forEach', seen.join(';'));
+  L('entries', JSON.stringify([...h]), JSON.stringify(Array.from(h.entries())));
+  L('copia', JSON.stringify([...new Headers(h)]));
+  try { h.append('mal nombre', 'x'); } catch (e) { L('nombre malo', e.name); }
+  try { h.append('ok', 'a\nb'); } catch (e) { L('valor malo', e.name); }
+  try { new Headers([['solo']]); } catch (e) { L('par malo', e.name); }
+
+  // --- AbortController
+  const ac = new AbortController();
+  L('signal', ac.signal.aborted, ac.signal.reason, ac.signal instanceof AbortSignal, typeof ac.abort);
+  ac.signal.addEventListener('abort', ev => L('evento abort', ev.type, ac.signal.aborted));
+  ac.signal.onabort = () => L('onabort');
+  ac.abort();
+  ac.abort();
+  L('despues', ac.signal.aborted, show(ac.signal.reason), ac.signal.reason instanceof DOMException, ac.signal.reason.code);
+  try { ac.signal.throwIfAborted(); } catch (e) { L('throwIfAborted', e.name); }
+  try { await fetch('/api/json', { signal: ac.signal }); } catch (e) { L('fetch abortado antes', show(e)); }
+
+  const ac2 = new AbortController();
+  const p = fetch('/api/slow', { signal: ac2.signal });
+  setTimeout(() => ac2.abort('motivo'), 10);
+  try { await p; } catch (e) { L('abortado en vuelo', e); }
+
+  const ac3 = new AbortController();
+  const p3 = fetch('/api/slow', { signal: ac3.signal });
+  setTimeout(() => ac3.abort(), 10);
+  try { await p3; } catch (e) { L('abortado sin motivo', show(e)); }
+
+  try { await fetch('/api/slow', { signal: AbortSignal.timeout(20) }); } catch (e) { L('timeout', show(e)); }
+  r = await fetch('/api/slow', { signal: AbortSignal.timeout(500) }); L('timeout ok', await r.text());
+  L('AbortSignal.abort', AbortSignal.abort().aborted, show(AbortSignal.abort('x').reason === 'x' ? { name: 'ok', message: 'x' } : {}));
+  const a1 = new AbortController(), a2 = new AbortController();
+  const any = AbortSignal.any([a1.signal, a2.signal]);
+  a2.abort('dos'); L('any', any.aborted, any.reason);
+  try { new AbortSignal(); } catch (e) { L('new AbortSignal', e.name); }
+  try { await fetch('/api/json', { signal: {} }); } catch (e) { L('signal malo', e.name); }
+
+  document.getElementById('out').textContent = 'listo';
+  L('FIN');
+})().catch(e => L('ERROR EN LA PRUEBA', show(e)));
+</script>
+</body></html>

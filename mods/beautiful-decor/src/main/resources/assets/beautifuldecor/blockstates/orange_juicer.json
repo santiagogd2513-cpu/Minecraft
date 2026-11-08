@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "beautifuldecor:block/orange_juicer"
+    },
+    "facing=east": {
+      "model": "beautifuldecor:block/orange_juicer",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "beautifuldecor:block/orange_juicer",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "beautifuldecor:block/orange_juicer",
+      "y": 270
+    }
+  }
+}

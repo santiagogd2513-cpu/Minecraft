@@ -1,0 +1,5 @@
+PAGE ajax | tick 5 | f1 - | f2 - | x1 - | ab - | ck - | [Cargar]
+CLICK Cargar -> button
+PAGE ajax | tick 5 | f1 hola 1,2,3 | f2 POST application/json si {"k":"ñ"} a=1 | x1 200 json hola | ab AbortError | ck fx=1 | [Cargar]
+PAGE ajax | tick 5 | f1 hola 1,2,3 | f2 POST application/json si {"k":"ñ"} a=1 | x1 200 json hola | ab AbortError | ck fx=1 | [Cargar]
+PAGE ajax | tick 5 | f1 hola 1,2,3 | f2 POST application/json si {"k":"ñ"} a=1 | x1 200 json hola | ab AbortError | ck fx=1 | [Cargar]

@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "beautifuldecor:block/barrel_gasoline"
+    },
+    "facing=east": {
+      "model": "beautifuldecor:block/barrel_gasoline",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "beautifuldecor:block/barrel_gasoline",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "beautifuldecor:block/barrel_gasoline",
+      "y": 270
+    }
+  }
+}

@@ -1,0 +1,28 @@
+wait 10
+scroll 350
+wait 10
+scroll 450
+wait 10
+eval $('t2').setAttribute('data-rect', '0,500,400,50')
+layout
+wait 10
+eval log('--- unobserve t1, disconnect ro')
+eval io.unobserve($('t1'))
+eval ro.disconnect()
+scroll 0
+wait 10
+eval log('--- nuevo elemento con la disposición vieja')
+stale
+eval var n = document.createElement('div'); n.id = 'n1'; n.setAttribute('data-rect', '0,50,100,20'); n.setAttribute('data-late', ''); document.body.appendChild(n); io.observe(n);
+wait 10
+eval log('(nada todavía)')
+fresh
+layout
+wait 10
+eval log('--- quitado del documento')
+eval n.remove()
+layout
+wait 10
+eval io.disconnect(); m.disconnect(); log('fin')
+scroll 700
+wait 10

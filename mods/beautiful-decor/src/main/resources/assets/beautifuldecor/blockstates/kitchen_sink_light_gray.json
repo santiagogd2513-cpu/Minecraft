@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "beautifuldecor:block/kitchen_sink_light_gray"
+    },
+    "facing=east": {
+      "model": "beautifuldecor:block/kitchen_sink_light_gray",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "beautifuldecor:block/kitchen_sink_light_gray",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "beautifuldecor:block/kitchen_sink_light_gray",
+      "y": 270
+    }
+  }
+}

@@ -1,0 +1,194 @@
+{
+  "parent": "minecraft:block/block",
+  "render_type": "minecraft:cutout",
+  "textures": {
+    "particle": "beautifuldecor:block/sign_post",
+    "sign": "beautifuldecor:block/sign_no_trucks",
+    "back": "beautifuldecor:block/sign_no_trucks_back",
+    "post": "beautifuldecor:block/sign_post"
+  },
+  "elements": [
+    {
+      "from": [
+        7,
+        0,
+        7
+      ],
+      "to": [
+        9,
+        13,
+        9
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            2,
+            13
+          ],
+          "texture": "#post"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            2,
+            13
+          ],
+          "texture": "#post"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            2,
+            13
+          ],
+          "texture": "#post"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            2,
+            13
+          ],
+          "texture": "#post"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            2,
+            2
+          ],
+          "texture": "#post"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            2,
+            2
+          ],
+          "texture": "#post"
+        }
+      }
+    },
+    {
+      "from": [
+        7,
+        9,
+        6.6
+      ],
+      "to": [
+        9,
+        10.2,
+        7
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            2,
+            1.2
+          ],
+          "texture": "#post"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            2,
+            1.2
+          ],
+          "texture": "#post"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            0.4,
+            1.2
+          ],
+          "texture": "#post"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            0.4,
+            1.2
+          ],
+          "texture": "#post"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            2,
+            0.4
+          ],
+          "texture": "#post"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            2,
+            0.4
+          ],
+          "texture": "#post"
+        }
+      }
+    },
+    {
+      "from": [
+        2,
+        3.5,
+        6.5
+      ],
+      "to": [
+        14,
+        15.5,
+        6.5
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            16,
+            16
+          ],
+          "texture": "#sign"
+        }
+      }
+    },
+    {
+      "from": [
+        2,
+        3.5,
+        6.55
+      ],
+      "to": [
+        14,
+        15.5,
+        6.55
+      ],
+      "faces": {
+        "south": {
+          "uv": [
+            16,
+            0,
+            0,
+            16
+          ],
+          "texture": "#back"
+        }
+      }
+    }
+  ]
+}

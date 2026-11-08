@@ -1,0 +1,6 @@
+click d
+pop
+eval location.hash = '#abc'
+eval location.assign('/x/y')
+eval history.back()
+eval location.reload()

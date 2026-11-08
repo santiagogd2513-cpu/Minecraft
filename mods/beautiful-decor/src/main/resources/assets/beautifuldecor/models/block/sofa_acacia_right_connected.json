@@ -1,0 +1,10 @@
+{
+ "parent": "beautifuldecor:block/sofa_base_right_connected",
+ "textures": {
+  "particle": "minecraft:block/acacia_planks",
+  "planks": "minecraft:block/acacia_planks",
+  "trim": "minecraft:block/stripped_acacia_log",
+  "cushion": "minecraft:block/yellow_wool",
+  "knob": "beautifuldecor:block/handle_metal"
+ }
+}

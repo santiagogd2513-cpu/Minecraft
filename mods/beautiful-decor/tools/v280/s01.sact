@@ -1,0 +1,25 @@
+go http://127.0.0.1:8765/index.html
+title
+console
+text
+click Pulsa
+click Pulsa
+text
+click al final
+anchor
+url
+history
+click ir a segunda
+url
+title
+text
+click push
+url
+text
+back
+url
+text
+back
+url
+title
+text

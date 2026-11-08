@@ -1,0 +1,1 @@
+{"type":"minecraft:block","pools":[{"rolls":1,"entries":[{"type":"minecraft:item","name":"beautifuldecor:rc_car"}],"conditions":[{"condition":"minecraft:survives_explosion"}]}]}

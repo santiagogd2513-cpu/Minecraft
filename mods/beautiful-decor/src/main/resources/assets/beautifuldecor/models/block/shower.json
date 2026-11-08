@@ -1,0 +1,53 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "particle": "beautifuldecor:block/metal",
+    "metal": "beautifuldecor:block/metal",
+    "glass": "beautifuldecor:block/light_glass"
+  },
+  "elements": [
+    {
+      "from": [0, 0, 0],
+      "to": [16, 1, 16],
+      "faces": {
+        "up": {"uv": [0, 0, 16, 16], "texture": "#metal"},
+        "down": {"uv": [0, 0, 16, 16], "texture": "#metal"}
+      }
+    },
+    {
+      "from": [0, 1, 0],
+      "to": [1, 16, 16],
+      "faces": {
+        "east": {"uv": [0, 0, 16, 15], "texture": "#glass"},
+        "west": {"uv": [0, 0, 16, 15], "texture": "#glass"}
+      }
+    },
+    {
+      "from": [15, 1, 0],
+      "to": [16, 16, 16],
+      "faces": {
+        "east": {"uv": [0, 0, 16, 15], "texture": "#glass"},
+        "west": {"uv": [0, 0, 16, 15], "texture": "#glass"}
+      }
+    },
+    {
+      "from": [1, 1, 0],
+      "to": [15, 16, 1],
+      "faces": {
+        "north": {"uv": [0, 0, 14, 15], "texture": "#glass"},
+        "south": {"uv": [0, 0, 14, 15], "texture": "#glass"}
+      }
+    },
+    {
+      "from": [7, 14, 7],
+      "to": [9, 16, 9],
+      "faces": {
+        "north": {"uv": [0, 0, 2, 2], "texture": "#metal"},
+        "east": {"uv": [0, 0, 2, 2], "texture": "#metal"},
+        "south": {"uv": [0, 0, 2, 2], "texture": "#metal"},
+        "west": {"uv": [0, 0, 2, 2], "texture": "#metal"},
+        "down": {"uv": [0, 0, 2, 2], "texture": "#metal"}
+      }
+    }
+  ]
+}

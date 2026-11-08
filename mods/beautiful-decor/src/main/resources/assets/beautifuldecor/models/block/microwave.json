@@ -1,0 +1,30 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "particle": "beautifuldecor:block/metal",
+    "metal": "beautifuldecor:block/metal",
+    "glass": "beautifuldecor:block/window_glass_clear",
+    "handle": "beautifuldecor:block/handle_black"
+  },
+  "elements": [
+    {"from": [2, 0, 2], "to": [14, 10, 14], "faces": {
+      "north": {"uv": [0,0,12,10], "texture": "#metal"},
+      "east": {"uv": [0,0,12,10], "texture": "#metal"},
+      "south": {"uv": [0,0,12,10], "texture": "#metal"},
+      "west": {"uv": [0,0,12,10], "texture": "#metal"},
+      "up": {"uv": [0,0,12,12], "texture": "#metal"},
+      "down": {"uv": [0,0,12,12], "texture": "#metal"}
+    }},
+    {"from": [3, 1.5, 1.8], "to": [11, 8.5, 2], "faces": {
+      "north": {"uv": [0,0,8,7], "texture": "#glass"},
+      "south": {"uv": [0,0,8,7], "texture": "#glass"}
+    }},
+    {"from": [11.5, 3, 1.5], "to": [13, 7, 2], "faces": {
+      "north": {"uv": [0,0,1.5,4], "texture": "#handle"},
+      "east": {"uv": [0,0,0.5,4], "texture": "#handle"},
+      "west": {"uv": [0,0,0.5,4], "texture": "#handle"},
+      "up": {"uv": [0,0,1.5,0.5], "texture": "#handle"},
+      "down": {"uv": [0,0,1.5,0.5], "texture": "#handle"}
+    }}
+  ]
+}

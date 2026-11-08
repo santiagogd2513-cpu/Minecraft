@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "beautifuldecor:block/bathtub"
+    },
+    "facing=east": {
+      "model": "beautifuldecor:block/bathtub",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "beautifuldecor:block/bathtub",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "beautifuldecor:block/bathtub",
+      "y": 270
+    }
+  }
+}

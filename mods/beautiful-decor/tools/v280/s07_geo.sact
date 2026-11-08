@@ -1,0 +1,20 @@
+# medidas reales de la pagina acomodada: rects, elementFromPoint, observadores y eventos scroll/resize
+go http://127.0.0.1:8765/geo.html
+wait 300
+drain
+view 600 100
+publish
+wait 300
+drain
+click Medir
+wait 300
+drain
+scroll 120
+wait 300
+drain
+view 500 80
+wait 300
+drain
+scroll 0
+wait 300
+drain

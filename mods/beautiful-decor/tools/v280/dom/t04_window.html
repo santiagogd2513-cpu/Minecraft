@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html><head><title>W</title><style>.big{font-size:2em} #p{margin:3px 5px; display:none}</style></head><body onload="console.log('body onload')">
+<p id="p" class="big" style="padding:1px">p</p>
+<div id="d" onclick="console.log('inline click ' + this.id + ' ' + event.type)">d</div>
+<script>
+function eq(name, got, exp) {
+  if (got === exp) console.log('ok ' + name);
+  else console.log('FAIL ' + name + ': got ' + JSON.stringify(got) + ' expected ' + JSON.stringify(exp));
+}
+eq('window', window === self && window === globalThis && window.window === window, true);
+eq('document ref', window.document === document, true);
+eq('localStorage', (localStorage.setItem('a', 1), localStorage.getItem('a')), '1');
+localStorage.b = 'x';
+eq('ls prop', localStorage.getItem('b'), 'x');
+eq('ls length', localStorage.length, 2);
+eq('ls keys', Object.keys(localStorage).join(), 'a,b');
+delete localStorage.b;
+eq('ls delete', localStorage.b, undefined);
+localStorage.removeItem('a');
+eq('ls null', localStorage.getItem('a'), null);
+sessionStorage.setItem('k', 'v');
+eq('ss', sessionStorage.getItem('k'), 'v');
+eq('matchMedia dark', matchMedia('(prefers-color-scheme: dark)').matches, true);
+eq('matchMedia width', matchMedia('(min-width: 600px) and (max-width: 2000px)').matches, true);
+eq('matchMedia small', matchMedia('(max-width: 300px)').matches, false);
+eq('innerWidth', innerWidth, 1024);
+eq('navigator', typeof navigator.userAgent, 'string');
+eq('history len', history.length, 1);
+history.pushState({ a: 1 }, '', '/new/path?z=1');
+eq('pushState url', location.pathname + location.search, '/new/path?z=1');
+eq('history len2', history.length, 2);
+try { history.pushState({}, '', 'http://other.com/x'); eq('cross origin', 'no throw', 'throw'); } catch (e) { eq('SecurityError', e.name, 'SecurityError'); }
+history.replaceState(null, '', '#frag');
+eq('replace', location.hash, '#frag');
+eq('btoa', btoa('hola'), 'aG9sYQ==');
+var cs = getComputedStyle(document.getElementById('p'));
+eq('cs display', cs.display, 'none');
+eq('cs font-size', cs.fontSize, '32px');
+eq('cs margin', cs.marginLeft, '5px');
+eq('cs padding', cs.paddingTop, '1px');
+eq('cs getPropertyValue', cs.getPropertyValue('margin-top'), '3px');
+eq('CSS.escape', CSS.escape('a.b'), 'a\\.b');
+eq('CSS.supports', CSS.supports('display', 'grid'), true);
+alert('hola');
+eq('confirm', confirm('seguro'), true);
+eq('prompt', prompt('x', 'def'), 'def');
+scrollTo(0, 100);
+console.log(typeof setTimeout, typeof fetch, typeof requestAnimationFrame);
+eq('crypto uuid', crypto.randomUUID().length, 36);
+eq('performance', typeof performance.now(), 'number');
+eq('instance MutationObserver', typeof new MutationObserver(function () {}).observe, 'function');
+eq('postMessage', (window.addEventListener('message', function (e) { console.log('message ' + e.data.m); }), window.postMessage({ m: 'hi' }, '*')), undefined);
+eq('location tostring', String(location), location.href);
+var n = document.createElement('div');
+eq('isConnected', n.isConnected, false);
+document.body.appendChild(n);
+eq('isConnected2', n.isConnected, true);
+eq('hash', location.hash, '#frag');
+window.addEventListener('hashchange', function (e) { console.log('hashchange'); });
+window.addEventListener('popstate', function (e) { console.log('popstate ' + JSON.stringify(e.state)); });
+document.write('<span id="w">escrito</span>');
+eq('document.write', document.getElementById('w').textContent, 'escrito');
+console.log('done');
+</script>
+<script>console.log('second script ' + document.getElementById('w').id);</script>
+<script>throw new TypeError('boom');</script>
+<script>console.log('after error');</script>
+</body></html>

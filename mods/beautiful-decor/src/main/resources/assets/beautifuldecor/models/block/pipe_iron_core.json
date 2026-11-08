@@ -1,0 +1,10 @@
+{
+ "parent": "minecraft:block/block",
+ "textures": {"particle": "beautifuldecor:block/pipe_iron", "pipe": "beautifuldecor:block/pipe_iron"},
+ "elements": [
+  {"from":[4.4,5.0,5.0],"to":[11.6,11.0,11.0],"faces":{"north":{"texture":"#pipe","uv":[1,9,7,15]},"east":{"texture":"#pipe","uv":[1,9,7,15]},"south":{"texture":"#pipe","uv":[1,9,7,15]},"west":{"texture":"#pipe","uv":[1,9,7,15]},"up":{"texture":"#pipe","uv":[1,9,7,15]},"down":{"texture":"#pipe","uv":[1,9,7,15]}}},
+  {"from":[5.0,4.4,5.0],"to":[11.0,11.6,11.0],"faces":{"north":{"texture":"#pipe","uv":[1,9,7,15]},"east":{"texture":"#pipe","uv":[1,9,7,15]},"south":{"texture":"#pipe","uv":[1,9,7,15]},"west":{"texture":"#pipe","uv":[1,9,7,15]},"up":{"texture":"#pipe","uv":[1,9,7,15]},"down":{"texture":"#pipe","uv":[1,9,7,15]}}},
+  {"from":[5.0,5.0,4.4],"to":[11.0,11.0,11.6],"faces":{"north":{"texture":"#pipe","uv":[1,9,7,15]},"east":{"texture":"#pipe","uv":[1,9,7,15]},"south":{"texture":"#pipe","uv":[1,9,7,15]},"west":{"texture":"#pipe","uv":[1,9,7,15]},"up":{"texture":"#pipe","uv":[1,9,7,15]},"down":{"texture":"#pipe","uv":[1,9,7,15]}}},
+  {"from":[4.7,4.7,4.7],"to":[11.3,11.3,11.3],"faces":{"north":{"texture":"#pipe","uv":[1,9,7,15]},"east":{"texture":"#pipe","uv":[1,9,7,15]},"south":{"texture":"#pipe","uv":[1,9,7,15]},"west":{"texture":"#pipe","uv":[1,9,7,15]},"up":{"texture":"#pipe","uv":[1,9,7,15]},"down":{"texture":"#pipe","uv":[1,9,7,15]}}}
+ ]
+}

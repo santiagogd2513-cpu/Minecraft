@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html><head><title>xhr</title></head><body>
+<p id="out">-</p>
+<script>
+const L = (...a) => console.log(...a);
+const show = e => (e && e.name) + ': ' + (e && e.message);
+const events = [];
+const watch = (x, name) => ['loadstart', 'progress', 'load', 'error', 'abort', 'timeout', 'loadend', 'readystatechange'].forEach(t =>
+  x.addEventListener(t, ev => events.push(t === 'readystatechange' ? 'rs' + x.readyState : t)));
+const flush = label => { L(label, events.join(' ')); events.length = 0; };
+
+L('constantes', XMLHttpRequest.UNSENT, XMLHttpRequest.OPENED, XMLHttpRequest.HEADERS_RECEIVED, XMLHttpRequest.LOADING, XMLHttpRequest.DONE, new XMLHttpRequest().DONE);
+const x = new XMLHttpRequest();
+L('inicial', x.readyState, x.status, JSON.stringify(x.responseText), x.responseType === '', x.timeout, x.withCredentials, x.response);
+try { x.send(); } catch (e) { L('send sin open', show(e)); }
+try { x.setRequestHeader('a', 'b'); } catch (e) { L('header sin open', show(e)); }
+
+// GET asíncrono con todos los eventos
+watch(x);
+x.onreadystatechange = () => { if (x.readyState === 4) L('onreadystatechange 4', x.status, x.statusText, x.responseURL); };
+x.onload = () => {
+  L('onload', x.status, x.responseText, x.getResponseHeader('Content-Type'), x.getResponseHeader('X-Test'), x.getResponseHeader('nope'),
+    x.getResponseHeader('set-cookie'));
+  L('todas las cabeceras', JSON.stringify(x.getAllResponseHeaders()));
+  L('response', x.response === x.responseText);
+  flush('eventos GET');
+  parte2();
+};
+x.open('GET', '/api/json?x=1');
+L('despues de open', x.readyState);
+x.setRequestHeader('X-One', '1');
+x.setRequestHeader('x-one', '2');
+x.send();
+try { x.send(); } catch (e) { L('send doble', show(e)); }
+L('sync fin');
+
+function parte2() {
+  // JSON
+  const j = new XMLHttpRequest();
+  j.responseType = 'json';
+  j.open('GET', '/api/json');
+  j.onload = () => {
+    L('json', JSON.stringify(j.response), typeof j.response, j.response.n.length);
+    try { j.responseText; } catch (e) { L('responseText con json', show(e)); }
+    parte3();
+  };
+  j.send();
+}
+
+function parte3() {
+  // 404 no es error
+  const n = new XMLHttpRequest();
+  watch(n);
+  n.open('GET', '/api/404');
+  n.onload = () => { L('404', n.status, n.statusText, n.responseText); flush('eventos 404'); parte4(); };
+  n.send();
+}
+
+function parte4() {
+  // error de red
+  const f = new XMLHttpRequest();
+  watch(f);
+  f.open('GET', '/api/fail');
+  f.onerror = () => { L('onerror', f.readyState, f.status, JSON.stringify(f.responseText)); };
+  f.onloadend = () => { flush('eventos error'); parte5(); };
+  f.send();
+}
+
+function parte5() {
+  // abort
+  const a = new XMLHttpRequest();
+  watch(a);
+  a.open('GET', '/api/slow');
+  a.send();
+  setTimeout(() => {
+    L('antes de abort', a.readyState);
+    a.abort();
+    L('despues de abort', a.readyState, a.status);
+    flush('eventos abort');
+    setTimeout(parte6, 100);
+  }, 10);
+}
+
+function parte6() {
+  // timeout
+  const t = new XMLHttpRequest();
+  watch(t);
+  t.open('GET', '/api/slow');
+  t.timeout = 20;
+  t.send();
+  t.ontimeout = () => { L('ontimeout', t.readyState, t.status); };
+  t.onloadend = () => { flush('eventos timeout'); setTimeout(parte7, 100); };
+}
+
+function parte7() {
+  // POST con cuerpo y cabeceras
+  const p = new XMLHttpRequest();
+  p.open('POST', '/api/echo');
+  p.setRequestHeader('Content-Type', 'application/json');
+  p.onload = () => { L('post', p.responseText); parte8(); };
+  p.send(JSON.stringify({ q: 1 }));
+}
+
+function parte8() {
+  // POST sin tipo explícito
+  const p = new XMLHttpRequest();
+  p.open('POST', '/api/echo');
+  p.onload = () => { L('post texto', p.responseText); parte9(); };
+  p.send('hola');
+}
+
+function parte9() {
+  // síncrono
+  const s = new XMLHttpRequest();
+  s.open('GET', '/api/text', false);
+  s.send();
+  L('sync', s.readyState, s.status, s.responseText);
+  const e = new XMLHttpRequest();
+  e.open('GET', '/api/fail', false);
+  try { e.send(); } catch (err) { L('sync fallo', show(err), e.readyState); }
+  // reusar el objeto: open de nuevo reinicia
+  const r = new XMLHttpRequest();
+  r.open('GET', '/api/json');
+  r.onload = () => {
+    L('primera', r.status);
+    r.onload = () => { L('segunda', r.status, r.responseText); parte10(); };
+    r.open('GET', '/api/404');
+    L('reabierto', r.readyState, r.status, JSON.stringify(r.responseText));
+    r.send();
+  };
+  r.send();
+}
+
+function parte10() {
+  // esquema no admitido
+  const u = new XMLHttpRequest();
+  u.open('GET', 'ftp://x/y');
+  u.onerror = () => { L('ftp onerror', u.status); document.getElementById('out').textContent = 'listo'; L('FIN'); };
+  u.send();
+}
+</script>
+</body></html>

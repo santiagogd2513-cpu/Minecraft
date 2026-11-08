@@ -1,0 +1,29 @@
+["1","2","b","a"] ["one","two",2,1] [["1","one"],["2","two"],["b",2],["a",1]] {"1":"one","2":"two","b":2,"a":1} ["1","2","b","a"] 1 true true false
+forin x
+forin y
+forin z
+{"a":1,"n":{"b":3}} true true false
+TypeError Cannot assign to read only property 'a' of object '#<Object>'
+TypeError Cannot delete property 'a' of #<Object>
+TypeError Cannot define property q, object is not extensible
+["acc"] 1 42 {"acc":42} {"value":1,"writable":false,"enumerable":false,"configurable":false} true {"a":{"value":1,"writable":true,"enumerable":true,"configurable":true}}
+{"0":"x","1":"y","a":1,"b":2} {"a":2,"b":3} {"0":1,"1":2} {"0":"a","1":"b"} {}
+{"a":1} {"x":1,"y":2} ["a1"]
+hi kid true true ["name"] true false
+true false true false
+[object Object] [object Array] [object Null] [object Date] [object RegExp] [object Function] [object Number] [object String] [object Undefined] [object Symbol] [object Map] [object Promise] [object JSON] [object Math]
+100 212 T100 101 200 {"celsius":100} true ["c"]
+function ["constructor","f","toString","valueOf","toJSON"] true
+Symbol(desc) desc true k symbol false
+42 str def 42
+TypeError Converting circular structure to JSON
+{"1":"a","2":"b"} {"a":[1,{"b":2}],"d":"1970-01-01T00:00:00.000Z","s":{},"m":{}}
+10 ["_v","v"] {"_v":10,"v":10}
+["0","1","2"] ["a","b"] [["0",7]] ["0","1","length"] ["0","length"]
+true true function 0 1 1 true
+2
+in block
+2
+1
+1 2 2 1 1
+true false 1500 123.5 false true

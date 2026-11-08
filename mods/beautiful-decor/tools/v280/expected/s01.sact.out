@@ -1,0 +1,22 @@
+TITLE Inicio
+CONSOLE log: index script, lib=string css=rgb(255, 0, 0)
+PAGE Hola DOM lib-ok | sin cambios | ir a segunda |   | al final |   | [Pulsa] | [Buscar] | [ana] | [uno] | [Aaa ▾] | [Enviar post] | final
+CLICK Pulsa -> button
+CLICK Pulsa -> button
+PAGE Hola DOM lib-ok | clic 2 | ir a segunda |   | al final |   | [Pulsa] | [Buscar] | [ana] | [uno] | [Aaa ▾] | [Enviar post] | final
+CLICK al final -> a
+ANCHOR bottom
+URL http://127.0.0.1:8765/index.html#bottom
+CANBACK true CANFORWARD false
+CLICK ir a segunda -> a
+URL http://127.0.0.1:8765/second.html
+TITLE Segunda
+PAGE Segunda | pagina dos | volver |   | [push]
+CLICK push -> button
+URL http://127.0.0.1:8765/second.html?step=1
+PAGE Segunda | push ?step=1 | volver |   | [push]
+URL http://127.0.0.1:8765/second.html
+PAGE Segunda | pop null | volver |   | [push]
+URL http://127.0.0.1:8765/index.html#bottom
+TITLE Inicio
+PAGE Hola DOM lib-ok | sin cambios | ir a segunda |   | al final |   | [Pulsa] | [Buscar] | [ana] | [uno] | [Aaa ▾] | [Enviar post] | final

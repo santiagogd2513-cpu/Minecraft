@@ -1,0 +1,6 @@
+{
+  "parent": "beautifuldecor:block/wii_family_edition",
+  "textures": {
+    "slot": "beautifuldecor:block/wii_family_slot_blue"
+  }
+}

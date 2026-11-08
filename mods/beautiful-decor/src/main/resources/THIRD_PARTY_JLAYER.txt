@@ -1,0 +1,13 @@
+Beautiful Decor - componentes de terceros
+==========================================
+
+JLayer (decodificador MP3), version 1.0.1
+  Autor: JavaZOOM (http://www.javazoom.net/javalayer/javalayer.html)
+  Licencia: GNU Lesser General Public License 2.1 (https://www.gnu.org/licenses/old-licenses/lgpl-2.1.html)
+
+Se incluye solo el paquete del decodificador (javazoom.jl.decoder), SIN modificar su codigo. Unicamente se cambiaron los nombres de paquete
+dentro de los .class (javazoom/jl/ -> com/example/beautifuldecor/lib/jl/) para no chocar con otras mods que traen su propia copia de JLayer
+(por ejemplo MusicBoxRadio). El procedimiento exacto esta en tools/v240/relocate_jlayer.py.
+
+Como LGPL lo permite, puedes reemplazar estas clases por otra version de JLayer: las clases estan sueltas en
+src/main/resources/com/example/beautifuldecor/lib/jl/decoder/ y el mod solo las usa a traves de reflexion (browser/audio/Mp3Source.java).

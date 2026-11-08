@@ -1,0 +1,9 @@
+{
+  "parent": "beautifuldecor:block/table_leg_se_base",
+  "textures": {
+    "particle": "minecraft:block/spruce_planks",
+    "planks": "minecraft:block/spruce_planks",
+    "trim": "minecraft:block/stripped_spruce_log",
+    "knob": "beautifuldecor:block/handle_metal"
+  }
+}

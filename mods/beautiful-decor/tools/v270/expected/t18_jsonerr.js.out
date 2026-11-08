@@ -1,0 +1,73 @@
+"{" SyntaxError Expected property name or '}' in JSON at position 1 (line 1 column 2)
+"" SyntaxError Unexpected end of JSON input
+" " SyntaxError Unexpected end of JSON input
+"[" SyntaxError Unexpected end of JSON input
+"[1," SyntaxError Unexpected end of JSON input
+"[1,]" SyntaxError Unexpected token ']', "[1,]" is not valid JSON
+"[,1]" SyntaxError Unexpected token ',', "[,1]" is not valid JSON
+"{,}" SyntaxError Expected property name or '}' in JSON at position 1 (line 1 column 2)
+"{\"a\"}" SyntaxError Expected ':' after property name in JSON at position 4 (line 1 column 5)
+"{\"a\":}" SyntaxError Unexpected token '}', "{"a":}" is not valid JSON
+"{\"a\":1,}" SyntaxError Expected double-quoted property name in JSON at position 7 (line 1 column 8)
+"{a:1}" SyntaxError Expected property name or '}' in JSON at position 1 (line 1 column 2)
+"{'a':1}" SyntaxError Expected property name or '}' in JSON at position 1 (line 1 column 2)
+"{\"a\":1 \"b\":2}" SyntaxError Expected ',' or '}' after property value in JSON at position 7 (line 1 column 8)
+"[1 2]" SyntaxError Expected ',' or ']' after array element in JSON at position 3 (line 1 column 4)
+"undefined" SyntaxError "undefined" is not valid JSON
+"NaN" SyntaxError "NaN" is not valid JSON
+"Infinity" SyntaxError "Infinity" is not valid JSON
+"-" SyntaxError No number after minus sign in JSON at position 1 (line 1 column 2)
+"-a" SyntaxError No number after minus sign in JSON at position 1 (line 1 column 2)
+"1." SyntaxError Unterminated fractional number in JSON at position 2 (line 1 column 3)
+"1.e5" SyntaxError Unterminated fractional number in JSON at position 2 (line 1 column 3)
+"1e" SyntaxError Exponent part is missing a number in JSON at position 2 (line 1 column 3)
+"1e+" SyntaxError Exponent part is missing a number in JSON at position 3 (line 1 column 4)
+".5" SyntaxError Unexpected token '.', ".5" is not valid JSON
+"+1" SyntaxError Unexpected token '+', "+1" is not valid JSON
+"01" SyntaxError Unexpected number in JSON at position 1 (line 1 column 2)
+"00" SyntaxError Unexpected number in JSON at position 1 (line 1 column 2)
+"0x10" SyntaxError Unexpected non-whitespace character after JSON at position 1 (line 1 column 2)
+"tru" SyntaxError Unexpected end of JSON input
+"nul" SyntaxError Unexpected end of JSON input
+"falsy" SyntaxError Unexpected token 'y', "falsy" is not valid JSON
+"truee" SyntaxError Unexpected non-whitespace character after JSON at position 4 (line 1 column 5)
+"\"abc" SyntaxError Unterminated string in JSON at position 4 (line 1 column 5)
+"\"a\\x\"" SyntaxError Bad escaped character in JSON at position 3 (line 1 column 4)
+"\"a\\u12\"" SyntaxError Bad Unicode escape in JSON at position 6 (line 1 column 7)
+"\"a\nb\"" SyntaxError Bad control character in string literal in JSON at position 2 (line 1 column 3)
+"\"a\tb\"" SyntaxError Bad control character in string literal in JSON at position 2 (line 1 column 3)
+"\"\\" SyntaxError Unexpected end of JSON input
+"[1] x" SyntaxError Unexpected non-whitespace character after JSON at position 4 (line 1 column 5)
+"{} {}" SyntaxError Unexpected non-whitespace character after JSON at position 3 (line 1 column 4)
+"1 2" SyntaxError Unexpected non-whitespace character after JSON at position 2 (line 1 column 3)
+"  1" SyntaxError Unexpected token ' ', "  1" is not valid JSON
+"'str'" SyntaxError Unexpected token ''', "'str'" is not valid JSON
+"[object Object]" SyntaxError "[object Object]" is not valid JSON
+"{\"a\":1}}" SyntaxError Unexpected non-whitespace character after JSON at position 7 (line 1 column 8)
+"[[[[" SyntaxError Unexpected end of JSON input
+"{\"a\":[1,2,}" SyntaxError Unexpected token '}', "{"a":[1,2,}" is not valid JSON
+"{\"abc\": tru}" SyntaxError Unexpected token '}', "{"abc": tru}" is not valid JSON
+"{\"a\":1,\"b\"" SyntaxError Expected ':' after property name in JSON at position 10 (line 1 column 11)
+"[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,x]" SyntaxError Unexpected token 'x', ...",48,49,50,x]" is not valid JSON
+"xyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy" SyntaxError Unexpected token 'x', "xyyyyyyyyy"... is not valid JSON
+"{\"key\":\"value\",\"other\":[1,2,3],\"bad\":@}" SyntaxError Unexpected token '@', ...",3],"bad":@}" is not valid JSON
+"<html>" SyntaxError Unexpected token '<', "<html>" is not valid JSON
+"<!DOCTYPE html><html></html>" SyntaxError Unexpected token '<', "<!DOCTYPE "... is not valid JSON
+"﻿{}" SyntaxError Unexpected token '﻿', "﻿{}" is not valid JSON
+"{\"a\":\"b\"} trailing" SyntaxError Unexpected non-whitespace character after JSON at position 10 (line 1 column 11)
+"[\"a\",\n\"b\",\n  oops]" SyntaxError Unexpected token 'o', "["a",\n"b",\n  oops]" is not valid JSON
+"{\n  \"a\": 1,\n  \"b\": ,\n}" SyntaxError Unexpected token ',', ..."1,\n  "b": ,\n}" is not valid JSON
+"\"\\ud800\"" OK "\ud800"
+"-0" OK 0
+"1E3" OK 1000
+"[1e400]" OK [null]
+"\"\\/\"" OK "/"
+"\"\\'\"" SyntaxError Bad escaped character in JSON at position 2 (line 1 column 3)
+undefined SyntaxError "undefined" is not valid JSON
+object null
+number 5
+boolean true
+object SyntaxError "[object Object]" is not valid JSON
+object SyntaxError Unexpected end of JSON input
+function SyntaxError Unexpected token '(', "() => 1" is not valid JSON
+symbol TypeError Cannot convert a Symbol value to a string

@@ -1,0 +1,9 @@
+{
+  "parent": "beautifuldecor:block/table_leg_se_base",
+  "textures": {
+    "particle": "minecraft:block/birch_planks",
+    "planks": "minecraft:block/birch_planks",
+    "trim": "minecraft:block/stripped_birch_log",
+    "knob": "beautifuldecor:block/handle_metal"
+  }
+}

@@ -1,0 +1,8 @@
+{
+ "parent": "beautifuldecor:block/slide_straight",
+ "textures": {
+  "main": "minecraft:block/green_concrete",
+  "rail": "minecraft:block/green_concrete",
+  "particle": "minecraft:block/green_concrete"
+ }
+}

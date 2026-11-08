@@ -1,0 +1,40 @@
+ok q value
+ok elements
+ok named
+ok select value
+ok select idx
+ok option text value
+ok multi
+ok textarea
+ok radio group
+ok checkbox
+ok select set
+ok FormData q
+ok FormData c2
+ok FormData getAll m
+ok FormData dis
+ok FormData go
+ok FormData order
+ok URLSearchParams
+ok validity
+ok checkValidity
+ok validationMessage
+ok willValidate
+ok now valid
+ok custom
+ok reset q
+ok reset after change
+done
+f submit
+SUBMIT GET http://test.local/search [application/x-www-form-urlencoded] q=hola;n=5;c=yes;r=2;s=b;m=1;m=2;t=lineas
+dos;h=oculto;go=Buscar;
+submit event, submitter=gs
+SUBMIT POST http://test.local/post [application/x-www-form-urlencoded] email=a@b.co;p=a&b;
+KEY End used=true
+KEY Backspace used=true
+KEY Backspace used=true
+f submit
+SUBMIT GET http://test.local/search [application/x-www-form-urlencoded] q=hol;n=5;c=yes;r=2;s=b;m=1;m=2;t=lineas
+dos;h=oculto;go=Buscar;
+KEY Enter used=true
+q=hol

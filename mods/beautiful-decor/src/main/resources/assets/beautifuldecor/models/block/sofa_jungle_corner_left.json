@@ -1,0 +1,10 @@
+{
+  "parent": "beautifuldecor:block/sofa_base_corner_left",
+  "textures": {
+    "particle": "minecraft:block/jungle_planks",
+    "planks": "minecraft:block/jungle_planks",
+    "trim": "minecraft:block/stripped_jungle_log",
+    "cushion": "minecraft:block/green_wool",
+    "knob": "beautifuldecor:block/handle_metal"
+  }
+}

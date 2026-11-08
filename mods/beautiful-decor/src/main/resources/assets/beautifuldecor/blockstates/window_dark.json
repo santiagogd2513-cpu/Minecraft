@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "beautifuldecor:block/window_dark"
+    },
+    "facing=east": {
+      "model": "beautifuldecor:block/window_dark",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "beautifuldecor:block/window_dark",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "beautifuldecor:block/window_dark",
+      "y": 270
+    }
+  }
+}

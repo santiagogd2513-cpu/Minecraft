@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "beautifuldecor:block/shelf_table_mangrove"
+    },
+    "facing=east": {
+      "model": "beautifuldecor:block/shelf_table_mangrove",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "beautifuldecor:block/shelf_table_mangrove",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "beautifuldecor:block/shelf_table_mangrove",
+      "y": 270
+    }
+  }
+}

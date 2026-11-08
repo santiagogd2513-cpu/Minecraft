@@ -1,0 +1,13 @@
+{
+  "parent": "beautifuldecor:block/kitchen_stove_cabinet",
+  "textures": {
+    "body": "beautifuldecor:block/kitchen_body_white",
+    "top": "beautifuldecor:block/kitchen_cooktop",
+    "glass": "beautifuldecor:block/kitchen_glass",
+    "inside": "beautifuldecor:block/kitchen_oven_inside",
+    "knob": "beautifuldecor:block/handle_black",
+    "steel": "beautifuldecor:block/handle_metal",
+    "display": "beautifuldecor:block/kitchen_display",
+    "particle": "beautifuldecor:block/kitchen_body_white"
+  }
+}

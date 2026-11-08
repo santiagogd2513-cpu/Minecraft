@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "beautifuldecor:block/toilet_paper" },
+    "facing=east": { "model": "beautifuldecor:block/toilet_paper", "y": 90 },
+    "facing=south": { "model": "beautifuldecor:block/toilet_paper", "y": 180 },
+    "facing=west": { "model": "beautifuldecor:block/toilet_paper", "y": 270 }
+  }
+}

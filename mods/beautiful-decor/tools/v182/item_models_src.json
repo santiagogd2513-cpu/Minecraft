@@ -1,0 +1,2295 @@
+{
+ "bar_stool": {
+  "parent": "beautifuldecor:block/bar_stool"
+ },
+ "barrel_diesel": {
+  "parent": "beautifuldecor:block/barrel_diesel"
+ },
+ "barrel_gasoline": {
+  "parent": "beautifuldecor:block/barrel_gasoline"
+ },
+ "barrel_oil": {
+  "parent": "beautifuldecor:block/barrel_oil"
+ },
+ "barrel_water": {
+  "parent": "beautifuldecor:block/barrel_water"
+ },
+ "bathtub": {
+  "parent": "beautifuldecor:block/bathtub"
+ },
+ "bed_blue": {
+  "parent": "beautifuldecor:block/bed_blue"
+ },
+ "bed_double_black": {
+  "parent": "beautifuldecor:block/bed_double_item",
+  "textures": {
+   "frame": "minecraft:block/oak_planks",
+   "sheet": "minecraft:block/black_wool",
+   "pillow": "minecraft:block/black_wool",
+   "blanket": "minecraft:block/black_wool"
+  }
+ },
+ "bed_double_black_red": {
+  "parent": "beautifuldecor:block/bed_double_item",
+  "textures": {
+   "frame": "minecraft:block/dark_oak_planks",
+   "sheet": "minecraft:block/red_wool",
+   "pillow": "minecraft:block/red_wool",
+   "blanket": "minecraft:block/black_wool"
+  }
+ },
+ "bed_double_black_white": {
+  "parent": "beautifuldecor:block/bed_double_item",
+  "textures": {
+   "frame": "minecraft:block/dark_oak_planks",
+   "sheet": "minecraft:block/white_wool",
+   "pillow": "minecraft:block/white_wool",
+   "blanket": "minecraft:block/black_wool"
+  }
+ },
+ "bed_double_blue": {
+  "parent": "beautifuldecor:block/bed_double_item",
+  "textures": {
+   "frame": "minecraft:block/oak_planks",
+   "sheet": "minecraft:block/blue_wool",
+   "pillow": "minecraft:block/blue_wool",
+   "blanket": "minecraft:block/blue_wool"
+  }
+ },
+ "bed_double_blue_white": {
+  "parent": "beautifuldecor:block/bed_double_item",
+  "textures": {
+   "frame": "minecraft:block/dark_oak_planks",
+   "sheet": "minecraft:block/white_wool",
+   "pillow": "minecraft:block/white_wool",
+   "blanket": "minecraft:block/blue_wool"
+  }
+ },
+ "bed_double_blue_yellow": {
+  "parent": "beautifuldecor:block/bed_double_item",
+  "textures": {
+   "frame": "minecraft:block/dark_oak_planks",
+   "sheet": "minecraft:block/yellow_wool",
+   "pillow": "minecraft:block/yellow_wool",
+   "blanket": "minecraft:block/blue_wool"
+  }
+ },
+ "bed_double_brown": {
+  "parent": "beautifuldecor:block/bed_double_item",
+  "textures": {
+   "frame": "minecraft:block/oak_planks",
+   "sheet": "minecraft:block/brown_wool",
+   "pillow": "minecraft:block/brown_wool",
+   "blanket": "minecraft:block/brown_wool"
+  }
+ },
+ "bed_double_cyan": {
+  "parent": "beautifuldecor:block/bed_double_item",
+  "textures": {
+   "frame": "minecraft:block/oak_planks",
+   "sheet": "minecraft:block/cyan_wool",
+   "pillow": "minecraft:block/cyan_wool",
+   "blanket": "minecraft:block/cyan_wool"
+  }
+ },
+ "bed_double_cyan_blue": {
+  "parent": "beautifuldecor:block/bed_double_item",
+  "textures": {
+   "frame": "minecraft:block/dark_oak_planks",
+   "sheet": "minecraft:block/blue_wool",
+   "pillow": "minecraft:block/blue_wool",
+   "blanket": "minecraft:block/cyan_wool"
+  }
+ },
+ "bed_double_gray": {
+  "parent": "beautifuldecor:block/bed_double_item",
+  "textures": {
+   "frame": "minecraft:block/oak_planks",
+   "sheet": "minecraft:block/gray_wool",
+   "pillow": "minecraft:block/gray_wool",
+   "blanket": "minecraft:block/gray_wool"
+  }
+ },
+ "bed_double_gray_light_gray": {
+  "parent": "beautifuldecor:block/bed_double_item",
+  "textures": {
+   "frame": "minecraft:block/dark_oak_planks",
+   "sheet": "minecraft:block/light_gray_wool",
+   "pillow": "minecraft:block/light_gray_wool",
+   "blanket": "minecraft:block/gray_wool"
+  }
+ },
+ "bed_double_gray_white": {
+  "parent": "beautifuldecor:block/bed_double_item",
+  "textures": {
+   "frame": "minecraft:block/dark_oak_planks",
+   "sheet": "minecraft:block/white_wool",
+   "pillow": "minecraft:block/white_wool",
+   "blanket": "minecraft:block/gray_wool"
+  }
+ },
+ "bed_double_green": {
+  "parent": "beautifuldecor:block/bed_double_item",
+  "textures": {
+   "frame": "minecraft:block/oak_planks",
+   "sheet": "minecraft:block/green_wool",
+   "pillow": "minecraft:block/green_wool",
+   "blanket": "minecraft:block/green_wool"
+  }
+ },
+ "bed_double_green_white": {
+  "parent": "beautifuldecor:block/bed_double_item",
+  "textures": {
+   "frame": "minecraft:block/dark_oak_planks",
+   "sheet": "minecraft:block/white_wool",
+   "pillow": "minecraft:block/white_wool",
+   "blanket": "minecraft:block/green_wool"
+  }
+ },
+ "bed_double_light_blue": {
+  "parent": "beautifuldecor:block/bed_double_item",
+  "textures": {
+   "frame": "minecraft:block/oak_planks",
+   "sheet": "minecraft:block/light_blue_wool",
+   "pillow": "minecraft:block/light_blue_wool",
+   "blanket": "minecraft:block/light_blue_wool"
+  }
+ },
+ "bed_double_light_blue_white": {
+  "parent": "beautifuldecor:block/bed_double_item",
+  "textures": {
+   "frame": "minecraft:block/dark_oak_planks",
+   "sheet": "minecraft:block/white_wool",
+   "pillow": "minecraft:block/white_wool",
+   "blanket": "minecraft:block/light_blue_wool"
+  }
+ },
+ "bed_double_light_gray": {
+  "parent": "beautifuldecor:block/bed_double_item",
+  "textures": {
+   "frame": "minecraft:block/oak_planks",
+   "sheet": "minecraft:block/light_gray_wool",
+   "pillow": "minecraft:block/light_gray_wool",
+   "blanket": "minecraft:block/light_gray_wool"
+  }
+ },
+ "bed_double_lime": {
+  "parent": "beautifuldecor:block/bed_double_item",
+  "textures": {
+   "frame": "minecraft:block/oak_planks",
+   "sheet": "minecraft:block/lime_wool",
+   "pillow": "minecraft:block/lime_wool",
+   "blanket": "minecraft:block/lime_wool"
+  }
+ },
+ "bed_double_lime_green": {
+  "parent": "beautifuldecor:block/bed_double_item",
+  "textures": {
+   "frame": "minecraft:block/dark_oak_planks",
+   "sheet": "minecraft:block/green_wool",
+   "pillow": "minecraft:block/green_wool",
+   "blanket": "minecraft:block/lime_wool"
+  }
+ },
+ "bed_double_magenta": {
+  "parent": "beautifuldecor:block/bed_double_item",
+  "textures": {
+   "frame": "minecraft:block/oak_planks",
+   "sheet": "minecraft:block/magenta_wool",
+   "pillow": "minecraft:block/magenta_wool",
+   "blanket": "minecraft:block/magenta_wool"
+  }
+ },
+ "bed_double_magenta_purple": {
+  "parent": "beautifuldecor:block/bed_double_item",
+  "textures": {
+   "frame": "minecraft:block/dark_oak_planks",
+   "sheet": "minecraft:block/purple_wool",
+   "pillow": "minecraft:block/purple_wool",
+   "blanket": "minecraft:block/magenta_wool"
+  }
+ },
+ "bed_double_orange": {
+  "parent": "beautifuldecor:block/bed_double_item",
+  "textures": {
+   "frame": "minecraft:block/oak_planks",
+   "sheet": "minecraft:block/orange_wool",
+   "pillow": "minecraft:block/orange_wool",
+   "blanket": "minecraft:block/orange_wool"
+  }
+ },
+ "bed_double_orange_brown": {
+  "parent": "beautifuldecor:block/bed_double_item",
+  "textures": {
+   "frame": "minecraft:block/dark_oak_planks",
+   "sheet": "minecraft:block/brown_wool",
+   "pillow": "minecraft:block/brown_wool",
+   "blanket": "minecraft:block/orange_wool"
+  }
+ },
+ "bed_double_pink": {
+  "parent": "beautifuldecor:block/bed_double_item",
+  "textures": {
+   "frame": "minecraft:block/oak_planks",
+   "sheet": "minecraft:block/pink_wool",
+   "pillow": "minecraft:block/pink_wool",
+   "blanket": "minecraft:block/pink_wool"
+  }
+ },
+ "bed_double_pink_white": {
+  "parent": "beautifuldecor:block/bed_double_item",
+  "textures": {
+   "frame": "minecraft:block/dark_oak_planks",
+   "sheet": "minecraft:block/white_wool",
+   "pillow": "minecraft:block/white_wool",
+   "blanket": "minecraft:block/pink_wool"
+  }
+ },
+ "bed_double_purple": {
+  "parent": "beautifuldecor:block/bed_double_item",
+  "textures": {
+   "frame": "minecraft:block/oak_planks",
+   "sheet": "minecraft:block/purple_wool",
+   "pillow": "minecraft:block/purple_wool",
+   "blanket": "minecraft:block/purple_wool"
+  }
+ },
+ "bed_double_purple_white": {
+  "parent": "beautifuldecor:block/bed_double_item",
+  "textures": {
+   "frame": "minecraft:block/dark_oak_planks",
+   "sheet": "minecraft:block/white_wool",
+   "pillow": "minecraft:block/white_wool",
+   "blanket": "minecraft:block/purple_wool"
+  }
+ },
+ "bed_double_red": {
+  "parent": "beautifuldecor:block/bed_double_item",
+  "textures": {
+   "frame": "minecraft:block/oak_planks",
+   "sheet": "minecraft:block/red_wool",
+   "pillow": "minecraft:block/red_wool",
+   "blanket": "minecraft:block/red_wool"
+  }
+ },
+ "bed_double_red_black": {
+  "parent": "beautifuldecor:block/bed_double_item",
+  "textures": {
+   "frame": "minecraft:block/dark_oak_planks",
+   "sheet": "minecraft:block/black_wool",
+   "pillow": "minecraft:block/black_wool",
+   "blanket": "minecraft:block/red_wool"
+  }
+ },
+ "bed_double_red_white": {
+  "parent": "beautifuldecor:block/bed_double_item",
+  "textures": {
+   "frame": "minecraft:block/dark_oak_planks",
+   "sheet": "minecraft:block/white_wool",
+   "pillow": "minecraft:block/white_wool",
+   "blanket": "minecraft:block/red_wool"
+  }
+ },
+ "bed_double_white": {
+  "parent": "beautifuldecor:block/bed_double_item",
+  "textures": {
+   "frame": "minecraft:block/oak_planks",
+   "sheet": "minecraft:block/white_wool",
+   "pillow": "minecraft:block/white_wool",
+   "blanket": "minecraft:block/white_wool"
+  }
+ },
+ "bed_double_yellow": {
+  "parent": "beautifuldecor:block/bed_double_item",
+  "textures": {
+   "frame": "minecraft:block/oak_planks",
+   "sheet": "minecraft:block/yellow_wool",
+   "pillow": "minecraft:block/yellow_wool",
+   "blanket": "minecraft:block/yellow_wool"
+  }
+ },
+ "bed_green": {
+  "parent": "beautifuldecor:block/bed_green"
+ },
+ "bed_pink": {
+  "parent": "beautifuldecor:block/bed_pink"
+ },
+ "bed_white": {
+  "parent": "beautifuldecor:block/bed_white"
+ },
+ "bookshelf_decor": {
+  "parent": "beautifuldecor:block/bookshelf_decor"
+ },
+ "bugerati_arc_lamp": {
+  "parent": "beautifuldecor:block/bugerati_arc_lamp"
+ },
+ "bugerati_chandelier_black": {
+  "parent": "beautifuldecor:block/bugerati_chandelier_black"
+ },
+ "bugerati_chandelier_gold": {
+  "parent": "beautifuldecor:block/bugerati_chandelier_gold"
+ },
+ "bugerati_chandelier_silver": {
+  "parent": "beautifuldecor:block/bugerati_chandelier_silver"
+ },
+ "bugerati_floor_lamp": {
+  "parent": "beautifuldecor:block/bugerati_floor_lamp"
+ },
+ "bugerati_neon_arrow_cyan": {
+  "parent": "beautifuldecor:block/bugerati_neon_arrow_cyan"
+ },
+ "bugerati_neon_arrow_pink": {
+  "parent": "beautifuldecor:block/bugerati_neon_arrow_pink"
+ },
+ "bugerati_neon_arrow_red": {
+  "parent": "beautifuldecor:block/bugerati_neon_arrow_red"
+ },
+ "bugerati_neon_arrow_yellow": {
+  "parent": "beautifuldecor:block/bugerati_neon_arrow_yellow"
+ },
+ "bugerati_neon_bolt_cyan": {
+  "parent": "beautifuldecor:block/bugerati_neon_bolt_cyan"
+ },
+ "bugerati_neon_bolt_pink": {
+  "parent": "beautifuldecor:block/bugerati_neon_bolt_pink"
+ },
+ "bugerati_neon_bolt_red": {
+  "parent": "beautifuldecor:block/bugerati_neon_bolt_red"
+ },
+ "bugerati_neon_bolt_yellow": {
+  "parent": "beautifuldecor:block/bugerati_neon_bolt_yellow"
+ },
+ "bugerati_neon_heart_cyan": {
+  "parent": "beautifuldecor:block/bugerati_neon_heart_cyan"
+ },
+ "bugerati_neon_heart_pink": {
+  "parent": "beautifuldecor:block/bugerati_neon_heart_pink"
+ },
+ "bugerati_neon_heart_red": {
+  "parent": "beautifuldecor:block/bugerati_neon_heart_red"
+ },
+ "bugerati_neon_heart_yellow": {
+  "parent": "beautifuldecor:block/bugerati_neon_heart_yellow"
+ },
+ "bugerati_neon_logo": {
+  "parent": "beautifuldecor:block/bugerati_neon_logo"
+ },
+ "bugerati_neon_moon_cyan": {
+  "parent": "beautifuldecor:block/bugerati_neon_moon_cyan"
+ },
+ "bugerati_neon_moon_pink": {
+  "parent": "beautifuldecor:block/bugerati_neon_moon_pink"
+ },
+ "bugerati_neon_moon_red": {
+  "parent": "beautifuldecor:block/bugerati_neon_moon_red"
+ },
+ "bugerati_neon_moon_yellow": {
+  "parent": "beautifuldecor:block/bugerati_neon_moon_yellow"
+ },
+ "bugerati_neon_ring_cyan": {
+  "parent": "beautifuldecor:block/bugerati_neon_ring_cyan"
+ },
+ "bugerati_neon_ring_pink": {
+  "parent": "beautifuldecor:block/bugerati_neon_ring_pink"
+ },
+ "bugerati_neon_ring_red": {
+  "parent": "beautifuldecor:block/bugerati_neon_ring_red"
+ },
+ "bugerati_neon_ring_yellow": {
+  "parent": "beautifuldecor:block/bugerati_neon_ring_yellow"
+ },
+ "bugerati_neon_star_cyan": {
+  "parent": "beautifuldecor:block/bugerati_neon_star_cyan"
+ },
+ "bugerati_neon_star_pink": {
+  "parent": "beautifuldecor:block/bugerati_neon_star_pink"
+ },
+ "bugerati_neon_star_red": {
+  "parent": "beautifuldecor:block/bugerati_neon_star_red"
+ },
+ "bugerati_neon_star_yellow": {
+  "parent": "beautifuldecor:block/bugerati_neon_star_yellow"
+ },
+ "bugerati_orb_lamp": {
+  "parent": "beautifuldecor:block/bugerati_orb_lamp"
+ },
+ "bugerati_pendant_lamp": {
+  "parent": "beautifuldecor:block/bugerati_pendant_lamp"
+ },
+ "bugerati_table_lamp": {
+  "parent": "beautifuldecor:block/bugerati_table_lamp"
+ },
+ "bugerati_wall_sconce": {
+  "parent": "beautifuldecor:block/bugerati_wall_sconce"
+ },
+ "carpet_checker_brown_beige": {
+  "parent": "beautifuldecor:block/carpet_checker_brown_beige"
+ },
+ "carpet_checker_cyan_blue": {
+  "parent": "beautifuldecor:block/carpet_checker_cyan_blue"
+ },
+ "carpet_checker_gray_lightgray": {
+  "parent": "beautifuldecor:block/carpet_checker_gray_lightgray"
+ },
+ "carpet_checker_green_lime": {
+  "parent": "beautifuldecor:block/carpet_checker_green_lime"
+ },
+ "carpet_checker_lightblue_darkblue": {
+  "parent": "beautifuldecor:block/carpet_checker_lightblue_darkblue"
+ },
+ "carpet_checker_pink_purple": {
+  "parent": "beautifuldecor:block/carpet_checker_pink_purple"
+ },
+ "carpet_checker_red_black": {
+  "parent": "beautifuldecor:block/carpet_checker_red_black"
+ },
+ "carpet_checker_red_white": {
+  "parent": "beautifuldecor:block/carpet_checker_red_white"
+ },
+ "carpet_checker_white_black": {
+  "parent": "beautifuldecor:block/carpet_checker_white_black"
+ },
+ "carpet_checker_yellow_orange": {
+  "parent": "beautifuldecor:block/carpet_checker_yellow_orange"
+ },
+ "carpet_stripes_blue": {
+  "parent": "beautifuldecor:block/carpet_stripes_blue"
+ },
+ "carpet_stripes_mono": {
+  "parent": "beautifuldecor:block/carpet_stripes_mono"
+ },
+ "carpet_stripes_pink": {
+  "parent": "beautifuldecor:block/carpet_stripes_pink"
+ },
+ "ceiling_bulb": {
+  "parent": "beautifuldecor:block/ceiling_bulb"
+ },
+ "ceiling_fan_black": {
+  "parent": "beautifuldecor:block/ceiling_fan_black_off",
+  "display": {
+   "gui": {
+    "rotation": [
+     30,
+     225,
+     0
+    ],
+    "translation": [
+     0,
+     3,
+     0
+    ],
+    "scale": [
+     0.8,
+     0.8,
+     0.8
+    ]
+   }
+  }
+ },
+ "ceiling_fan_white": {
+  "parent": "beautifuldecor:block/ceiling_fan_white_off",
+  "display": {
+   "gui": {
+    "rotation": [
+     30,
+     225,
+     0
+    ],
+    "translation": [
+     0,
+     3,
+     0
+    ],
+    "scale": [
+     0.8,
+     0.8,
+     0.8
+    ]
+   }
+  }
+ },
+ "ceiling_fan_wood": {
+  "parent": "beautifuldecor:block/ceiling_fan_wood_off",
+  "display": {
+   "gui": {
+    "rotation": [
+     30,
+     225,
+     0
+    ],
+    "translation": [
+     0,
+     3,
+     0
+    ],
+    "scale": [
+     0.8,
+     0.8,
+     0.8
+    ]
+   }
+  }
+ },
+ "ceiling_light": {
+  "parent": "beautifuldecor:block/ceiling_light"
+ },
+ "ceiling_light_round": {
+  "parent": "beautifuldecor:block/ceiling_light_round"
+ },
+ "ceiling_light_square": {
+  "parent": "beautifuldecor:block/ceiling_light_square"
+ },
+ "ceiling_shower": {
+  "parent": "beautifuldecor:block/ceiling_shower"
+ },
+ "chair_acacia": {
+  "parent": "beautifuldecor:block/chair_acacia"
+ },
+ "chair_bamboo": {
+  "parent": "beautifuldecor:block/chair_bamboo"
+ },
+ "chair_birch": {
+  "parent": "beautifuldecor:block/chair_birch"
+ },
+ "chair_cherry": {
+  "parent": "beautifuldecor:block/chair_cherry"
+ },
+ "chair_crimson": {
+  "parent": "beautifuldecor:block/chair_crimson"
+ },
+ "chair_dark_oak": {
+  "parent": "beautifuldecor:block/chair_dark_oak"
+ },
+ "chair_jungle": {
+  "parent": "beautifuldecor:block/chair_jungle"
+ },
+ "chair_mangrove": {
+  "parent": "beautifuldecor:block/chair_mangrove"
+ },
+ "chair_oak": {
+  "parent": "beautifuldecor:block/chair_oak"
+ },
+ "chair_spruce": {
+  "parent": "beautifuldecor:block/chair_spruce"
+ },
+ "chair_warped": {
+  "parent": "beautifuldecor:block/chair_warped"
+ },
+ "circular_bulb": {
+  "parent": "beautifuldecor:block/circular_bulb"
+ },
+ "coffee_maker": {
+  "parent": "beautifuldecor:block/coffee_maker"
+ },
+ "cold_room": {
+  "parent": "beautifuldecor:block/cold_room_item"
+ },
+ "concrete_ramp_black": {
+  "parent": "beautifuldecor:block/concrete_ramp_black"
+ },
+ "concrete_ramp_blue": {
+  "parent": "beautifuldecor:block/concrete_ramp_blue"
+ },
+ "concrete_ramp_brown": {
+  "parent": "beautifuldecor:block/concrete_ramp_brown"
+ },
+ "concrete_ramp_cyan": {
+  "parent": "beautifuldecor:block/concrete_ramp_cyan"
+ },
+ "concrete_ramp_gray": {
+  "parent": "beautifuldecor:block/concrete_ramp_gray"
+ },
+ "concrete_ramp_green": {
+  "parent": "beautifuldecor:block/concrete_ramp_green"
+ },
+ "concrete_ramp_light_blue": {
+  "parent": "beautifuldecor:block/concrete_ramp_light_blue"
+ },
+ "concrete_ramp_light_gray": {
+  "parent": "beautifuldecor:block/concrete_ramp_light_gray"
+ },
+ "concrete_ramp_lime": {
+  "parent": "beautifuldecor:block/concrete_ramp_lime"
+ },
+ "concrete_ramp_magenta": {
+  "parent": "beautifuldecor:block/concrete_ramp_magenta"
+ },
+ "concrete_ramp_orange": {
+  "parent": "beautifuldecor:block/concrete_ramp_orange"
+ },
+ "concrete_ramp_pink": {
+  "parent": "beautifuldecor:block/concrete_ramp_pink"
+ },
+ "concrete_ramp_purple": {
+  "parent": "beautifuldecor:block/concrete_ramp_purple"
+ },
+ "concrete_ramp_red": {
+  "parent": "beautifuldecor:block/concrete_ramp_red"
+ },
+ "concrete_ramp_white": {
+  "parent": "beautifuldecor:block/concrete_ramp_white"
+ },
+ "concrete_ramp_yellow": {
+  "parent": "beautifuldecor:block/concrete_ramp_yellow"
+ },
+ "crate_balls": {
+  "parent": "beautifuldecor:block/crate_balls"
+ },
+ "crate_empty": {
+  "parent": "beautifuldecor:block/crate_empty"
+ },
+ "crate_fries": {
+  "parent": "beautifuldecor:block/crate_fries"
+ },
+ "crate_ribs": {
+  "parent": "beautifuldecor:block/crate_ribs"
+ },
+ "curtain_blue": {
+  "parent": "beautifuldecor:block/curtain_blue"
+ },
+ "curtain_green": {
+  "parent": "beautifuldecor:block/curtain_green"
+ },
+ "curtain_red": {
+  "parent": "beautifuldecor:block/curtain_red"
+ },
+ "curtain_white": {
+  "parent": "beautifuldecor:block/curtain_white"
+ },
+ "cutlery_fork": {
+  "parent": "beautifuldecor:block/cutlery_fork"
+ },
+ "cutlery_knife": {
+  "parent": "beautifuldecor:block/cutlery_knife"
+ },
+ "cutlery_pack": {
+  "parent": "beautifuldecor:block/cutlery_pack"
+ },
+ "cutlery_set": {
+  "parent": "beautifuldecor:block/cutlery_set"
+ },
+ "cutlery_spoon": {
+  "parent": "beautifuldecor:block/cutlery_spoon"
+ },
+ "decorative_vase": {
+  "parent": "beautifuldecor:block/decorative_vase"
+ },
+ "desk_lamp": {
+  "parent": "beautifuldecor:block/desk_lamp"
+ },
+ "desk_lamp_flexo": {
+  "parent": "beautifuldecor:block/desk_lamp_flexo_off"
+ },
+ "dish_rack_empty": {
+  "parent": "beautifuldecor:block/dish_rack_empty"
+ },
+ "dish_rack_plates": {
+  "parent": "beautifuldecor:block/dish_rack_plates"
+ },
+ "dishwasher": {
+  "parent": "beautifuldecor:block/dishwasher"
+ },
+ "diving_board": {
+  "parent": "beautifuldecor:block/diving_board"
+ },
+ "dog_bed_blue": {
+  "parent": "beautifuldecor:block/dog_bed_blue"
+ },
+ "dog_bed_gray": {
+  "parent": "beautifuldecor:block/dog_bed_gray"
+ },
+ "dog_bed_pink": {
+  "parent": "beautifuldecor:block/dog_bed_pink"
+ },
+ "dog_door": {
+  "parent": "beautifuldecor:block/dog_door"
+ },
+ "doorbell_dark_gray": {
+  "parent": "beautifuldecor:block/doorbell_dark_gray"
+ },
+ "doorbell_light_gray": {
+  "parent": "beautifuldecor:block/doorbell_light_gray"
+ },
+ "doorbell_white": {
+  "parent": "beautifuldecor:block/doorbell_white"
+ },
+ "empanada_cart": {
+  "parent": "beautifuldecor:block/empanada_cart"
+ },
+ "fan_large": {
+  "parent": "beautifuldecor:block/fan_large_off"
+ },
+ "fan_medium": {
+  "parent": "beautifuldecor:block/fan_medium_off"
+ },
+ "fan_small": {
+  "parent": "beautifuldecor:block/fan_small_off"
+ },
+ "fence_aluminum": {
+  "parent": "beautifuldecor:block/fence_aluminum"
+ },
+ "fence_carbon": {
+  "parent": "beautifuldecor:block/fence_carbon"
+ },
+ "fence_gold": {
+  "parent": "beautifuldecor:block/fence_gold"
+ },
+ "fence_metal": {
+  "parent": "beautifuldecor:block/fence_metal"
+ },
+ "fence_steel": {
+  "parent": "beautifuldecor:block/fence_steel"
+ },
+ "floor_lamp": {
+  "parent": "beautifuldecor:block/floor_lamp"
+ },
+ "flower_vase": {
+  "parent": "beautifuldecor:block/flower_vase"
+ },
+ "freezer_chest": {
+  "parent": "beautifuldecor:block/freezer_chest"
+ },
+ "frying_pan_cast_iron": {
+  "parent": "beautifuldecor:block/frying_pan_cast_iron"
+ },
+ "frying_pan_copper": {
+  "parent": "beautifuldecor:block/frying_pan_copper"
+ },
+ "frying_pan_nonstick": {
+  "parent": "beautifuldecor:block/frying_pan_nonstick"
+ },
+ "frying_pan_red": {
+  "parent": "beautifuldecor:block/frying_pan_red"
+ },
+ "frying_pan_stainless": {
+  "parent": "beautifuldecor:block/frying_pan_stainless"
+ },
+ "garage_door": {
+  "parent": "beautifuldecor:block/garage_door_item"
+ },
+ "glass_blue": {
+  "parent": "beautifuldecor:block/glass_blue"
+ },
+ "glass_door": {
+  "parent": "beautifuldecor:block/glass_door"
+ },
+ "glass_green": {
+  "parent": "beautifuldecor:block/glass_green"
+ },
+ "glass_red": {
+  "parent": "beautifuldecor:block/glass_red"
+ },
+ "glass_sliding_door": {
+  "parent": "beautifuldecor:block/glass_sliding_door"
+ },
+ "glass_yellow": {
+  "parent": "beautifuldecor:block/glass_yellow"
+ },
+ "hs_desktop": {
+  "parent": "beautifuldecor:block/hs_desktop_on",
+  "display": {
+   "gui": {
+    "rotation": [
+     30,
+     225,
+     0
+    ],
+    "translation": [
+     0,
+     0,
+     0
+    ],
+    "scale": [
+     0.62,
+     0.62,
+     0.62
+    ]
+   },
+   "ground": {
+    "rotation": [
+     0,
+     0,
+     0
+    ],
+    "translation": [
+     0,
+     2,
+     0
+    ],
+    "scale": [
+     0.4,
+     0.4,
+     0.4
+    ]
+   },
+   "fixed": {
+    "rotation": [
+     0,
+     180,
+     0
+    ],
+    "translation": [
+     0,
+     0,
+     0
+    ],
+    "scale": [
+     0.6,
+     0.6,
+     0.6
+    ]
+   },
+   "thirdperson_righthand": {
+    "rotation": [
+     75,
+     45,
+     0
+    ],
+    "translation": [
+     0,
+     2.5,
+     0
+    ],
+    "scale": [
+     0.3,
+     0.3,
+     0.3
+    ]
+   },
+   "firstperson_righthand": {
+    "rotation": [
+     0,
+     45,
+     0
+    ],
+    "translation": [
+     0,
+     3,
+     0
+    ],
+    "scale": [
+     0.4,
+     0.4,
+     0.4
+    ]
+   }
+  }
+ },
+ "hs_laptop": {
+  "parent": "beautifuldecor:block/hs_laptop_closed"
+ },
+ "kinect_sensor": {
+  "parent": "beautifuldecor:block/kinect_sensor"
+ },
+ "kitchen_counter": {
+  "parent": "beautifuldecor:block/kitchen_counter"
+ },
+ "kitchen_oven": {
+  "parent": "beautifuldecor:block/kitchen_oven_model_closed"
+ },
+ "kitchen_sink_black": {
+  "parent": "beautifuldecor:block/kitchen_sink_black"
+ },
+ "kitchen_sink_dark_gray": {
+  "parent": "beautifuldecor:block/kitchen_sink_dark_gray"
+ },
+ "kitchen_sink_light_gray": {
+  "parent": "beautifuldecor:block/kitchen_sink_light_gray"
+ },
+ "kitchen_sink_white": {
+  "parent": "beautifuldecor:block/kitchen_sink_white"
+ },
+ "metal_door_black": {
+  "parent": "beautifuldecor:block/metal_door_black"
+ },
+ "metal_mesh": {
+  "parent": "beautifuldecor:block/metal_mesh"
+ },
+ "microwave": {
+  "parent": "beautifuldecor:block/microwave"
+ },
+ "microwave_black": {
+  "parent": "beautifuldecor:block/microwave_black_closed"
+ },
+ "microwave_dark_gray": {
+  "parent": "beautifuldecor:block/microwave_dark_gray_closed"
+ },
+ "microwave_gray": {
+  "parent": "beautifuldecor:block/microwave_gray_closed"
+ },
+ "microwave_white": {
+  "parent": "beautifuldecor:block/microwave_white_closed"
+ },
+ "mini_f150": {
+  "parent": "beautifuldecor:block/mini_f150"
+ },
+ "mini_ferrari": {
+  "parent": "beautifuldecor:block/mini_ferrari"
+ },
+ "mini_fiesta": {
+  "parent": "beautifuldecor:block/mini_fiesta"
+ },
+ "mini_golf": {
+  "parent": "beautifuldecor:block/mini_golf"
+ },
+ "mini_mustang": {
+  "parent": "beautifuldecor:block/mini_mustang"
+ },
+ "mini_mustang_classic": {
+  "parent": "beautifuldecor:block/mini_mustang_classic"
+ },
+ "modern_chair": {
+  "parent": "beautifuldecor:block/modern_chair"
+ },
+ "neon_bar_black": {
+  "parent": "beautifuldecor:block/neon_bar_black"
+ },
+ "neon_bar_blue": {
+  "parent": "beautifuldecor:block/neon_bar_blue"
+ },
+ "neon_bar_brown": {
+  "parent": "beautifuldecor:block/neon_bar_brown"
+ },
+ "neon_bar_cyan": {
+  "parent": "beautifuldecor:block/neon_bar_cyan"
+ },
+ "neon_bar_gray": {
+  "parent": "beautifuldecor:block/neon_bar_gray"
+ },
+ "neon_bar_green": {
+  "parent": "beautifuldecor:block/neon_bar_green"
+ },
+ "neon_bar_light_blue": {
+  "parent": "beautifuldecor:block/neon_bar_light_blue"
+ },
+ "neon_bar_light_gray": {
+  "parent": "beautifuldecor:block/neon_bar_light_gray"
+ },
+ "neon_bar_lime": {
+  "parent": "beautifuldecor:block/neon_bar_lime"
+ },
+ "neon_bar_magenta": {
+  "parent": "beautifuldecor:block/neon_bar_magenta"
+ },
+ "neon_bar_orange": {
+  "parent": "beautifuldecor:block/neon_bar_orange"
+ },
+ "neon_bar_pink": {
+  "parent": "beautifuldecor:block/neon_bar_pink"
+ },
+ "neon_bar_purple": {
+  "parent": "beautifuldecor:block/neon_bar_purple"
+ },
+ "neon_bar_red": {
+  "parent": "beautifuldecor:block/neon_bar_red"
+ },
+ "neon_bar_white": {
+  "parent": "beautifuldecor:block/neon_bar_white"
+ },
+ "neon_bar_yellow": {
+  "parent": "beautifuldecor:block/neon_bar_yellow"
+ },
+ "night_lamp": {
+  "parent": "beautifuldecor:block/night_lamp"
+ },
+ "nightstand": {
+  "parent": "beautifuldecor:block/nightstand"
+ },
+ "nightstand_acacia": {
+  "parent": "beautifuldecor:block/nightstand_acacia_00"
+ },
+ "nightstand_bamboo": {
+  "parent": "beautifuldecor:block/nightstand_bamboo_00"
+ },
+ "nightstand_birch": {
+  "parent": "beautifuldecor:block/nightstand_birch_00"
+ },
+ "nightstand_cherry": {
+  "parent": "beautifuldecor:block/nightstand_cherry_00"
+ },
+ "nightstand_crimson": {
+  "parent": "beautifuldecor:block/nightstand_crimson_00"
+ },
+ "nightstand_dark_oak": {
+  "parent": "beautifuldecor:block/nightstand_dark_oak_00"
+ },
+ "nightstand_jungle": {
+  "parent": "beautifuldecor:block/nightstand_jungle_00"
+ },
+ "nightstand_mangrove": {
+  "parent": "beautifuldecor:block/nightstand_mangrove_00"
+ },
+ "nightstand_oak": {
+  "parent": "beautifuldecor:block/nightstand_oak_00"
+ },
+ "nightstand_spruce": {
+  "parent": "beautifuldecor:block/nightstand_spruce_00"
+ },
+ "nightstand_warped": {
+  "parent": "beautifuldecor:block/nightstand_warped_00"
+ },
+ "nintendo_switch": {
+  "parent": "beautifuldecor:block/nintendo_switch"
+ },
+ "oak_parquet": {
+  "parent": "beautifuldecor:block/oak_parquet"
+ },
+ "office_chair": {
+  "parent": "beautifuldecor:block/office_chair"
+ },
+ "office_led_panel": {
+  "parent": "beautifuldecor:block/office_led_panel"
+ },
+ "orange_juicer": {
+  "parent": "beautifuldecor:block/orange_juicer"
+ },
+ "pan_lid_cast_iron": {
+  "parent": "beautifuldecor:block/pan_lid_cast_iron"
+ },
+ "pan_lid_copper": {
+  "parent": "beautifuldecor:block/pan_lid_copper"
+ },
+ "pan_lid_glass": {
+  "parent": "beautifuldecor:block/pan_lid_glass"
+ },
+ "pan_lid_red": {
+  "parent": "beautifuldecor:block/pan_lid_red"
+ },
+ "pan_lid_stainless": {
+  "parent": "beautifuldecor:block/pan_lid_stainless"
+ },
+ "pedestal_table_acacia": {
+  "parent": "beautifuldecor:block/pedestal_table_acacia"
+ },
+ "pedestal_table_bamboo": {
+  "parent": "beautifuldecor:block/pedestal_table_bamboo"
+ },
+ "pedestal_table_birch": {
+  "parent": "beautifuldecor:block/pedestal_table_birch"
+ },
+ "pedestal_table_cherry": {
+  "parent": "beautifuldecor:block/pedestal_table_cherry"
+ },
+ "pedestal_table_crimson": {
+  "parent": "beautifuldecor:block/pedestal_table_crimson"
+ },
+ "pedestal_table_dark_oak": {
+  "parent": "beautifuldecor:block/pedestal_table_dark_oak"
+ },
+ "pedestal_table_jungle": {
+  "parent": "beautifuldecor:block/pedestal_table_jungle"
+ },
+ "pedestal_table_mangrove": {
+  "parent": "beautifuldecor:block/pedestal_table_mangrove"
+ },
+ "pedestal_table_oak": {
+  "parent": "beautifuldecor:block/pedestal_table_oak"
+ },
+ "pedestal_table_spruce": {
+  "parent": "beautifuldecor:block/pedestal_table_spruce"
+ },
+ "pedestal_table_warped": {
+  "parent": "beautifuldecor:block/pedestal_table_warped"
+ },
+ "piano": {
+  "parent": "beautifuldecor:block/piano_item"
+ },
+ "piano_stand": {
+  "parent": "beautifuldecor:block/piano_stand_item"
+ },
+ "picnic_basket": {
+  "parent": "beautifuldecor:block/picnic_basket"
+ },
+ "picnic_rug": {
+  "parent": "beautifuldecor:block/picnic_rug"
+ },
+ "pipe_aluminum": {
+  "parent": "beautifuldecor:block/pipe_aluminum_item"
+ },
+ "pipe_iron": {
+  "parent": "beautifuldecor:block/pipe_iron_item"
+ },
+ "pipe_steel": {
+  "parent": "beautifuldecor:block/pipe_steel_item"
+ },
+ "plant_pot": {
+  "parent": "beautifuldecor:block/plant_pot"
+ },
+ "plate_burger": {
+  "parent": "beautifuldecor:block/plate_burger"
+ },
+ "plate_chicken": {
+  "parent": "beautifuldecor:block/plate_chicken"
+ },
+ "plate_fries": {
+  "parent": "beautifuldecor:block/plate_fries"
+ },
+ "plate_hotdog": {
+  "parent": "beautifuldecor:block/plate_hotdog"
+ },
+ "plate_pizza": {
+  "parent": "beautifuldecor:block/plate_pizza"
+ },
+ "plate_rice": {
+  "parent": "beautifuldecor:block/plate_rice"
+ },
+ "plate_sushi": {
+  "parent": "beautifuldecor:block/plate_sushi"
+ },
+ "printer": {
+  "parent": "beautifuldecor:block/printer"
+ },
+ "refined_oak_planks": {
+  "parent": "beautifuldecor:block/refined_oak_planks"
+ },
+ "round_bulb": {
+  "parent": "beautifuldecor:block/round_bulb"
+ },
+ "shelf_acacia": {
+  "parent": "beautifuldecor:block/shelf_acacia"
+ },
+ "shelf_bamboo": {
+  "parent": "beautifuldecor:block/shelf_bamboo"
+ },
+ "shelf_birch": {
+  "parent": "beautifuldecor:block/shelf_birch"
+ },
+ "shelf_cherry": {
+  "parent": "beautifuldecor:block/shelf_cherry"
+ },
+ "shelf_crimson": {
+  "parent": "beautifuldecor:block/shelf_crimson"
+ },
+ "shelf_dark_oak": {
+  "parent": "beautifuldecor:block/shelf_dark_oak"
+ },
+ "shelf_jungle": {
+  "parent": "beautifuldecor:block/shelf_jungle"
+ },
+ "shelf_mangrove": {
+  "parent": "beautifuldecor:block/shelf_mangrove"
+ },
+ "shelf_metal_black": {
+  "parent": "beautifuldecor:block/shelf_metal_black"
+ },
+ "shelf_metal_copper": {
+  "parent": "beautifuldecor:block/shelf_metal_copper"
+ },
+ "shelf_metal_gold": {
+  "parent": "beautifuldecor:block/shelf_metal_gold"
+ },
+ "shelf_metal_iron": {
+  "parent": "beautifuldecor:block/shelf_metal_iron"
+ },
+ "shelf_oak": {
+  "parent": "beautifuldecor:block/shelf_oak"
+ },
+ "shelf_spruce": {
+  "parent": "beautifuldecor:block/shelf_spruce"
+ },
+ "shelf_table_acacia": {
+  "parent": "beautifuldecor:block/shelf_table_acacia"
+ },
+ "shelf_table_bamboo": {
+  "parent": "beautifuldecor:block/shelf_table_bamboo"
+ },
+ "shelf_table_birch": {
+  "parent": "beautifuldecor:block/shelf_table_birch"
+ },
+ "shelf_table_cherry": {
+  "parent": "beautifuldecor:block/shelf_table_cherry"
+ },
+ "shelf_table_crimson": {
+  "parent": "beautifuldecor:block/shelf_table_crimson"
+ },
+ "shelf_table_dark_oak": {
+  "parent": "beautifuldecor:block/shelf_table_dark_oak"
+ },
+ "shelf_table_jungle": {
+  "parent": "beautifuldecor:block/shelf_table_jungle"
+ },
+ "shelf_table_mangrove": {
+  "parent": "beautifuldecor:block/shelf_table_mangrove"
+ },
+ "shelf_table_oak": {
+  "parent": "beautifuldecor:block/shelf_table_oak"
+ },
+ "shelf_table_spruce": {
+  "parent": "beautifuldecor:block/shelf_table_spruce"
+ },
+ "shelf_table_warped": {
+  "parent": "beautifuldecor:block/shelf_table_warped"
+ },
+ "shelf_warped": {
+  "parent": "beautifuldecor:block/shelf_warped"
+ },
+ "shower": {
+  "parent": "beautifuldecor:block/shower"
+ },
+ "sign_no_parking": {
+  "parent": "beautifuldecor:block/sign_no_parking"
+ },
+ "sign_no_trucks": {
+  "parent": "beautifuldecor:block/sign_no_trucks"
+ },
+ "sign_pedestrian": {
+  "parent": "beautifuldecor:block/sign_pedestrian"
+ },
+ "sign_stop": {
+  "parent": "beautifuldecor:block/sign_stop"
+ },
+ "sign_turn_left": {
+  "parent": "beautifuldecor:block/sign_turn_left"
+ },
+ "sign_turn_right": {
+  "parent": "beautifuldecor:block/sign_turn_right"
+ },
+ "sink": {
+  "parent": "beautifuldecor:block/sink"
+ },
+ "slide_black": {
+  "parent": "beautifuldecor:block/slide_black"
+ },
+ "slide_blue": {
+  "parent": "beautifuldecor:block/slide_blue"
+ },
+ "slide_brown": {
+  "parent": "beautifuldecor:block/slide_brown"
+ },
+ "slide_cyan": {
+  "parent": "beautifuldecor:block/slide_cyan"
+ },
+ "slide_gray": {
+  "parent": "beautifuldecor:block/slide_gray"
+ },
+ "slide_green": {
+  "parent": "beautifuldecor:block/slide_green"
+ },
+ "slide_light_blue": {
+  "parent": "beautifuldecor:block/slide_light_blue"
+ },
+ "slide_light_gray": {
+  "parent": "beautifuldecor:block/slide_light_gray"
+ },
+ "slide_lime": {
+  "parent": "beautifuldecor:block/slide_lime"
+ },
+ "slide_magenta": {
+  "parent": "beautifuldecor:block/slide_magenta"
+ },
+ "slide_orange": {
+  "parent": "beautifuldecor:block/slide_orange"
+ },
+ "slide_pink": {
+  "parent": "beautifuldecor:block/slide_pink"
+ },
+ "slide_purple": {
+  "parent": "beautifuldecor:block/slide_purple"
+ },
+ "slide_red": {
+  "parent": "beautifuldecor:block/slide_red"
+ },
+ "slide_white": {
+  "parent": "beautifuldecor:block/slide_white"
+ },
+ "slide_yellow": {
+  "parent": "beautifuldecor:block/slide_yellow"
+ },
+ "sofa_acacia": {
+  "parent": "beautifuldecor:block/sofa_acacia"
+ },
+ "sofa_bamboo": {
+  "parent": "beautifuldecor:block/sofa_bamboo"
+ },
+ "sofa_birch": {
+  "parent": "beautifuldecor:block/sofa_birch"
+ },
+ "sofa_blue": {
+  "parent": "beautifuldecor:block/sofa_blue"
+ },
+ "sofa_cherry": {
+  "parent": "beautifuldecor:block/sofa_cherry"
+ },
+ "sofa_crimson": {
+  "parent": "beautifuldecor:block/sofa_crimson"
+ },
+ "sofa_dark_oak": {
+  "parent": "beautifuldecor:block/sofa_dark_oak"
+ },
+ "sofa_jungle": {
+  "parent": "beautifuldecor:block/sofa_jungle"
+ },
+ "sofa_mangrove": {
+  "parent": "beautifuldecor:block/sofa_mangrove"
+ },
+ "sofa_oak": {
+  "parent": "beautifuldecor:block/sofa_oak"
+ },
+ "sofa_red": {
+  "parent": "beautifuldecor:block/sofa_red"
+ },
+ "sofa_spruce": {
+  "parent": "beautifuldecor:block/sofa_spruce"
+ },
+ "sofa_warped": {
+  "parent": "beautifuldecor:block/sofa_warped"
+ },
+ "stairs_acacia": {
+  "parent": "beautifuldecor:block/stairs_acacia"
+ },
+ "stairs_bamboo": {
+  "parent": "beautifuldecor:block/stairs_bamboo"
+ },
+ "stairs_birch": {
+  "parent": "beautifuldecor:block/stairs_birch"
+ },
+ "stairs_cherry": {
+  "parent": "beautifuldecor:block/stairs_cherry"
+ },
+ "stairs_concrete_black": {
+  "parent": "beautifuldecor:block/stairs_concrete_black"
+ },
+ "stairs_concrete_blue": {
+  "parent": "beautifuldecor:block/stairs_concrete_blue"
+ },
+ "stairs_concrete_brown": {
+  "parent": "beautifuldecor:block/stairs_concrete_brown"
+ },
+ "stairs_concrete_cyan": {
+  "parent": "beautifuldecor:block/stairs_concrete_cyan"
+ },
+ "stairs_concrete_gray": {
+  "parent": "beautifuldecor:block/stairs_concrete_gray"
+ },
+ "stairs_concrete_green": {
+  "parent": "beautifuldecor:block/stairs_concrete_green"
+ },
+ "stairs_concrete_light_blue": {
+  "parent": "beautifuldecor:block/stairs_concrete_light_blue"
+ },
+ "stairs_concrete_light_gray": {
+  "parent": "beautifuldecor:block/stairs_concrete_light_gray"
+ },
+ "stairs_concrete_lime": {
+  "parent": "beautifuldecor:block/stairs_concrete_lime"
+ },
+ "stairs_concrete_magenta": {
+  "parent": "beautifuldecor:block/stairs_concrete_magenta"
+ },
+ "stairs_concrete_orange": {
+  "parent": "beautifuldecor:block/stairs_concrete_orange"
+ },
+ "stairs_concrete_pink": {
+  "parent": "beautifuldecor:block/stairs_concrete_pink"
+ },
+ "stairs_concrete_purple": {
+  "parent": "beautifuldecor:block/stairs_concrete_purple"
+ },
+ "stairs_concrete_red": {
+  "parent": "beautifuldecor:block/stairs_concrete_red"
+ },
+ "stairs_concrete_white": {
+  "parent": "beautifuldecor:block/stairs_concrete_white"
+ },
+ "stairs_concrete_yellow": {
+  "parent": "beautifuldecor:block/stairs_concrete_yellow"
+ },
+ "stairs_crimson": {
+  "parent": "beautifuldecor:block/stairs_crimson"
+ },
+ "stairs_dark_oak": {
+  "parent": "beautifuldecor:block/stairs_dark_oak"
+ },
+ "stairs_jungle": {
+  "parent": "beautifuldecor:block/stairs_jungle"
+ },
+ "stairs_mangrove": {
+  "parent": "beautifuldecor:block/stairs_mangrove"
+ },
+ "stairs_oak": {
+  "parent": "beautifuldecor:block/stairs_oak"
+ },
+ "stairs_smooth_quartz": {
+  "parent": "beautifuldecor:block/stairs_smooth_quartz"
+ },
+ "stairs_spruce": {
+  "parent": "beautifuldecor:block/stairs_spruce"
+ },
+ "stairs_warped": {
+  "parent": "beautifuldecor:block/stairs_warped"
+ },
+ "stove": {
+  "parent": "beautifuldecor:block/stove"
+ },
+ "stove_cabinet_black": {
+  "parent": "beautifuldecor:block/stove_cabinet_black"
+ },
+ "stove_cabinet_dark_gray": {
+  "parent": "beautifuldecor:block/stove_cabinet_dark_gray"
+ },
+ "stove_cabinet_light_gray": {
+  "parent": "beautifuldecor:block/stove_cabinet_light_gray"
+ },
+ "stove_cabinet_white": {
+  "parent": "beautifuldecor:block/stove_cabinet_white"
+ },
+ "stove_oven_black": {
+  "parent": "beautifuldecor:block/stove_oven_black_closed"
+ },
+ "stove_oven_dark_gray": {
+  "parent": "beautifuldecor:block/stove_oven_dark_gray_closed"
+ },
+ "stove_oven_light_gray": {
+  "parent": "beautifuldecor:block/stove_oven_light_gray_closed"
+ },
+ "stove_oven_white": {
+  "parent": "beautifuldecor:block/stove_oven_white_closed"
+ },
+ "street_lamp": {
+  "parent": "beautifuldecor:block/street_lamp"
+ },
+ "table_acacia": {
+  "parent": "beautifuldecor:block/table_acacia"
+ },
+ "table_bamboo": {
+  "parent": "beautifuldecor:block/table_bamboo"
+ },
+ "table_birch": {
+  "parent": "beautifuldecor:block/table_birch"
+ },
+ "table_cherry": {
+  "parent": "beautifuldecor:block/table_cherry"
+ },
+ "table_crimson": {
+  "parent": "beautifuldecor:block/table_crimson"
+ },
+ "table_dark_oak": {
+  "parent": "beautifuldecor:block/table_dark_oak"
+ },
+ "table_jungle": {
+  "parent": "beautifuldecor:block/table_jungle"
+ },
+ "table_mangrove": {
+  "parent": "beautifuldecor:block/table_mangrove"
+ },
+ "table_oak": {
+  "parent": "beautifuldecor:block/table_oak"
+ },
+ "table_spruce": {
+  "parent": "beautifuldecor:block/table_spruce"
+ },
+ "table_warped": {
+  "parent": "beautifuldecor:block/table_warped"
+ },
+ "television": {
+  "parent": "beautifuldecor:block/television"
+ },
+ "toilet": {
+  "parent": "beautifuldecor:block/toilet"
+ },
+ "toilet_paper": {
+  "parent": "beautifuldecor:block/toilet_paper"
+ },
+ "traffic_light": {
+  "parent": "beautifuldecor:block/traffic_light_red"
+ },
+ "tv_big": {
+  "parent": "beautifuldecor:block/tv_big_item"
+ },
+ "tv_cinema": {
+  "parent": "beautifuldecor:block/tv_cinema_item"
+ },
+ "tv_crt": {
+  "parent": "beautifuldecor:block/tv_crt_off"
+ },
+ "tv_modern": {
+  "parent": "beautifuldecor:block/tv_modern_off"
+ },
+ "tv_retro": {
+  "parent": "beautifuldecor:block/tv_retro_off"
+ },
+ "wall_light": {
+  "parent": "beautifuldecor:block/wall_light"
+ },
+ "wall_switch": {
+  "parent": "beautifuldecor:block/wall_switch"
+ },
+ "washbasin_pedestal_black": {
+  "parent": "beautifuldecor:block/washbasin_pedestal_black"
+ },
+ "washbasin_pedestal_dark_gray": {
+  "parent": "beautifuldecor:block/washbasin_pedestal_dark_gray"
+ },
+ "washbasin_pedestal_light_gray": {
+  "parent": "beautifuldecor:block/washbasin_pedestal_light_gray"
+ },
+ "washbasin_pedestal_white": {
+  "parent": "beautifuldecor:block/washbasin_pedestal_white"
+ },
+ "washbasin_vanity_black": {
+  "parent": "beautifuldecor:block/washbasin_vanity_black"
+ },
+ "washbasin_vanity_dark_gray": {
+  "parent": "beautifuldecor:block/washbasin_vanity_dark_gray"
+ },
+ "washbasin_vanity_light_gray": {
+  "parent": "beautifuldecor:block/washbasin_vanity_light_gray"
+ },
+ "washbasin_vanity_white": {
+  "parent": "beautifuldecor:block/washbasin_vanity_white"
+ },
+ "washbasin_wall_black": {
+  "parent": "beautifuldecor:block/washbasin_wall_black"
+ },
+ "washbasin_wall_dark_gray": {
+  "parent": "beautifuldecor:block/washbasin_wall_dark_gray"
+ },
+ "washbasin_wall_light_gray": {
+  "parent": "beautifuldecor:block/washbasin_wall_light_gray"
+ },
+ "washbasin_wall_white": {
+  "parent": "beautifuldecor:block/washbasin_wall_white"
+ },
+ "washing_machine": {
+  "parent": "beautifuldecor:block/washing_machine"
+ },
+ "wii_console": {
+  "parent": "beautifuldecor:block/wii_family_edition"
+ },
+ "window_blue": {
+  "parent": "beautifuldecor:block/window_blue"
+ },
+ "window_clear": {
+  "parent": "beautifuldecor:block/window_clear"
+ },
+ "window_dark": {
+  "parent": "beautifuldecor:block/window_dark"
+ },
+ "window_green": {
+  "parent": "beautifuldecor:block/window_green"
+ },
+ "window_tinted": {
+  "parent": "beautifuldecor:block/window_tinted"
+ },
+ "wooden_chair": {
+  "parent": "beautifuldecor:block/wooden_chair"
+ },
+ "wooden_door_metal": {
+  "parent": "beautifuldecor:block/wooden_door_metal"
+ },
+ "wooden_table": {
+  "parent": "beautifuldecor:block/wooden_table"
+ },
+ "writing_desk_acacia": {
+  "parent": "beautifuldecor:block/writing_desk_acacia_closed"
+ },
+ "writing_desk_bamboo": {
+  "parent": "beautifuldecor:block/writing_desk_bamboo_closed"
+ },
+ "writing_desk_birch": {
+  "parent": "beautifuldecor:block/writing_desk_birch_closed"
+ },
+ "writing_desk_cherry": {
+  "parent": "beautifuldecor:block/writing_desk_cherry_closed"
+ },
+ "writing_desk_crimson": {
+  "parent": "beautifuldecor:block/writing_desk_crimson_closed"
+ },
+ "writing_desk_dark_oak": {
+  "parent": "beautifuldecor:block/writing_desk_dark_oak_closed"
+ },
+ "writing_desk_jungle": {
+  "parent": "beautifuldecor:block/writing_desk_jungle_closed"
+ },
+ "writing_desk_mangrove": {
+  "parent": "beautifuldecor:block/writing_desk_mangrove_closed"
+ },
+ "writing_desk_oak": {
+  "parent": "beautifuldecor:block/writing_desk_oak_closed"
+ },
+ "writing_desk_spruce": {
+  "parent": "beautifuldecor:block/writing_desk_spruce_closed"
+ },
+ "writing_desk_warped": {
+  "parent": "beautifuldecor:block/writing_desk_warped_closed"
+ },
+ "xbox_360": {
+  "parent": "beautifuldecor:block/xbox_360"
+ },
+ "xbox_one": {
+  "parent": "beautifuldecor:block/xbox_one"
+ },
+ "xbox_series_s": {
+  "parent": "beautifuldecor:block/xbox_series_s_detailed"
+ },
+ "toolbox_open": {
+  "parent": "beautifuldecor:block/toolbox_open"
+ },
+ "kitchen_drawers_oak": {
+  "parent": "beautifuldecor:block/kitchen_drawers_oak_closed"
+ },
+ "kitchen_drawers_spruce": {
+  "parent": "beautifuldecor:block/kitchen_drawers_spruce_closed"
+ },
+ "kitchen_drawers_birch": {
+  "parent": "beautifuldecor:block/kitchen_drawers_birch_closed"
+ },
+ "kitchen_drawers_jungle": {
+  "parent": "beautifuldecor:block/kitchen_drawers_jungle_closed"
+ },
+ "kitchen_drawers_acacia": {
+  "parent": "beautifuldecor:block/kitchen_drawers_acacia_closed"
+ },
+ "kitchen_drawers_dark_oak": {
+  "parent": "beautifuldecor:block/kitchen_drawers_dark_oak_closed"
+ },
+ "kitchen_drawers_mangrove": {
+  "parent": "beautifuldecor:block/kitchen_drawers_mangrove_closed"
+ },
+ "kitchen_drawers_cherry": {
+  "parent": "beautifuldecor:block/kitchen_drawers_cherry_closed"
+ },
+ "kitchen_drawers_bamboo": {
+  "parent": "beautifuldecor:block/kitchen_drawers_bamboo_closed"
+ },
+ "kitchen_drawers_crimson": {
+  "parent": "beautifuldecor:block/kitchen_drawers_crimson_closed"
+ },
+ "kitchen_drawers_warped": {
+  "parent": "beautifuldecor:block/kitchen_drawers_warped_closed"
+ },
+ "elevator_controller": {
+  "parent": "beautifuldecor:block/elevator_controller"
+ },
+ "elevator_display": {
+  "parent": "beautifuldecor:block/elevator_display_item"
+ },
+ "elevator_door": {
+  "parent": "beautifuldecor:block/elevator_door_item",
+  "display": {
+   "gui": {
+    "rotation": [
+     30,
+     225,
+     0
+    ],
+    "translation": [
+     0,
+     -2,
+     0
+    ],
+    "scale": [
+     0.4,
+     0.4,
+     0.4
+    ]
+   }
+  }
+ },
+ "hs_desktop_retro": {
+  "parent": "beautifuldecor:block/hs_desktop_retro_on",
+  "display": {
+   "gui": {
+    "rotation": [
+     30,
+     225,
+     0
+    ],
+    "translation": [
+     0,
+     0,
+     0
+    ],
+    "scale": [
+     0.62,
+     0.62,
+     0.62
+    ]
+   },
+   "ground": {
+    "rotation": [
+     0,
+     0,
+     0
+    ],
+    "translation": [
+     0,
+     2,
+     0
+    ],
+    "scale": [
+     0.4,
+     0.4,
+     0.4
+    ]
+   },
+   "fixed": {
+    "rotation": [
+     0,
+     180,
+     0
+    ],
+    "translation": [
+     0,
+     0,
+     0
+    ],
+    "scale": [
+     0.6,
+     0.6,
+     0.6
+    ]
+   },
+   "thirdperson_righthand": {
+    "rotation": [
+     75,
+     45,
+     0
+    ],
+    "translation": [
+     0,
+     2.5,
+     0
+    ],
+    "scale": [
+     0.3,
+     0.3,
+     0.3
+    ]
+   },
+   "firstperson_righthand": {
+    "rotation": [
+     0,
+     45,
+     0
+    ],
+    "translation": [
+     0,
+     3,
+     0
+    ],
+    "scale": [
+     0.4,
+     0.4,
+     0.4
+    ]
+   }
+  }
+ },
+ "hs_desktop_compact": {
+  "parent": "beautifuldecor:block/hs_desktop_compact_on",
+  "display": {
+   "gui": {
+    "rotation": [
+     30,
+     225,
+     0
+    ],
+    "translation": [
+     0,
+     0,
+     0
+    ],
+    "scale": [
+     0.62,
+     0.62,
+     0.62
+    ]
+   },
+   "ground": {
+    "rotation": [
+     0,
+     0,
+     0
+    ],
+    "translation": [
+     0,
+     2,
+     0
+    ],
+    "scale": [
+     0.4,
+     0.4,
+     0.4
+    ]
+   },
+   "fixed": {
+    "rotation": [
+     0,
+     180,
+     0
+    ],
+    "translation": [
+     0,
+     0,
+     0
+    ],
+    "scale": [
+     0.6,
+     0.6,
+     0.6
+    ]
+   },
+   "thirdperson_righthand": {
+    "rotation": [
+     75,
+     45,
+     0
+    ],
+    "translation": [
+     0,
+     2.5,
+     0
+    ],
+    "scale": [
+     0.3,
+     0.3,
+     0.3
+    ]
+   },
+   "firstperson_righthand": {
+    "rotation": [
+     0,
+     45,
+     0
+    ],
+    "translation": [
+     0,
+     3,
+     0
+    ],
+    "scale": [
+     0.4,
+     0.4,
+     0.4
+    ]
+   }
+  }
+ },
+ "hs_desktop_amber": {
+  "parent": "beautifuldecor:block/hs_desktop_amber_on",
+  "display": {
+   "gui": {
+    "rotation": [
+     30,
+     225,
+     0
+    ],
+    "translation": [
+     0,
+     0,
+     0
+    ],
+    "scale": [
+     0.62,
+     0.62,
+     0.62
+    ]
+   },
+   "ground": {
+    "rotation": [
+     0,
+     0,
+     0
+    ],
+    "translation": [
+     0,
+     2,
+     0
+    ],
+    "scale": [
+     0.4,
+     0.4,
+     0.4
+    ]
+   },
+   "fixed": {
+    "rotation": [
+     0,
+     180,
+     0
+    ],
+    "translation": [
+     0,
+     0,
+     0
+    ],
+    "scale": [
+     0.6,
+     0.6,
+     0.6
+    ]
+   },
+   "thirdperson_righthand": {
+    "rotation": [
+     75,
+     45,
+     0
+    ],
+    "translation": [
+     0,
+     2.5,
+     0
+    ],
+    "scale": [
+     0.3,
+     0.3,
+     0.3
+    ]
+   },
+   "firstperson_righthand": {
+    "rotation": [
+     0,
+     45,
+     0
+    ],
+    "translation": [
+     0,
+     3,
+     0
+    ],
+    "scale": [
+     0.4,
+     0.4,
+     0.4
+    ]
+   }
+  }
+ },
+ "hs_desktop_slim": {
+  "parent": "beautifuldecor:block/hs_desktop_slim_on",
+  "display": {
+   "gui": {
+    "rotation": [
+     30,
+     225,
+     0
+    ],
+    "translation": [
+     0,
+     0,
+     0
+    ],
+    "scale": [
+     0.62,
+     0.62,
+     0.62
+    ]
+   },
+   "ground": {
+    "rotation": [
+     0,
+     0,
+     0
+    ],
+    "translation": [
+     0,
+     2,
+     0
+    ],
+    "scale": [
+     0.4,
+     0.4,
+     0.4
+    ]
+   },
+   "fixed": {
+    "rotation": [
+     0,
+     180,
+     0
+    ],
+    "translation": [
+     0,
+     0,
+     0
+    ],
+    "scale": [
+     0.6,
+     0.6,
+     0.6
+    ]
+   },
+   "thirdperson_righthand": {
+    "rotation": [
+     75,
+     45,
+     0
+    ],
+    "translation": [
+     0,
+     2.5,
+     0
+    ],
+    "scale": [
+     0.3,
+     0.3,
+     0.3
+    ]
+   },
+   "firstperson_righthand": {
+    "rotation": [
+     0,
+     45,
+     0
+    ],
+    "translation": [
+     0,
+     3,
+     0
+    ],
+    "scale": [
+     0.4,
+     0.4,
+     0.4
+    ]
+   }
+  }
+ },
+ "hs_desktop_gaming": {
+  "parent": "beautifuldecor:block/hs_desktop_gaming_on",
+  "display": {
+   "gui": {
+    "rotation": [
+     30,
+     225,
+     0
+    ],
+    "translation": [
+     0,
+     0,
+     0
+    ],
+    "scale": [
+     0.62,
+     0.62,
+     0.62
+    ]
+   },
+   "ground": {
+    "rotation": [
+     0,
+     0,
+     0
+    ],
+    "translation": [
+     0,
+     2,
+     0
+    ],
+    "scale": [
+     0.4,
+     0.4,
+     0.4
+    ]
+   },
+   "fixed": {
+    "rotation": [
+     0,
+     180,
+     0
+    ],
+    "translation": [
+     0,
+     0,
+     0
+    ],
+    "scale": [
+     0.6,
+     0.6,
+     0.6
+    ]
+   },
+   "thirdperson_righthand": {
+    "rotation": [
+     75,
+     45,
+     0
+    ],
+    "translation": [
+     0,
+     2.5,
+     0
+    ],
+    "scale": [
+     0.3,
+     0.3,
+     0.3
+    ]
+   },
+   "firstperson_righthand": {
+    "rotation": [
+     0,
+     45,
+     0
+    ],
+    "translation": [
+     0,
+     3,
+     0
+    ],
+    "scale": [
+     0.4,
+     0.4,
+     0.4
+    ]
+   }
+  }
+ },
+ "hs_desktop_dual": {
+  "parent": "beautifuldecor:block/hs_desktop_dual_on",
+  "display": {
+   "gui": {
+    "rotation": [
+     30,
+     225,
+     0
+    ],
+    "translation": [
+     0,
+     0,
+     0
+    ],
+    "scale": [
+     0.62,
+     0.62,
+     0.62
+    ]
+   },
+   "ground": {
+    "rotation": [
+     0,
+     0,
+     0
+    ],
+    "translation": [
+     0,
+     2,
+     0
+    ],
+    "scale": [
+     0.4,
+     0.4,
+     0.4
+    ]
+   },
+   "fixed": {
+    "rotation": [
+     0,
+     180,
+     0
+    ],
+    "translation": [
+     0,
+     0,
+     0
+    ],
+    "scale": [
+     0.6,
+     0.6,
+     0.6
+    ]
+   },
+   "thirdperson_righthand": {
+    "rotation": [
+     75,
+     45,
+     0
+    ],
+    "translation": [
+     0,
+     2.5,
+     0
+    ],
+    "scale": [
+     0.3,
+     0.3,
+     0.3
+    ]
+   },
+   "firstperson_righthand": {
+    "rotation": [
+     0,
+     45,
+     0
+    ],
+    "translation": [
+     0,
+     3,
+     0
+    ],
+    "scale": [
+     0.4,
+     0.4,
+     0.4
+    ]
+   }
+  }
+ },
+ "pedestal_fan_white": {
+  "parent": "beautifuldecor:block/pedestal_fan_white_item",
+  "display": {
+   "gui": {
+    "rotation": [
+     30,
+     225,
+     0
+    ],
+    "translation": [
+     0,
+     -1.5,
+     0
+    ],
+    "scale": [
+     0.38,
+     0.38,
+     0.38
+    ]
+   }
+  }
+ },
+ "pedestal_fan_black": {
+  "parent": "beautifuldecor:block/pedestal_fan_black_item",
+  "display": {
+   "gui": {
+    "rotation": [
+     30,
+     225,
+     0
+    ],
+    "translation": [
+     0,
+     -1.5,
+     0
+    ],
+    "scale": [
+     0.38,
+     0.38,
+     0.38
+    ]
+   }
+  }
+ },
+ "pedestal_fan_retro": {
+  "parent": "beautifuldecor:block/pedestal_fan_retro_item",
+  "display": {
+   "gui": {
+    "rotation": [
+     30,
+     225,
+     0
+    ],
+    "translation": [
+     0,
+     -1.5,
+     0
+    ],
+    "scale": [
+     0.38,
+     0.38,
+     0.38
+    ]
+   }
+  }
+ }
+}

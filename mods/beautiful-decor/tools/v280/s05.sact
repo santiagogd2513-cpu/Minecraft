@@ -1,0 +1,6 @@
+# un intervalo de 0 ms y bucles infinitos en temporizadores: la pagina sigue respondiendo
+go http://127.0.0.1:8765/stress.html
+wait 4500
+click Pulsa
+text
+console

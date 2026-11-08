@@ -1,0 +1,13 @@
+a 7
+6 12 hola mundo string
+610
+8 14 5 true
+1 1 [2,3] t
+0
+1
+2
+0 0
+1 0
+Cannot read properties of null (reading 'x')
+{"value":1,"done":false} {"value":2,"done":false} {"value":3,"done":true} {"done":true}
+[1,2] t2x

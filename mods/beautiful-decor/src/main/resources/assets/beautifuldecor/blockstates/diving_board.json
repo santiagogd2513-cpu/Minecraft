@@ -1,0 +1,8 @@
+{
+  "variants": {
+    "facing=north": { "model": "beautifuldecor:block/diving_board" },
+    "facing=east": { "model": "beautifuldecor:block/diving_board", "y": 90 },
+    "facing=south": { "model": "beautifuldecor:block/diving_board", "y": 180 },
+    "facing=west": { "model": "beautifuldecor:block/diving_board", "y": 270 }
+  }
+}

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html data-page="400,2000" data-viewport="400,300">
+<body data-rect="0,0,400,2000">
+<div id="t1" data-rect="0,100,400,100">uno</div>
+<div id="t2" data-rect="0,500,400,200">dos</div>
+<script>
+var $ = function (id) { return document.getElementById(id); };
+function log() { console.log(Array.prototype.slice.call(arguments).join(' ')); }
+var io = new IntersectionObserver(function (entries, obs) {
+  entries.forEach(function (e) {
+    log('IO', e.target.id, 'int=' + e.isIntersecting, 'ratio=' + e.intersectionRatio.toFixed(2), 'top=' + e.boundingClientRect.top,
+        'ih=' + e.intersectionRect.height, 'root=' + e.rootBounds.height, obs === io, this === io);
+  }, this);
+}, {threshold: [0, 0.5, 1]});
+io.observe($('t1'));
+io.observe($('t2'));
+io.observe($('t2'));
+var ro = new ResizeObserver(function (entries) {
+  entries.forEach(function (e) {
+    log('RO', e.target.id, e.contentRect.width + 'x' + e.contentRect.height, e.borderBoxSize[0].inlineSize + 'x' + e.borderBoxSize[0].blockSize);
+  });
+});
+ro.observe($('t1'));
+ro.observe($('t2'));
+log('config', io.thresholds.join('|'), io.rootMargin, io.root, io.takeRecords().length);
+var m = new IntersectionObserver(function (entries) {
+  entries.forEach(function (e) { log('MARGIN', e.target.id, 'int=' + e.isIntersecting, 'rootBounds=' + e.rootBounds.top + ',' + e.rootBounds.height); });
+}, {rootMargin: '100px 0px'});
+m.observe($('t2'));
+log('margin', m.rootMargin, new IntersectionObserver(function () {}, {rootMargin: '10% 5px'}).rootMargin);
+['new IntersectionObserver()', 'new IntersectionObserver(function () {}, {rootMargin: "1"})', 'new IntersectionObserver(function () {}, {threshold: 2})',
+ 'io.observe(null)', 'new ResizeObserver(1)', 'IntersectionObserver(function () {})'].forEach(function (src) {
+  try { eval(src); log('ok', src); } catch (e) { log(e.name + ': ' + e.message); }
+});
+</script>
+</body>
+</html>

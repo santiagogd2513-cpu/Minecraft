@@ -1,0 +1,249 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "steel": "beautifuldecor:block/cutlery_steel",
+    "particle": "beautifuldecor:block/cutlery_steel"
+  },
+  "elements": [
+    {
+      "from": [
+        7.3,
+        0,
+        8
+      ],
+      "to": [
+        8.7,
+        0.7,
+        13
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            1.4,
+            0.7
+          ],
+          "texture": "#steel"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            1.4,
+            0.7
+          ],
+          "texture": "#steel"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            5,
+            0.7
+          ],
+          "texture": "#steel"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            5,
+            0.7
+          ],
+          "texture": "#steel"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            1.4,
+            5
+          ],
+          "texture": "#steel"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            1.4,
+            5
+          ],
+          "texture": "#steel"
+        }
+      }
+    },
+    {
+      "from": [
+        7.3,
+        0,
+        1.5
+      ],
+      "to": [
+        8.4,
+        0.3,
+        8
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            1.1,
+            0.3
+          ],
+          "texture": "#steel"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            1.1,
+            0.3
+          ],
+          "texture": "#steel"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            6.5,
+            0.3
+          ],
+          "texture": "#steel"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            6.5,
+            0.3
+          ],
+          "texture": "#steel"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            1.1,
+            6.5
+          ],
+          "texture": "#steel"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            1.1,
+            6.5
+          ],
+          "texture": "#steel"
+        }
+      }
+    },
+    {
+      "from": [
+        8.4,
+        0,
+        2.5
+      ],
+      "to": [
+        8.7,
+        0.55,
+        8
+      ],
+      "faces": {
+        "north": {
+          "uv": [
+            0,
+            0,
+            0.3,
+            0.55
+          ],
+          "texture": "#steel"
+        },
+        "south": {
+          "uv": [
+            0,
+            0,
+            0.3,
+            0.55
+          ],
+          "texture": "#steel"
+        },
+        "east": {
+          "uv": [
+            0,
+            0,
+            5.5,
+            0.55
+          ],
+          "texture": "#steel"
+        },
+        "west": {
+          "uv": [
+            0,
+            0,
+            5.5,
+            0.55
+          ],
+          "texture": "#steel"
+        },
+        "up": {
+          "uv": [
+            0,
+            0,
+            0.3,
+            5.5
+          ],
+          "texture": "#steel"
+        },
+        "down": {
+          "uv": [
+            0,
+            0,
+            0.3,
+            5.5
+          ],
+          "texture": "#steel"
+        }
+      }
+    }
+  ],
+  "display": {
+    "gui": {
+      "rotation": [
+        45,
+        225,
+        0
+      ],
+      "translation": [
+        0,
+        1.5,
+        0
+      ],
+      "scale": [
+        1.9,
+        1.9,
+        1.9
+      ]
+    },
+    "ground": {
+      "rotation": [
+        0,
+        0,
+        0
+      ],
+      "translation": [
+        0,
+        2,
+        0
+      ],
+      "scale": [
+        0.7,
+        0.7,
+        0.7
+      ]
+    }
+  }
+}

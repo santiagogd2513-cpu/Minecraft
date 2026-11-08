@@ -1,0 +1,11 @@
+{
+  "parent": "beautifuldecor:block/washbasin_pedestal",
+  "textures": {
+    "ceramic": "beautifuldecor:block/washbasin_ceramic_white",
+    "inner": "beautifuldecor:block/washbasin_inner_white",
+    "floor": "beautifuldecor:block/washbasin_floor_white",
+    "body": "beautifuldecor:block/kitchen_body_white",
+    "chrome": "beautifuldecor:block/handle_metal",
+    "particle": "beautifuldecor:block/washbasin_ceramic_white"
+  }
+}

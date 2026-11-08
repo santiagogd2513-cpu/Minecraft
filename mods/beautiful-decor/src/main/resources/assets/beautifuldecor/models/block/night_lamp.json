@@ -1,0 +1,83 @@
+{
+  "parent": "block/block",
+  "textures": {
+    "particle": "beautifuldecor:block/lamp_wood",
+    "wood": "beautifuldecor:block/lamp_wood",
+    "metal": "beautifuldecor:block/fixture_metal",
+    "brass": "beautifuldecor:block/fixture_brass",
+    "shade": "beautifuldecor:block/lamp_shade_cream",
+    "glass": "beautifuldecor:block/fixture_glass"
+  },
+  "elements": [
+    {
+      "from": [4, 0, 4],
+      "to": [12, 1.5, 12],
+      "faces": {
+        "north": {"texture": "#wood"},
+        "east": {"texture": "#wood"},
+        "south": {"texture": "#wood"},
+        "west": {"texture": "#wood"},
+        "up": {"texture": "#brass"},
+        "down": {"texture": "#wood"}
+      }
+    },
+    {
+      "from": [5, 1.4, 5],
+      "to": [11, 2.1, 11],
+      "faces": {
+        "north": {"texture": "#brass"},
+        "east": {"texture": "#brass"},
+        "south": {"texture": "#brass"},
+        "west": {"texture": "#brass"},
+        "up": {"texture": "#wood"},
+        "down": {"texture": "#wood"}
+      }
+    },
+    {
+      "from": [7, 2, 7],
+      "to": [9, 9.5, 9],
+      "faces": {
+        "north": {"texture": "#metal"},
+        "east": {"texture": "#brass"},
+        "south": {"texture": "#metal"},
+        "west": {"texture": "#brass"},
+        "up": {"texture": "#metal"},
+        "down": {"texture": "#metal"}
+      }
+    },
+    {
+      "from": [4, 8.8, 4],
+      "to": [12, 9.8, 12],
+      "faces": {
+        "north": {"texture": "#shade"},
+        "east": {"texture": "#shade"},
+        "south": {"texture": "#shade"},
+        "west": {"texture": "#shade"},
+        "up": {"texture": "#shade"},
+        "down": {"texture": "#glass"}
+      }
+    },
+    {
+      "from": [4.5, 9.7, 4.5],
+      "to": [11.5, 13.2, 11.5],
+      "faces": {
+        "north": {"texture": "#shade"},
+        "east": {"texture": "#shade"},
+        "south": {"texture": "#shade"},
+        "west": {"texture": "#shade"},
+        "up": {"texture": "#shade"}
+      }
+    },
+    {
+      "from": [5.5, 13.1, 5.5],
+      "to": [10.5, 14, 10.5],
+      "faces": {
+        "north": {"texture": "#brass"},
+        "east": {"texture": "#brass"},
+        "south": {"texture": "#brass"},
+        "west": {"texture": "#brass"},
+        "up": {"texture": "#wood"}
+      }
+    }
+  ]
+}

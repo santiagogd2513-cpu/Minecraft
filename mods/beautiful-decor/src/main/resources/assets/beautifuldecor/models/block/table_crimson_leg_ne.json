@@ -1,0 +1,9 @@
+{
+  "parent": "beautifuldecor:block/table_leg_ne_base",
+  "textures": {
+    "particle": "minecraft:block/crimson_planks",
+    "planks": "minecraft:block/crimson_planks",
+    "trim": "minecraft:block/stripped_crimson_stem",
+    "knob": "beautifuldecor:block/handle_metal"
+  }
+}

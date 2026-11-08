@@ -1,0 +1,184 @@
+{
+  "variants": {
+    "corner=none,facing=north,left_connected=false,right_connected=false": {
+      "model": "beautifuldecor:block/sofa_dark_oak"
+    },
+    "corner=none,facing=north,left_connected=false,right_connected=true": {
+      "model": "beautifuldecor:block/sofa_dark_oak_right_connected"
+    },
+    "corner=none,facing=north,left_connected=true,right_connected=false": {
+      "model": "beautifuldecor:block/sofa_dark_oak_left_connected"
+    },
+    "corner=none,facing=north,left_connected=true,right_connected=true": {
+      "model": "beautifuldecor:block/sofa_dark_oak_both_connected"
+    },
+    "corner=none,facing=east,left_connected=false,right_connected=false": {
+      "model": "beautifuldecor:block/sofa_dark_oak",
+      "y": 90
+    },
+    "corner=none,facing=east,left_connected=false,right_connected=true": {
+      "model": "beautifuldecor:block/sofa_dark_oak_right_connected",
+      "y": 90
+    },
+    "corner=none,facing=east,left_connected=true,right_connected=false": {
+      "model": "beautifuldecor:block/sofa_dark_oak_left_connected",
+      "y": 90
+    },
+    "corner=none,facing=east,left_connected=true,right_connected=true": {
+      "model": "beautifuldecor:block/sofa_dark_oak_both_connected",
+      "y": 90
+    },
+    "corner=none,facing=south,left_connected=false,right_connected=false": {
+      "model": "beautifuldecor:block/sofa_dark_oak",
+      "y": 180
+    },
+    "corner=none,facing=south,left_connected=false,right_connected=true": {
+      "model": "beautifuldecor:block/sofa_dark_oak_right_connected",
+      "y": 180
+    },
+    "corner=none,facing=south,left_connected=true,right_connected=false": {
+      "model": "beautifuldecor:block/sofa_dark_oak_left_connected",
+      "y": 180
+    },
+    "corner=none,facing=south,left_connected=true,right_connected=true": {
+      "model": "beautifuldecor:block/sofa_dark_oak_both_connected",
+      "y": 180
+    },
+    "corner=none,facing=west,left_connected=false,right_connected=false": {
+      "model": "beautifuldecor:block/sofa_dark_oak",
+      "y": 270
+    },
+    "corner=none,facing=west,left_connected=false,right_connected=true": {
+      "model": "beautifuldecor:block/sofa_dark_oak_right_connected",
+      "y": 270
+    },
+    "corner=none,facing=west,left_connected=true,right_connected=false": {
+      "model": "beautifuldecor:block/sofa_dark_oak_left_connected",
+      "y": 270
+    },
+    "corner=none,facing=west,left_connected=true,right_connected=true": {
+      "model": "beautifuldecor:block/sofa_dark_oak_both_connected",
+      "y": 270
+    },
+    "corner=left,facing=north,left_connected=false,right_connected=false": {
+      "model": "beautifuldecor:block/sofa_dark_oak_corner_left"
+    },
+    "corner=left,facing=north,left_connected=false,right_connected=true": {
+      "model": "beautifuldecor:block/sofa_dark_oak_corner_left_right_connected"
+    },
+    "corner=left,facing=north,left_connected=true,right_connected=false": {
+      "model": "beautifuldecor:block/sofa_dark_oak_corner_left"
+    },
+    "corner=left,facing=north,left_connected=true,right_connected=true": {
+      "model": "beautifuldecor:block/sofa_dark_oak_corner_left_right_connected"
+    },
+    "corner=left,facing=east,left_connected=false,right_connected=false": {
+      "model": "beautifuldecor:block/sofa_dark_oak_corner_left",
+      "y": 90
+    },
+    "corner=left,facing=east,left_connected=false,right_connected=true": {
+      "model": "beautifuldecor:block/sofa_dark_oak_corner_left_right_connected",
+      "y": 90
+    },
+    "corner=left,facing=east,left_connected=true,right_connected=false": {
+      "model": "beautifuldecor:block/sofa_dark_oak_corner_left",
+      "y": 90
+    },
+    "corner=left,facing=east,left_connected=true,right_connected=true": {
+      "model": "beautifuldecor:block/sofa_dark_oak_corner_left_right_connected",
+      "y": 90
+    },
+    "corner=left,facing=south,left_connected=false,right_connected=false": {
+      "model": "beautifuldecor:block/sofa_dark_oak_corner_left",
+      "y": 180
+    },
+    "corner=left,facing=south,left_connected=false,right_connected=true": {
+      "model": "beautifuldecor:block/sofa_dark_oak_corner_left_right_connected",
+      "y": 180
+    },
+    "corner=left,facing=south,left_connected=true,right_connected=false": {
+      "model": "beautifuldecor:block/sofa_dark_oak_corner_left",
+      "y": 180
+    },
+    "corner=left,facing=south,left_connected=true,right_connected=true": {
+      "model": "beautifuldecor:block/sofa_dark_oak_corner_left_right_connected",
+      "y": 180
+    },
+    "corner=left,facing=west,left_connected=false,right_connected=false": {
+      "model": "beautifuldecor:block/sofa_dark_oak_corner_left",
+      "y": 270
+    },
+    "corner=left,facing=west,left_connected=false,right_connected=true": {
+      "model": "beautifuldecor:block/sofa_dark_oak_corner_left_right_connected",
+      "y": 270
+    },
+    "corner=left,facing=west,left_connected=true,right_connected=false": {
+      "model": "beautifuldecor:block/sofa_dark_oak_corner_left",
+      "y": 270
+    },
+    "corner=left,facing=west,left_connected=true,right_connected=true": {
+      "model": "beautifuldecor:block/sofa_dark_oak_corner_left_right_connected",
+      "y": 270
+    },
+    "corner=right,facing=north,left_connected=false,right_connected=false": {
+      "model": "beautifuldecor:block/sofa_dark_oak_corner_right"
+    },
+    "corner=right,facing=north,left_connected=false,right_connected=true": {
+      "model": "beautifuldecor:block/sofa_dark_oak_corner_right"
+    },
+    "corner=right,facing=north,left_connected=true,right_connected=false": {
+      "model": "beautifuldecor:block/sofa_dark_oak_corner_right_left_connected"
+    },
+    "corner=right,facing=north,left_connected=true,right_connected=true": {
+      "model": "beautifuldecor:block/sofa_dark_oak_corner_right_left_connected"
+    },
+    "corner=right,facing=east,left_connected=false,right_connected=false": {
+      "model": "beautifuldecor:block/sofa_dark_oak_corner_right",
+      "y": 90
+    },
+    "corner=right,facing=east,left_connected=false,right_connected=true": {
+      "model": "beautifuldecor:block/sofa_dark_oak_corner_right",
+      "y": 90
+    },
+    "corner=right,facing=east,left_connected=true,right_connected=false": {
+      "model": "beautifuldecor:block/sofa_dark_oak_corner_right_left_connected",
+      "y": 90
+    },
+    "corner=right,facing=east,left_connected=true,right_connected=true": {
+      "model": "beautifuldecor:block/sofa_dark_oak_corner_right_left_connected",
+      "y": 90
+    },
+    "corner=right,facing=south,left_connected=false,right_connected=false": {
+      "model": "beautifuldecor:block/sofa_dark_oak_corner_right",
+      "y": 180
+    },
+    "corner=right,facing=south,left_connected=false,right_connected=true": {
+      "model": "beautifuldecor:block/sofa_dark_oak_corner_right",
+      "y": 180
+    },
+    "corner=right,facing=south,left_connected=true,right_connected=false": {
+      "model": "beautifuldecor:block/sofa_dark_oak_corner_right_left_connected",
+      "y": 180
+    },
+    "corner=right,facing=south,left_connected=true,right_connected=true": {
+      "model": "beautifuldecor:block/sofa_dark_oak_corner_right_left_connected",
+      "y": 180
+    },
+    "corner=right,facing=west,left_connected=false,right_connected=false": {
+      "model": "beautifuldecor:block/sofa_dark_oak_corner_right",
+      "y": 270
+    },
+    "corner=right,facing=west,left_connected=false,right_connected=true": {
+      "model": "beautifuldecor:block/sofa_dark_oak_corner_right",
+      "y": 270
+    },
+    "corner=right,facing=west,left_connected=true,right_connected=false": {
+      "model": "beautifuldecor:block/sofa_dark_oak_corner_right_left_connected",
+      "y": 270
+    },
+    "corner=right,facing=west,left_connected=true,right_connected=true": {
+      "model": "beautifuldecor:block/sofa_dark_oak_corner_right_left_connected",
+      "y": 270
+    }
+  }
+}

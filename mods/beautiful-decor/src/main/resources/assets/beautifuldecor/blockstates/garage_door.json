@@ -1,0 +1,5035 @@
+{
+  "multipart": [
+    {
+      "when": {
+        "facing": "north",
+        "part": "0",
+        "raise": "0"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r0"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "0",
+        "raise": "1"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r1"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "0",
+        "raise": "2"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r2"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "0",
+        "raise": "3"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r3"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "0",
+        "raise": "4"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r4"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "0",
+        "raise": "5"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r4"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "0",
+        "raise": "6"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r4"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "0",
+        "raise": "7"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r4"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "0",
+        "raise": "8"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r4"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "0",
+        "raise": "9"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r4"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "0",
+        "raise": "10"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r4"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "0",
+        "raise": "11"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r4"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "0",
+        "raise": "12"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r4"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "1",
+        "raise": "0"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r0"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "1",
+        "raise": "1"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r1"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "1",
+        "raise": "2"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r2"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "1",
+        "raise": "3"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r3"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "1",
+        "raise": "4"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "1",
+        "raise": "5"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "1",
+        "raise": "6"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "1",
+        "raise": "7"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "1",
+        "raise": "8"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "1",
+        "raise": "9"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "1",
+        "raise": "10"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "1",
+        "raise": "11"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "1",
+        "raise": "12"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "2",
+        "raise": "0"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r0"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "2",
+        "raise": "1"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r1"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "2",
+        "raise": "2"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r2"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "2",
+        "raise": "3"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r3"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "2",
+        "raise": "4"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r4"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "2",
+        "raise": "5"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r4"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "2",
+        "raise": "6"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r4"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "2",
+        "raise": "7"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r4"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "2",
+        "raise": "8"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r4"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "2",
+        "raise": "9"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r4"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "2",
+        "raise": "10"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r4"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "2",
+        "raise": "11"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r4"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "2",
+        "raise": "12"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r4"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "3",
+        "raise": "0"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r0"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "3",
+        "raise": "1"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r1"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "3",
+        "raise": "2"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r2"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "3",
+        "raise": "3"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r3"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "3",
+        "raise": "4"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r4"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "3",
+        "raise": "5"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r5"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "3",
+        "raise": "6"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r6"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "3",
+        "raise": "7"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r7"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "3",
+        "raise": "8"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r8"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "3",
+        "raise": "9"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r8"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "3",
+        "raise": "10"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r8"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "3",
+        "raise": "11"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r8"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "3",
+        "raise": "12"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r8"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "4",
+        "raise": "0"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p4_r0"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "4",
+        "raise": "1"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p4_r1"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "4",
+        "raise": "2"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p4_r2"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "4",
+        "raise": "3"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p4_r3"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "4",
+        "raise": "4"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p4_r4"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "4",
+        "raise": "5"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r1"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "4",
+        "raise": "6"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r2"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "4",
+        "raise": "7"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r3"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "4",
+        "raise": "8"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "4",
+        "raise": "9"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "4",
+        "raise": "10"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "4",
+        "raise": "11"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "4",
+        "raise": "12"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "5",
+        "raise": "0"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r0"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "5",
+        "raise": "1"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r1"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "5",
+        "raise": "2"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r2"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "5",
+        "raise": "3"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r3"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "5",
+        "raise": "4"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r4"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "5",
+        "raise": "5"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r5"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "5",
+        "raise": "6"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r6"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "5",
+        "raise": "7"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r7"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "5",
+        "raise": "8"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r8"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "5",
+        "raise": "9"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r8"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "5",
+        "raise": "10"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r8"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "5",
+        "raise": "11"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r8"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "5",
+        "raise": "12"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r8"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "6",
+        "raise": "0"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r0"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "6",
+        "raise": "1"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r1"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "6",
+        "raise": "2"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r2"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "6",
+        "raise": "3"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r3"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "6",
+        "raise": "4"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r4"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "6",
+        "raise": "5"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r5"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "6",
+        "raise": "6"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r6"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "6",
+        "raise": "7"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r7"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "6",
+        "raise": "8"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r8"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "6",
+        "raise": "9"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r9"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "6",
+        "raise": "10"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r10"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "6",
+        "raise": "11"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r11"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "6",
+        "raise": "12"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r12"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "7",
+        "raise": "0"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r0"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "7",
+        "raise": "1"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r1"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "7",
+        "raise": "2"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r2"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "7",
+        "raise": "3"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r3"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "7",
+        "raise": "4"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r4"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "7",
+        "raise": "5"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r5"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "7",
+        "raise": "6"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r6"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "7",
+        "raise": "7"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r7"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "7",
+        "raise": "8"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r8"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "7",
+        "raise": "9"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r9"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "7",
+        "raise": "10"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r10"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "7",
+        "raise": "11"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r11"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "7",
+        "raise": "12"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r12"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "8",
+        "raise": "0"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r0"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "8",
+        "raise": "1"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r1"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "8",
+        "raise": "2"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r2"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "8",
+        "raise": "3"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r3"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "8",
+        "raise": "4"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r4"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "8",
+        "raise": "5"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r5"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "8",
+        "raise": "6"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r6"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "8",
+        "raise": "7"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r7"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "8",
+        "raise": "8"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r8"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "8",
+        "raise": "9"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r9"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "8",
+        "raise": "10"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r10"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "8",
+        "raise": "11"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r11"
+      }
+    },
+    {
+      "when": {
+        "facing": "north",
+        "part": "8",
+        "raise": "12"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r12"
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "0",
+        "raise": "0"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r0",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "0",
+        "raise": "1"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r1",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "0",
+        "raise": "2"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r2",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "0",
+        "raise": "3"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r3",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "0",
+        "raise": "4"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "0",
+        "raise": "5"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "0",
+        "raise": "6"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "0",
+        "raise": "7"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "0",
+        "raise": "8"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "0",
+        "raise": "9"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "0",
+        "raise": "10"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "0",
+        "raise": "11"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "0",
+        "raise": "12"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "1",
+        "raise": "0"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r0",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "1",
+        "raise": "1"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r1",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "1",
+        "raise": "2"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r2",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "1",
+        "raise": "3"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r3",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "1",
+        "raise": "4"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "1",
+        "raise": "5"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "1",
+        "raise": "6"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "1",
+        "raise": "7"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "1",
+        "raise": "8"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "1",
+        "raise": "9"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "1",
+        "raise": "10"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "1",
+        "raise": "11"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "1",
+        "raise": "12"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "2",
+        "raise": "0"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r0",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "2",
+        "raise": "1"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r1",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "2",
+        "raise": "2"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r2",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "2",
+        "raise": "3"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r3",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "2",
+        "raise": "4"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "2",
+        "raise": "5"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "2",
+        "raise": "6"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "2",
+        "raise": "7"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "2",
+        "raise": "8"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "2",
+        "raise": "9"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "2",
+        "raise": "10"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "2",
+        "raise": "11"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "2",
+        "raise": "12"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "3",
+        "raise": "0"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r0",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "3",
+        "raise": "1"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r1",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "3",
+        "raise": "2"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r2",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "3",
+        "raise": "3"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r3",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "3",
+        "raise": "4"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "3",
+        "raise": "5"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r5",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "3",
+        "raise": "6"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r6",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "3",
+        "raise": "7"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r7",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "3",
+        "raise": "8"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r8",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "3",
+        "raise": "9"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r8",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "3",
+        "raise": "10"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r8",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "3",
+        "raise": "11"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r8",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "3",
+        "raise": "12"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r8",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "4",
+        "raise": "0"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p4_r0",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "4",
+        "raise": "1"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p4_r1",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "4",
+        "raise": "2"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p4_r2",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "4",
+        "raise": "3"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p4_r3",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "4",
+        "raise": "4"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p4_r4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "4",
+        "raise": "5"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r1",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "4",
+        "raise": "6"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r2",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "4",
+        "raise": "7"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r3",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "4",
+        "raise": "8"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "4",
+        "raise": "9"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "4",
+        "raise": "10"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "4",
+        "raise": "11"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "4",
+        "raise": "12"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "5",
+        "raise": "0"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r0",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "5",
+        "raise": "1"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r1",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "5",
+        "raise": "2"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r2",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "5",
+        "raise": "3"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r3",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "5",
+        "raise": "4"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "5",
+        "raise": "5"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r5",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "5",
+        "raise": "6"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r6",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "5",
+        "raise": "7"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r7",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "5",
+        "raise": "8"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r8",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "5",
+        "raise": "9"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r8",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "5",
+        "raise": "10"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r8",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "5",
+        "raise": "11"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r8",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "5",
+        "raise": "12"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r8",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "6",
+        "raise": "0"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r0",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "6",
+        "raise": "1"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r1",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "6",
+        "raise": "2"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r2",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "6",
+        "raise": "3"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r3",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "6",
+        "raise": "4"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "6",
+        "raise": "5"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r5",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "6",
+        "raise": "6"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r6",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "6",
+        "raise": "7"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r7",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "6",
+        "raise": "8"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r8",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "6",
+        "raise": "9"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r9",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "6",
+        "raise": "10"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r10",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "6",
+        "raise": "11"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r11",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "6",
+        "raise": "12"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r12",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "7",
+        "raise": "0"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r0",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "7",
+        "raise": "1"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r1",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "7",
+        "raise": "2"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r2",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "7",
+        "raise": "3"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r3",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "7",
+        "raise": "4"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "7",
+        "raise": "5"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r5",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "7",
+        "raise": "6"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r6",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "7",
+        "raise": "7"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r7",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "7",
+        "raise": "8"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r8",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "7",
+        "raise": "9"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r9",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "7",
+        "raise": "10"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r10",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "7",
+        "raise": "11"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r11",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "7",
+        "raise": "12"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r12",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "8",
+        "raise": "0"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r0",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "8",
+        "raise": "1"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r1",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "8",
+        "raise": "2"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r2",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "8",
+        "raise": "3"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r3",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "8",
+        "raise": "4"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r4",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "8",
+        "raise": "5"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r5",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "8",
+        "raise": "6"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r6",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "8",
+        "raise": "7"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r7",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "8",
+        "raise": "8"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r8",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "8",
+        "raise": "9"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r9",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "8",
+        "raise": "10"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r10",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "8",
+        "raise": "11"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r11",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "east",
+        "part": "8",
+        "raise": "12"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r12",
+        "y": 90
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "0",
+        "raise": "0"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r0",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "0",
+        "raise": "1"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r1",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "0",
+        "raise": "2"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r2",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "0",
+        "raise": "3"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r3",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "0",
+        "raise": "4"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "0",
+        "raise": "5"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "0",
+        "raise": "6"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "0",
+        "raise": "7"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "0",
+        "raise": "8"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "0",
+        "raise": "9"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "0",
+        "raise": "10"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "0",
+        "raise": "11"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "0",
+        "raise": "12"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "1",
+        "raise": "0"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r0",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "1",
+        "raise": "1"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r1",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "1",
+        "raise": "2"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r2",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "1",
+        "raise": "3"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r3",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "1",
+        "raise": "4"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "1",
+        "raise": "5"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "1",
+        "raise": "6"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "1",
+        "raise": "7"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "1",
+        "raise": "8"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "1",
+        "raise": "9"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "1",
+        "raise": "10"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "1",
+        "raise": "11"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "1",
+        "raise": "12"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "2",
+        "raise": "0"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r0",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "2",
+        "raise": "1"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r1",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "2",
+        "raise": "2"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r2",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "2",
+        "raise": "3"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r3",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "2",
+        "raise": "4"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "2",
+        "raise": "5"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "2",
+        "raise": "6"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "2",
+        "raise": "7"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "2",
+        "raise": "8"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "2",
+        "raise": "9"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "2",
+        "raise": "10"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "2",
+        "raise": "11"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "2",
+        "raise": "12"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "3",
+        "raise": "0"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r0",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "3",
+        "raise": "1"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r1",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "3",
+        "raise": "2"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r2",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "3",
+        "raise": "3"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r3",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "3",
+        "raise": "4"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "3",
+        "raise": "5"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r5",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "3",
+        "raise": "6"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r6",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "3",
+        "raise": "7"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r7",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "3",
+        "raise": "8"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r8",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "3",
+        "raise": "9"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r8",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "3",
+        "raise": "10"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r8",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "3",
+        "raise": "11"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r8",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "3",
+        "raise": "12"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r8",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "4",
+        "raise": "0"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p4_r0",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "4",
+        "raise": "1"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p4_r1",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "4",
+        "raise": "2"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p4_r2",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "4",
+        "raise": "3"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p4_r3",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "4",
+        "raise": "4"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p4_r4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "4",
+        "raise": "5"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r1",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "4",
+        "raise": "6"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r2",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "4",
+        "raise": "7"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r3",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "4",
+        "raise": "8"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "4",
+        "raise": "9"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "4",
+        "raise": "10"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "4",
+        "raise": "11"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "4",
+        "raise": "12"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "5",
+        "raise": "0"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r0",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "5",
+        "raise": "1"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r1",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "5",
+        "raise": "2"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r2",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "5",
+        "raise": "3"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r3",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "5",
+        "raise": "4"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "5",
+        "raise": "5"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r5",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "5",
+        "raise": "6"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r6",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "5",
+        "raise": "7"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r7",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "5",
+        "raise": "8"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r8",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "5",
+        "raise": "9"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r8",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "5",
+        "raise": "10"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r8",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "5",
+        "raise": "11"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r8",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "5",
+        "raise": "12"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r8",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "6",
+        "raise": "0"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r0",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "6",
+        "raise": "1"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r1",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "6",
+        "raise": "2"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r2",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "6",
+        "raise": "3"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r3",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "6",
+        "raise": "4"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "6",
+        "raise": "5"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r5",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "6",
+        "raise": "6"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r6",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "6",
+        "raise": "7"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r7",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "6",
+        "raise": "8"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r8",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "6",
+        "raise": "9"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r9",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "6",
+        "raise": "10"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r10",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "6",
+        "raise": "11"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r11",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "6",
+        "raise": "12"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r12",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "7",
+        "raise": "0"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r0",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "7",
+        "raise": "1"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r1",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "7",
+        "raise": "2"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r2",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "7",
+        "raise": "3"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r3",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "7",
+        "raise": "4"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "7",
+        "raise": "5"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r5",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "7",
+        "raise": "6"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r6",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "7",
+        "raise": "7"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r7",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "7",
+        "raise": "8"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r8",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "7",
+        "raise": "9"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r9",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "7",
+        "raise": "10"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r10",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "7",
+        "raise": "11"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r11",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "7",
+        "raise": "12"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r12",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "8",
+        "raise": "0"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r0",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "8",
+        "raise": "1"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r1",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "8",
+        "raise": "2"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r2",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "8",
+        "raise": "3"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r3",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "8",
+        "raise": "4"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r4",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "8",
+        "raise": "5"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r5",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "8",
+        "raise": "6"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r6",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "8",
+        "raise": "7"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r7",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "8",
+        "raise": "8"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r8",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "8",
+        "raise": "9"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r9",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "8",
+        "raise": "10"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r10",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "8",
+        "raise": "11"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r11",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "south",
+        "part": "8",
+        "raise": "12"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r12",
+        "y": 180
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "0",
+        "raise": "0"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r0",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "0",
+        "raise": "1"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r1",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "0",
+        "raise": "2"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r2",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "0",
+        "raise": "3"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r3",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "0",
+        "raise": "4"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r4",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "0",
+        "raise": "5"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r4",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "0",
+        "raise": "6"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r4",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "0",
+        "raise": "7"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r4",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "0",
+        "raise": "8"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r4",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "0",
+        "raise": "9"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r4",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "0",
+        "raise": "10"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r4",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "0",
+        "raise": "11"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r4",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "0",
+        "raise": "12"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p0_r4",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "1",
+        "raise": "0"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r0",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "1",
+        "raise": "1"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r1",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "1",
+        "raise": "2"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r2",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "1",
+        "raise": "3"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r3",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "1",
+        "raise": "4"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "1",
+        "raise": "5"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "1",
+        "raise": "6"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "1",
+        "raise": "7"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "1",
+        "raise": "8"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "1",
+        "raise": "9"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "1",
+        "raise": "10"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "1",
+        "raise": "11"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "1",
+        "raise": "12"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "2",
+        "raise": "0"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r0",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "2",
+        "raise": "1"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r1",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "2",
+        "raise": "2"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r2",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "2",
+        "raise": "3"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r3",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "2",
+        "raise": "4"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r4",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "2",
+        "raise": "5"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r4",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "2",
+        "raise": "6"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r4",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "2",
+        "raise": "7"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r4",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "2",
+        "raise": "8"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r4",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "2",
+        "raise": "9"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r4",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "2",
+        "raise": "10"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r4",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "2",
+        "raise": "11"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r4",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "2",
+        "raise": "12"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p2_r4",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "3",
+        "raise": "0"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r0",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "3",
+        "raise": "1"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r1",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "3",
+        "raise": "2"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r2",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "3",
+        "raise": "3"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r3",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "3",
+        "raise": "4"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r4",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "3",
+        "raise": "5"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r5",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "3",
+        "raise": "6"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r6",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "3",
+        "raise": "7"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r7",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "3",
+        "raise": "8"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r8",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "3",
+        "raise": "9"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r8",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "3",
+        "raise": "10"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r8",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "3",
+        "raise": "11"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r8",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "3",
+        "raise": "12"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p3_r8",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "4",
+        "raise": "0"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p4_r0",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "4",
+        "raise": "1"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p4_r1",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "4",
+        "raise": "2"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p4_r2",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "4",
+        "raise": "3"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p4_r3",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "4",
+        "raise": "4"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p4_r4",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "4",
+        "raise": "5"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r1",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "4",
+        "raise": "6"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r2",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "4",
+        "raise": "7"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r3",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "4",
+        "raise": "8"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "4",
+        "raise": "9"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "4",
+        "raise": "10"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "4",
+        "raise": "11"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "4",
+        "raise": "12"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p1_r4",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "5",
+        "raise": "0"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r0",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "5",
+        "raise": "1"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r1",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "5",
+        "raise": "2"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r2",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "5",
+        "raise": "3"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r3",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "5",
+        "raise": "4"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r4",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "5",
+        "raise": "5"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r5",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "5",
+        "raise": "6"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r6",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "5",
+        "raise": "7"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r7",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "5",
+        "raise": "8"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r8",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "5",
+        "raise": "9"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r8",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "5",
+        "raise": "10"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r8",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "5",
+        "raise": "11"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r8",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "5",
+        "raise": "12"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p5_r8",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "6",
+        "raise": "0"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r0",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "6",
+        "raise": "1"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r1",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "6",
+        "raise": "2"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r2",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "6",
+        "raise": "3"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r3",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "6",
+        "raise": "4"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r4",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "6",
+        "raise": "5"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r5",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "6",
+        "raise": "6"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r6",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "6",
+        "raise": "7"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r7",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "6",
+        "raise": "8"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r8",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "6",
+        "raise": "9"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r9",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "6",
+        "raise": "10"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r10",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "6",
+        "raise": "11"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r11",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "6",
+        "raise": "12"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p6_r12",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "7",
+        "raise": "0"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r0",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "7",
+        "raise": "1"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r1",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "7",
+        "raise": "2"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r2",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "7",
+        "raise": "3"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r3",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "7",
+        "raise": "4"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r4",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "7",
+        "raise": "5"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r5",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "7",
+        "raise": "6"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r6",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "7",
+        "raise": "7"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r7",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "7",
+        "raise": "8"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r8",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "7",
+        "raise": "9"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r9",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "7",
+        "raise": "10"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r10",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "7",
+        "raise": "11"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r11",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "7",
+        "raise": "12"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p7_r12",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "8",
+        "raise": "0"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r0",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "8",
+        "raise": "1"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r1",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "8",
+        "raise": "2"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r2",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "8",
+        "raise": "3"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r3",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "8",
+        "raise": "4"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r4",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "8",
+        "raise": "5"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r5",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "8",
+        "raise": "6"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r6",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "8",
+        "raise": "7"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r7",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "8",
+        "raise": "8"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r8",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "8",
+        "raise": "9"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r9",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "8",
+        "raise": "10"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r10",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "8",
+        "raise": "11"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r11",
+        "y": 270
+      }
+    },
+    {
+      "when": {
+        "facing": "west",
+        "part": "8",
+        "raise": "12"
+      },
+      "apply": {
+        "model": "beautifuldecor:block/garage_door_p8_r12",
+        "y": 270
+      }
+    }
+  ]
+}

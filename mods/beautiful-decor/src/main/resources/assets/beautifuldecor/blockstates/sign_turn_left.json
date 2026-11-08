@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "beautifuldecor:block/sign_turn_left"
+    },
+    "facing=east": {
+      "model": "beautifuldecor:block/sign_turn_left",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "beautifuldecor:block/sign_turn_left",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "beautifuldecor:block/sign_turn_left",
+      "y": 270
+    }
+  }
+}

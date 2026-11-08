@@ -1,0 +1,10 @@
+{
+ "parent": "beautifuldecor:block/nightstand_base_10",
+ "textures": {
+  "particle": "minecraft:block/cherry_planks",
+  "planks": "minecraft:block/cherry_planks",
+  "trim": "minecraft:block/stripped_cherry_log",
+  "cushion": "minecraft:block/pink_wool",
+  "knob": "beautifuldecor:block/handle_metal"
+ }
+}

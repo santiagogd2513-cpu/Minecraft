@@ -1,0 +1,184 @@
+{
+  "variants": {
+    "facing=north,half=lower,open=false,part=single": {
+      "model": "beautifuldecor:block/elevator_door_closed_lower"
+    },
+    "facing=north,half=lower,open=false,part=left": {
+      "model": "beautifuldecor:block/elevator_door_left_closed_lower"
+    },
+    "facing=north,half=lower,open=false,part=right": {
+      "model": "beautifuldecor:block/elevator_door_right_closed_lower"
+    },
+    "facing=north,half=lower,open=true,part=single": {
+      "model": "beautifuldecor:block/elevator_door_open_lower"
+    },
+    "facing=north,half=lower,open=true,part=left": {
+      "model": "beautifuldecor:block/elevator_door_left_open_lower"
+    },
+    "facing=north,half=lower,open=true,part=right": {
+      "model": "beautifuldecor:block/elevator_door_right_open_lower"
+    },
+    "facing=north,half=upper,open=false,part=single": {
+      "model": "beautifuldecor:block/elevator_door_closed_upper"
+    },
+    "facing=north,half=upper,open=false,part=left": {
+      "model": "beautifuldecor:block/elevator_door_left_closed_upper"
+    },
+    "facing=north,half=upper,open=false,part=right": {
+      "model": "beautifuldecor:block/elevator_door_right_closed_upper"
+    },
+    "facing=north,half=upper,open=true,part=single": {
+      "model": "beautifuldecor:block/elevator_door_open_upper"
+    },
+    "facing=north,half=upper,open=true,part=left": {
+      "model": "beautifuldecor:block/elevator_door_left_open_upper"
+    },
+    "facing=north,half=upper,open=true,part=right": {
+      "model": "beautifuldecor:block/elevator_door_right_open_upper"
+    },
+    "facing=east,half=lower,open=false,part=single": {
+      "model": "beautifuldecor:block/elevator_door_closed_lower",
+      "y": 90
+    },
+    "facing=east,half=lower,open=false,part=left": {
+      "model": "beautifuldecor:block/elevator_door_left_closed_lower",
+      "y": 90
+    },
+    "facing=east,half=lower,open=false,part=right": {
+      "model": "beautifuldecor:block/elevator_door_right_closed_lower",
+      "y": 90
+    },
+    "facing=east,half=lower,open=true,part=single": {
+      "model": "beautifuldecor:block/elevator_door_open_lower",
+      "y": 90
+    },
+    "facing=east,half=lower,open=true,part=left": {
+      "model": "beautifuldecor:block/elevator_door_left_open_lower",
+      "y": 90
+    },
+    "facing=east,half=lower,open=true,part=right": {
+      "model": "beautifuldecor:block/elevator_door_right_open_lower",
+      "y": 90
+    },
+    "facing=east,half=upper,open=false,part=single": {
+      "model": "beautifuldecor:block/elevator_door_closed_upper",
+      "y": 90
+    },
+    "facing=east,half=upper,open=false,part=left": {
+      "model": "beautifuldecor:block/elevator_door_left_closed_upper",
+      "y": 90
+    },
+    "facing=east,half=upper,open=false,part=right": {
+      "model": "beautifuldecor:block/elevator_door_right_closed_upper",
+      "y": 90
+    },
+    "facing=east,half=upper,open=true,part=single": {
+      "model": "beautifuldecor:block/elevator_door_open_upper",
+      "y": 90
+    },
+    "facing=east,half=upper,open=true,part=left": {
+      "model": "beautifuldecor:block/elevator_door_left_open_upper",
+      "y": 90
+    },
+    "facing=east,half=upper,open=true,part=right": {
+      "model": "beautifuldecor:block/elevator_door_right_open_upper",
+      "y": 90
+    },
+    "facing=south,half=lower,open=false,part=single": {
+      "model": "beautifuldecor:block/elevator_door_closed_lower",
+      "y": 180
+    },
+    "facing=south,half=lower,open=false,part=left": {
+      "model": "beautifuldecor:block/elevator_door_left_closed_lower",
+      "y": 180
+    },
+    "facing=south,half=lower,open=false,part=right": {
+      "model": "beautifuldecor:block/elevator_door_right_closed_lower",
+      "y": 180
+    },
+    "facing=south,half=lower,open=true,part=single": {
+      "model": "beautifuldecor:block/elevator_door_open_lower",
+      "y": 180
+    },
+    "facing=south,half=lower,open=true,part=left": {
+      "model": "beautifuldecor:block/elevator_door_left_open_lower",
+      "y": 180
+    },
+    "facing=south,half=lower,open=true,part=right": {
+      "model": "beautifuldecor:block/elevator_door_right_open_lower",
+      "y": 180
+    },
+    "facing=south,half=upper,open=false,part=single": {
+      "model": "beautifuldecor:block/elevator_door_closed_upper",
+      "y": 180
+    },
+    "facing=south,half=upper,open=false,part=left": {
+      "model": "beautifuldecor:block/elevator_door_left_closed_upper",
+      "y": 180
+    },
+    "facing=south,half=upper,open=false,part=right": {
+      "model": "beautifuldecor:block/elevator_door_right_closed_upper",
+      "y": 180
+    },
+    "facing=south,half=upper,open=true,part=single": {
+      "model": "beautifuldecor:block/elevator_door_open_upper",
+      "y": 180
+    },
+    "facing=south,half=upper,open=true,part=left": {
+      "model": "beautifuldecor:block/elevator_door_left_open_upper",
+      "y": 180
+    },
+    "facing=south,half=upper,open=true,part=right": {
+      "model": "beautifuldecor:block/elevator_door_right_open_upper",
+      "y": 180
+    },
+    "facing=west,half=lower,open=false,part=single": {
+      "model": "beautifuldecor:block/elevator_door_closed_lower",
+      "y": 270
+    },
+    "facing=west,half=lower,open=false,part=left": {
+      "model": "beautifuldecor:block/elevator_door_left_closed_lower",
+      "y": 270
+    },
+    "facing=west,half=lower,open=false,part=right": {
+      "model": "beautifuldecor:block/elevator_door_right_closed_lower",
+      "y": 270
+    },
+    "facing=west,half=lower,open=true,part=single": {
+      "model": "beautifuldecor:block/elevator_door_open_lower",
+      "y": 270
+    },
+    "facing=west,half=lower,open=true,part=left": {
+      "model": "beautifuldecor:block/elevator_door_left_open_lower",
+      "y": 270
+    },
+    "facing=west,half=lower,open=true,part=right": {
+      "model": "beautifuldecor:block/elevator_door_right_open_lower",
+      "y": 270
+    },
+    "facing=west,half=upper,open=false,part=single": {
+      "model": "beautifuldecor:block/elevator_door_closed_upper",
+      "y": 270
+    },
+    "facing=west,half=upper,open=false,part=left": {
+      "model": "beautifuldecor:block/elevator_door_left_closed_upper",
+      "y": 270
+    },
+    "facing=west,half=upper,open=false,part=right": {
+      "model": "beautifuldecor:block/elevator_door_right_closed_upper",
+      "y": 270
+    },
+    "facing=west,half=upper,open=true,part=single": {
+      "model": "beautifuldecor:block/elevator_door_open_upper",
+      "y": 270
+    },
+    "facing=west,half=upper,open=true,part=left": {
+      "model": "beautifuldecor:block/elevator_door_left_open_upper",
+      "y": 270
+    },
+    "facing=west,half=upper,open=true,part=right": {
+      "model": "beautifuldecor:block/elevator_door_right_open_upper",
+      "y": 270
+    }
+  }
+}

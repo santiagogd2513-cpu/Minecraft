@@ -1,0 +1,12 @@
+{
+  "variants": {
+    "facing=north,on=false": { "model": "beautifuldecor:block/television" },
+    "facing=east,on=false":  { "model": "beautifuldecor:block/television", "y": 90 },
+    "facing=south,on=false": { "model": "beautifuldecor:block/television", "y": 180 },
+    "facing=west,on=false":  { "model": "beautifuldecor:block/television", "y": 270 },
+    "facing=north,on=true":  { "model": "beautifuldecor:block/television_on" },
+    "facing=east,on=true":   { "model": "beautifuldecor:block/television_on", "y": 90 },
+    "facing=south,on=true":  { "model": "beautifuldecor:block/television_on", "y": 180 },
+    "facing=west,on=true":   { "model": "beautifuldecor:block/television_on", "y": 270 }
+  }
+}
