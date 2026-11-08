@@ -114,7 +114,7 @@ final class FtpClient {
         if (hello.code != 220) throw new FtpException(hello.code, "El servidor no saludó bien: " + hello.text);
         Reply r = cmd("USER " + (user == null || user.isEmpty() ? "anonymous" : user));
         if (r.code == 331 || r.code == 332) r = cmd("PASS " + (pass == null ? "" : pass));
-        if (r.code != 230 && r.code != 202) throw new FtpException(r.code, r.code == 530 ? "Usuario o contraseña incorrectos" : r.text);
+        if (r.code != 230 && r.code != 202) throw new FtpException(r.code, r.code == 530 ? "Usuario o contraseña incorrectos (van en minúsculas tal cual). En la Xbox 360 con Aurora son xboxftp / xboxftp; con FreeStyle Dash, xbox / xbox." : r.text);
         // lo moderno es opcional: servidores viejos (Xbox) no lo tienen
         try {
             Reply feat = cmd("FEAT");

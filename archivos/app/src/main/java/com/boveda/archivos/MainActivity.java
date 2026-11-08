@@ -813,7 +813,9 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         EditText name = input("Nombre (ej. Mi Xbox)", sv.name, android.text.InputType.TYPE_CLASS_TEXT);
         EditText host = input("Dirección IP (ej. 192.168.1.20)", sv.host, android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_URI);
         EditText port = input("Puerto", String.valueOf(sv.port), android.text.InputType.TYPE_CLASS_NUMBER);
-        EditText user = input("Usuario (vacío = anónimo)", sv.user, android.text.InputType.TYPE_CLASS_TEXT);
+        // sin mayúscula automática ni autocorrector: el usuario y la contraseña van tal cual
+        EditText user = input("Usuario (vacío = anónimo)", sv.user, android.text.InputType.TYPE_CLASS_TEXT
+                | android.text.InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD | android.text.InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
         EditText pass = input("Contraseña", sv.pass, android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD);
         TextView opts = Ui.text(this, "", 12.5f, Ui.SUB, false);
         Runnable showOpts = () -> opts.setText((sv.passive ? "Modo pasivo" : "Modo activo") + "  ·  " + sv.maxConnections
@@ -832,13 +834,13 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         presets.addView(chip("🎮 Xbox 360", false, v -> {
             if (name.getText().toString().trim().isEmpty()) name.setText("Xbox 360");
             port.setText("21");
-            user.setText("xbox");
-            pass.setText("xbox");
+            user.setText("xboxftp");
+            pass.setText("xboxftp");
             sv.maxConnections = 1;
             sv.passive = true;
             sv.latin1 = true;
             showOpts.run();
-            Toast.makeText(this, "Pon la IP que muestra Aurora/FSD en la pantalla de la Xbox", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Pon la IP que muestra Aurora en la pantalla de la Xbox. Usuario y contraseña: xboxftp (en FreeStyle Dash: xbox)", Toast.LENGTH_LONG).show();
         }));
         TextView sp = new TextView(this);
         sp.setWidth(dp(8));
