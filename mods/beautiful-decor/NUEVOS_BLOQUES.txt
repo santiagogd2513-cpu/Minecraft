@@ -1,3 +1,15 @@
+PARCHE V4.0.2
+=============
+Arreglo del aviso de las pestañas creativas al iniciar el juego
+   * El log mostraba, al terminar de cargar: "[WARN] No se pudieron mover las pestañas de Beautiful Decor al final / java.lang.UnsupportedOperationException: null / at Collections$UnmodifiableCollection.clear /
+     at TabOrder.moveToEnd(TabOrder.java:50)". Causa: Forge guarda la lista ordenada de pestañas en un campo y una VISTA de solo lectura de esa misma lista en otro; el mod las recorría todas y a la vista también
+     le hacía clear(), que no se puede. Ahora (TabReorder.java, Java puro): cada campo se trata por separado y sin cortar el resto, a las listas de solo lectura no se les toca nada (la vista se actualiza sola al reordenar
+     la lista de verdad) y al final se comprueba que las tres pestañas del mod queden al final en todas las listas. Si algo no se pudiera, sale una sola línea corta con el nombre del campo, sin la pila.
+   * Del resto del log (el launcher de Android, el narrador, la clave de perfil, mixins y sonidos de otros mods) no es del mod y no afecta; no había ningún crash.
+   * Sin cambios de red ni de textos.
+   Pruebas (tools/verify_v402.py, solo de esta versión): con clases que imitan a Forge (lista + vista en los dos órdenes de declaración, campo no final, lista inmutable, campos ajenos, ya al final) se reproduce el
+   fallo del código anterior y se comprueba que el nuevo deja las pestañas al final, conserva el orden del resto y no lanza nada. Lo que NO se puede probar aquí: ver las pestañas en el inventario creativo del juego.
+
 PARCHE V4.0.1
 =============
 Barra de desplazamiento en el menú de la radio de los vehículos
