@@ -35,7 +35,8 @@ jobs:
       - name: Compilar
         run: |
           set +e
-          gradle build > build.log 2>&1
+          # el compilador necesita más pila para las listas muy largas del mod (si no, StackOverflowError)
+          gradle build "-Dorg.gradle.jvmargs=-Xmx3G -Xss64m" > build.log 2>&1
           code=$?
           if [ $code != 0 ]; then
             echo "==== ERRORES ===="
