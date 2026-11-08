@@ -242,6 +242,11 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
     @Override
     protected void onResume() {
         super.onResume();
+        // ¿hay versión nueva? (no cuando otra app la abrió para elegir un archivo)
+        if (!picker()) {
+            Updater.resume(this);
+            Updater.check(this);
+        }
         engine.addListener(this);
         ShizukuHelper.addListener(shizukuListener);
         updateTransfersBadge();

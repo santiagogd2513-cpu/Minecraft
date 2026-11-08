@@ -66,6 +66,14 @@ public class MainActivity extends Activity {
     // ------------------------------------------------------------------ ciclo de vida
 
     @Override
+    protected void onResume() {
+        super.onResume();
+        // ¿hay versión nueva de la app?
+        Updater.resume(this);
+        Updater.check(this);
+    }
+
+    @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
         installCrashLog();
