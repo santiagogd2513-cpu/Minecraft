@@ -17,7 +17,7 @@ public final class MissileSounds {
         var sm = Minecraft.getInstance().getSoundManager();
         if (m.age() < 10) {
             sm.play(new SimpleSoundInstance(ModSounds.MISSILE_LAUNCH.get(), SoundSource.HOSTILE, 4f,
-                    0.85f + m.getRandom().nextFloat() * 0.3f, SoundInstance.createUnseededRandom(), m.getX(), m.getY(), m.getZ()));
+                    0.85f + (float) Math.random() * 0.3f, SoundInstance.createUnseededRandom(), m.getX(), m.getY(), m.getZ()));
         }
         sm.play(new Engine(m));
     }
@@ -37,7 +37,7 @@ public final class MissileSounds {
             looping = true;
             delay = 0;
             volume = 2.5f;
-            pitch = 0.85f + m.getRandom().nextFloat() * 0.3f;
+            pitch = 0.85f + (float) Math.random() * 0.3f;
             x = m.getX();
             y = m.getY();
             z = m.getZ();
