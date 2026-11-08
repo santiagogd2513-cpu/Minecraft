@@ -41,6 +41,9 @@ public final class CiTest {
         Vec3 t = Vec3.atBottomCenterOf(target).add(0, 0.5, 0);
         Vec3 site = LaunchManager.launcherSite(level, Vec3.atCenterOf(spawn), t, RandomSource.create(7));
         float yaw = LaunchManager.yawTowards(site, t);
+        // sin jugadores el mundo deja de mover entidades a los 15 s; un chunk forzado lo mantiene vivo
+        level.setChunkForced(target.getX() >> 4, target.getZ() >> 4, true);
+        level.setChunkForced(BlockPos.containing(site).getX() >> 4, BlockPos.containing(site).getZ() >> 4, true);
         LaunchManager.begin(level, null, WeaponType.SALVO, t, site, yaw, 1234L);
         until = level.getGameTime() + new SalvoPlan(site, yaw, t, 1234L).lastImpactTick() + 100;
         System.out.println("PRUEBA: blanco " + target.toShortString() + ", batería en " + BlockPos.containing(site).toShortString()
