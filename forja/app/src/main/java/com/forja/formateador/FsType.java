@@ -23,7 +23,7 @@ public enum FsType {
 
     /** ¿Ya está hecho? (las etapas siguientes agregan NTFS y ext4) */
     public boolean available() {
-        return this == FAT32 || this == EXFAT || this == EXT4;
+        return this != NTFS || Ntfs.available();
     }
 
     /** «clúster» o, en ext4, «bloque». */
@@ -78,7 +78,7 @@ public enum FsType {
 
     /** Por qué no se puede usar este formato en este volumen, o null si se puede. */
     public String problem(long volBytes, int sectorSize) {
-        if (!available()) return "Llega en una próxima versión";
+        if (!available()) return "El motor NTFS no se pudo cargar";
         if (clusterChoices(volBytes, sectorSize).isEmpty()) {
             if (this == FAT32 && volBytes / sectorSize > 0xFFFFFFFFL) return "FAT32 no llega a discos tan grandes";
             return "No sirve para un disco de este tamaño";

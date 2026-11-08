@@ -4,13 +4,22 @@
 set -euo pipefail
 H=$(cd "$(dirname "$0")" && pwd)
 W=$(mktemp -d)
-javac -d $W/out $H/../app/src/main/java/com/forja/formateador/{BlockDevice,Progress,Io,Partitioner,FsType,Fat32Formatter,ExFatFormatter,Ext4Formatter,Forja}.java $H/FileDev.java $H/FTest.java
+J=$H/../app/src/main/java/com/forja/formateador
+javac -d $W/out $J/{BlockDevice,Progress,Io,Partitioner,FsType,Fat32Formatter,ExFatFormatter,Ext4Formatter,Ntfs,Forja}.java $H/FileDev.java $H/FTest.java
+# el motor NTFS (mkntfs + puente) compilado para esta PC, igual que para el celular
+C=$H/../app/src/main/cpp; V=$C/ntfs-3g
+JH=$(dirname $(dirname $(readlink -f $(which javac))))
+mkdir -p $W/nb
+INC="-I$C/ntfs-config -I$V/include/ntfs-3g -I$V/ntfsprogs -I$C -I$JH/include -I$JH/include/linux -DHAVE_CONFIG_H -D_FILE_OFFSET_BITS=64 -O1 -w -fPIC"
+for f in $V/libntfs-3g/*.c $V/ntfsprogs/{attrdef,boot,sd,utils}.c $C/forja_ntfs.c $C/forja_jni.c; do gcc $INC -c $f -o $W/nb/$(basename $f .c).o; done
+gcc $INC -Dmain=forja_mkntfs_main -Dntfs_device_unix_io_ops=forja_io_ops -Dntfs_log_handler_outerr=forja_log_handler -c $V/ntfsprogs/mkntfs.c -o $W/nb/mkntfs.o
+gcc -shared $W/nb/*.o -o $W/nb/libforjantfs.so
 G=$((1<<30)); TB=$((1<<40))
 fallas=0
 sudo_() { if [ -n "${USAR_LOOP:-}" ]; then sudo "$@"; else "$@"; fi; }
 probar() {   # bytes sector FS TABLA cluster etiqueta
   rm -f $W/d.img $W/p.img
-  java -cp $W/out FTest $W/d.img "$@" > $W/log.txt
+  java -Djava.library.path=$W/nb -cp $W/out FTest $W/d.img "$@" > $W/log.txt
   echo "== $3 $4 sector=$2 $(( $1 >> 30 )) GB clúster=$5: $(cat $W/log.txt)"
   if [ "$4" = GPT ] && [ "$2" = 512 ]; then sgdisk -v $W/d.img | grep -q "No problems found" || { echo "   GPT con problemas"; fallas=$((fallas+1)); }; fi
   # la partición se revisa en el lugar (dispositivo loop con desplazamiento) si se puede;
@@ -27,6 +36,7 @@ probar() {   # bytes sector FS TABLA cluster etiqueta
     FAT32) sudo_ fsck.fat -n $P | tail -1 ;;
     EXFAT) sudo_ fsck.exfat -n $P | tail -1 ;;
     EXT4) sudo_ e2fsck -fn $P | tail -1 ;;
+    NTFS) sudo_ ntfsfix -n $P | tail -1 && sudo_ ntfsinfo -m $P | grep -E "Volume Name|Cluster Size" ;;
   esac || ok=0
   if [ $ok = 0 ]; then
     echo "   FALLÓ"; fallas=$((fallas+1))
@@ -51,6 +61,10 @@ probar $G 512 EXT4 GPT 2048 Linux
 probar $((40*G)) 4096 EXT4 GPT 0 Linux
 probar $((200<<20)) 512 EXT4 MBR 0 Linux
 probar $((4*TB)) 512 EXT4 GPT 0 Linux
+probar $((4*G)) 512 NTFS GPT 0 Windows
+probar $((4*G)) 4096 NTFS MBR 0 Windows
+probar $((40*G)) 512 NTFS MBR 65536 Windows
+probar $((4*TB)) 512 NTFS GPT 0 Windows
 rm -rf $W
 echo "fallas: $fallas"
 test $fallas = 0

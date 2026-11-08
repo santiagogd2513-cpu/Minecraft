@@ -76,6 +76,7 @@ public final class Forja {
             case FAT32 -> Fat32Formatter.format(io, part.start, part.size, cluster, label, serial, part.start / ss, sub);
             case EXFAT -> ExFatFormatter.format(io, part.start, part.size, cluster, label, serial, sub);
             case EXT4 -> Ext4Formatter.format(io, part.start, part.size, cluster, label, rnd, sub);
+            case NTFS -> Ntfs.format(io, part.start, part.size, cluster, label, sub);
             default -> throw new IOException(o.fs.title + " llega en una próxima versión");
         }
         io.flush();
