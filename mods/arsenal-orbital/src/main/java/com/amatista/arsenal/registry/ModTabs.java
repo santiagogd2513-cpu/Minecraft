@@ -18,6 +18,7 @@ public final class ModTabs {
             .displayItems((parameters, output) -> {
                 // aquí se irán sumando las nuevas armas
                 output.accept(ModItems.ORBITAL_DESIGNATOR.get());
+                output.accept(ModItems.ARTIFACT_PEDESTAL.get());
             })
             .build());
 

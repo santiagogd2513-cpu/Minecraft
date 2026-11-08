@@ -40,8 +40,14 @@ public class OrbitalDesignatorItem extends Item {
     }
 
     @Override
+    public boolean isFoil(ItemStack stack) {
+        return true;   // brilla: es un artefacto
+    }
+
+    @Override
     public void appendHoverText(ItemStack stack, @Nullable Level level, List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(Component.translatable("item.arsenalorbital.orbital_designator.tip1").withStyle(ChatFormatting.GRAY));
         tooltip.add(Component.translatable("item.arsenalorbital.orbital_designator.tip2").withStyle(ChatFormatting.DARK_PURPLE));
+        tooltip.add(Component.translatable("item.arsenalorbital.orbital_designator.tip3").withStyle(ChatFormatting.GOLD));
     }
 }

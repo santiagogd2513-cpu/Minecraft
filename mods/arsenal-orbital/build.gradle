@@ -16,6 +16,21 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 minecraft {
     mappings channel: 'official', version: '1.20.1'
     copyIdeResources = true
+
+    // servidor de prueba: lo usa la compilación de GitHub para revisar el búnker (ver BunkerCiTest)
+    runs {
+        server {
+            workingDirectory project.file('run')
+            property 'forge.logging.console.level', 'info'
+            property 'arsenal.ci', 'true'
+            args '--nogui'
+            mods {
+                arsenalorbital {
+                    source sourceSets.main
+                }
+            }
+        }
+    }
 }
 
 repositories {
@@ -29,11 +44,11 @@ tasks.named('jar', Jar).configure {
     manifest {
         attributes([
                 'Specification-Title'     : 'arsenalorbital',
-                'Specification-Vendor'    : 'Amatista',
+                'Specification-Vendor'    : 'santiagogd2513-cpu y Claude',
                 'Specification-Version'   : '1',
                 'Implementation-Title'    : project.name,
                 'Implementation-Version'  : project.version,
-                'Implementation-Vendor'   : 'Amatista'
+                'Implementation-Vendor'   : 'santiagogd2513-cpu y Claude'
         ])
     }
     finalizedBy 'reobfJar'

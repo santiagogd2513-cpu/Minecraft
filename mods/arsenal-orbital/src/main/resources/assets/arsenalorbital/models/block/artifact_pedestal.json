@@ -1,0 +1,34 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "minecraft:block/polished_blackstone",
+    "base": "minecraft:block/polished_blackstone_bricks",
+    "column": "minecraft:block/quartz_pillar",
+    "column_top": "minecraft:block/quartz_pillar_top",
+    "top": "minecraft:block/chiseled_polished_blackstone"
+  },
+  "elements": [
+    { "from": [0, 0, 0], "to": [16, 4, 16],
+      "faces": {
+        "down":  { "texture": "#base", "cullface": "down" },
+        "up":    { "texture": "#base" },
+        "north": { "uv": [0, 12, 16, 16], "texture": "#base", "cullface": "north" },
+        "south": { "uv": [0, 12, 16, 16], "texture": "#base", "cullface": "south" },
+        "west":  { "uv": [0, 12, 16, 16], "texture": "#base", "cullface": "west" },
+        "east":  { "uv": [0, 12, 16, 16], "texture": "#base", "cullface": "east" } } },
+    { "from": [3, 4, 3], "to": [13, 12, 13],
+      "faces": {
+        "north": { "uv": [3, 4, 13, 12], "texture": "#column" },
+        "south": { "uv": [3, 4, 13, 12], "texture": "#column" },
+        "west":  { "uv": [3, 4, 13, 12], "texture": "#column" },
+        "east":  { "uv": [3, 4, 13, 12], "texture": "#column" } } },
+    { "from": [1, 12, 1], "to": [15, 16, 15],
+      "faces": {
+        "down":  { "texture": "#base" },
+        "up":    { "uv": [1, 1, 15, 15], "texture": "#top", "cullface": "up" },
+        "north": { "uv": [1, 0, 15, 4], "texture": "#base" },
+        "south": { "uv": [1, 0, 15, 4], "texture": "#base" },
+        "west":  { "uv": [1, 0, 15, 4], "texture": "#base" },
+        "east":  { "uv": [1, 0, 15, 4], "texture": "#base" } } }
+  ]
+}

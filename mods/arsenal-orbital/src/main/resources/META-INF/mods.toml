@@ -6,10 +6,11 @@ license="All rights reserved"
 modId="arsenalorbital"
 version="1.0.0"
 displayName="Arsenal Orbital"
-authors="Amatista"
+authors="santiagogd2513-cpu (idea, pruebas y diseño), Claude de Anthropic (código)"
 description='''
-Armas espaciales. Incluye el Designador Orbital: marca un objetivo y mira la
-cinemática del satélite ÉGIDA-7 disparando desde el espacio.
+Armas espaciales. El Designador Orbital es un artefacto: búscalo en la bóveda de los
+raros búnkeres militares ÉGIDA-7, escondidos bajo tierra. Marca un objetivo y mira la
+cinemática del satélite disparando desde el espacio.
 '''
 
 [[dependencies.arsenalorbital]]

@@ -61,5 +61,7 @@
   "subtitles.arsenalorbital.ui_confirm": "Ui confirm",
   "subtitles.arsenalorbital.void_drone": "Void drone",
   "subtitles.arsenalorbital.warp_jump": "Warp jump",
-  "subtitles.arsenalorbital.wormhole_open": "Wormhole open"
+  "subtitles.arsenalorbital.wormhole_open": "Wormhole open",
+  "block.arsenalorbital.artifact_pedestal": "Artifact Showcase",
+  "item.arsenalorbital.orbital_designator.tip3": "Artifact: found in the vault of underground military bunkers."
 }

@@ -61,5 +61,7 @@
   "subtitles.arsenalorbital.ui_confirm": "Confirmación",
   "subtitles.arsenalorbital.void_drone": "Murmullo del vacío",
   "subtitles.arsenalorbital.warp_jump": "Salto espacial",
-  "subtitles.arsenalorbital.wormhole_open": "Se abre el agujero de gusano"
+  "subtitles.arsenalorbital.wormhole_open": "Se abre el agujero de gusano",
+  "block.arsenalorbital.artifact_pedestal": "Vitrina de artefacto",
+  "item.arsenalorbital.orbital_designator.tip3": "Artefacto: se encuentra en la bóveda de los búnkeres militares bajo tierra."
 }

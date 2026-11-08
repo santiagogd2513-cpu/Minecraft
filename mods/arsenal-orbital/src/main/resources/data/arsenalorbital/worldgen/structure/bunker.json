@@ -1,0 +1,7 @@
+{
+  "type": "arsenalorbital:bunker",
+  "biomes": "#arsenalorbital:has_bunker",
+  "step": "surface_structures",
+  "spawn_overrides": {},
+  "terrain_adaptation": "none"
+}
