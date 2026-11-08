@@ -1,0 +1,64 @@
+name: Forja
+
+on:
+  push:
+    branches: [ "**" ]
+    paths: [ "forja/**", ".github/workflows/forja.yml" ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: forja-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  apk:
+    name: Compilar Forja (APK)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: forja
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Probar los formatos con las herramientas oficiales de Linux
+        run: |
+          sudo apt-get install -y dosfstools exfatprogs gdisk >/dev/null
+          bash test/probar.sh
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.14.3"
+
+      - name: Compilar
+        run: gradle assembleRelease --stacktrace
+
+      - name: Preparar
+        run: |
+          mkdir -p ../dist
+          cp app/build/outputs/apk/release/app-release.apk ../dist/Forja.apk
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Forja-apk
+          path: dist/Forja.apk
+
+      - name: Publicar
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: forja-${{ github.run_number }}
+          name: "Forja #${{ github.run_number }} (formateador de unidades para Android)"
+          target_commitish: ${{ github.sha }}
+          make_latest: false
+          body: |
+            **Forja**: formatea memorias USB y discos externos desde el celular, sin root y sin anuncios.
+            FAT32 y exFAT · tabla MBR o GPT · clúster a elección · de 1 GB a 4 TB. NTFS y ext4 en camino.
+            Descarga `Forja.apk`, conecta la unidad por OTG y elige cómo formatearla.
+          files: dist/Forja.apk
