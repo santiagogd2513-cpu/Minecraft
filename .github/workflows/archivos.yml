@@ -39,6 +39,7 @@ jobs:
         run: |
           mkdir -p ../dist
           cp app/build/outputs/apk/release/app-release.apk ../dist/Boveda.apk
+          cp NOVEDADES.txt ../dist/novedades.txt
 
       - uses: actions/upload-artifact@v4
         with:
@@ -54,4 +55,6 @@ jobs:
           make_latest: false
           body: |
             **Bóveda**, el gestor de archivos. Descarga `Boveda.apk` (con Chrome, no desde otra app) e instálalo.
-          files: dist/Boveda.apk
+          files: |
+            dist/Boveda.apk
+            dist/novedades.txt

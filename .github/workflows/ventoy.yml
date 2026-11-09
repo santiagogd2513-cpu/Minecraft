@@ -92,6 +92,7 @@ jobs:
         run: |
           mkdir -p ../dist
           cp app/build/outputs/apk/release/app-release.apk ../dist/Ventoy-no-oficial.apk
+          cp NOVEDADES.txt ../dist/novedades.txt
 
       - uses: actions/upload-artifact@v4
         with:
@@ -110,4 +111,6 @@ jobs:
             Descarga `Ventoy-no-oficial.apk`, conecta la USB por OTG, elige el formato de la partición (exFAT, NTFS, FAT32 o ext4) y toca «Instalar».
 
             Basado en [Ventoy](https://github.com/ventoy/Ventoy) de longpanda (GPLv3); usa sus archivos oficiales de arranque sin modificar. NTFS se crea con `mkntfs` de ntfs-3g (GPLv2+). No es una app oficial.
-          files: dist/Ventoy-no-oficial.apk
+          files: |
+            dist/Ventoy-no-oficial.apk
+            dist/novedades.txt

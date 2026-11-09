@@ -1,0 +1,4 @@
+## 8
+Avisos de actualización nuevos
+- Cuando hay una versión nueva, el aviso sale en toda la pantalla y te cuenta las novedades.
+- Ventoy no oficial revisa si hay actualizaciones cada vez que vuelves a la app, y ya no se queda sin avisar cuando hay mucha gente usando la misma conexión.

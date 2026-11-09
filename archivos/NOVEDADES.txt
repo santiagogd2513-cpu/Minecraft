@@ -1,0 +1,13 @@
+## 26
+Avisos de actualización nuevos
+- Cuando hay una versión nueva, el aviso sale en toda la pantalla y te cuenta las novedades.
+- Bóveda revisa si hay actualizaciones cada vez que vuelves a la app, y ya no se queda sin avisar cuando hay mucha gente usando la misma conexión.
+
+## 25
+Visor de imágenes
+- Abre fotos JPG, PNG, GIF y WebP (también animados), BMP, ICO, HEIC de iPhone, AVIF y fotos RAW de cámara.
+- También formatos raros: TGA, TIFF, PSD de Photoshop, QOI, PPM/PGM/PBM y SVG.
+- Zoom pellizcando o tocando dos veces, desliza para pasar a la siguiente foto de la carpeta, girar, ver los datos y compartir.
+
+## 24
+- Arreglado el cierre al abrir videos y archivos de texto.

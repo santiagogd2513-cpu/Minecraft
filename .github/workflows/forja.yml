@@ -45,6 +45,7 @@ jobs:
         run: |
           mkdir -p ../dist
           cp app/build/outputs/apk/release/app-release.apk ../dist/Forja.apk
+          cp NOVEDADES.txt ../dist/novedades.txt
 
       - uses: actions/upload-artifact@v4
         with:
@@ -64,4 +65,6 @@ jobs:
             Descarga `Forja.apk`, conecta la unidad por OTG y elige cómo formatearla.
 
             NTFS se crea con `mkntfs` de [ntfs-3g](https://github.com/tuxera/ntfs-3g) (GPLv2+), compilado dentro de la app.
-          files: dist/Forja.apk
+          files: |
+            dist/Forja.apk
+            dist/novedades.txt

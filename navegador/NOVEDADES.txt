@@ -1,0 +1,11 @@
+## 16
+Avisos de actualización nuevos
+- Cuando hay una versión nueva, el aviso sale en toda la pantalla y te cuenta las novedades.
+- Nocturna revisa si hay actualizaciones cada vez que vuelves a la app, y ya no se queda sin avisar cuando hay mucha gente usando la misma conexión.
+
+## 15
+Historial de descargas al día
+- Si un archivo descargado se borra, se mueve a otra carpeta o desaparece, sale solo de la lista de descargas.
+
+## 14
+- Arreglado el error 404 al descargar mods y archivos de CurseForge.
