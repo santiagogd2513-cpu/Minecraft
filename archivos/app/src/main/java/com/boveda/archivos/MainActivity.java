@@ -813,6 +813,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         e.setSingleLine(true);
         e.setInputType(type);
         e.setBackground(Ui.roundStroke(Ui.SURFACE2, dp(14), dp(1), Ui.STROKE));
+        Ui.passwordEye(e);
         e.setPadding(dp(14), dp(11), dp(14), dp(11));
         return e;
     }

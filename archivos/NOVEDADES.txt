@@ -1,3 +1,7 @@
+## 30
+Ojito para ver la contraseña
+- Todos los campos de contraseña (MEGA, MediaFire, FTP y el secreto de Google Drive) tienen un ojito al final: tócalo para ver lo que escribiste y vuelve a tocarlo para ocultarlo.
+
 ## 29
 MEGA en Bóveda
 - Nuevo en «Nube y red»: MEGA. Entras con tu correo y contraseña (y el código de verificación en dos pasos si lo tienes activado).

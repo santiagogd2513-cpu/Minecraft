@@ -134,4 +134,40 @@ final class Ui {
         if (t <= 0) return "";
         return new java.text.SimpleDateFormat("d MMM yyyy, HH:mm", new java.util.Locale("es")).format(new java.util.Date(t));
     }
+
+    /**
+     * Si el campo es de contraseña, le pone el ojito al final: tocarlo muestra u oculta lo escrito
+     * (para no tener que adivinar si quedó bien).
+     */
+    @android.annotation.SuppressLint("ClickableViewAccessibility")
+    static void passwordEye(android.widget.EditText e) {
+        int type = e.getInputType();
+        int variation = type & android.text.InputType.TYPE_MASK_VARIATION;
+        if (variation != android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD
+                && variation != android.text.InputType.TYPE_NUMBER_VARIATION_PASSWORD) return;
+        Context c = e.getContext();
+        int size = dp(c, 22);
+        boolean[] shown = {false};
+        Runnable paint = () -> {
+            Drawable d = icon(c, shown[0] ? R.drawable.ic_eye_off : R.drawable.ic_eye, shown[0] ? ACCENT : SUB);
+            d.setBounds(0, 0, size, size);
+            e.setCompoundDrawables(null, null, d, null);
+        };
+        e.setCompoundDrawablePadding(dp(c, 10));
+        paint.run();
+        e.setOnTouchListener((v, ev) -> {
+            Drawable d = e.getCompoundDrawables()[2];
+            if (d == null || ev.getAction() != android.view.MotionEvent.ACTION_UP) return false;
+            int zone = e.getWidth() - e.getPaddingRight() - d.getBounds().width() - dp(c, 12);
+            if (ev.getX() < zone) return false;
+            shown[0] = !shown[0];
+            int sel = e.getSelectionEnd();
+            int base = type & ~android.text.InputType.TYPE_MASK_VARIATION;
+            boolean number = (type & android.text.InputType.TYPE_MASK_CLASS) == android.text.InputType.TYPE_CLASS_NUMBER;
+            e.setInputType(shown[0] ? (number ? android.text.InputType.TYPE_CLASS_NUMBER : base | android.text.InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD) : type);
+            if (sel >= 0) e.setSelection(Math.min(sel, e.length()));
+            paint.run();
+            return true;
+        });
+    }
 }

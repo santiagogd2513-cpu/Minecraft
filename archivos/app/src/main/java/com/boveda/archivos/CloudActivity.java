@@ -267,6 +267,7 @@ public class CloudActivity extends Activity implements TransferEngine.Listener {
         e.setSingleLine(true);
         e.setInputType(type);
         e.setBackground(Ui.roundStroke(Ui.SURFACE, dp(16), dp(1), Ui.STROKE));
+        Ui.passwordEye(e);
         e.setPadding(dp(16), dp(13), dp(16), dp(13));
         return e;
     }
