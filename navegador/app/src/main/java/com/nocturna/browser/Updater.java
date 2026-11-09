@@ -362,7 +362,7 @@ final class Updater {
         LinearLayout.LayoutParams gl = new LinearLayout.LayoutParams(-1, -2);
         gl.setMargins(0, px(dp, 10), 0, 0);
         root.addView(go, gl);
-        TextView later = flat(a, dp, L.t("Más tarde"));
+        TextView later = flat(a, dp, "Más tarde");
         later.setPadding(0, px(dp, 14), 0, px(dp, 6));
         later.setOnClickListener(v -> d.dismiss());
         root.addView(later, new LinearLayout.LayoutParams(-1, -2));
