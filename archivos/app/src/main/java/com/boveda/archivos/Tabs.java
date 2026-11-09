@@ -43,6 +43,7 @@ final class Tabs {
         if (p.equals(Paths.ROOT)) return "Memoria interna";
         if (DriveFs.isDrive(p) && p.equals(DriveFs.ROOT)) return "Google Drive";
         if (p.equals(MegaFs.ROOT)) return "MEGA";
+        if (p.equals(OneDriveFs.ROOT)) return "OneDrive";
         return Paths.name(p);
     }
 

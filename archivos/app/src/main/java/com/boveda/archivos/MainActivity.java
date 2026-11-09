@@ -518,6 +518,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         }
         if (DriveFs.isDrive(p)) return new Volume(DriveFs.ROOT, "Google Drive", "Drive", false);
         if (MegaFs.isMega(p)) return new Volume(MegaFs.ROOT, "MEGA", "MEGA", false);
+        if (OneDriveFs.isOneDrive(p)) return new Volume(OneDriveFs.ROOT, "OneDrive", "OneDrive", false);
         Volume best = null;
         for (Volume v : volumes()) if (Paths.under(p, v.path) && (best == null || v.path.length() > best.path.length())) best = v;
         return best;
@@ -699,6 +700,13 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                     gd.connected() ? (gd.email().isEmpty() ? "Conectado" : gd.email()) : "Toca para conectar",
                     v -> openDrive(), v -> {
                         driveMenu();
+                        return true;
+                    }));
+            OneDrive od = OneDrive.get(this);
+            box.addView(netRow("OD", 0xFF0A64D6, 0xFF28A8EA, "OneDrive",
+                    od.connected() ? (od.email().isEmpty() ? "Conectado" : od.email()) : "Toca para conectar",
+                    v -> openOneDrive(), v -> {
+                        oneDriveMenu();
                         return true;
                     }));
             Mega mg = Mega.get(this);
@@ -934,6 +942,80 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                     d.dismiss();
                     open(sv.root());
                 });
+            });
+        }));
+        d.show();
+    }
+
+    // ------------------------------------------------------------------ OneDrive
+
+    private void openOneDrive() {
+        if (OneDrive.get(this).connected()) open(OneDriveFs.ROOT);
+        else showOneDriveSetup();
+    }
+
+    private void oneDriveMenu() {
+        OneDrive od = OneDrive.get(this);
+        if (!od.configured()) {
+            showOneDriveSetup();
+            return;
+        }
+        new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                .setTitle("OneDrive")
+                .setItems(new String[]{"Desconectar la cuenta", "Cambiar el ID de aplicación"}, (d, w) -> {
+                    if (w == 0) od.disconnect();
+                    else od.forgetClient();
+                    showHome();
+                })
+                .show();
+    }
+
+    private void showOneDriveSetup() {
+        OneDrive od = OneDrive.get(this);
+        LinearLayout box = Ui.column(this);
+        box.setPadding(dp(20), dp(8), dp(20), dp(4));
+        EditText id = input("ID de aplicación (cliente)", od.clientId(), android.text.InputType.TYPE_CLASS_TEXT);
+        if (!od.configured()) {
+            TextView guide = Ui.text(this, "Microsoft pide que cada app esté registrada. Se hace una sola vez, gratis:\n\n"
+                    + "1. Entra a entra.microsoft.com (o portal.azure.com) con tu cuenta de Microsoft.\n"
+                    + "2. Busca «Registros de aplicaciones» → «Nuevo registro».\n"
+                    + "3. Nombre: Bóveda. En «Tipos de cuenta compatibles» elige la opción que incluye «cuentas personales de Microsoft».\n"
+                    + "4. En «URI de redirección» elige la plataforma «Cliente público/nativo (móvil y escritorio)» y escribe: http://localhost\n"
+                    + "5. Toca «Registrar» y copia aquí el «Id. de aplicación (cliente)», que se ve así: 1a2b3c4d-…\n\n"
+                    + "No hace falta secreto ni tarjeta para esto. Al conectar, Microsoft te pedirá permiso para que Bóveda vea tus archivos.", 13, Ui.SUB, false);
+            guide.setTextIsSelectable(true);
+            box.addView(guide);
+            box.addView(id, topMargin(dp(12)));
+        } else {
+            box.addView(Ui.text(this, "Se abrirá el navegador para que entres con tu cuenta de Microsoft y le des permiso a Bóveda.", 14, Ui.SUB, false));
+        }
+        ScrollView scroll = new ScrollView(this);
+        scroll.addView(box);
+        AlertDialog d = new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                .setTitle("Conectar OneDrive")
+                .setView(scroll)
+                .setPositiveButton("Conectar", null)
+                .setNegativeButton("Cancelar", null)
+                .create();
+        d.setOnShowListener(x -> d.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+            if (!od.configured()) {
+                String i = id.getText().toString().trim();
+                if (!i.matches("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}")) {
+                    id.setError("Copia el Id. de aplicación completo (8-4-4-4-12 letras y números)");
+                    return;
+                }
+                od.setClient(i);
+            }
+            d.dismiss();
+            Toast.makeText(this, "Entra con tu cuenta de Microsoft en el navegador y vuelve aquí", Toast.LENGTH_LONG).show();
+            od.login(this, err -> {
+                if (err != null) {
+                    new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog).setTitle("No se conectó OneDrive")
+                            .setMessage(err).setPositiveButton("Entendido", null).show();
+                    return;
+                }
+                Toast.makeText(this, "OneDrive conectado", Toast.LENGTH_SHORT).show();
+                open(OneDriveFs.ROOT);
             });
         }));
         d.show();
@@ -1230,7 +1312,10 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                 if (gen != loadGen || !p.equals(path)) return;
                 loading.setVisibility(View.INVISIBLE);
                 if (error instanceof Fs.NeedAccess) {
-                    if (MegaFs.isMega(p)) {
+                    if (OneDriveFs.isOneDrive(p)) {
+                        showHome();
+                        showOneDriveSetup();
+                    } else if (MegaFs.isMega(p)) {
                         showHome();
                         showMegaLogin(null, null);
                     } else if (DriveFs.isDrive(p)) {
@@ -2265,6 +2350,11 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             d.dismiss();
             openMediaFire();
         });
+        settingsRow(col, "OneDrive", OneDrive.get(this).connected() ? "Conectado" : "Conectar", () -> {
+            d.dismiss();
+            if (OneDrive.get(this).connected()) oneDriveMenu();
+            else showOneDriveSetup();
+        });
         settingsRow(col, "MEGA", Mega.get(this).loggedIn() ? Mega.get(this).email() : "Iniciar sesión", () -> {
             d.dismiss();
             if (Mega.get(this).loggedIn()) megaMenu();
@@ -2756,7 +2846,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
     private String countOf(String dir) {
         if (!prefs.showCounts()) return null;
         String c = counts.get(dir);
-        if (c != null || FtpServers.isFtp(dir) || DriveFs.isDrive(dir) || MegaFs.isMega(dir)) return c;
+        if (c != null || FtpServers.isFtp(dir) || DriveFs.isDrive(dir) || MegaFs.isMega(dir) || OneDriveFs.isOneDrive(dir)) return c;
         if (!counting.add(dir)) return null;
         final boolean hidden = prefs.showHidden();
         counter.execute(() -> {

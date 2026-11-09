@@ -17,6 +17,10 @@ final class FsRouter {
                 throw new Fs.NeedAccess(path);
             }
         }
+        if (OneDriveFs.isOneDrive(path)) {
+            if (!OneDrive.get(c).connected()) throw new Fs.NeedAccess(path);
+            return OneDriveFs.get(c);
+        }
         if (MegaFs.isMega(path)) {
             if (!Mega.get(c).loggedIn()) throw new Fs.NeedAccess(path);
             return MegaFs.get(c);

@@ -170,7 +170,7 @@ final class Drive {
     }
 
     /** Google no deja iniciar sesión dentro de navegadores tipo WebView (como Nocturna): se usa Chrome u otro. */
-    private static void openBrowser(Activity a, String url) {
+    static void openBrowser(Activity a, String url) {
         Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
         PackageManager pm = a.getPackageManager();
         String[] preferred = {"com.android.chrome", "com.chrome.beta", "com.sec.android.app.sbrowser", "org.mozilla.firefox",

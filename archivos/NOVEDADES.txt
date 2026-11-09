@@ -1,3 +1,9 @@
+## 32
+OneDrive en Bóveda
+- Nuevo en «Nube y red»: OneDrive. Se registra la app una sola vez en Microsoft (los pasos están en Bóveda) y luego entras con tu cuenta.
+- Tu OneDrive aparece como una carpeta más: entrar a carpetas, abrir, copiar en los dos sentidos, crear carpetas, cambiar nombres y mover. Los archivos grandes se suben por partes.
+- Borrar manda a la papelera de OneDrive, así que se puede recuperar.
+
 ## 31
 MEGA arreglado
 - Ya se puede iniciar sesión en MEGA: antes salía «MEGA está ocupado» porque la verificación anti-robots que pide MEGA al entrar se mandaba mal.
