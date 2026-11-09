@@ -55,7 +55,7 @@ final class Thumbs {
     /** Solo archivos que se pueden leer directamente (no FTP, Drive ni carpetas protegidas). */
     static boolean local(String path) {
         // solo por la ruta: la pantalla no debe esperar al disco (una USB ocupada puede tardar segundos)
-        return path != null && path.startsWith("/") && !FtpServers.isFtp(path) && !DriveFs.isDrive(path) && !MegaFs.isMega(path) && !OneDriveFs.isOneDrive(path) && !Paths.restricted(path);
+        return path != null && path.startsWith("/") && !FtpServers.isFtp(path) && !DriveFs.isDrive(path) && !MegaFs.isMega(path) && !OneDriveFs.isOneDrive(path) && !VaultFs.isVault(path) && !Paths.restricted(path);
     }
 
     private static String key(Entry e) {
@@ -79,8 +79,11 @@ final class Thumbs {
             Bitmap b = null;
             try {
                 File f = new File(e.path);
-                if (!f.canRead()) throw new java.io.IOException();
-                if (kind == IMAGE) b = ThumbnailUtils.createImageThumbnail(f, new Size(px, px), null);
+                if (VaultFs.isVault(e.path)) {
+                    // la Bóveda: la miniatura se arma en la memoria, nunca se guarda en el disco
+                    if (kind == IMAGE) b = vaultImage(app, e.path, px);
+                } else if (!f.canRead()) throw new java.io.IOException();
+                else if (kind == IMAGE) b = ThumbnailUtils.createImageThumbnail(f, new Size(px, px), null);
                 else if (kind == VIDEO) b = ThumbnailUtils.createVideoThumbnail(f, new Size(px, px), null);
                 else if (kind == APK) b = apkIcon(app, e.path, px);
             } catch (Throwable ignored) {
@@ -94,6 +97,30 @@ final class Thumbs {
             final Bitmap bmp = b;
             main.post(() -> done.accept(bmp));
         });
+    }
+
+    /** Al cerrar la Bóveda: que no quede ninguna miniatura de ella en la memoria. */
+    static void clearAll() {
+        cache.evictAll();
+        failed.clear();
+    }
+
+    private static Bitmap vaultImage(Context c, String path, int px) throws java.io.IOException {
+        Fs fs = FsRouter.get(c, path);
+        android.graphics.BitmapFactory.Options o = new android.graphics.BitmapFactory.Options();
+        o.inJustDecodeBounds = true;
+        try (java.io.InputStream in = fs.in(path)) {
+            android.graphics.BitmapFactory.decodeStream(in, null, o);
+        }
+        if (o.outWidth <= 0 || o.outHeight <= 0) return null;
+        int sample = 1;
+        while (Math.min(o.outWidth, o.outHeight) / (sample * 2) >= px) sample *= 2;
+        o = new android.graphics.BitmapFactory.Options();
+        o.inSampleSize = sample;
+        try (java.io.InputStream in = fs.in(path)) {
+            Bitmap full = android.graphics.BitmapFactory.decodeStream(in, null, o);
+            return full == null ? null : ThumbnailUtils.extractThumbnail(full, px, px, ThumbnailUtils.OPTIONS_RECYCLE_INPUT);
+        }
     }
 
     private static Bitmap apkIcon(Context c, String path, int px) {

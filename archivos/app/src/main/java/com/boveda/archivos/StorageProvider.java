@@ -53,6 +53,10 @@ public class StorageProvider extends DocumentsProvider {
     }
 
     private Fs fs(String path) throws FileNotFoundException {
+        // la Bóveda solo la abre Bóveda: ninguna otra app puede pedir sus archivos
+        if ((VaultFs.isVault(path) || Paths.under(path, Vault.DIR)) && android.os.Binder.getCallingUid() != android.os.Process.myUid()) {
+            throw new FileNotFoundException(path);
+        }
         try {
             return FsRouter.get(getContext(), path);
         } catch (Fs.NeedAccess e) {
@@ -119,7 +123,7 @@ public class StorageProvider extends DocumentsProvider {
         MatrixCursor c = new MatrixCursor(projection != null ? projection : DOC_COLS);
         try {
             for (Entry e : fs(parentId).list(parentId)) {
-                if (e.name.endsWith(".boveda-parte")) continue;
+                if (e.name.endsWith(".boveda-parte") || e.path.equals(Vault.DIR)) continue;
                 addRow(c, e);
             }
         } catch (IOException ex) {

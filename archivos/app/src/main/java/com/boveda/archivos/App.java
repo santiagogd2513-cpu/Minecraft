@@ -17,6 +17,7 @@ public class App extends Application {
             }
             if (prev != null) prev.uncaughtException(t, e);
         });
+        Vault.watch(this);
         try {
             ShizukuHelper.init(this);
         } catch (Throwable ignored) {

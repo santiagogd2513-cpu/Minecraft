@@ -663,3 +663,48 @@ No hay otra app para abrir este archivo
 Automático
 Automático (idioma del teléfono)
 Cambiando el idioma…
+La Bóveda
+Bóveda
+Análisis y seguridad
+Carpeta secreta cifrada · toca para crearla
+Abierta · mantén presionado para opciones
+Cerrada · toca para abrir con tu PIN o tu huella
+Lo que guardes aquí queda cifrado con AES-256. Ninguna otra app, ni la galería, ni un computador conectado al celular puede verlo.
+Elige un PIN de 4 a 12 números. ¡No lo olvides! Si lo olvidas, nadie puede recuperar los archivos, ni siquiera nosotros.
+PIN nuevo
+Repite el PIN
+Crear tu Bóveda
+El PIN debe tener al menos 4 números
+Los PIN no coinciden
+Creando tu Bóveda…
+¿Abrir también con la huella?
+Así no tienes que escribir el PIN cada vez. El PIN sigue sirviendo.
+Usar la huella
+Solo el PIN
+Pon tu huella
+Usar el PIN
+Activar la huella
+Listo: la Bóveda también se abre con tu huella
+No se pudo activar la huella
+Abrir la Bóveda
+Demasiados intentos. Espera 
+ segundos
+PIN incorrecto
+Cerrar la Bóveda ahora
+Bóveda cerrada
+Cambiar el PIN
+Dejar de usar la huella
+Ahora la Bóveda se abre solo con el PIN
+Abrir también con la huella
+PIN actual
+PIN cambiado
+Moviendo a la Bóveda…
+Mover a la Bóveda 🔐
+Para ver lo que tiene, sácalo primero de la Bóveda
+Este tipo de archivo solo se puede abrir sacándolo de la Bóveda
+No se pudo crear la carpeta de la Bóveda
+No se pudo guardar la llave de la Bóveda
+No se pudo guardar en la Bóveda
+Archivo dañado o no compatible
+En la Bóveda solo se puede abrir para leer
+No se pudo borrar: 

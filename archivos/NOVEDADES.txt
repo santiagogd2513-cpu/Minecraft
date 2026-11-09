@@ -1,3 +1,12 @@
+## 38
+🔐 La Bóveda: tu carpeta secreta cifrada
+- Nuevo en el inicio, en «Análisis y seguridad»: La Bóveda. La primera vez eliges un PIN de 4 a 12 números y, si quieres, también tu huella.
+- Todo lo que guardas ahí queda cifrado con AES-256, nombres incluidos. Ninguna otra app, ni la galería, ni un computador conectado al celular puede verlo.
+- Para guardar algo: selecciónalo, toca «Más» → «Mover a la Bóveda». Para sacarlo, usa «Mover» como siempre.
+- Las fotos, videos, música, textos y PDF se ven ahí mismo con los visores de Bóveda, sin descifrar nada al disco.
+- Se cierra sola cuando sales de la app. Manteniendo presionada la Bóveda en el inicio puedes cerrarla ya, cambiar el PIN o activar o quitar la huella.
+- Importante: si olvidas el PIN, nadie puede recuperar los archivos.
+
 ## 37
 Aviso de actualización cada vez que abres la app
 - Ahora la app busca una versión nueva cada vez que la abres, y si hay una te muestra el aviso.

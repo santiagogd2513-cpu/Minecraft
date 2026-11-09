@@ -663,3 +663,48 @@
 663|Automático
 664|Automático (idioma do celular)
 665|Mudando o idioma…
+666|O Cofre
+667|Cofre
+668|Análise e segurança
+669|Pasta secreta criptografada · toque para criar
+670|Aberto · mantenha pressionado para opções
+671|Fechado · toque para abrir com seu PIN ou digital
+672|O que você guardar aqui fica criptografado com AES-256. Nenhum outro app, nem a galeria, nem um computador conectado ao celular consegue ver.
+673|Escolha um PIN de 4 a 12 números. Não esqueça! Se esquecer, ninguém consegue recuperar os arquivos, nem nós.
+674|PIN novo
+675|Repita o PIN
+676|Criar seu Cofre
+677|O PIN precisa ter pelo menos 4 números
+678|Os PINs não coincidem
+679|Criando seu Cofre…
+680|Abrir também com a digital?
+681|Assim você não precisa digitar o PIN toda vez. O PIN continua funcionando.
+682|Usar a digital
+683|Só o PIN
+684|Coloque sua digital
+685|Usar o PIN
+686|Ativar a digital
+687|Pronto: o Cofre também abre com sua digital
+688|Não foi possível ativar a digital
+689|Abrir o Cofre
+690|Tentativas demais. Espere 
+691| segundos
+692|PIN incorreto
+693|Fechar o Cofre agora
+694|Cofre fechado
+695|Mudar o PIN
+696|Parar de usar a digital
+697|Agora o Cofre abre só com o PIN
+698|Abrir também com a digital
+699|PIN atual
+700|PIN alterado
+701|Movendo para o Cofre…
+702|Mover para o Cofre 🔐
+703|Para ver o que tem dentro, tire do Cofre primeiro
+704|Este tipo de arquivo só pode ser aberto tirando-o do Cofre
+705|Não foi possível criar a pasta do Cofre
+706|Não foi possível salvar a chave do Cofre
+707|Não foi possível salvar no Cofre
+708|Arquivo danificado ou não compatível
+709|No Cofre só pode ser aberto para leitura
+710|Não foi possível apagar: 

@@ -663,3 +663,48 @@
 663|Automatic
 664|Automatic (phone language)
 665|Changing the language…
+666|The Vault
+667|Vault
+668|Analysis and security
+669|Encrypted secret folder · tap to create it
+670|Open · press and hold for options
+671|Locked · tap to open with your PIN or fingerprint
+672|Whatever you keep here is encrypted with AES-256. No other app, not the gallery, not even a computer connected to the phone can see it.
+673|Choose a PIN of 4 to 12 digits. Don't forget it! If you forget it, nobody can recover the files, not even us.
+674|New PIN
+675|Repeat the PIN
+676|Create your Vault
+677|The PIN must have at least 4 digits
+678|The PINs don't match
+679|Creating your Vault…
+680|Open with your fingerprint too?
+681|That way you don't have to type the PIN every time. The PIN still works.
+682|Use fingerprint
+683|PIN only
+684|Touch the fingerprint sensor
+685|Use PIN
+686|Turn on fingerprint
+687|Done: the Vault also opens with your fingerprint
+688|Couldn't turn on the fingerprint
+689|Open the Vault
+690|Too many attempts. Wait 
+691| seconds
+692|Wrong PIN
+693|Lock the Vault now
+694|Vault locked
+695|Change PIN
+696|Stop using fingerprint
+697|Now the Vault opens with the PIN only
+698|Open with fingerprint too
+699|Current PIN
+700|PIN changed
+701|Moving to the Vault…
+702|Move to the Vault 🔐
+703|To see what's inside, take it out of the Vault first
+704|This type of file can only be opened by taking it out of the Vault
+705|Couldn't create the Vault folder
+706|Couldn't save the Vault key
+707|Couldn't save in the Vault
+708|Damaged or unsupported file
+709|In the Vault it can only be opened for reading
+710|Couldn't delete: 

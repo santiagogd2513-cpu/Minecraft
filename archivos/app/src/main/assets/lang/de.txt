@@ -663,3 +663,48 @@
 663|Automatisch
 664|Automatisch (Sprache des Handys)
 665|Sprache wird geändert…
+666|Der Tresor
+667|Tresor
+668|Analyse und Sicherheit
+669|Verschlüsselter Geheimordner · tippen zum Erstellen
+670|Offen · gedrückt halten für Optionen
+671|Gesperrt · tippen, um mit PIN oder Fingerabdruck zu öffnen
+672|Was du hier ablegst, wird mit AES-256 verschlüsselt. Keine andere App, nicht die Galerie und nicht einmal ein angeschlossener Computer kann es sehen.
+673|Wähle eine PIN mit 4 bis 12 Ziffern. Vergiss sie nicht! Wenn du sie vergisst, kann niemand die Dateien wiederherstellen, nicht einmal wir.
+674|Neue PIN
+675|PIN wiederholen
+676|Deinen Tresor erstellen
+677|Die PIN braucht mindestens 4 Ziffern
+678|Die PINs stimmen nicht überein
+679|Dein Tresor wird erstellt…
+680|Auch mit Fingerabdruck öffnen?
+681|Dann musst du die PIN nicht jedes Mal eingeben. Die PIN funktioniert weiterhin.
+682|Fingerabdruck verwenden
+683|Nur PIN
+684|Lege deinen Finger auf
+685|PIN verwenden
+686|Fingerabdruck aktivieren
+687|Fertig: Der Tresor öffnet sich auch mit deinem Fingerabdruck
+688|Fingerabdruck konnte nicht aktiviert werden
+689|Tresor öffnen
+690|Zu viele Versuche. Warte 
+691| Sekunden
+692|Falsche PIN
+693|Tresor jetzt sperren
+694|Tresor gesperrt
+695|PIN ändern
+696|Fingerabdruck nicht mehr verwenden
+697|Jetzt öffnet sich der Tresor nur mit der PIN
+698|Auch mit Fingerabdruck öffnen
+699|Aktuelle PIN
+700|PIN geändert
+701|Wird in den Tresor verschoben…
+702|In den Tresor verschieben 🔐
+703|Um den Inhalt zu sehen, hol es zuerst aus dem Tresor
+704|Diese Art von Datei lässt sich nur öffnen, wenn du sie aus dem Tresor holst
+705|Tresorordner konnte nicht erstellt werden
+706|Tresorschlüssel konnte nicht gespeichert werden
+707|Konnte nicht im Tresor gespeichert werden
+708|Beschädigte oder nicht unterstützte Datei
+709|Im Tresor kann nur zum Lesen geöffnet werden
+710|Konnte nicht gelöscht werden: 

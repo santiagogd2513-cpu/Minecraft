@@ -663,3 +663,48 @@
 663|Automatique
 664|Automatique (langue du téléphone)
 665|Changement de langue…
+666|Le Coffre
+667|Coffre
+668|Analyse et sécurité
+669|Dossier secret chiffré · touche pour le créer
+670|Ouvert · appui long pour les options
+671|Verrouillé · touche pour ouvrir avec ton PIN ou ton empreinte
+672|Ce que tu ranges ici est chiffré en AES-256. Aucune autre application, ni la galerie, ni même un ordinateur branché au téléphone ne peut le voir.
+673|Choisis un PIN de 4 à 12 chiffres. Ne l’oublie pas ! Si tu l’oublies, personne ne pourra récupérer les fichiers, même pas nous.
+674|Nouveau PIN
+675|Répète le PIN
+676|Créer ton Coffre
+677|Le PIN doit avoir au moins 4 chiffres
+678|Les PIN ne correspondent pas
+679|Création de ton Coffre…
+680|Ouvrir aussi avec l’empreinte ?
+681|Ainsi, tu n’as pas à saisir le PIN à chaque fois. Le PIN fonctionne toujours.
+682|Utiliser l’empreinte
+683|PIN uniquement
+684|Pose ton doigt sur le capteur
+685|Utiliser le PIN
+686|Activer l’empreinte
+687|C’est fait : le Coffre s’ouvre aussi avec ton empreinte
+688|Impossible d’activer l’empreinte
+689|Ouvrir le Coffre
+690|Trop de tentatives. Attends 
+691| secondes
+692|PIN incorrect
+693|Verrouiller le Coffre maintenant
+694|Coffre verrouillé
+695|Changer le PIN
+696|Ne plus utiliser l’empreinte
+697|Le Coffre s’ouvre maintenant uniquement avec le PIN
+698|Ouvrir aussi avec l’empreinte
+699|PIN actuel
+700|PIN changé
+701|Déplacement vers le Coffre…
+702|Déplacer vers le Coffre 🔐
+703|Pour voir son contenu, sors-le d’abord du Coffre
+704|Ce type de fichier ne peut s’ouvrir qu’en le sortant du Coffre
+705|Impossible de créer le dossier du Coffre
+706|Impossible d’enregistrer la clé du Coffre
+707|Impossible d’enregistrer dans le Coffre
+708|Fichier endommagé ou non pris en charge
+709|Dans le Coffre, ouverture en lecture seule uniquement
+710|Impossible de supprimer : 

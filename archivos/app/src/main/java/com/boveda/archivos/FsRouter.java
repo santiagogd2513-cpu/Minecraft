@@ -10,6 +10,10 @@ final class FsRouter {
     private FsRouter() {}
 
     static Fs get(Context c, String path) throws Fs.NeedAccess {
+        if (VaultFs.isVault(path)) {
+            if (!Vault.unlocked()) throw new Fs.NeedAccess(path);
+            return VaultFs.get(c);
+        }
         if (FtpServers.isFtp(path)) {
             try {
                 return FtpServers.get(c).fsFor(path);

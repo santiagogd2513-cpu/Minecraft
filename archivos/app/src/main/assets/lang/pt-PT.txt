@@ -663,3 +663,48 @@
 663|Automático
 664|Automático (idioma do telemóvel)
 665|A mudar o idioma…
+666|O Cofre
+667|Cofre
+668|Análise e segurança
+669|Pasta secreta encriptada · toque para a criar
+670|Aberto · mantenha premido para opções
+671|Fechado · toque para abrir com o seu PIN ou impressão digital
+672|O que guardar aqui fica encriptado com AES-256. Nenhuma outra app, nem a galeria, nem um computador ligado ao telemóvel o consegue ver.
+673|Escolha um PIN de 4 a 12 algarismos. Não se esqueça! Se o esquecer, ninguém consegue recuperar os ficheiros, nem nós.
+674|PIN novo
+675|Repita o PIN
+676|Criar o seu Cofre
+677|O PIN tem de ter pelo menos 4 algarismos
+678|Os PIN não coincidem
+679|A criar o seu Cofre…
+680|Abrir também com a impressão digital?
+681|Assim não tem de escrever o PIN sempre. O PIN continua a funcionar.
+682|Usar a impressão digital
+683|Só o PIN
+684|Coloque o dedo no sensor
+685|Usar o PIN
+686|Ativar a impressão digital
+687|Pronto: o Cofre também abre com a sua impressão digital
+688|Não foi possível ativar a impressão digital
+689|Abrir o Cofre
+690|Demasiadas tentativas. Aguarde 
+691| segundos
+692|PIN incorreto
+693|Fechar o Cofre agora
+694|Cofre fechado
+695|Alterar o PIN
+696|Deixar de usar a impressão digital
+697|Agora o Cofre abre só com o PIN
+698|Abrir também com a impressão digital
+699|PIN atual
+700|PIN alterado
+701|A mover para o Cofre…
+702|Mover para o Cofre 🔐
+703|Para ver o conteúdo, tire-o primeiro do Cofre
+704|Este tipo de ficheiro só pode ser aberto tirando-o do Cofre
+705|Não foi possível criar a pasta do Cofre
+706|Não foi possível guardar a chave do Cofre
+707|Não foi possível guardar no Cofre
+708|Ficheiro danificado ou não compatível
+709|No Cofre só pode ser aberto para leitura
+710|Não foi possível eliminar: 

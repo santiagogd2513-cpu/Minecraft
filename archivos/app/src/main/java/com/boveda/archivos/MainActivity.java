@@ -247,6 +247,8 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             Updater.resume(this);
             Updater.check(this);
         }
+        // la Bóveda se cerró sola mientras estabas en otra app: no se queda mostrando sus archivos
+        if (path != null && VaultFs.isVault(path) && !Vault.unlocked()) showHome();
         engine.addListener(this);
         ShizukuHelper.addListener(shizukuListener);
         updateTransfersBadge();
@@ -517,6 +519,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             }
             return null;
         }
+        if (VaultFs.isVault(p)) return new Volume(VaultFs.ROOT, L.t("La Bóveda"), L.t("Bóveda"), false);
         if (DriveFs.isDrive(p)) return new Volume(DriveFs.ROOT, "Google Drive", "Drive", false);
         if (MegaFs.isMega(p)) return new Volume(MegaFs.ROOT, "MEGA", "MEGA", false);
         if (OneDriveFs.isOneDrive(p)) return new Volume(OneDriveFs.ROOT, "OneDrive", "OneDrive", false);
@@ -726,6 +729,15 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             }
             box.addView(netRow("+", 0xFF2A3346, 0xFF2A3346, L.t("Añadir servidor FTP"), L.t("Xbox 360, PC, NAS, otro celular…"),
                     v -> editFtp(null), null));
+            box.addView(section(L.t("Análisis y seguridad")));
+            box.addView(netRow("🔐", 0xFF7B4DFF, 0xFFB86BFF, L.t("La Bóveda"),
+                    !Vault.exists() ? L.t("Carpeta secreta cifrada · toca para crearla")
+                            : Vault.unlocked() ? L.t("Abierta · mantén presionado para opciones")
+                            : L.t("Cerrada · toca para abrir con tu PIN o tu huella"),
+                    v -> openVault(), v -> {
+                        vaultMenu();
+                        return true;
+                    }));
             box.addView(section("Shizuku"));
             box.addView(shizukuCard());
         }
@@ -1022,6 +1034,327 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         d.show();
     }
 
+    // ------------------------------------------------------------------ la Bóveda (carpeta secreta cifrada)
+
+    private void openVault() {
+        withVault(() -> open(VaultFs.ROOT));
+    }
+
+    /** Hace lo que sigue con la Bóveda abierta: la crea si no existe o pide el PIN o la huella. */
+    private void withVault(Runnable then) {
+        if (Vault.unlocked()) then.run();
+        else if (!Vault.exists()) createVault(then);
+        else unlockVault(then);
+    }
+
+    private EditText pinInput(String hint) {
+        EditText e = input(hint, "", android.text.InputType.TYPE_CLASS_NUMBER | android.text.InputType.TYPE_NUMBER_VARIATION_PASSWORD);
+        e.setFilters(new android.text.InputFilter[]{new android.text.InputFilter.LengthFilter(12)});
+        return e;
+    }
+
+    private void createVault(Runnable then) {
+        LinearLayout box = Ui.column(this);
+        box.setPadding(dp(20), dp(8), dp(20), dp(4));
+        box.addView(Ui.text(this, L.t("Lo que guardes aquí queda cifrado con AES-256. Ninguna otra app, ni la galería, ni un computador conectado al celular puede verlo.")
+                + "\n\n" + L.t("Elige un PIN de 4 a 12 números. ¡No lo olvides! Si lo olvidas, nadie puede recuperar los archivos, ni siquiera nosotros."), 13, Ui.SUB, false));
+        EditText pin = pinInput(L.t("PIN nuevo"));
+        EditText again = pinInput(L.t("Repite el PIN"));
+        box.addView(pin, topMargin(dp(12)));
+        box.addView(again, topMargin(dp(8)));
+        AlertDialog d = new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                .setTitle(L.t("Crear tu Bóveda"))
+                .setView(box)
+                .setPositiveButton(L.t("Crear"), null)
+                .setNegativeButton(L.t("Cancelar"), null)
+                .create();
+        d.setOnShowListener(x -> d.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+            String p = pin.getText().toString();
+            if (p.length() < 4) {
+                pin.setError(L.t("El PIN debe tener al menos 4 números"));
+                return;
+            }
+            if (!p.equals(again.getText().toString())) {
+                again.setError(L.t("Los PIN no coinciden"));
+                return;
+            }
+            d.dismiss();
+            AlertDialog wait = new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                    .setTitle(L.t("Creando tu Bóveda…")).setCancelable(false).show();
+            new Thread(() -> {
+                String err = null;
+                try {
+                    Vault.create(this, p);
+                } catch (Exception e) {
+                    err = e.getMessage() == null ? e.toString() : e.getMessage();
+                }
+                String fe = err;
+                main.post(() -> {
+                    wait.dismiss();
+                    if (fe != null) {
+                        Toast.makeText(this, fe, Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    if (biometricAvailable()) {
+                        new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                                .setTitle(L.t("¿Abrir también con la huella?"))
+                                .setMessage(L.t("Así no tienes que escribir el PIN cada vez. El PIN sigue sirviendo."))
+                                .setPositiveButton(L.t("Usar la huella"), (dd, w) -> enableVaultBiometric(p, then))
+                                .setNegativeButton(L.t("Solo el PIN"), (dd, w) -> then.run())
+                                .setCancelable(false)
+                                .show();
+                    } else {
+                        then.run();
+                    }
+                });
+            }).start();
+        }));
+        d.show();
+    }
+
+    private boolean biometricAvailable() {
+        android.hardware.biometrics.BiometricManager bm = getSystemService(android.hardware.biometrics.BiometricManager.class);
+        if (bm == null) return false;
+        int r = Build.VERSION.SDK_INT >= 30
+                ? bm.canAuthenticate(android.hardware.biometrics.BiometricManager.Authenticators.BIOMETRIC_STRONG)
+                : bm.canAuthenticate();
+        return r == android.hardware.biometrics.BiometricManager.BIOMETRIC_SUCCESS;
+    }
+
+    private void biometricPrompt(String titleText, javax.crypto.Cipher cipher, java.util.function.Consumer<javax.crypto.Cipher> ok, Runnable usePin) {
+        android.hardware.biometrics.BiometricPrompt.Builder b = new android.hardware.biometrics.BiometricPrompt.Builder(this)
+                .setTitle(titleText)
+                .setSubtitle(L.t("Pon tu huella"))
+                .setNegativeButton(L.t("Usar el PIN"), getMainExecutor(), (dd, w) -> usePin.run());
+        if (Build.VERSION.SDK_INT >= 30) b.setAllowedAuthenticators(android.hardware.biometrics.BiometricManager.Authenticators.BIOMETRIC_STRONG);
+        b.build().authenticate(new android.hardware.biometrics.BiometricPrompt.CryptoObject(cipher), new android.os.CancellationSignal(), getMainExecutor(),
+                new android.hardware.biometrics.BiometricPrompt.AuthenticationCallback() {
+                    @Override
+                    public void onAuthenticationSucceeded(android.hardware.biometrics.BiometricPrompt.AuthenticationResult r) {
+                        ok.accept(r.getCryptoObject().getCipher());
+                    }
+
+                    @Override
+                    public void onAuthenticationError(int code, CharSequence msg) {
+                        if (code == android.hardware.biometrics.BiometricPrompt.BIOMETRIC_ERROR_LOCKOUT
+                                || code == android.hardware.biometrics.BiometricPrompt.BIOMETRIC_ERROR_LOCKOUT_PERMANENT) {
+                            Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
+                            usePin.run();
+                        }
+                    }
+                });
+    }
+
+    private void enableVaultBiometric(String pin, Runnable then) {
+        try {
+            javax.crypto.Cipher c = Vault.bioEncryptCipher();
+            biometricPrompt(L.t("Activar la huella"), c, authed -> {
+                try {
+                    if (Vault.enableBiometric(this, authed, pin)) Toast.makeText(this, L.t("Listo: la Bóveda también se abre con tu huella"), Toast.LENGTH_SHORT).show();
+                } catch (Exception e) {
+                    Toast.makeText(this, L.t("No se pudo activar la huella"), Toast.LENGTH_SHORT).show();
+                }
+                if (then != null) then.run();
+            }, () -> {
+                if (then != null) then.run();
+            });
+        } catch (Exception e) {
+            Toast.makeText(this, L.t("No se pudo activar la huella"), Toast.LENGTH_SHORT).show();
+            if (then != null) then.run();
+        }
+    }
+
+    private void unlockVault(Runnable then) {
+        javax.crypto.Cipher c = Vault.biometricOn(this) ? Vault.bioDecryptCipher(this) : null;
+        if (c != null && biometricAvailable()) {
+            biometricPrompt(L.t("Abrir la Bóveda"), c, authed -> {
+                if (Vault.unlockWithBiometric(this, authed)) then.run();
+                else askVaultPin(then);
+            }, () -> askVaultPin(then));
+        } else {
+            askVaultPin(then);
+        }
+    }
+
+    private void askVaultPin(Runnable then) {
+        long wait = Vault.waitSeconds(this);
+        if (wait > 0) {
+            Toast.makeText(this, L.t("Demasiados intentos. Espera ") + wait + L.t(" segundos"), Toast.LENGTH_LONG).show();
+            return;
+        }
+        LinearLayout box = Ui.column(this);
+        box.setPadding(dp(20), dp(8), dp(20), dp(4));
+        EditText pin = pinInput("PIN");
+        box.addView(pin);
+        AlertDialog d = new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                .setTitle(L.t("Abrir la Bóveda"))
+                .setView(box)
+                .setPositiveButton(L.t("Abrir"), null)
+                .setNegativeButton(L.t("Cancelar"), null)
+                .create();
+        d.setOnShowListener(x -> d.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+            String p = pin.getText().toString();
+            if (p.length() < 4) {
+                pin.setError(L.t("El PIN debe tener al menos 4 números"));
+                return;
+            }
+            v.setEnabled(false);
+            new Thread(() -> {
+                boolean ok;
+                try {
+                    ok = Vault.unlockWithPin(this, p);
+                } catch (Exception e) {
+                    ok = false;
+                }
+                boolean fok = ok;
+                main.post(() -> {
+                    v.setEnabled(true);
+                    if (fok) {
+                        d.dismiss();
+                        then.run();
+                        return;
+                    }
+                    long w = Vault.waitSeconds(this);
+                    pin.setText("");
+                    pin.setError(w > 0 ? L.t("Demasiados intentos. Espera ") + w + L.t(" segundos") : L.t("PIN incorrecto"));
+                    if (w > 0) d.dismiss();
+                });
+            }).start();
+        }));
+        d.show();
+        pin.requestFocus();
+        if (d.getWindow() != null) d.getWindow().setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+    }
+
+    private void vaultMenu() {
+        if (!Vault.exists()) {
+            createVault(() -> open(VaultFs.ROOT));
+            return;
+        }
+        List<String> labels = new ArrayList<>();
+        List<Runnable> acts = new ArrayList<>();
+        if (Vault.unlocked()) {
+            labels.add(L.t("Cerrar la Bóveda ahora"));
+            acts.add(() -> {
+                Vault.lock();
+                if (path != null && VaultFs.isVault(path)) showHome();
+                Toast.makeText(this, L.t("Bóveda cerrada"), Toast.LENGTH_SHORT).show();
+            });
+        }
+        labels.add(L.t("Cambiar el PIN"));
+        acts.add(this::changeVaultPin);
+        if (Vault.biometricOn(this)) {
+            labels.add(L.t("Dejar de usar la huella"));
+            acts.add(() -> {
+                Vault.forgetBiometric(this);
+                Toast.makeText(this, L.t("Ahora la Bóveda se abre solo con el PIN"), Toast.LENGTH_SHORT).show();
+            });
+        } else if (biometricAvailable()) {
+            labels.add(L.t("Abrir también con la huella"));
+            acts.add(() -> askPinThen(L.t("Activar la huella"), p -> enableVaultBiometric(p, null)));
+        }
+        new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                .setTitle(L.t("La Bóveda"))
+                .setItems(labels.toArray(new String[0]), (d, w) -> acts.get(w).run())
+                .show();
+    }
+
+    /** Pide el PIN actual, lo revisa y sigue con él. */
+    private void askPinThen(String titleText, java.util.function.Consumer<String> then) {
+        LinearLayout box = Ui.column(this);
+        box.setPadding(dp(20), dp(8), dp(20), dp(4));
+        EditText pin = pinInput(L.t("PIN actual"));
+        box.addView(pin);
+        AlertDialog d = new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                .setTitle(titleText)
+                .setView(box)
+                .setPositiveButton(L.t("Aceptar"), null)
+                .setNegativeButton(L.t("Cancelar"), null)
+                .create();
+        d.setOnShowListener(x -> d.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+            String p = pin.getText().toString();
+            v.setEnabled(false);
+            new Thread(() -> {
+                boolean ok;
+                try {
+                    // revisa el PIN volviendo a guardar la llave con el mismo PIN
+                    ok = Vault.changePin(p, p);
+                } catch (Exception e) {
+                    ok = false;
+                }
+                boolean fok = ok;
+                main.post(() -> {
+                    v.setEnabled(true);
+                    if (!fok) {
+                        pin.setText("");
+                        pin.setError(L.t("PIN incorrecto"));
+                        return;
+                    }
+                    d.dismiss();
+                    then.accept(p);
+                });
+            }).start();
+        }));
+        d.show();
+    }
+
+    private void changeVaultPin() {
+        LinearLayout box = Ui.column(this);
+        box.setPadding(dp(20), dp(8), dp(20), dp(4));
+        EditText old = pinInput(L.t("PIN actual"));
+        EditText pin = pinInput(L.t("PIN nuevo"));
+        EditText again = pinInput(L.t("Repite el PIN"));
+        box.addView(old);
+        box.addView(pin, topMargin(dp(8)));
+        box.addView(again, topMargin(dp(8)));
+        AlertDialog d = new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                .setTitle(L.t("Cambiar el PIN"))
+                .setView(box)
+                .setPositiveButton(L.t("Guardar"), null)
+                .setNegativeButton(L.t("Cancelar"), null)
+                .create();
+        d.setOnShowListener(x -> d.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+            String o = old.getText().toString(), p = pin.getText().toString();
+            if (p.length() < 4) {
+                pin.setError(L.t("El PIN debe tener al menos 4 números"));
+                return;
+            }
+            if (!p.equals(again.getText().toString())) {
+                again.setError(L.t("Los PIN no coinciden"));
+                return;
+            }
+            v.setEnabled(false);
+            new Thread(() -> {
+                boolean ok;
+                try {
+                    ok = Vault.changePin(o, p);
+                } catch (Exception e) {
+                    ok = false;
+                }
+                boolean fok = ok;
+                main.post(() -> {
+                    v.setEnabled(true);
+                    if (!fok) {
+                        old.setText("");
+                        old.setError(L.t("PIN incorrecto"));
+                        return;
+                    }
+                    d.dismiss();
+                    Toast.makeText(this, L.t("PIN cambiado"), Toast.LENGTH_SHORT).show();
+                });
+            }).start();
+        }));
+        d.show();
+    }
+
+    private void moveToVault(List<String> sel) {
+        withVault(() -> {
+            engine.submit(TransferEngine.Kind.MOVE, new ArrayList<>(sel), VaultFs.ROOT, TransferEngine.Conflict.KEEP_BOTH);
+            clearSelection();
+            Toast.makeText(this, L.t("Moviendo a la Bóveda…"), Toast.LENGTH_SHORT).show();
+        });
+    }
+
     // ------------------------------------------------------------------ MEGA
 
     private void openMega() {
@@ -1313,7 +1646,10 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                 if (gen != loadGen || !p.equals(path)) return;
                 loading.setVisibility(View.INVISIBLE);
                 if (error instanceof Fs.NeedAccess) {
-                    if (OneDriveFs.isOneDrive(p)) {
+                    if (VaultFs.isVault(p)) {
+                        showHome();
+                        withVault(() -> open(p));
+                    } else if (OneDriveFs.isOneDrive(p)) {
                         showHome();
                         showOneDriveSetup();
                     } else if (MegaFs.isMega(p)) {
@@ -1335,7 +1671,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                 if (res != null) {
                     boolean hidden = prefs.showHidden();
                     for (Entry e : res) {
-                        if (e.name.endsWith(".boveda-parte")) continue;
+                        if (e.name.endsWith(".boveda-parte") || e.path.equals(Vault.DIR)) continue;
                         if (!hidden && e.hidden()) continue;
                         all.add(e);
                     }
@@ -1854,9 +2190,11 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                     buildChips();
                 });
             } else {
-                labels.add(L.t("Abrir con…"));
-                acts.add(() -> openWith(single, true));
-                if (Archive.supported(single.name)) {
+                if (!VaultFs.isVault(single.path)) {
+                    labels.add(L.t("Abrir con…"));
+                    acts.add(() -> openWith(single, true));
+                }
+                if (Archive.supported(single.name) && !VaultFs.isVault(single.path)) {
                     labels.add(L.t("Ver contenido"));
                     acts.add(() -> {
                         clearSelection();
@@ -1877,20 +2215,27 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                 }
             }
         }
+        boolean inVault = path != null && VaultFs.isVault(path);
         boolean allFiles = true;
         for (String s : sel) for (Entry e : all) if (e.path.equals(s) && e.dir) allFiles = false;
-        if (allFiles) {
+        if (allFiles && !inVault) {
             labels.add(L.t("Compartir"));
             acts.add(() -> share(sel));
         }
-        labels.add(L.t("Subir a MediaFire"));
-        acts.add(() -> {
-            CloudActivity.pendingUpload.clear();
-            CloudActivity.pendingUpload.addAll(sel);
-            clearSelection();
-            Toast.makeText(this, L.t("Elige la carpeta de MediaFire y toca «Subir aquí»"), Toast.LENGTH_LONG).show();
-            openMediaFire();
-        });
+        if (!inVault) {
+            labels.add(L.t("Mover a la Bóveda 🔐"));
+            acts.add(() -> moveToVault(sel));
+        }
+        if (!inVault) {
+            labels.add(L.t("Subir a MediaFire"));
+            acts.add(() -> {
+                CloudActivity.pendingUpload.clear();
+                CloudActivity.pendingUpload.addAll(sel);
+                clearSelection();
+                Toast.makeText(this, L.t("Elige la carpeta de MediaFire y toca «Subir aquí»"), Toast.LENGTH_LONG).show();
+                openMediaFire();
+            });
+        }
         labels.add(L.t("Propiedades"));
         acts.add(() -> properties(sel));
         new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
@@ -2101,6 +2446,16 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
 
     private void openFile(Entry e) {
         // música, video, texto/código y PDF se abren con los visores de Bóveda
+        if (VaultFs.isVault(e.path)) {
+            // lo de la Bóveda solo se abre con los visores de Bóveda: ninguna otra app lo puede leer
+            if (!picker() && Viewers.open(this, e, all)) return;
+            if (Archive.supported(e.name)) {
+                Toast.makeText(this, L.t("Para ver lo que tiene, sácalo primero de la Bóveda"), Toast.LENGTH_LONG).show();
+                return;
+            }
+            Toast.makeText(this, L.t("Este tipo de archivo solo se puede abrir sacándolo de la Bóveda"), Toast.LENGTH_LONG).show();
+            return;
+        }
         if (!picker() && prefs.ownViewers() && Viewers.open(this, e, all)) return;
         openWith(e, false);
     }
@@ -2992,7 +3347,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                         : Ui.size(e.size) + "  ·  " + Ui.date(e.modified));
                 if (tk != Thumbs.NONE) {
                     if (thumb != null) showThumb(h, thumb, tk, e.hidden());
-                    else if (!Thumbs.failedBefore(e) && Thumbs.local(e.path)) {
+                    else if (!Thumbs.failedBefore(e) && (Thumbs.local(e.path) || (VaultFs.isVault(e.path) && tk == Thumbs.IMAGE))) {
                         final String p = e.path;
                         final int kk = tk;
                         final boolean hid = e.hidden();
