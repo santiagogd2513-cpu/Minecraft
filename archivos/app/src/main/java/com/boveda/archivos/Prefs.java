@@ -11,7 +11,7 @@ import java.util.List;
 /** Ajustes, favoritas y ancladas. */
 final class Prefs {
     static final int SORT_NAME = 0, SORT_DATE = 1, SORT_SIZE = 2, SORT_TYPE = 3;
-    static final String[] SORT_NAMES = {"Nombre", "Fecha", "Tamaño", "Tipo"};
+    static final String[] SORT_NAMES = {L.t("Nombre"), L.t("Fecha"), L.t("Tamaño"), L.t("Tipo")};
 
     private final SharedPreferences p;
 
@@ -47,6 +47,8 @@ final class Prefs {
     boolean ownViewers() { return p.getBoolean("own_viewers", true); }
     void setOwnViewers(boolean b) { p.edit().putBoolean("own_viewers", b).apply(); }
 
+    String language() { return p.getString("idioma", "auto"); }
+    void setLanguage(String code) { p.edit().putString("idioma", code).commit(); }
     boolean tabsEnabled() { return p.getBoolean("tabs_on", true); }
     void setTabsEnabled(boolean b) { p.edit().putBoolean("tabs_on", b).apply(); }
     int tabCount() { return Math.max(2, Math.min(Tabs.MAX, p.getInt("tabs_count", 3))); }

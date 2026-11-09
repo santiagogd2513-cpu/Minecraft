@@ -1,0 +1,665 @@
+1|Fil :
+2|Format non pris en charge
+3|Impossible de lire «
+4| » (est-il protégé par mot de passe ?)
+5|Fichier endommagé ou non pris en charge
+6|Lecture du fichier…
+7|Le fichier est trop gros pour être listé
+8|Impossible d’ouvrir :
+9|Vide
+10|Contenu
+11|Tout extraire ici
+12|Extraire vers…
+13|Extraire ici
+14|Extraction vers «
+15|Va dans le dossier de destination et touche « Extraire ici »
+16|Extraction depuis l’archive :
+17|Ouverture :
+18|Introuvable dans l’archive
+19|Aucune application ne peut ouvrir ce fichier
+20|élément
+21|éléments
+22|Connecte-toi pour voir et gérer tes fichiers MediaFire dans Bóveda.
+23|E-mail
+24|Mot de passe
+25|ID d’application (facultatif)
+26|Clé API (facultatif)
+27|Seulement si MediaFire exige ta propre application : crée-la gratuitement sur mediafire.com/developers.
+28|Options avancées
+29|Se connecter
+30|Saisis ton e-mail et ton mot de passe
+31|Connexion…
+32|Échec de la connexion
+33|Compris
+34|🔒 Le mot de passe est enregistré chiffré dans le coffre de clés Android de ce téléphone.
+35|Accueil MediaFire
+36|Se déconnecter
+37|Mes fichiers
+38|Impossible de charger :
+39|Ce dossier est vide
+40|Télécharger
+41|Télécharger vers…
+42|Déplacer
+43|Va dans le dossier MediaFire de destination et touche « Déplacer ici »
+44|Supprimer
+45|Tout
+46|sélectionné
+47|sélectionnés
+48|Envoyer :
+49|élément ici
+50|éléments ici
+51|Envoyer ici
+52|Envoi vers MediaFire…
+53|Déplacer :
+54|Déplacer ici
+55|Annuler
+56|Ouvrir
+57|Télécharger dans « Download »
+58|Télécharger vers…
+59|Partager le lien
+60|Copier le lien
+61|Renommer
+62|Déplacer vers…
+63|Va dans le dossier de destination et touche « Déplacer ici »
+64|Téléchargement vers
+65|… (vérifié à la fin)
+66|Choisis le dossier et touche « Télécharger ici »
+67|Supprimer :
+68|Ils iront dans la corbeille MediaFire (récupérables depuis le site).
+69|Nom
+70|OK
+71|Lien copié
+72|Nouveau dossier
+73|Envoyer des fichiers depuis ce téléphone
+74|Touche un fichier ou appuie longuement pour en choisir plusieurs
+75|Impossible de préparer la connexion :
+76|C’est fait !
+77|Ça n’a pas marché
+78|Google Drive est connecté. Retourne dans Bóveda.
+79|Retourne dans Bóveda et réessaie.
+80|Tu n’as pas donné l’autorisation
+81|Google n’a pas répondu correctement
+82|Le temps pour se connecter est écoulé
+83|Google n’a pas donné d’accès permanent (réessaie)
+84|Google demande de se reconnecter (touche Google Drive sur l’écran d’accueil)
+85|L’ID client ou le secret n’est pas valide
+86|Google a répondu quelque chose d’inattendu (
+87|Connecte Google Drive depuis l’écran d’accueil de Bóveda
+88|Réponse étrange de Google Drive
+89|Google Drive n’a pas accepté l’accès
+90|Google Drive ne le permet pas
+91|N’existe plus dans Google Drive
+92|Plus d’espace dans ton Google Drive
+93|=
+94|N’existe plus dans Google Drive :
+95|Les documents Google (Docs, Sheets, Slides) s’ouvrent sur le Web
+96|Google Drive n’a pas démarré l’envoi
+97|Google Drive n’a pas terminé l’envoi
+98|Dans Google Drive, ouverture en lecture seule uniquement
+99|Ouverture…
+100|Enregistrer
+101|Le fichier dépasse 6 Mo : trop gros pour être modifié sur le téléphone
+102|Ce n’est pas un fichier texte (contient des données binaires)
+103|Impossible d’ouvrir
+104|Ouvrir avec une autre application
+105|Fermer
+106|● Non enregistré  ·
+107|Ligne
+108|, col.
+109| lignes  ·
+110| (Windows)
+111|Enregistrement…
+112|Impossible d’enregistrer
+113|Enregistré ✓
+114|Rechercher…
+115|Rechercher dans le fichier
+116|Suivant
+117|Introuvable : «
+118|Rechercher le suivant : «
+119|Ne pas couper les longues lignes
+120|Adapter les longues lignes à l’écran
+121|Aller au début
+122|Aller à la fin
+123|Enregistrer les modifications ?
+124| » a des modifications non enregistrées.
+125|Abandonner
+126|Accès nécessaire pour ce dossier
+127|L’appareil
+128| n’a pas répondu. Vérifie que l’IP est correcte et que le téléphone est
+129|sur le même Wi-Fi (pas en données mobiles).
+130| a refusé la connexion sur le port
+131|. Le serveur FTP n’est pas allumé (sur la Xbox : ouvre Aurora ou FreeStyle Dash) ou ce n’est pas ce port.
+132|Adresse introuvable : «
+133| ». Écris l’IP exactement comme elle apparaît sur l’appareil, par exemple 192.168.1.20.
+134|Aucune route vers
+135|. Le téléphone et l’appareil doivent être sur le même Wi-Fi.
+136|Le serveur n’a pas salué correctement :
+137|Utilisateur ou mot de passe incorrect (en minuscules, tel quel). Sur Xbox 360 avec Aurora : xboxftp / xboxftp ; avec FreeStyle Dash : xbox / xbox.
+138|Le serveur a fermé la connexion
+139|Le serveur n’accepte plus de connexions (
+140|Le transfert a été interrompu (
+141|N’existe pas ou ne peut pas être utilisé (
+142|Plus d’espace sur le serveur
+143|Nom non autorisé par le serveur
+144|EPSV étrange
+145|Le serveur n’a pas donné d’adresse pour les données
+146|Le serveur ne s’est pas connecté pour envoyer les données
+147| » n’autorise que
+148| connexion
+149| connexions
+150| à la fois : copie d’abord sur le téléphone, puis de là vers le serveur
+151|Le serveur est occupé par un autre transfert
+152|Annulé
+153|Impossible de se connecter à
+154| (êtes-vous sur le même réseau et le serveur FTP est-il allumé ?)
+155|Par FTP, ouverture en lecture seule uniquement
+156|Ce serveur FTP n’est plus enregistré
+157| sur
+158|L’image est trop grande pour la mémoire.
+159|Impossible d’ouvrir cette image.
+160|Essaie « Ouvrir avec une autre application » (en bas).
+161| (animée)
+162|Android ne reconnaît pas ce format (
+163|Nom :
+164|Format :
+165|Taille :
+166| pixels
+167|Poids :
+168|Dossier :
+169|Détails de l’image
+170|Chargement en cours…
+171|Partager l’image
+172|Impossible de partager
+173|Ce n’est pas une image ISO-9660 (peut-être un disque UDF uniquement)
+174|L’ISO n’a pas de volume principal
+175|Impossible de lire ce dossier
+176|Impossible de créer le dossier
+177|Impossible de supprimer :
+178|Impossible de renommer
+179| s’est fermée à cause d’une erreur
+180| s’est fermée à cause d’une erreur interne
+181| ne répondait plus et Android l’a fermée
+182|Android l’a fermée par manque de mémoire
+183|Android l’a fermée car elle consommait trop de ressources
+184|=
+185|Raison :
+186|La dernière fois,
+187|Copie les détails et envoie-les au développeur de l’application pour qu’il corrige le problème.
+188|Copier les détails
+189|Erreur de Bóveda
+190|Copié
+191|Rechercher dans ce dossier
+192|Détaché
+193|Mémoire interne
+194|Carte SD
+195|Bóveda a besoin d’une autorisation
+196|Pour voir et gérer tous tes fichiers, Android exige l’autorisation « Accès à tous les fichiers ».
+197|Sur l’écran suivant, active l’interrupteur de Bóveda et reviens.
+198|Donner l’autorisation
+199|Choisis un dossier
+200|Où l’enregistrer ?
+201|Choisis un fichier
+202|Accès rapide
+203|Téléchargements
+204|Appareil photo (DCIM)
+205|Documents
+206|Musique
+207|Avec accès
+208|Touche pour donner l’accès
+209|Épinglés
+210|Favoris
+211|Appuie longuement sur un dossier et choisis « Favori » pour l’avoir ici.
+212|Cloud et réseau
+213|Touche pour te connecter
+214|Connecté
+215|Touche pour connecter
+216|Ajouter un serveur FTP
+217|Xbox 360, PC, NAS, autre téléphone…
+218|Modifier
+219|Supprimer ce serveur
+220|Nom (ex. : Ma Xbox)
+221|Adresse IP (ex. : 192.168.1.20)
+222|Port
+223|Utilisateur (vide = anonyme)
+224|Mode passif
+225|Mode actif
+226| (touche pour changer)
+227|Mode :
+228|passif → actif
+229|actif → passif
+230|Connexions simultanées :
+231|Encodage :
+232|=
+233|UTF-8 → Latin-1 (anciens serveurs)
+234|=
+235|Saisis l’IP qu’Aurora affiche sur l’écran de la Xbox. Utilisateur et mot de passe : xboxftp (dans FreeStyle Dash : xbox)
+236|Nouveau serveur FTP
+237|Modifier le serveur
+238|Connecter
+239|L’adresse est manquante
+240|Test en cours…
+241|Échec de la connexion
+242|Vérifie l’IP, que le téléphone et l’appareil sont sur le même Wi-Fi et que le serveur FTP est allumé.
+243|Si ça échoue encore, alterne entre mode passif/actif.
+244|Déconnecter le compte
+245|Changer l’ID d’application
+246|ID d’application (client)
+247|Microsoft exige que chaque application soit enregistrée. Ça se fait une seule fois, gratuitement :
+248|1. Va sur entra.microsoft.com (ou portal.azure.com) avec ton compte Microsoft.
+249|2. Cherche « Inscriptions d’applications » → « Nouvelle inscription ».
+250|3. Nom : Bóveda. Dans « Types de comptes pris en charge », choisis l’option qui inclut « comptes Microsoft personnels ».
+251|5. Touche « S’inscrire » et copie ici l’« ID d’application (client) », qui ressemble à ceci : 1a2b3c4d-…
+252|Aucun secret ni carte n’est nécessaire. En te connectant, Microsoft te demandera l’autorisation pour que Bóveda voie tes fichiers.
+253|Le navigateur s’ouvrira pour que tu te connectes avec ton compte Microsoft et donnes l’autorisation à Bóveda.
+254|Connecter OneDrive
+255|Copie l’ID d’application complet (8-4-4-4-12 lettres et chiffres)
+256|Connecte-toi avec ton compte Microsoft dans le navigateur et reviens ici
+257|OneDrive n’a pas été connecté
+258|OneDrive connecté
+259|E-mail MEGA
+260|Code à 6 chiffres
+261|Ton compte a la vérification en deux étapes. Saisis le code de ton application d’authentification.
+262|Connecte-toi avec ton compte MEGA. Le mot de passe n’est pas enregistré : seule la session est gardée, chiffrée sur le téléphone.
+263|Tout est déchiffré ici même, comme dans l’application MEGA.
+264|Vérification MEGA
+265|Se connecter à MEGA
+266|Se connecter
+267|Le mot de passe est manquant
+268|Saisis ton e-mail
+269|Le code a 6 chiffres
+270|Connexion à MEGA…
+271|Préparation des clés. Cela peut prendre quelques secondes.
+272|Échec de la connexion à MEGA
+273|MEGA connecté
+274|Changer l’ID client
+275|ID client (se termine par .apps.googleusercontent.com)
+276|Secret client
+277|Google exige que chaque application soit enregistrée. Ça se fait une seule fois, gratuitement (environ 5 minutes) :
+278|1. Va sur console.cloud.google.com avec ton compte et crée un projet (par exemple « Bóveda »).
+279|2. « API et services » → « Bibliothèque » : cherche « Google Drive API » et active-la.
+280|3. « Écran de consentement OAuth » : type Externe, nom Bóveda et ton e-mail.
+281|Dans « Utilisateurs test », ajoute ton e-mail. Puis touche « Publier l’application » (sinon tu devras te reconnecter chaque semaine).
+282|4. « Identifiants » → « Créer des identifiants » → « ID client OAuth » → type « Application de bureau ».
+283|5. Copie ici l’ID client et le secret.
+284|En te connectant, Google dira « Google n’a pas validé cette application » : c’est ta propre application, touche « Continuer ».
+285|Le navigateur s’ouvrira pour que tu choisisses ton compte Google et donnes l’autorisation à Bóveda.
+286|Connecter Google Drive
+287|Copie l’ID client complet
+288|Le secret est manquant
+289|Choisis ton compte dans le navigateur et reviens ici
+290|Google Drive n’a pas été connecté
+291|Google Drive connecté
+292|Avec Shizuku, Bóveda entre dans Android/data et Android/obb sur n’importe quelle version d’Android, sans root.
+293|Connecter avec Shizuku
+294|Comment activer Shizuku ?
+295|Accepte l’autorisation dans la fenêtre de Shizuku
+296|Activer Shizuku
+297|1. Installe l’application Shizuku (Play Store ou GitHub).
+298|2. Ouvre-la et démarre-la avec « Débogage sans fil » (suis ses étapes ; ni ordinateur ni root nécessaires).
+299|3. Retourne dans Bóveda et touche « Connecter avec Shizuku ».
+300|Shizuku doit être réactivé à chaque redémarrage du téléphone.
+301|Ouvrir le Play Store
+302|Dossier vide
+303|Rien ne correspond à «
+304|Dossier protégé par Android
+305|Depuis Android 11, Android/data et Android/obb sont protégés. Il y a deux façons d’y entrer :
+306|1 · Avec le sélecteur du système
+307|Le sélecteur d’Android s’ouvrira dans le dossier « Android » : entre dans «
+308| », touche « Utiliser ce dossier » et « Autoriser ».
+309|Fonctionne sur Android 11 et 12 (et certains 13). Sur Android 13–14, ça marche parfois avec le dossier d’une seule application.
+310|Donner l’accès à
+311|Donner l’accès au dossier d’une application
+312|2 · Avec Shizuku (tout Android)
+313|Ce téléphone n’a pas de sélecteur de dossiers
+314|Le dossier de quelle application ?
+315|Accès accordé
+316|Android n’a pas enregistré l’autorisation pour ce dossier
+317|Entre dans le dossier et touche « Utiliser ce dossier »
+318|Les fichiers RAR ne sont pas les bienvenus dans Bóveda 🦶
+319|Sélectionner
+320|Retirer
+321|Copier
+322|Compresser
+323|Plus
+324|Donner l’accès à «
+325|Utiliser ce dossier
+326|Nom du fichier
+327|Enregistrer ici
+328|Télécharger :
+329| depuis MediaFire
+330|Télécharger ici
+331|Téléchargement depuis MediaFire…
+332|Extraire :
+333| depuis «
+334|Extraction…
+335|Garder l’écran allumé
+336|L’écran ne s’éteindra pas pendant le travail
+337|L’écran s’éteindra normalement
+338|Copier :
+339|Coller ici
+340|Va dans le dossier de destination et touche « Coller ici »
+341|Impossible de coller un dossier dans lui-même
+342|Ils sont déjà dans ce dossier
+343|Remplacer
+344|Garder les deux (renommer)
+345|Ignorer les doublons
+346| élément existe déjà ici
+347| éléments existent déjà ici
+348|Déplacement…
+349|Copie…
+350|Ils seront supprimés définitivement (pas de corbeille).
+351|Compresser en .zip
+352|Retirer des favoris
+353|Ajouter aux favoris
+354|Détacher
+355|Épingler en haut
+356|Ouvrir avec…
+357|Voir le contenu
+358|Partager
+359|Envoyer vers MediaFire
+360|Choisis le dossier MediaFire et touche « Envoyer ici »
+361|Propriétés
+362|Nom non valide
+363|Il existe déjà quelque chose avec ce nom
+364|Nouveau fichier texte (.txt)
+365|Nouveau PDF
+366|document
+367|Titre (facultatif)
+368|Écris le contenu du PDF (facultatif)
+369|Écris le texte (facultatif)
+370|Nouveau fichier texte
+371|Créer
+372|Impossible de créer :
+373| » créé
+374|Calcul…
+375|Chemin :
+376|Modifié :
+377|Fichiers :
+378|Dossiers :
+379|Ouvrir avec
+380|Saisis un nom valide
+381|Joindre / choisir des fichiers
+382|Ouvrir des documents
+383|Choisir un dossier (émulateurs…)
+384|Ouvrir des dossiers
+385|personne (les applications se ferment) → touche pour tester
+386|=
+387|aucune par défaut → touche et choisis Bóveda + « Toujours »
+388| → touche pour la retirer
+389|Définir Bóveda par défaut
+390|Touche « Ouvrir par défaut » → « Effacer les valeurs par défaut » et reviens
+391|Choisis « Bóveda » et touche « Toujours »
+392|Android n’a pas permis le test
+393|Bóveda est déjà l’application par défaut pour ça
+394|Terminé
+395|Paramètres
+396|Langue et interface
+397|Langue, onglets et écran
+398|Affichage et fichiers
+399|Cachés, tri, miniatures et comptage
+400|Visionneuses
+401|Lecteur, photos, éditeur et PDF
+402|Transferts
+403|Copier, déplacer et la barre de progression
+404|MEGA, OneDrive, Google Drive, MediaFire et FTP
+405|Accès aux dossiers
+406|Shizuku et autorisations pour d’autres applications
+407|Stockage
+408|Fichiers temporaires
+409|À propos
+410|Version et Forja Estudios
+411|Langue
+412|Langue de Bóveda
+413|=
+414|Interface
+415|Écran allumé pendant la copie
+416|Empêche l’écran de s’éteindre pendant un transfert
+417|Affichage
+418|Afficher les fichiers cachés
+419|Ceux qui commencent par un point (.nomedia, .thumbnails…)
+420|Trier par
+421| (décroissant)
+422| (croissant)
+423|Compter les éléments des dossiers
+424|« 3 dossiers · 12 fichiers » sous chaque dossier
+425|Fichiers
+426|Miniatures
+427|Aperçu des photos et vidéos et icône de chaque APK
+428|Icônes d’applications dans Android/data
+429|Affiche l’icône et le nom de l’application à qui appartient chaque dossier
+430|Ouvrir avec les visionneuses de Bóveda
+431|Musique et vidéo avec le lecteur, images avec la visionneuse de photos, texte et code avec l’éditeur et PDF avec la visionneuse. Désactivé : avec d’autres applications
+432|Vérifier chaque copie
+433|Relit chaque fichier copié et le compare à l’original. Plus sûr, un peu plus lent
+434|Barre de progression flottante
+435|Pourcentage, vitesse et temps lors de la copie, du déplacement, de la suppression, de la compression ou de l’envoi
+436|Voir les transferts
+437|Tâches en cours et terminées
+438|Clouds
+439|Connecté
+440|Réseau
+441|Xbox 360, PC, autre téléphone…
+442|Gestionnaire de fichiers par défaut
+443|Que Bóveda ouvre les dossiers et choisisse les fichiers pour d’autres applications
+444|Donner des dossiers à d’autres applications
+445|Émulateurs et applications qui demandent un dossier (Dolphin, Limbo…)
+446|Vider les fichiers temporaires
+447| en cache (aperçus, téléchargements du cloud et du FTP)
+448|Fichiers temporaires effacés
+449|Gestionnaire de fichiers · build
+450|Onglets
+451| onglets · touche pour changer le nombre
+452|Désactivé : une seule vue
+453| onglets
+454|Combien d’onglets ?
+455|⚙  Paramètres
+456|Trier par :
+457|Détacher ce dossier
+458|Épingler ce dossier
+459|Tout sélectionner
+460|Vérifier chaque copie (plus sûr)
+461|Chaque fichier copié est relu et comparé à l’original
+462|Vérification désactivée : copies plus rapides
+463|=
+464|Définir Bóveda comme gestionnaire de fichiers par défaut
+465|Donner des dossiers à d’autres applications (émulateurs…)
+466|Accueil
+467|Quand une application (par exemple un émulateur) te demande de choisir un dossier ou un fichier :\n\n
+468|1. Dans le sélecteur d’Android, ouvre le menu (☰) à gauche.\n
+469|2. Choisis « Bóveda ».\n
+470|3. Entre dans le dossier voulu et touche « Utiliser ce dossier ».\n\n
+471|Avec Bóveda, tu peux donner des dossiers que le sélecteur normal n’autorise pas (la racine, Download) et,
+472|si Bóveda a Shizuku ou l’autorisation, aussi Android/data et Android/obb.
+473|Pour que Bóveda soit ton gestionnaire de fichiers par défaut, la première fois ouvre-le depuis « Ouvrir avec »
+474|et choisis « Toujours ».
+475|Vider
+476|Aucune copie ni aucun déplacement.
+477|Annulation… (ce qui est à moitié fait sera supprimé)
+478|En attente
+479|Terminé ✓
+480|·  vérifié
+481|Erreur :
+482|Onglet
+483| : va dans le dossier et colle
+484|application non installée  ·
+485|Vide
+486| dossier
+487| dossiers
+488| fichier
+489| fichiers
+490|Impossible d’enregistrer la session en toute sécurité
+491|MediaFire n’a pas renvoyé de session
+492|Connecte-toi d’abord à MediaFire
+493|MediaFire n’a pas répondu
+494|Erreur
+495|Erreur de MediaFire
+496|MediaFire a répondu quelque chose d’inattendu (
+497|E-mail ou mot de passe incorrect
+498|La session a expiré
+499|Ce dossier n’existe plus
+500|Ce fichier n’existe plus
+501|Pas assez d’espace sur ton compte
+502| (code
+503|MediaFire n’a pas créé le dossier
+504|MediaFire n’a pas donné de lien de téléchargement pour «
+505|Le fichier a changé pendant l’envoi
+506|MediaFire a refusé l’envoi (résultat
+507|MediaFire n’a pas accepté le fichier (erreur
+508|MediaFire a mis trop de temps à traiter l’envoi
+509|MEGA n’a pas renvoyé de session
+510|Réponse inattendue de MEGA :
+511|MEGA a répondu
+512|Réponse inattendue de MEGA
+513|MEGA est occupé, réessaie plus tard
+514|MEGA a refusé la demande
+515|E-mail ou mot de passe incorrect (ou le fichier n’existe plus)
+516|MEGA n’a pas donné l’autorisation
+517|L’envoi est incomplet
+518|Erreur de chiffrement
+519|La session MEGA est terminée : reconnecte-toi
+520|Le compte MEGA est bloqué
+521|Espace ou quota de transfert MEGA épuisé
+522|Le code de vérification en deux étapes est manquant
+523|MEGA a répondu avec l’erreur
+524|MEGA a demandé une vérification inconnue
+525|Impossible de résoudre la vérification de MEGA
+526|Le dossier principal de MEGA est introuvable
+527|N’existe pas dans MEGA :
+528|MEGA a envoyé
+529| fichiers et dossiers, mais ils n’ont pas pu être lus :
+530| sans clé et
+531| sans nom. Utilisateur :
+532|). Clés de :
+533|. Envoie une capture de ceci à Claude.
+534|C’est un dossier
+535|MEGA n’a pas donné de lien de téléchargement
+536|Le quota de téléchargement de MEGA est épuisé (attends un peu)
+537|MEGA n’a pas démarré l’envoi
+538|MEGA n’a pas terminé l’envoi
+539|MEGA a refusé l’envoi (
+540|Dans MEGA, ouverture en lecture seule uniquement
+541|OneDrive est connecté. Retourne dans Bóveda.
+542|=
+543|Microsoft n’a pas répondu correctement
+544|Microsoft n’a pas donné d’accès permanent (réessaie)
+545|Microsoft demande de se reconnecter (touche OneDrive sur l’écran d’accueil)
+546|Microsoft ne reconnaît pas cet ID d’application
+547|Microsoft a répondu quelque chose d’inattendu (
+548|Connecte OneDrive depuis l’écran d’accueil de Bóveda
+549|Réponse étrange de OneDrive
+550|OneDrive n’a pas accepté l’accès
+551|OneDrive ne le permet pas
+552|N’existe plus dans OneDrive
+553|Il existe déjà quelque chose avec ce nom dans OneDrive
+554|Plus d’espace dans ton OneDrive
+555|=
+556|N’existe plus
+557|OneDrive n’a pas démarré l’envoi
+558|OneDrive a répondu
+559|Dans OneDrive, ouverture en lecture seule uniquement
+560|Impossible d’ouvrir le PDF
+561|Il est peut-être protégé par mot de passe ou endommagé.
+562| page
+563| pages
+564|Page
+565|Lecture impossible ici
+566| » a un format que le téléphone ne peut pas lire
+567| (certains anciens AVI, WMV ou FLV). Tu peux l’ouvrir avec une autre application, comme VLC.
+568|=
+569|=
+570|C’est le dernier du dossier
+571|Date
+572|Taille
+573|Type
+574|Terminé ✓ en
+575| en moyenne
+576| en attente)
+577|En attente…
+578|Enregistrement
+579|Vérification
+580|·  reste
+581|Copie
+582|Déplacement
+583|Suppression
+584|Compression
+585|Extraction
+586|Téléchargement
+587|Envoi
+588|Impossible d’écrire :
+589|Impossible de créer :
+590|Impossible de déplacer
+591|Impossible de chiffrer
+592|Shizuku s’est déconnecté
+593|Shizuku n’est pas actif
+594|Bóveda n’a pas encore l’autorisation
+595|Connexion…
+596|Connecté : accès complet à Android/data et obb
+597|Ouvre Bóveda et donne l’accès à
+598|Nous créons des applications Android et des mods Minecraft de A à Z : des outils utiles,
+599|sombres et légers, sans publicité. Chaque version est testée sur un vrai téléphone avant sa sortie,
+600|et chaque bug est traqué jusqu’à sa correction.
+601|Bóveda · Nocturna · Yunque · Ventoy (non officiel) · Arnis (non officiel) · Arsenal Orbital · Arsenal Atómico
+602|Tests de chaque mise à jour et détection des erreurs
+603|Claude d’Anthropic
+604|Code et correction des erreurs
+605|Mémoire interne
+606|Téléchargement depuis MediaFire :
+607|Envoi vers MediaFire :
+608|Copie :
+609|Déplacement :
+610|Suppression :
+611|Compression :
+612|Extraction :
+613|Pas assez d’espace
+614|Trop de dossiers imbriqués
+615|Impossible de mettre un dossier dans lui-même
+616|Comptage des fichiers
+617|Suppression des originaux
+618|Suppression de l’original :
+619|N’existe plus :
+620|Enregistrement en mémoire (peut prendre du temps)
+621|La taille ne correspond pas en copiant :
+622|Vérification de la copie
+623|Vérification :
+624|Échec de la vérification de
+625|Vérification sur MediaFire
+626|Vérification…
+627|MediaFire a envoyé une page au lieu du fichier
+628|Vérification que tout est bien arrivé
+629|Arrivé incomplet :
+630|Préparation :
+631|Préparation de l’envoi
+632|MediaFire n’a pas accepté les parties du fichier
+633|MediaFire traite le fichier
+634|MediaFire traite
+635|Copies et déplacements
+636|Préparation…
+637| en attente
+638|=
+639|=
+640|pas de connexion
+641| a été mis à jour
+642|Version n°
+643|  ·  tu as la n°
+644|Nouveautés
+645|Améliorations et corrections
+646|Cette version apporte des améliorations et des corrections pour que tout fonctionne mieux.
+647|Le téléchargement se fait ici même et Android te demandera de confirmer l’installation. Rien de tes données ne sera supprimé.
+648|Mettre à jour maintenant
+649|Plus tard
+650|Pas maintenant
+651|« Plus tard » te le rappellera demain. « Pas maintenant » ne te rappellera plus cette version.
+652|Une autorisation, une seule fois
+653|Pour que
+654| puisse installer sa propre mise à jour, active « Autoriser cette source »
+655|sur l’écran suivant et reviens avec la touche Retour.
+656|Impossible d’ouvrir l’autorisation
+657|Téléchargement :
+658|Ouverture du programme d’installation…
+659|Échec de la mise à jour
+660|Vérifie ta connexion Internet et réessaie.
+661|La mise à jour n’a pas été installée
+662|Aucune autre application ne peut ouvrir ce fichier
+663|Automatique
+664|Automatique (langue du téléphone)
+665|Changement de langue…

@@ -33,7 +33,7 @@ public class TransferService extends Service implements TransferEngine.Listener 
     public void onCreate() {
         super.onCreate();
         NotificationManager nm = getSystemService(NotificationManager.class);
-        NotificationChannel ch = new NotificationChannel(CHANNEL, "Copias y movimientos", NotificationManager.IMPORTANCE_LOW);
+        NotificationChannel ch = new NotificationChannel(CHANNEL, L.t("Copias y movimientos"), NotificationManager.IMPORTANCE_LOW);
         ch.setShowBadge(false);
         nm.createNotificationChannel(ch);
         engine = TransferEngine.get(this);
@@ -93,12 +93,12 @@ public class TransferService extends Service implements TransferEngine.Listener 
                 .setOngoing(true)
                 .setOnlyAlertOnce(true)
                 .setContentIntent(open)
-                .addAction(new Notification.Action.Builder(null, "Cancelar", cancel).build());
-        if (cur == null) return b.setContentTitle("Preparando…").build();
+                .addAction(new Notification.Action.Builder(null, L.t("Cancelar"), cancel).build());
+        if (cur == null) return b.setContentTitle(L.t("Preparando…")).build();
         String text = cur.totalBytes > 0
-                ? Ui.size(cur.doneBytes) + " de " + Ui.size(cur.totalBytes) + " · " + Ui.speed(cur.speed)
-                : cur.doneItems + " de " + cur.totalItems;
-        if (waiting > 0) text += " · " + waiting + " en cola";
+                ? Ui.size(cur.doneBytes) + L.t(" de ") + Ui.size(cur.totalBytes) + " · " + Ui.speed(cur.speed)
+                : cur.doneItems + L.t(" de ") + cur.totalItems;
+        if (waiting > 0) text += " · " + waiting + L.t(" en cola");
         return b.setContentTitle(cur.title())
                 .setContentText(text)
                 .setSubText(cur.current)

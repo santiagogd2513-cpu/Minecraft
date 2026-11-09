@@ -32,7 +32,7 @@ final class ShizukuFs implements Fs {
     }
 
     private static IOException io(RemoteException e) {
-        return new IOException("Shizuku se desconectó", e);
+        return new IOException(L.t("Shizuku se desconectó"), e);
     }
 
     @Override
@@ -48,11 +48,11 @@ final class ShizukuFs implements Fs {
                 } catch (RuntimeException | RemoteException old) {
                     if (start > 0) throw old;
                     json = s.list(dir);   // servicio de una versión anterior
-                    if (json == null) throw new IOException("No se puede leer esta carpeta");
+                    if (json == null) throw new IOException(L.t("No se puede leer esta carpeta"));
                     addAll(out, dir, new JSONArray(json));
                     return out;
                 }
-                if (json == null) throw new IOException("No se puede leer esta carpeta");
+                if (json == null) throw new IOException(L.t("No se puede leer esta carpeta"));
                 JSONArray a = new JSONArray(json);
                 addAll(out, dir, a);
                 if (a.length() < page) return out;
@@ -102,7 +102,7 @@ final class ShizukuFs implements Fs {
     @Override
     public void mkdir(String path) throws IOException {
         try {
-            if (!s.mkdirs(path)) throw new IOException("No se pudo crear la carpeta");
+            if (!s.mkdirs(path)) throw new IOException(L.t("No se pudo crear la carpeta"));
         } catch (RemoteException e) {
             throw io(e);
         }
@@ -111,7 +111,7 @@ final class ShizukuFs implements Fs {
     @Override
     public void delete(String path) throws IOException {
         try {
-            if (!s.delete(path)) throw new IOException("No se pudo borrar " + Paths.name(path));
+            if (!s.delete(path)) throw new IOException(L.t("No se pudo borrar ") + Paths.name(path));
         } catch (RemoteException e) {
             throw io(e);
         }
@@ -120,7 +120,7 @@ final class ShizukuFs implements Fs {
     @Override
     public void rename(String from, String to) throws IOException {
         try {
-            if (!s.rename(from, to)) throw new IOException("No se pudo renombrar");
+            if (!s.rename(from, to)) throw new IOException(L.t("No se pudo renombrar"));
         } catch (RemoteException e) {
             throw io(e);
         }

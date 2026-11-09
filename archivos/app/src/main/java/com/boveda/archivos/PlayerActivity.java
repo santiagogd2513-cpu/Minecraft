@@ -198,13 +198,13 @@ public class PlayerActivity extends Activity {
         video.setOnCompletionListener(mp -> next(false));
         video.setOnErrorListener((mp, what, extra) -> {
             new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
-                    .setTitle("No se puede reproducir aquí")
-                    .setMessage("«" + Paths.name(paths[index]) + "» usa un formato que el celular no sabe reproducir"
-                            + " (algunos AVI, WMV o FLV antiguos). Puedes abrirlo con otra app, como VLC.")
-                    .setPositiveButton("Abrir con otra app", (d, w) ->
+                    .setTitle(L.t("No se puede reproducir aquí"))
+                    .setMessage("«" + Paths.name(paths[index]) + L.t("» usa un formato que el celular no sabe reproducir")
+                            + L.t(" (algunos AVI, WMV o FLV antiguos). Puedes abrirlo con otra app, como VLC."))
+                    .setPositiveButton(L.t("Abrir con otra app"), (d, w) ->
                             Viewers.openWithOther(this, paths[index], FileTypes.mime(Paths.name(paths[index]))))
-                    .setNeutralButton("Siguiente", (d, w) -> next(true))
-                    .setNegativeButton("Cerrar", null)
+                    .setNeutralButton(L.t("Siguiente"), (d, w) -> next(true))
+                    .setNegativeButton(L.t("Cerrar"), null)
                     .show();
             return true;
         });
@@ -218,7 +218,7 @@ public class PlayerActivity extends Activity {
     private void load() {
         String p = paths[index];
         title.setText(Paths.name(p));
-        sub.setText((isVideo() ? "Video" : "Audio") + (paths.length > 1 ? "  ·  " + (index + 1) + " de " + paths.length : ""));
+        sub.setText((isVideo() ? L.t("Video") : L.t("Audio")) + (paths.length > 1 ? "  ·  " + (index + 1) + L.t(" de ") + paths.length : ""));
         art.setVisibility(isVideo() ? View.GONE : View.VISIBLE);
         if (!isVideo()) {
             setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
@@ -235,7 +235,7 @@ public class PlayerActivity extends Activity {
             index++;
             load();
         } else if (user) {
-            android.widget.Toast.makeText(this, "Es el último de la carpeta", android.widget.Toast.LENGTH_SHORT).show();
+            android.widget.Toast.makeText(this, L.t("Es el último de la carpeta"), android.widget.Toast.LENGTH_SHORT).show();
         } else {
             updatePlayIcon();
             showControls(true);

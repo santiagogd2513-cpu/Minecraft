@@ -97,24 +97,24 @@ final class FtpClient {
         try {
             ctrl.connect(new InetSocketAddress(host, port), 12000);
         } catch (SocketTimeoutException e) {
-            throw new IOException("El equipo " + host + " no respondió. Revisa que la IP sea la correcta y que el celular "
-                    + "esté en la misma red Wi-Fi (no en datos móviles).");
+            throw new IOException(L.t("El equipo ") + host + L.t(" no respondió. Revisa que la IP sea la correcta y que el celular ")
+                    + L.t("esté en la misma red Wi-Fi (no en datos móviles)."));
         } catch (java.net.ConnectException e) {
-            throw new IOException("El equipo " + host + " rechazó la conexión en el puerto " + port
-                    + ". El servidor FTP no está encendido (en la Xbox: abre Aurora o FreeStyle Dash) o el puerto no es ese.");
+            throw new IOException(L.t("El equipo ") + host + L.t(" rechazó la conexión en el puerto ") + port
+                    + L.t(". El servidor FTP no está encendido (en la Xbox: abre Aurora o FreeStyle Dash) o el puerto no es ese."));
         } catch (java.net.UnknownHostException e) {
-            throw new IOException("No se encontró la dirección «" + host + "». Escribe la IP tal como aparece en el equipo, por ejemplo 192.168.1.20.");
+            throw new IOException(L.t("No se encontró la dirección «") + host + L.t("». Escribe la IP tal como aparece en el equipo, por ejemplo 192.168.1.20."));
         } catch (java.net.NoRouteToHostException e) {
-            throw new IOException("No hay camino hasta " + host + ". El celular y el equipo deben estar en la misma red Wi-Fi.");
+            throw new IOException(L.t("No hay camino hasta ") + host + L.t(". El celular y el equipo deben estar en la misma red Wi-Fi."));
         }
         ctrl.setSoTimeout(30000);
         ctrl.setKeepAlive(true);
         open();
         Reply hello = reply();
-        if (hello.code != 220) throw new FtpException(hello.code, "El servidor no saludó bien: " + hello.text);
+        if (hello.code != 220) throw new FtpException(hello.code, L.t("El servidor no saludó bien: ") + hello.text);
         Reply r = cmd("USER " + (user == null || user.isEmpty() ? "anonymous" : user));
         if (r.code == 331 || r.code == 332) r = cmd("PASS " + (pass == null ? "" : pass));
-        if (r.code != 230 && r.code != 202) throw new FtpException(r.code, r.code == 530 ? "Usuario o contraseña incorrectos (van en minúsculas tal cual). En la Xbox 360 con Aurora son xboxftp / xboxftp; con FreeStyle Dash, xbox / xbox." : r.text);
+        if (r.code != 230 && r.code != 202) throw new FtpException(r.code, r.code == 530 ? L.t("Usuario o contraseña incorrectos (van en minúsculas tal cual). En la Xbox 360 con Aurora son xboxftp / xboxftp; con FreeStyle Dash, xbox / xbox.") : r.text);
         // lo moderno es opcional: servidores viejos (Xbox) no lo tienen
         try {
             Reply feat = cmd("FEAT");
@@ -169,7 +169,7 @@ final class FtpClient {
 
     private Reply reply() throws IOException {
         String line = in.readLine();
-        if (line == null) throw new IOException("El servidor cerró la conexión");
+        if (line == null) throw new IOException(L.t("El servidor cerró la conexión"));
         if (line.length() < 3) return reply();
         int code;
         try {
@@ -237,13 +237,13 @@ final class FtpClient {
         try {
             r = cmd("EPSV");
             Matcher m = Pattern.compile("\\(\\|\\|\\|(\\d+)\\|\\)").matcher(r.text);
-            if (!m.find()) throw new FtpException(500, "EPSV raro");
+            if (!m.find()) throw new FtpException(500, L.t("EPSV raro"));
             dataHost = host;
             dataPort = Integer.parseInt(m.group(1));
         } catch (FtpException e) {
             r = cmd("PASV");
             Matcher m = Pattern.compile("(\\d+),(\\d+),(\\d+),(\\d+),(\\d+),(\\d+)").matcher(r.text);
-            if (!m.find()) throw new FtpException(500, "El servidor no dio dirección para los datos");
+            if (!m.find()) throw new FtpException(500, L.t("El servidor no dio dirección para los datos"));
             dataHost = m.group(1) + "." + m.group(2) + "." + m.group(3) + "." + m.group(4);
             dataPort = Integer.parseInt(m.group(5)) * 256 + Integer.parseInt(m.group(6));
             // servidores detrás de un router a veces dan su IP interna: se usa la del control
@@ -280,7 +280,7 @@ final class FtpClient {
                     s.setSoTimeout(60000);
                     return s;
                 } catch (SocketTimeoutException e) {
-                    throw new IOException("El servidor no se conectó para enviar los datos");
+                    throw new IOException(L.t("El servidor no se conectó para enviar los datos"));
                 } finally {
                     ss.close();
                 }

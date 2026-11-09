@@ -20,7 +20,7 @@ final class LocalFs implements Fs {
         File[] files = new File(dir).listFiles();
         if (files == null) {
             if (Paths.restricted(dir)) throw new NeedAccess(dir);
-            throw new IOException("No se puede leer esta carpeta");
+            throw new IOException(L.t("No se puede leer esta carpeta"));
         }
         List<Entry> out = new ArrayList<>(files.length);
         for (File f : files) out.add(entry(f));
@@ -56,7 +56,7 @@ final class LocalFs implements Fs {
     @Override
     public void mkdir(String path) throws IOException {
         File f = new File(path);
-        if (!f.isDirectory() && !f.mkdirs()) throw new IOException("No se pudo crear la carpeta");
+        if (!f.isDirectory() && !f.mkdirs()) throw new IOException(L.t("No se pudo crear la carpeta"));
     }
 
     @Override
@@ -69,12 +69,12 @@ final class LocalFs implements Fs {
             File[] kids = f.listFiles();
             if (kids != null) for (File k : kids) deleteRec(k);
         }
-        if (f.exists() && !f.delete()) throw new IOException("No se pudo borrar " + f.getName());
+        if (f.exists() && !f.delete()) throw new IOException(L.t("No se pudo borrar ") + f.getName());
     }
 
     @Override
     public void rename(String from, String to) throws IOException {
-        if (!new File(from).renameTo(new File(to))) throw new IOException("No se pudo renombrar");
+        if (!new File(from).renameTo(new File(to))) throw new IOException(L.t("No se pudo renombrar"));
     }
 
     @Override

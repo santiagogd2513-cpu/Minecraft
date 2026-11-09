@@ -70,11 +70,11 @@ final class TransferEngine {
         String title() {
             if (kind == Kind.CLOUD_DOWN) {
                 int n = cloudItems.size();
-                return "Bajando de MediaFire " + (n == 1 ? cloudItems.get(0).name : n + " elementos");
+                return L.t("Bajando de MediaFire ") + (n == 1 ? cloudItems.get(0).name : n + L.t(" elementos"));
             }
             int n = sources.size();
-            String what = n == 1 ? Paths.name(sources.get(0)) : n + " elementos";
-            if (kind == Kind.CLOUD_UP) return "Subiendo a MediaFire " + what;
+            String what = n == 1 ? Paths.name(sources.get(0)) : n + L.t(" elementos");
+            if (kind == Kind.CLOUD_UP) return L.t("Subiendo a MediaFire ") + what;
             return switch (kind) {
                 case COPY -> "Copiando " + what;
                 case MOVE -> "Moviendo " + what;
@@ -232,8 +232,8 @@ final class TransferEngine {
         } catch (Throwable e) {
             // cualquier error (incluso falta de memoria) deja la tarea en error, sin cerrar la app
             j.state = j.cancel ? 4 : 3;
-            j.error = e instanceof OutOfMemoryError ? "Sin memoria suficiente"
-                    : e instanceof StackOverflowError ? "Demasiadas carpetas una dentro de otra"
+            j.error = e instanceof OutOfMemoryError ? L.t("Sin memoria suficiente")
+                    : e instanceof StackOverflowError ? L.t("Demasiadas carpetas una dentro de otra")
                     : e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage();
         }
         j.current = "";
@@ -243,7 +243,7 @@ final class TransferEngine {
 
     private static final class Cancelled extends IOException {
         Cancelled() {
-            super("Cancelado");
+            super(L.t("Cancelado"));
         }
     }
 
@@ -273,7 +273,7 @@ final class TransferEngine {
 
     private void transfer(Job j) throws IOException {
         for (String s : j.sources) {
-            if (Paths.under(j.dest, s)) throw new IOException("No se puede poner una carpeta dentro de sí misma");
+            if (Paths.under(j.dest, s)) throw new IOException(L.t("No se puede poner una carpeta dentro de sí misma"));
         }
         // mover dentro del mismo almacenamiento: instantáneo
         List<String> pending = new ArrayList<>();
@@ -293,7 +293,7 @@ final class TransferEngine {
             pending.addAll(j.sources);
         }
         if (pending.isEmpty()) return;
-        phase(j, "Contando archivos");
+        phase(j, L.t("Contando archivos"));
         for (String s : pending) measure(j, s);
         for (String s : pending) {
             check(j);
@@ -302,8 +302,8 @@ final class TransferEngine {
             copyTree(j, s, target);
             if (j.kind == Kind.MOVE) {
                 // el original se borra solo cuando todo quedó copiado y verificado
-                phase(j, "Borrando los originales");
-                j.current = "Borrando el original de " + Paths.name(s);
+                phase(j, L.t("Borrando los originales"));
+                j.current = L.t("Borrando el original de ") + Paths.name(s);
                 fs(s).delete(s);
             }
         }
@@ -358,7 +358,7 @@ final class TransferEngine {
         check(j);
         Fs sf = fs(src);
         Entry e = sf.stat(src);
-        if (e == null) throw new IOException("Ya no existe: " + Paths.name(src));
+        if (e == null) throw new IOException(L.t("Ya no existe: ") + Paths.name(src));
         Fs df = fs(dst);
         if (e.dir) {
             df.mkdir(dst);
@@ -385,7 +385,7 @@ final class TransferEngine {
 
     private void copyFile(Job j, Fs sf, Entry src, Fs df, String dst) throws IOException {
         j.current = src.name;
-        phase(j, j.kind == Kind.MOVE ? "Moviendo" : "Copiando");
+        phase(j, j.kind == Kind.MOVE ? L.t("Moviendo") : L.t("Copiando"));
         String tmp = Paths.join(Paths.parent(dst), "." + Paths.name(dst) + ".boveda-parte");
         long startBytes = j.doneBytes;
         IOException last = null;
@@ -407,23 +407,23 @@ final class TransferEngine {
                         j.doneBytes += r;
                     }
                     out.flush();
-                    phase(j, "Guardando en la memoria (puede tardar)");
+                    phase(j, L.t("Guardando en la memoria (puede tardar)"));
                     sync(out);
                 }
-                if (written != src.size && src.size > 0) throw new IOException("El tamaño no coincide al copiar " + src.name);
+                if (written != src.size && src.size > 0) throw new IOException(L.t("El tamaño no coincide al copiar ") + src.name);
                 if (prefs.verify()) {
-                    phase(j, "Verificando que se copió bien");
-                    j.current = "Verificando " + src.name;
+                    phase(j, L.t("Verificando que se copió bien"));
+                    j.current = L.t("Verificando ") + src.name;
                     long[] check = checksum(j, df, tmp);
                     if (check[0] != written || check[1] != crc.getValue()) {
-                        throw new IOException("La verificación falló en " + src.name);
+                        throw new IOException(L.t("La verificación falló en ") + src.name);
                     }
                 }
                 Entry existing = df.stat(dst);
                 if (existing != null) df.delete(dst);
                 df.rename(tmp, dst);
                 df.setModified(dst, src.modified);
-                phase(j, j.kind == Kind.MOVE ? "Moviendo" : "Copiando");
+                phase(j, j.kind == Kind.MOVE ? L.t("Moviendo") : L.t("Copiando"));
                 return;
             } catch (Cancelled c) {
                 cleanup(df, tmp);
@@ -537,7 +537,7 @@ final class TransferEngine {
     private void extract(Job j) throws IOException {
         String arch = j.sources.get(0);
         Archive.Type type = Archive.type(Paths.name(arch));
-        if (type == null || Archive.isRar(Paths.name(arch))) throw new IOException("Formato no soportado");
+        if (type == null || Archive.isRar(Paths.name(arch))) throw new IOException(L.t("Formato no soportado"));
         // para ZIP, 7Z e ISO el índice es rápido de leer: así la barra muestra el total real
         if (type == Archive.Type.ZIP || type == Archive.Type.SEVEN_Z || type == Archive.Type.ISO) {
             for (Archive.Item it : Archive.list(app, arch)) {
@@ -599,8 +599,8 @@ final class TransferEngine {
 
     private void cloudDown(Job j) throws IOException {
         MediaFire mf = MediaFire.get(app);
-        phase(j, "Revisando en MediaFire");
-        j.current = "Revisando…";
+        phase(j, L.t("Revisando en MediaFire"));
+        j.current = L.t("Revisando…");
         for (MediaFire.Item it : j.cloudItems) cloudMeasure(j, mf, it);
         Fs df = fs(j.dest);
         mkdirsAbsolute(df, j.dest);
@@ -618,7 +618,7 @@ final class TransferEngine {
         }
         if (df.stat(target) != null) target = uniqueName(df, target);
         j.current = it.name;
-        phase(j, "Descargando");
+        phase(j, L.t("Descargando"));
         String tmp = Paths.join(dir, "." + Paths.name(target) + ".boveda-parte");
         long start = j.doneBytes;
         IOException last = null;
@@ -635,7 +635,7 @@ final class TransferEngine {
                 try (InputStream in = c.getInputStream(); OutputStream out = df.out(tmp)) {
                     if (c.getContentType() != null && c.getContentType().startsWith("text/html") && it.size > 0
                             && !it.name.toLowerCase().endsWith(".html")) {
-                        throw new IOException("MediaFire mandó una página en vez del archivo");
+                        throw new IOException(L.t("MediaFire mandó una página en vez del archivo"));
                     }
                     byte[] buf = new byte[BUF];
                     int r;
@@ -647,16 +647,16 @@ final class TransferEngine {
                         j.doneBytes += r;
                     }
                     out.flush();
-                    phase(j, "Guardando en la memoria (puede tardar)");
+                    phase(j, L.t("Guardando en la memoria (puede tardar)"));
                     sync(out);
                 } finally {
                     c.disconnect();
                 }
-                phase(j, "Verificando que llegó bien");
+                phase(j, L.t("Verificando que llegó bien"));
                 // verificación: tamaño y huella SHA-256 que guarda MediaFire
-                if (it.size > 0 && written != it.size) throw new IOException("Llegó incompleto: " + it.name);
+                if (it.size > 0 && written != it.size) throw new IOException(L.t("Llegó incompleto: ") + it.name);
                 if (it.hash != null && it.hash.length() == 64 && !it.hash.equalsIgnoreCase(MediaFire.hex(sha.digest()))) {
-                    throw new IOException("La verificación falló en " + it.name);
+                    throw new IOException(L.t("La verificación falló en ") + it.name);
                 }
                 df.rename(tmp, target);
                 if (it.created > 0) df.setModified(target, it.created);
@@ -693,8 +693,8 @@ final class TransferEngine {
             for (Entry k : f.list(path)) cloudUpItem(j, mf, k.path, sub);
             return;
         }
-        j.current = "Preparando " + e.name;
-        phase(j, "Preparando la subida");
+        j.current = L.t("Preparando ") + e.name;
+        phase(j, L.t("Preparando la subida"));
         long start = j.doneBytes;
         // huella SHA-256 (MediaFire la pide y con ella comprueba que llegó bien)
         String hash;
@@ -711,7 +711,7 @@ final class TransferEngine {
             throw new IOException(ex);
         }
         j.current = e.name;
-        phase(j, "Subiendo");
+        phase(j, L.t("Subiendo"));
         MediaFire.UploadCheck uc = mf.check(folderKey, e.name, e.size, hash);
         if (uc.hashExists) {
             // MediaFire ya tiene ese contenido: se agrega al instante sin subirlo
@@ -764,10 +764,10 @@ final class TransferEngine {
                 }
             }
             if (key == null) key = uc.resumeKey;
-            if (key == null) throw new IOException("MediaFire no aceptó las partes del archivo");
+            if (key == null) throw new IOException(L.t("MediaFire no aceptó las partes del archivo"));
         }
-        phase(j, "MediaFire está procesando el archivo");
-        j.current = "MediaFire está procesando " + e.name;
+        phase(j, L.t("MediaFire está procesando el archivo"));
+        j.current = L.t("MediaFire está procesando ") + e.name;
         mf.waitUpload(key);
         j.doneBytes = start + e.size;
         j.doneItems++;

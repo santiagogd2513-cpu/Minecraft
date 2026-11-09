@@ -137,7 +137,7 @@ final class Mega {
             } else if (r.has("tsid")) {
                 session = r.getString("tsid");
             } else {
-                throw new IOException("MEGA no devolvió una sesión");
+                throw new IOException(L.t("MEGA no devolvió una sesión"));
             }
             sid = session;
             master = mk;
@@ -147,7 +147,7 @@ final class Mega {
                     .putString("usuario", user).putString("correo", ug.optString("email", email)).apply();
             MegaFs.reset();
         } catch (JSONException e) {
-            throw new IOException("Respuesta inesperada de MEGA: " + e.getMessage());
+            throw new IOException(L.t("Respuesta inesperada de MEGA: ") + e.getMessage());
         }
     }
 
@@ -191,13 +191,13 @@ final class Mega {
             }
             String text = read(code >= 400 ? c.getErrorStream() : c.getInputStream()).trim();
             c.disconnect();
-            if (code >= 400) throw new IOException("MEGA respondió " + code);
+            if (code >= 400) throw new IOException(L.t("MEGA respondió ") + code);
             Object r;
             try {
                 Object top = new org.json.JSONTokener(text).nextValue();
                 r = top instanceof JSONArray ? ((JSONArray) top).opt(0) : top;
             } catch (JSONException e) {
-                throw new IOException("Respuesta inesperada de MEGA");
+                throw new IOException(L.t("Respuesta inesperada de MEGA"));
             }
             if (r instanceof Number && ((Number) r).intValue() < 0) {
                 int e = ((Number) r).intValue();
@@ -213,7 +213,7 @@ final class Mega {
             }
             return r;
         }
-        throw new IOException("MEGA está ocupado, inténtalo en un rato");
+        throw new IOException(L.t("MEGA está ocupado, inténtalo en un rato"));
     }
 
     private static void sleep(int attempt) {
@@ -234,7 +234,7 @@ final class Mega {
             case -16: return "La cuenta de MEGA está bloqueada";
             case -17: return "Se acabó el espacio o la cuota de transferencia de MEGA";
             case -26: return "Falta el código de verificación en dos pasos";
-            default: return "MEGA respondió con el error " + code;
+            default: return L.t("MEGA respondió con el error ") + code;
         }
     }
 
@@ -252,7 +252,7 @@ final class Mega {
 
     static String solveHashcash(String header) throws IOException {
         String[] p = header.split(":");
-        if (p.length < 4 || !p[0].equals("1")) throw new IOException("MEGA pidió una verificación desconocida");
+        if (p.length < 4 || !p[0].equals("1")) throw new IOException(L.t("MEGA pidió una verificación desconocida"));
         int e = Integer.parseInt(p[1]);
         long threshold = ((long) (((e & 63) << 1) + 1)) << ((e >> 6) * 7 + 3);
         byte[] token = b64d(p[3]);
@@ -272,7 +272,7 @@ final class Mega {
         } catch (Exception ex) {
             throw new IOException(ex);
         }
-        throw new IOException("No se pudo resolver la verificación de MEGA");
+        throw new IOException(L.t("No se pudo resolver la verificación de MEGA"));
     }
 
     // ------------------------------------------------------------------ cifrado

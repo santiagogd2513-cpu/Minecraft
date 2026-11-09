@@ -56,7 +56,7 @@ public class StorageProvider extends DocumentsProvider {
         try {
             return FsRouter.get(getContext(), path);
         } catch (Fs.NeedAccess e) {
-            throw new FileNotFoundException("Abre Bóveda y da acceso a " + path);
+            throw new FileNotFoundException(L.t("Abre Bóveda y da acceso a ") + path);
         }
     }
 
@@ -80,7 +80,7 @@ public class StorageProvider extends DocumentsProvider {
             r.add(Root.COLUMN_ROOT_ID, path);
             r.add(Root.COLUMN_DOCUMENT_ID, path);
             r.add(Root.COLUMN_TITLE, "Bóveda");
-            r.add(Root.COLUMN_SUMMARY, v.isPrimary() ? "Almacenamiento interno" : v.getDescription(getContext()));
+            r.add(Root.COLUMN_SUMMARY, v.isPrimary() ? L.t("Almacenamiento interno") : v.getDescription(getContext()));
             r.add(Root.COLUMN_FLAGS, Root.FLAG_SUPPORTS_CREATE | Root.FLAG_SUPPORTS_IS_CHILD | Root.FLAG_LOCAL_ONLY);
             r.add(Root.COLUMN_ICON, R.mipmap.ic_launcher);
             r.add(Root.COLUMN_AVAILABLE_BYTES, dir.getUsableSpace());

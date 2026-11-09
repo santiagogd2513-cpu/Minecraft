@@ -1,3 +1,8 @@
+## 36
+Bóveda habla 11 idiomas
+- Nuevo en Ajustes → Idioma e interfaz → «Idioma»: español, English (US), português (Brasil), português (Portugal), Deutsch, français, русский, 中文（繁體）, 中文（简体）, 日本語 y 한국어.
+- «Automático» usa el idioma del teléfono. Al cambiarlo, Bóveda se reinicia sola en el idioma nuevo.
+
 ## 35
 Ajustes por categorías y pestañas a tu gusto
 - Los ajustes ahora están ordenados en categorías: Idioma e interfaz, Vista y archivos, Visores, Transferencias, Nube y red, Acceso a carpetas, Almacenamiento y Acerca de.

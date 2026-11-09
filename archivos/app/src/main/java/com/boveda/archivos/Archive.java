@@ -199,7 +199,7 @@ final class Archive {
     private static void walk(Context c, String path, Visitor v, boolean withData) throws IOException {
         String name = Paths.name(path);
         Type t = type(name);
-        if (t == null || isRar(name)) throw new IOException("Formato no soportado");
+        if (t == null || isRar(name)) throw new IOException(L.t("Formato no soportado"));
         switch (t) {
             case ZIP -> {
                 try (Channel ch = new Channel(c, path); ZipFile zf = openZip(ch)) {
@@ -211,7 +211,7 @@ final class Archive {
                             if (!v.entry(it, null)) return;
                             continue;
                         }
-                        if (!zf.canReadEntryData(e)) throw new IOException("No se puede leer «" + it.name + "» (¿tiene contraseña?)");
+                        if (!zf.canReadEntryData(e)) throw new IOException(L.t("No se puede leer «") + it.name + L.t("» (¿tiene contraseña?)"));
                         try (InputStream in = zf.getInputStream(e)) {
                             if (!v.entry(it, in)) return;
                         }
@@ -290,7 +290,7 @@ final class Archive {
                     try {
                         ais = new ArchiveStreamFactory().createArchiveInputStream(fmt, new BufferedInputStream(raw, 1 << 20));
                     } catch (org.apache.commons.compress.archivers.ArchiveException ex) {
-                        throw new IOException("Archivo dañado o no soportado", ex);
+                        throw new IOException(L.t("Archivo dañado o no soportado"), ex);
                     }
                     try (ArchiveInputStream<?> a = ais) {
                         ArchiveEntry e;

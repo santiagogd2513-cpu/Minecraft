@@ -141,7 +141,7 @@ final class MegaFs implements Fs {
             trashHandle = trash;
             loadedAt = System.currentTimeMillis();
         } catch (JSONException e) {
-            throw new IOException("Respuesta inesperada de MEGA");
+            throw new IOException(L.t("Respuesta inesperada de MEGA"));
         }
     }
 
@@ -186,7 +186,7 @@ final class MegaFs implements Fs {
     /** El nodo de una ruta, o null si no existe. */
     private synchronized Node node(String path) throws IOException {
         load(false);
-        if (rootHandle == null) throw new IOException("No se encontró la carpeta principal de MEGA");
+        if (rootHandle == null) throw new IOException(L.t("No se encontró la carpeta principal de MEGA"));
         Node cur = nodes.get(rootHandle);
         if (path.equals(ROOT)) return cur;
         for (String part : path.substring(ROOT.length() + 1).split("/")) {
@@ -201,7 +201,7 @@ final class MegaFs implements Fs {
 
     private Node need(String path) throws IOException {
         Node n = node(path);
-        if (n == null) throw new IOException("No existe en MEGA: " + Paths.name(path));
+        if (n == null) throw new IOException(L.t("No existe en MEGA: ") + Paths.name(path));
         return n;
     }
 
@@ -214,9 +214,9 @@ final class MegaFs implements Fs {
         if (dir.equals(ROOT) && d.kids.isEmpty() && seen > 0) {
             // llegó la lista pero no se pudo leer nada: se muestra un diagnóstico (sin datos secretos)
             String u = mega.user();
-            throw new IOException("MEGA mandó " + seen + " archivos y carpetas, pero no se pudieron leer: " + noKey + " sin llave y "
-                    + noName + " sin nombre. Usuario: " + (u.length() > 4 ? u.substring(0, 4) : u) + "(" + u.length() + "). Llaves de: "
-                    + sampleOwners + ". Mándale una captura de esto a Claude.");
+            throw new IOException(L.t("MEGA mandó ") + seen + L.t(" archivos y carpetas, pero no se pudieron leer: ") + noKey + L.t(" sin llave y ")
+                    + noName + L.t(" sin nombre. Usuario: ") + (u.length() > 4 ? u.substring(0, 4) : u) + "(" + u.length() + L.t("). Llaves de: ")
+                    + sampleOwners + L.t(". Mándale una captura de esto a Claude."));
         }
         List<Entry> out = new ArrayList<>();
         for (Node k : d.kids) out.add(new Entry(Paths.join(dir, k.name), k.name, k.dir, k.dir ? 0 : k.size, k.ts));
@@ -233,18 +233,18 @@ final class MegaFs implements Fs {
     @Override
     public InputStream in(String path) throws IOException {
         Node n = need(path);
-        if (n.dir) throw new IOException("Es una carpeta");
+        if (n.dir) throw new IOException(L.t("Es una carpeta"));
         try {
             JSONObject r = (JSONObject) mega.api(new JSONObject().put("a", "g").put("g", 1).put("ssl", 2).put("n", n.h));
             String url = r.optString("g");
-            if (url.isEmpty()) throw new IOException("MEGA no dio el enlace de descarga");
+            if (url.isEmpty()) throw new IOException(L.t("MEGA no dio el enlace de descarga"));
             HttpURLConnection c = (HttpURLConnection) new URL(url).openConnection();
             c.setConnectTimeout(20000);
             c.setReadTimeout(120000);
             if (c.getResponseCode() >= 400) {
                 int code = c.getResponseCode();
                 c.disconnect();
-                throw new IOException(code == 509 ? "Se acabó la cuota de descarga de MEGA (espera un rato)" : "MEGA respondió " + code);
+                throw new IOException(code == 509 ? L.t("Se acabó la cuota de descarga de MEGA (espera un rato)") : L.t("MEGA respondió ") + code);
             }
             Cipher dec = Mega.ctr(n.aesKey(), n.nonce(), 0);
             return new CipherInputStream(c.getInputStream(), dec);
@@ -297,7 +297,7 @@ final class MegaFs implements Fs {
         try {
             JSONObject u = (JSONObject) mega.api(new JSONObject().put("a", "u").put("s", size).put("ssl", 2));
             String url = u.optString("p");
-            if (url.isEmpty()) throw new IOException("MEGA no abrió la subida");
+            if (url.isEmpty()) throw new IOException(L.t("MEGA no abrió la subida"));
             Cipher enc = Mega.ctr(key, nonce, 0);
             Cipher block = Cipher.getInstance("AES/ECB/NoPadding");
             block.init(Cipher.ENCRYPT_MODE, new javax.crypto.spec.SecretKeySpec(key, "AES"));
@@ -313,7 +313,7 @@ final class MegaFs implements Fs {
                     int got = 0;
                     while (got < len) {
                         int r = in.read(plain, got, len - got);
-                        if (r < 0) throw new IOException("El archivo cambió mientras se subía");
+                        if (r < 0) throw new IOException(L.t("El archivo cambió mientras se subía"));
                         got += r;
                     }
                     // MAC del pedazo (CBC-MAC con el nonce repetido) y MAC del archivo
@@ -333,7 +333,7 @@ final class MegaFs implements Fs {
                 } while (pos < size);
             }
             if (handle == null || handle.isEmpty() || handle.startsWith("-")) {
-                throw handle != null && handle.startsWith("-") ? new Mega.ApiError(Integer.parseInt(handle.trim())) : new IOException("MEGA no terminó la subida");
+                throw handle != null && handle.startsWith("-") ? new Mega.ApiError(Integer.parseInt(handle.trim())) : new IOException(L.t("MEGA no terminó la subida"));
             }
             int[] m = Mega.toA32(fileMac);
             int meta0 = m[0] ^ m[1], meta1 = m[2] ^ m[3];
@@ -371,8 +371,8 @@ final class MegaFs implements Fs {
                 int code = c.getResponseCode();
                 String body = Mega.read(code >= 400 ? c.getErrorStream() : c.getInputStream()).trim();
                 c.disconnect();
-                if (code >= 500) throw new IOException("MEGA respondió " + code);
-                if (code >= 400) throw new IOException("MEGA rechazó la subida (" + code + ")");
+                if (code >= 500) throw new IOException(L.t("MEGA respondió ") + code);
+                if (code >= 400) throw new IOException(L.t("MEGA rechazó la subida (") + code + ")");
                 return body;
             } catch (IOException e) {
                 last = e;
@@ -387,7 +387,7 @@ final class MegaFs implements Fs {
 
     @Override
     public ParcelFileDescriptor pfd(String path, String mode) throws IOException {
-        if (mode.contains("w")) throw new IOException("En MEGA solo se puede abrir para leer");
+        if (mode.contains("w")) throw new IOException(L.t("En MEGA solo se puede abrir para leer"));
         //noinspection ResultOfMethodCallIgnored
         cacheDir.mkdirs();
         Node n = need(path);

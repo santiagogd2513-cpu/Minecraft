@@ -38,7 +38,7 @@ interface Fs {
         final String path;
 
         NeedAccess(String path) {
-            super("Se necesita acceso para entrar aquí");
+            super(L.t("Se necesita acceso para entrar aquí"));
             this.path = path;
         }
     }

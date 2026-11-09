@@ -169,7 +169,7 @@ public class ImageActivity extends Activity {
         String path = paths[index];
         int gen = ++generation;
         title.setText(Paths.name(path));
-        sub.setText(paths.length > 1 ? (index + 1) + " de " + paths.length : "");
+        sub.setText(paths.length > 1 ? (index + 1) + L.t(" de ") + paths.length : "");
         spin.setVisibility(View.VISIBLE);
         error.setVisibility(View.GONE);
         view.setImage(null);
@@ -198,9 +198,9 @@ public class ImageActivity extends Activity {
                     svg.loadDataWithBaseURL(null, (String) r, "text/html", "utf-8", null);
                 } else {
                     Throwable t = (Throwable) r;
-                    String msg = t instanceof OutOfMemoryError ? "La imagen es demasiado grande para la memoria."
+                    String msg = t instanceof OutOfMemoryError ? L.t("La imagen es demasiado grande para la memoria.")
                             : t.getMessage() == null ? t.toString() : t.getMessage();
-                    error.setText("No se pudo abrir esta imagen.\n\n" + msg + "\n\nPrueba con «Abrir con otra app» (abajo).");
+                    error.setText(L.t("No se pudo abrir esta imagen.\n\n") + msg + L.t("\n\nPrueba con «Abrir con otra app» (abajo)."));
                     error.setVisibility(View.VISIBLE);
                 }
             });
@@ -254,14 +254,14 @@ public class ImageActivity extends Activity {
                 dec.setAllocator(ImageDecoder.ALLOCATOR_SOFTWARE);
             });
             String fmt = mime[0] == null ? ext.toUpperCase(Locale.ROOT) : mime[0].replace("image/", "").toUpperCase(Locale.ROOT);
-            if (d instanceof android.graphics.drawable.AnimatedImageDrawable) fmt += " (animada)";
+            if (d instanceof android.graphics.drawable.AnimatedImageDrawable) fmt += L.t(" (animada)");
             return new Decoded(d, details(path, fmt, dims[0], dims[1], size));
         } catch (Exception e) {
             // último intento con el decodificador viejo
             if (data == null) data = read(path);
             BitmapFactory.Options o = new BitmapFactory.Options();
             Bitmap bm = BitmapFactory.decodeByteArray(data, 0, data.length, o);
-            if (bm == null) throw new Exception("Android no reconoce este formato (" + ext.toUpperCase(Locale.ROOT) + ").");
+            if (bm == null) throw new Exception(L.t("Android no reconoce este formato (") + ext.toUpperCase(Locale.ROOT) + ").");
             return new Decoded(new BitmapDrawable(getResources(), bm), details(path, ext.toUpperCase(Locale.ROOT), bm.getWidth(), bm.getHeight(), data.length));
         }
     }
@@ -274,22 +274,22 @@ public class ImageActivity extends Activity {
 
     private String details(String path, String format, int w, int h, long size) {
         StringBuilder s = new StringBuilder();
-        s.append("Nombre: ").append(Paths.name(path)).append('\n');
-        s.append("Formato: ").append(format).append('\n');
+        s.append(L.t("Nombre: ")).append(Paths.name(path)).append('\n');
+        s.append(L.t("Formato: ")).append(format).append('\n');
         if (w > 0 && h > 0) {
-            s.append("Tamaño: ").append(w).append(" × ").append(h).append(" píxeles");
+            s.append(L.t("Tamaño: ")).append(w).append(" × ").append(h).append(L.t(" píxeles"));
             s.append(String.format(Locale.ROOT, " (%.1f MP)", w * (double) h / 1e6)).append('\n');
         }
-        if (size >= 0) s.append("Peso: ").append(Ui.size(size)).append('\n');
-        s.append("Carpeta: ").append(Paths.parent(path));
+        if (size >= 0) s.append(L.t("Peso: ")).append(Ui.size(size)).append('\n');
+        s.append(L.t("Carpeta: ")).append(Paths.parent(path));
         return s.toString();
     }
 
     private void showInfo() {
         new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
-                .setTitle("Datos de la imagen")
-                .setMessage(info.isEmpty() ? "Todavía cargando…" : info)
-                .setPositiveButton("Cerrar", null)
+                .setTitle(L.t("Datos de la imagen"))
+                .setMessage(info.isEmpty() ? L.t("Todavía cargando…") : info)
+                .setPositiveButton(L.t("Cerrar"), null)
                 .show();
     }
 
@@ -299,9 +299,9 @@ public class ImageActivity extends Activity {
             i.setType("image/*");
             i.putExtra(Intent.EXTRA_STREAM, StorageProvider.documentUri(this, paths[index]));
             i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-            startActivity(Intent.createChooser(i, "Compartir imagen"));
+            startActivity(Intent.createChooser(i, L.t("Compartir imagen")));
         } catch (Exception e) {
-            android.widget.Toast.makeText(this, "No se pudo compartir", android.widget.Toast.LENGTH_SHORT).show();
+            android.widget.Toast.makeText(this, L.t("No se pudo compartir"), android.widget.Toast.LENGTH_SHORT).show();
         }
     }
 

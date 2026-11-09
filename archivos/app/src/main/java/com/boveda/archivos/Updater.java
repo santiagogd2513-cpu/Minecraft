@@ -160,7 +160,7 @@ final class Updater {
                 size = -1;
             }
         }
-        if (!reached) throw new Exception("sin conexión");
+        if (!reached) throw new Exception(L.t("sin conexión"));
         if (best <= current) return null;
         String notes = "";
         try {
@@ -259,19 +259,19 @@ final class Updater {
         LinearLayout.LayoutParams bl = new LinearLayout.LayoutParams(-2, -2);
         root.addView(badge, bl);
         TextView title = new TextView(a);
-        title.setText(APP + " se actualizó");
+        title.setText(APP + L.t(" se actualizó"));
         title.setTextColor(Ui.TEXT);
         title.setTextSize(28);
         title.setTypeface(Typeface.DEFAULT_BOLD);
         title.setPadding(0, px(dp, 14), 0, px(dp, 4));
         root.addView(title);
         TextView sub = new TextView(a);
-        sub.setText("Versión #" + r.number + "  ·  tienes la #" + current + (r.size > 0 ? "  ·  " + size(r.size) : ""));
+        sub.setText(L.t("Versión #") + r.number + L.t("  ·  tienes la #") + current + (r.size > 0 ? "  ·  " + size(r.size) : ""));
         sub.setTextColor(Ui.SUB);
         sub.setTextSize(14);
         root.addView(sub);
         TextView h = new TextView(a);
-        h.setText("Novedades");
+        h.setText(L.t("Novedades"));
         h.setTextColor(Ui.ACCENT2);
         h.setTextSize(13);
         h.setTypeface(Typeface.DEFAULT_BOLD);
@@ -285,14 +285,14 @@ final class Updater {
         list.setOrientation(LinearLayout.VERTICAL);
         scroll.addView(list);
         List<Section> secs = sections(r.notes, current);
-        if (secs.isEmpty()) secs.add(new Section(r.number, "Mejoras y arreglos", List.of("Esta versión trae mejoras y arreglos para que todo funcione mejor.")));
+        if (secs.isEmpty()) secs.add(new Section(r.number, L.t("Mejoras y arreglos"), List.of(L.t("Esta versión trae mejoras y arreglos para que todo funcione mejor."))));
         for (Section s : secs) {
             LinearLayout card = new LinearLayout(a);
             card.setOrientation(LinearLayout.VERTICAL);
             card.setPadding(px(dp, 16), px(dp, 14), px(dp, 16), px(dp, 14));
             card.setBackground(Ui.round(Ui.SURFACE2, px(dp, 16)));
             TextView ct = new TextView(a);
-            ct.setText((s.number == Integer.MAX_VALUE ? "" : "#" + s.number + "  ") + (s.title == null ? "Novedades" : s.title));
+            ct.setText((s.number == Integer.MAX_VALUE ? "" : "#" + s.number + "  ") + (s.title == null ? L.t("Novedades") : s.title));
             ct.setTextColor(Ui.TEXT);
             ct.setTextSize(16.5f);
             ct.setTypeface(Typeface.DEFAULT_BOLD);
@@ -319,7 +319,7 @@ final class Updater {
             list.addView(card, cl);
         }
         TextView note = new TextView(a);
-        note.setText("Se descarga desde aquí mismo y Android te pide confirmar la instalación. No se borra nada de lo tuyo.");
+        note.setText(L.t("Se descarga desde aquí mismo y Android te pide confirmar la instalación. No se borra nada de lo tuyo."));
         note.setTextColor(Ui.SUB);
         note.setTextSize(12.5f);
         note.setPadding(px(dp, 4), px(dp, 4), px(dp, 4), px(dp, 8));
@@ -328,7 +328,7 @@ final class Updater {
 
         // botones
         TextView go = new TextView(a);
-        go.setText("Actualizar ahora");
+        go.setText(L.t("Actualizar ahora"));
         go.setTextColor(0xFF06101F);
         go.setTextSize(17);
         go.setTypeface(Typeface.DEFAULT_BOLD);
@@ -344,12 +344,12 @@ final class Updater {
         root.addView(go, gl);
         LinearLayout row = new LinearLayout(a);
         row.setPadding(0, px(dp, 6), 0, 0);
-        TextView later = flat(a, dp, "Más tarde");
+        TextView later = flat(a, dp, L.t("Más tarde"));
         later.setOnClickListener(v -> {
             prefs(a).edit().putLong("later_until", System.currentTimeMillis() + LATER).apply();
             d.dismiss();
         });
-        TextView skip = flat(a, dp, "Ahora no");
+        TextView skip = flat(a, dp, L.t("Ahora no"));
         skip.setOnClickListener(v -> {
             prefs(a).edit().putInt("skip", r.number).apply();
             d.dismiss();
@@ -358,7 +358,7 @@ final class Updater {
         row.addView(skip, new LinearLayout.LayoutParams(0, -2, 1));
         root.addView(row);
         TextView hint = new TextView(a);
-        hint.setText("«Más tarde» te recuerda mañana. «Ahora no» no vuelve a avisar de esta versión.");
+        hint.setText(L.t("«Más tarde» te recuerda mañana. «Ahora no» no vuelve a avisar de esta versión."));
         hint.setTextColor(0xFF6E7A8E);
         hint.setTextSize(11.5f);
         hint.setGravity(Gravity.CENTER);
@@ -397,19 +397,19 @@ final class Updater {
             // la primera vez Android pide permitir que la app instale actualizaciones
             pendingPermission = true;
             new AlertDialog.Builder(a, THEME)
-                    .setTitle("Un permiso, una sola vez")
-                    .setMessage("Para que " + APP + " pueda instalar su propia actualización, activa «Permitir de esta fuente» "
-                            + "en la pantalla que se abre y vuelve con el botón atrás.")
-                    .setPositiveButton("Abrir", (dd, w) -> {
+                    .setTitle(L.t("Un permiso, una sola vez"))
+                    .setMessage(L.t("Para que ") + APP + L.t(" pueda instalar su propia actualización, activa «Permitir de esta fuente» ")
+                            + L.t("en la pantalla que se abre y vuelve con el botón atrás."))
+                    .setPositiveButton(L.t("Abrir"), (dd, w) -> {
                         try {
                             a.startActivity(new Intent(Settings.ACTION_MANAGE_UNKNOWN_APP_SOURCES,
                                     Uri.parse("package:" + a.getPackageName())));
                         } catch (Exception e) {
                             pendingPermission = false;
-                            Toast.makeText(a, "No se pudo abrir el permiso", Toast.LENGTH_LONG).show();
+                            Toast.makeText(a, L.t("No se pudo abrir el permiso"), Toast.LENGTH_LONG).show();
                         }
                     })
-                    .setNegativeButton("Cancelar", (dd, w) -> pendingPermission = false)
+                    .setNegativeButton(L.t("Cancelar"), (dd, w) -> pendingPermission = false)
                     .show();
             return;
         }
@@ -428,10 +428,10 @@ final class Updater {
         box.addView(bar);
         TextView info = new TextView(a);
         info.setPadding(0, pad / 2, 0, 0);
-        info.setText("Conectando…");
+        info.setText(L.t("Conectando…"));
         box.addView(info);
         AlertDialog dlg = new AlertDialog.Builder(a, THEME)
-                .setTitle("Descargando " + APP + " #" + r.number)
+                .setTitle(L.t("Descargando ") + APP + " #" + r.number)
                 .setView(box)
                 .setCancelable(false)
                 .show();
@@ -463,7 +463,7 @@ final class Updater {
                                 long dd = done;
                                 main.post(() -> {
                                     if (total > 0) bar.setProgress((int) (dd * 1000 / total));
-                                    info.setText(size(dd) + (total > 0 ? " de " + size(total) : ""));
+                                    info.setText(size(dd) + (total > 0 ? L.t(" de ") + size(total) : ""));
                                 });
                             }
                         }
@@ -471,7 +471,7 @@ final class Updater {
                     } finally {
                         c.disconnect();
                     }
-                    main.post(() -> info.setText("Abriendo el instalador…"));
+                    main.post(() -> info.setText(L.t("Abriendo el instalador…")));
                     registerStatus(app);
                     Intent cb = new Intent(ACTION_STATUS).setPackage(app.getPackageName());
                     int flags = PendingIntent.FLAG_UPDATE_CURRENT | (Build.VERSION.SDK_INT >= 31 ? PendingIntent.FLAG_MUTABLE : 0);
@@ -489,9 +489,9 @@ final class Updater {
                 if (err != null) {
                     installing = false;
                     if (!a.isFinishing()) new AlertDialog.Builder(a, THEME)
-                            .setTitle("No se pudo actualizar")
-                            .setMessage(err + "\n\nRevisa tu internet e inténtalo otra vez.")
-                            .setPositiveButton("Entendido", null).show();
+                            .setTitle(L.t("No se pudo actualizar"))
+                            .setMessage(err + L.t("\n\nRevisa tu internet e inténtalo otra vez."))
+                            .setPositiveButton(L.t("Entendido"), null).show();
                 }
             });
         }, "descargar-actualizacion").start();
@@ -519,7 +519,7 @@ final class Updater {
                 installing = false;
                 if (status != PackageInstaller.STATUS_SUCCESS) {
                     String msg = i.getStringExtra(PackageInstaller.EXTRA_STATUS_MESSAGE);
-                    Toast.makeText(c, "No se instaló la actualización" + (msg == null ? "" : ": " + msg), Toast.LENGTH_LONG).show();
+                    Toast.makeText(c, L.t("No se instaló la actualización") + (msg == null ? "" : ": " + msg), Toast.LENGTH_LONG).show();
                 }
             }
         };

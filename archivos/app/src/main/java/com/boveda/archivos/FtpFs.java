@@ -43,8 +43,8 @@ final class FtpFs implements Fs {
     private FtpClient acquire() throws IOException {
         int max = Math.max(1, server.maxConnections);
         if (held.get() >= max) {
-            throw new IOException("«" + server.name + "» solo acepta " + max + (max == 1 ? " conexión" : " conexiones")
-                    + " a la vez: copia primero al celular y de ahí al servidor");
+            throw new IOException("«" + server.name + L.t("» solo acepta ") + max + (max == 1 ? L.t(" conexión") : L.t(" conexiones"))
+                    + L.t(" a la vez: copia primero al celular y de ahí al servidor"));
         }
         long deadline = System.currentTimeMillis() + 90000;
         synchronized (this) {
@@ -63,11 +63,11 @@ final class FtpFs implements Fs {
                     break;
                 }
                 long wait = deadline - System.currentTimeMillis();
-                if (wait <= 0) throw new IOException("El servidor está ocupado con otra transferencia");
+                if (wait <= 0) throw new IOException(L.t("El servidor está ocupado con otra transferencia"));
                 try {
                     wait(Math.min(wait, 1000));
                 } catch (InterruptedException e) {
-                    throw new IOException("Cancelado");
+                    throw new IOException(L.t("Cancelado"));
                 }
             }
         }
@@ -83,8 +83,8 @@ final class FtpFs implements Fs {
                 notifyAll();
             }
             if (e.getMessage() != null && e.getMessage().contains("connect")) {
-                throw new IOException("No se pudo conectar a " + server.host + ":" + server.port
-                        + " (¿están en la misma red y el servidor FTP está encendido?)", e);
+                throw new IOException(L.t("No se pudo conectar a ") + server.host + ":" + server.port
+                        + L.t(" (¿están en la misma red y el servidor FTP está encendido?)"), e);
             }
             throw e;
         }
@@ -239,7 +239,7 @@ final class FtpFs implements Fs {
     /** Solo lectura: se baja a la carpeta temporal y se abre desde ahí (para abrir o ver un .zip). */
     @Override
     public ParcelFileDescriptor pfd(String path, String mode) throws IOException {
-        if (mode.contains("w")) throw new IOException("En FTP solo se puede abrir para leer");
+        if (mode.contains("w")) throw new IOException(L.t("En FTP solo se puede abrir para leer"));
         File dir = new File(System.getProperty("java.io.tmpdir", "/data/local/tmp"), "ftp");
         //noinspection ResultOfMethodCallIgnored
         dir.mkdirs();

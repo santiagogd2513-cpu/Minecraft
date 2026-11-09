@@ -50,7 +50,7 @@ final class SafFs implements Fs {
         List<Entry> out = new ArrayList<>();
         try (Cursor c = cr.query(kids, new String[]{Document.COLUMN_DISPLAY_NAME, Document.COLUMN_MIME_TYPE,
                 Document.COLUMN_SIZE, Document.COLUMN_LAST_MODIFIED}, null, null, null)) {
-            if (c == null) throw new IOException("No se puede leer esta carpeta");
+            if (c == null) throw new IOException(L.t("No se puede leer esta carpeta"));
             while (c.moveToNext()) {
                 String name = c.getString(0);
                 boolean d = Document.MIME_TYPE_DIR.equals(c.getString(1));
@@ -88,14 +88,14 @@ final class SafFs implements Fs {
     public OutputStream out(String path) throws IOException {
         Uri u = stat(path) != null ? uri(path) : create(path, "application/octet-stream");
         OutputStream o = cr.openOutputStream(u, "wt");
-        if (o == null) throw new IOException("No se pudo escribir " + Paths.name(path));
+        if (o == null) throw new IOException(L.t("No se pudo escribir ") + Paths.name(path));
         return o;
     }
 
     private Uri create(String path, String mime) throws IOException {
         Uri parent = uri(Paths.parent(path));
         Uri made = DocumentsContract.createDocument(cr, parent, mime, Paths.name(path));
-        if (made == null) throw new IOException("No se pudo crear " + Paths.name(path));
+        if (made == null) throw new IOException(L.t("No se pudo crear ") + Paths.name(path));
         return made;
     }
 
@@ -115,7 +115,7 @@ final class SafFs implements Fs {
 
     @Override
     public void delete(String path) throws IOException {
-        if (!DocumentsContract.deleteDocument(cr, uri(path))) throw new IOException("No se pudo borrar " + Paths.name(path));
+        if (!DocumentsContract.deleteDocument(cr, uri(path))) throw new IOException(L.t("No se pudo borrar ") + Paths.name(path));
     }
 
     @Override
@@ -124,12 +124,12 @@ final class SafFs implements Fs {
         Uri u = uri(from);
         if (!fromParent.equals(toParent)) {
             Uri moved = DocumentsContract.moveDocument(cr, u, uri(fromParent), uri(toParent));
-            if (moved == null) throw new IOException("No se pudo mover");
+            if (moved == null) throw new IOException(L.t("No se pudo mover"));
             u = moved;
         }
         if (!Paths.name(from).equals(Paths.name(to))) {
             Uri r = DocumentsContract.renameDocument(cr, u, Paths.name(to));
-            if (r == null) throw new IOException("No se pudo renombrar");
+            if (r == null) throw new IOException(L.t("No se pudo renombrar"));
         }
     }
 

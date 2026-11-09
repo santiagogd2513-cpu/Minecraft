@@ -115,7 +115,7 @@ public class ArchiveActivity extends Activity {
             return true;
         });
         content.addView(list);
-        empty = Ui.text(this, "Leyendo el archivo…", 15, Ui.SUB, false);
+        empty = Ui.text(this, L.t("Leyendo el archivo…"), 15, Ui.SUB, false);
         empty.setGravity(Gravity.CENTER);
         empty.setPadding(dp(24), 0, dp(24), 0);
         content.addView(empty, new FrameLayout.LayoutParams(-1, -1));
@@ -158,14 +158,14 @@ public class ArchiveActivity extends Activity {
             } catch (Throwable e) {
                 items = null;
                 err = e.getMessage() == null ? e.getClass().getSimpleName() : e.getMessage();
-                if (e instanceof OutOfMemoryError) err = "El archivo es demasiado grande para listarlo";
+                if (e instanceof OutOfMemoryError) err = L.t("El archivo es demasiado grande para listarlo");
             }
             final List<Archive.Item> res = items;
             final String error = err;
             main.post(() -> {
                 loading.setVisibility(View.INVISIBLE);
                 if (res == null) {
-                    empty.setText("No se pudo abrir: " + error);
+                    empty.setText(L.t("No se pudo abrir: ") + error);
                     return;
                 }
                 buildTree(res);
@@ -218,7 +218,7 @@ public class ArchiveActivity extends Activity {
         if (l != null) shown.addAll(l);
         adapter.notifyDataSetChanged();
         list.setSelection(0);
-        empty.setText("Vacío");
+        empty.setText(L.t("Vacío"));
         empty.setVisibility(shown.isEmpty() ? View.VISIBLE : View.GONE);
         buildCrumbs();
         updateBottom();
@@ -238,7 +238,7 @@ public class ArchiveActivity extends Activity {
         for (int i = 0; i < parts.size(); i++) {
             String p = parts.get(i);
             boolean last = i == parts.size() - 1;
-            TextView t = Ui.text(this, p.isEmpty() ? "Contenido" : Paths.name("/" + p), 12.5f, last ? 0xFFFFC14D : Ui.SUB, last);
+            TextView t = Ui.text(this, p.isEmpty() ? L.t("Contenido") : Paths.name("/" + p), 12.5f, last ? 0xFFFFC14D : Ui.SUB, last);
             t.setPadding(dp(2), dp(2), dp(2), dp(2));
             t.setOnClickListener(v -> show(p));
             crumbs.addView(t);
@@ -267,16 +267,16 @@ public class ArchiveActivity extends Activity {
     private void updateBottom() {
         bottom.removeAllViews();
         if (selected.isEmpty()) {
-            bottom.addView(button("Extraer todo aquí", true, v -> extractHere(new ArrayList<>(), "")), Ui.weight(1));
+            bottom.addView(button(L.t("Extraer todo aquí"), true, v -> extractHere(new ArrayList<>(), "")), Ui.weight(1));
             bottom.addView(spacer());
-            bottom.addView(button("Extraer a…", false, v -> extractTo(new ArrayList<>(), "")), Ui.weight(1));
+            bottom.addView(button(L.t("Extraer a…"), false, v -> extractTo(new ArrayList<>(), "")), Ui.weight(1));
         } else {
             TextView n = Ui.text(this, selected.size() + "", 15, Ui.TEXT, true);
             n.setPadding(dp(6), 0, dp(10), 0);
             bottom.addView(n);
-            bottom.addView(button("Extraer aquí", true, v -> extractHere(new ArrayList<>(selected), inner)), Ui.weight(1));
+            bottom.addView(button(L.t("Extraer aquí"), true, v -> extractHere(new ArrayList<>(selected), inner)), Ui.weight(1));
             bottom.addView(spacer());
-            bottom.addView(button("Extraer a…", false, v -> extractTo(new ArrayList<>(selected), inner)), Ui.weight(1));
+            bottom.addView(button(L.t("Extraer a…"), false, v -> extractTo(new ArrayList<>(selected), inner)), Ui.weight(1));
             bottom.addView(Ui.iconButton(this, R.drawable.ic_select_all, 44, v -> {
                 if (selected.size() == shown.size()) selected.clear();
                 else for (Entry e : shown) selected.add(e.path);
@@ -308,21 +308,21 @@ public class ArchiveActivity extends Activity {
     private void extractHere(List<String> picks, String base) {
         String dest = Paths.join(Paths.parent(archive), Archive.baseName(Paths.name(archive)));
         TransferEngine.get(this).submitExtract(archive, picks, base, dest);
-        Toast.makeText(this, "Extrayendo en «" + Paths.name(dest) + "»…", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, L.t("Extrayendo en «") + Paths.name(dest) + "»…", Toast.LENGTH_SHORT).show();
         finish();
     }
 
     /** Elegir la carpeta destino en el explorador y tocar «Extraer aquí». */
     private void extractTo(List<String> picks, String base) {
         MainActivity.setExtractClip(archive, picks, base);
-        Toast.makeText(this, "Ve a la carpeta destino y toca «Extraer aquí»", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, L.t("Ve a la carpeta destino y toca «Extraer aquí»"), Toast.LENGTH_LONG).show();
         finish();
     }
 
     /** Abre un archivo de adentro: se saca a una carpeta temporal y se abre con la app que corresponda. */
     private void openInside(Entry e) {
         loading.setVisibility(View.VISIBLE);
-        Toast.makeText(this, (Viewers.isMedia(e.name) ? "Sacando del comprimido " : "Abriendo ") + e.name + "…", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, (Viewers.isMedia(e.name) ? L.t("Sacando del comprimido ") : L.t("Abriendo ")) + e.name + "…", Toast.LENGTH_SHORT).show();
         io.execute(() -> {
             File dir = new File(getCacheDir(), "dentro");
             deleteRec(dir);
@@ -351,7 +351,7 @@ public class ArchiveActivity extends Activity {
             main.post(() -> {
                 loading.setVisibility(View.INVISIBLE);
                 if (!found[0]) {
-                    Toast.makeText(this, fe != null ? fe : "No se encontró dentro del archivo", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, fe != null ? fe : L.t("No se encontró dentro del archivo"), Toast.LENGTH_LONG).show();
                     return;
                 }
                 if (Archive.opensOnTap(e.name)) {
@@ -368,7 +368,7 @@ public class ArchiveActivity extends Activity {
                 try {
                     startActivity(i);
                 } catch (Exception ex) {
-                    Toast.makeText(this, "No hay ninguna app para abrir este archivo", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, L.t("No hay ninguna app para abrir este archivo"), Toast.LENGTH_SHORT).show();
                 }
             });
         });
@@ -454,7 +454,7 @@ public class ArchiveActivity extends Activity {
             if (e.dir) {
                 List<Entry> kids = tree.get(e.path);
                 int n = kids == null ? 0 : kids.size();
-                h.info.setText(n + (n == 1 ? " elemento" : " elementos"));
+                h.info.setText(n + (n == 1 ? L.t(" elemento") : L.t(" elementos")));
             } else {
                 h.info.setText(Ui.size(e.size) + (e.modified > 0 ? "  ·  " + Ui.date(e.modified) : ""));
             }

@@ -126,9 +126,9 @@ final class Viewers {
         i.setDataAndType(StorageProvider.documentUri(a, path), mime);
         i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         try {
-            a.startActivity(Intent.createChooser(i, "Abrir con"));
+            a.startActivity(Intent.createChooser(i, L.t("Abrir con")));
         } catch (Exception ex) {
-            android.widget.Toast.makeText(a, "No hay otra app para abrir este archivo", android.widget.Toast.LENGTH_SHORT).show();
+            android.widget.Toast.makeText(a, L.t("No hay otra app para abrir este archivo"), android.widget.Toast.LENGTH_SHORT).show();
         }
     }
 }

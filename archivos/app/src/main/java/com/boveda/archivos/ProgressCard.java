@@ -146,10 +146,10 @@ final class ProgressCard implements TransferEngine.Listener {
             long ms = Math.max(1, last.finished - last.started);
             String txt;
             if (ok) {
-                txt = "Listo ✓ en " + seconds(ms);
-                if (last.totalBytes > 0) txt += "  ·  " + Ui.size(last.totalBytes) + "  ·  " + Ui.speed(last.totalBytes * 1000.0 / ms) + " promedio";
+                txt = L.t("Listo ✓ en ") + seconds(ms);
+                if (last.totalBytes > 0) txt += "  ·  " + Ui.size(last.totalBytes) + "  ·  " + Ui.speed(last.totalBytes * 1000.0 / ms) + L.t(" promedio");
             } else {
-                txt = last.state == 4 ? "Cancelado" : "Error: " + last.error;
+                txt = last.state == 4 ? L.t("Cancelado") : L.t("Error: ") + last.error;
             }
             info.setText(txt);
             final long shown = last.finished;
@@ -168,7 +168,7 @@ final class ProgressCard implements TransferEngine.Listener {
         show();
         stage.setTextColor(Ui.ACCENT2);
         stage.setText(stageText(run));
-        title.setText(run.title() + (waiting > 0 ? "  (+" + waiting + " en cola)" : ""));
+        title.setText(run.title() + (waiting > 0 ? "  (+" + waiting + L.t(" en cola)") : ""));
         float prog = run.totalBytes > 0 ? (float) run.doneBytes / run.totalBytes
                 : run.totalItems > 0 ? (float) run.doneItems / run.totalItems : -1;
         if (run.state == 0 || prog < 0) {
@@ -181,16 +181,17 @@ final class ProgressCard implements TransferEngine.Listener {
             pct.setText((pm / 10) + "%");
         }
         String txt;
-        if (run.state == 0) txt = "En cola…";
+        if (run.state == 0) txt = L.t("En cola…");
         else if (run.totalBytes > 0) {
-            boolean waitingDisk = run.phase != null && (run.phase.startsWith("Guardando") || run.phase.startsWith("Verificando")
-                    || run.phase.startsWith("MediaFire"));
-            txt = Ui.size(run.doneBytes) + " de " + Ui.size(run.totalBytes);
+            boolean waitingDisk = run.phase != null && (run.phase.equals(L.t("Guardando en la memoria (puede tardar)"))
+                    || run.phase.equals(L.t("Verificando que se copió bien")) || run.phase.equals(L.t("Verificando que llegó bien"))
+                    || run.phase.equals(L.t("Revisando en MediaFire")) || run.phase.equals(L.t("MediaFire está procesando el archivo")));
+            txt = Ui.size(run.doneBytes) + L.t(" de ") + Ui.size(run.totalBytes);
             if (!waitingDisk) {
                 txt += "  ·  " + Ui.speed(run.speed);
-                if (run.speed > 1) txt += "  ·  faltan " + Ui.eta((long) ((run.totalBytes - run.doneBytes) / run.speed));
+                if (run.speed > 1) txt += L.t("  ·  faltan ") + Ui.eta((long) ((run.totalBytes - run.doneBytes) / run.speed));
             }
-        } else txt = run.doneItems + " de " + run.totalItems + " elementos";
+        } else txt = run.doneItems + L.t(" de ") + run.totalItems + L.t(" elementos");
         if (run.started > 0) txt += "  ·  " + seconds(System.currentTimeMillis() - run.started);
         if (run.current != null && !run.current.isEmpty()) txt += "\n" + run.current;
         info.setText(txt);

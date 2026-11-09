@@ -75,7 +75,7 @@ public class PdfActivity extends Activity {
         TextView title = Ui.text(this, Paths.name(path), 16, Ui.TEXT, true);
         title.setSingleLine(true);
         title.setEllipsize(TextUtils.TruncateAt.MIDDLE);
-        pageLabel = Ui.text(this, "Abriendo…", 11.5f, Ui.SUB, false);
+        pageLabel = Ui.text(this, L.t("Abriendo…"), 11.5f, Ui.SUB, false);
         tt.addView(title);
         tt.addView(pageLabel);
         bar.addView(tt, Ui.weight(1));
@@ -120,19 +120,19 @@ public class PdfActivity extends Activity {
                 body.removeView(spin);
                 if (err != null || renderer == null) {
                     new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
-                            .setTitle("No se pudo abrir el PDF")
-                            .setMessage((err == null ? "" : err) + "\n\nPuede estar protegido con contraseña o dañado.")
-                            .setPositiveButton("Abrir con otra app", (d, w) -> {
+                            .setTitle(L.t("No se pudo abrir el PDF"))
+                            .setMessage((err == null ? "" : err) + L.t("\n\nPuede estar protegido con contraseña o dañado."))
+                            .setPositiveButton(L.t("Abrir con otra app"), (d, w) -> {
                                 Viewers.openWithOther(this, path, "application/pdf");
                                 finish();
                             })
-                            .setNegativeButton("Cerrar", (d, w) -> finish())
+                            .setNegativeButton(L.t("Cerrar"), (d, w) -> finish())
                             .setOnCancelListener(d -> finish())
                             .show();
                     return;
                 }
                 int pages = renderer.getPageCount();
-                pageLabel.setText(pages + (pages == 1 ? " página" : " páginas"));
+                pageLabel.setText(pages + (pages == 1 ? L.t(" página") : L.t(" páginas")));
                 list.setAdapter(new Pages(pages));
                 list.setOnScrollListener(new AbsListView.OnScrollListener() {
                     @Override
@@ -140,7 +140,7 @@ public class PdfActivity extends Activity {
 
                     @Override
                     public void onScroll(AbsListView v, int first, int visible, int total) {
-                        if (total > 0) pageLabel.setText("Página " + (first + 1) + " de " + total);
+                        if (total > 0) pageLabel.setText(L.t("Página ") + (first + 1) + L.t(" de ") + total);
                     }
                 });
             });

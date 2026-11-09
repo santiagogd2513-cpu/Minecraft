@@ -96,7 +96,7 @@ final class OneDriveFs implements Fs {
             Entry e = entry(path, o);
             return path.equals(ROOT) ? new Entry(path, "OneDrive", true, 0, e.modified) : e;
         } catch (IOException e) {
-            if (e.getMessage() != null && e.getMessage().startsWith("Ya no existe")) return null;
+            if (e.getMessage() != null && e.getMessage().equals(L.t("Ya no existe en OneDrive"))) return null;
             throw e;
         }
     }
@@ -165,7 +165,7 @@ final class OneDriveFs implements Fs {
         } catch (JSONException e) {
             throw new IOException(e);
         }
-        if (session.isEmpty()) throw new IOException("OneDrive no abrió la subida");
+        if (session.isEmpty()) throw new IOException(L.t("OneDrive no abrió la subida"));
         int chunk = 32 * 327680;
         byte[] buf = new byte[chunk];
         long pos = 0;
@@ -193,7 +193,7 @@ final class OneDriveFs implements Fs {
                         int rc = u.getResponseCode();
                         if (rc >= 400) {
                             String err = Drive.read(u.getErrorStream());
-                            if (rc >= 500) throw new IOException("OneDrive respondió " + rc);
+                            if (rc >= 500) throw new IOException(L.t("OneDrive respondió ") + rc);
                             throw new IllegalStateException(OneDrive.errorText(rc, err));
                         }
                         u.disconnect();
@@ -217,7 +217,7 @@ final class OneDriveFs implements Fs {
 
     @Override
     public ParcelFileDescriptor pfd(String path, String mode) throws IOException {
-        if (mode.contains("w")) throw new IOException("En OneDrive solo se puede abrir para leer");
+        if (mode.contains("w")) throw new IOException(L.t("En OneDrive solo se puede abrir para leer"));
         //noinspection ResultOfMethodCallIgnored
         cacheDir.mkdirs();
         File f = new File(cacheDir, Integer.toHexString(path.hashCode()) + "_" + Paths.name(path));

@@ -114,9 +114,9 @@ final class ShizukuHelper {
     }
 
     static String status() {
-        if (!running()) return "Shizuku no está activo";
-        if (!granted()) return "Falta darle permiso a Bóveda";
-        if (!ready()) return "Conectando…";
-        return "Conectado: acceso completo a Android/data y obb";
+        if (!running()) return L.t("Shizuku no está activo");
+        if (!granted()) return L.t("Falta darle permiso a Bóveda");
+        if (!ready()) return L.t("Conectando…");
+        return L.t("Conectado: acceso completo a Android/data y obb");
     }
 }

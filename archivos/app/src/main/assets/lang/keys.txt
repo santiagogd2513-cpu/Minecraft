@@ -1,0 +1,665 @@
+Hilo: 
+Formato no soportado
+No se puede leer «
+» (¿tiene contraseña?)
+Archivo dañado o no soportado
+Leyendo el archivo…
+El archivo es demasiado grande para listarlo
+No se pudo abrir: 
+Vacío
+Contenido
+Extraer todo aquí
+Extraer a…
+Extraer aquí
+Extrayendo en «
+Ve a la carpeta destino y toca «Extraer aquí»
+Sacando del comprimido 
+Abriendo 
+No se encontró dentro del archivo
+No hay ninguna app para abrir este archivo
+ elemento
+ elementos
+Inicia sesión para ver y manejar tus archivos de MediaFire desde Bóveda.
+Correo
+Contraseña
+ID de aplicación (opcional)
+Clave de API (opcional)
+Solo si MediaFire pide tu propia aplicación: se crea gratis en mediafire.com/developers.
+Opciones avanzadas
+Iniciar sesión
+Escribe tu correo y tu contraseña
+Entrando…
+No se pudo entrar
+Entendido
+🔒 La contraseña se guarda cifrada en este celular con el almacén de claves de Android.
+Ir al inicio de MediaFire
+Cerrar sesión
+Mis archivos
+No se pudo cargar: 
+Esta carpeta está vacía
+Descargar
+Bajar a…
+Mover
+Ve a la carpeta de MediaFire destino y toca «Mover aquí»
+Borrar
+Todo
+ seleccionado
+ seleccionados
+Subir 
+ elemento aquí
+ elementos aquí
+Subir aquí
+Subiendo a MediaFire…
+Mover 
+Mover aquí
+Cancelar
+Abrir
+Descargar en «Download»
+Descargar a…
+Compartir enlace
+Copiar enlace
+Renombrar
+Mover…
+Ve a la carpeta destino y toca «Mover aquí»
+Descargando en 
+… (se verifica al terminar)
+Elige la carpeta y toca «Descargar aquí»
+¿Borrar 
+Van a la papelera de MediaFire (se pueden recuperar desde la web).
+Nombre
+Aceptar
+Enlace copiado
+Nueva carpeta
+Subir archivos de este celular
+Toca un archivo, o mantén presionado para elegir varios
+No se pudo preparar el inicio de sesión: 
+¡Listo!
+No se pudo
+Google Drive quedó conectado. Vuelve a Bóveda.
+Vuelve a Bóveda e inténtalo otra vez.
+No diste permiso
+Google no respondió bien
+Se acabó el tiempo para iniciar sesión
+Google no dio acceso permanente (vuelve a intentarlo)
+Google pidió iniciar sesión de nuevo (toca Google Drive en el inicio)
+El ID de cliente o el secreto no son válidos
+Google respondió algo inesperado (
+Conecta Google Drive desde el inicio de Bóveda
+Respuesta rara de Google Drive
+Google Drive no aceptó el acceso
+Google Drive no lo permite
+Ya no existe en Google Drive
+No hay espacio en tu Google Drive
+Google Drive (
+Ya no existe en Google Drive: 
+Los documentos de Google (Docs, Hojas, Presentaciones) se abren en la web
+Google Drive no abrió la subida
+Google Drive no terminó la subida
+En Google Drive solo se puede abrir para leer
+Abriendo…
+Guardar
+El archivo pasa de 6 MB: es muy grande para editarlo en el celular
+No es un archivo de texto (tiene datos binarios)
+No se pudo abrir
+Abrir con otra app
+Cerrar
+● Sin guardar  ·  
+Línea 
+, col 
+ líneas  ·  
+ (Windows)
+Guardando…
+No se pudo guardar
+Guardado ✓
+Buscar…
+Buscar en el archivo
+Siguiente
+No aparece «
+Buscar el siguiente «
+No ajustar las líneas largas
+Ajustar las líneas largas a la pantalla
+Ir al principio
+Ir al final
+¿Guardar los cambios?
+» tiene cambios sin guardar.
+Descartar
+Se necesita acceso para entrar aquí
+El equipo 
+ no respondió. Revisa que la IP sea la correcta y que el celular 
+esté en la misma red Wi-Fi (no en datos móviles).
+ rechazó la conexión en el puerto 
+. El servidor FTP no está encendido (en la Xbox: abre Aurora o FreeStyle Dash) o el puerto no es ese.
+No se encontró la dirección «
+». Escribe la IP tal como aparece en el equipo, por ejemplo 192.168.1.20.
+No hay camino hasta 
+. El celular y el equipo deben estar en la misma red Wi-Fi.
+El servidor no saludó bien: 
+Usuario o contraseña incorrectos (van en minúsculas tal cual). En la Xbox 360 con Aurora son xboxftp / xboxftp; con FreeStyle Dash, xbox / xbox.
+El servidor cerró la conexión
+El servidor no acepta más conexiones (
+Se cortó la transferencia (
+No existe o no se puede usar (
+No hay espacio en el servidor
+Nombre no permitido por el servidor
+EPSV raro
+El servidor no dio dirección para los datos
+El servidor no se conectó para enviar los datos
+» solo acepta 
+ conexión
+ conexiones
+ a la vez: copia primero al celular y de ahí al servidor
+El servidor está ocupado con otra transferencia
+Cancelado
+No se pudo conectar a 
+ (¿están en la misma red y el servidor FTP está encendido?)
+En FTP solo se puede abrir para leer
+Ese servidor FTP ya no está guardado
+ de 
+La imagen es demasiado grande para la memoria.
+No se pudo abrir esta imagen.\n\n
+\n\nPrueba con «Abrir con otra app» (abajo).
+ (animada)
+Android no reconoce este formato (
+Nombre: 
+Formato: 
+Tamaño: 
+ píxeles
+Peso: 
+Carpeta: 
+Datos de la imagen
+Todavía cargando…
+Compartir imagen
+No se pudo compartir
+No es una imagen ISO 9660 (puede ser un disco solo UDF)
+La imagen ISO no tiene volumen principal
+No se puede leer esta carpeta
+No se pudo crear la carpeta
+No se pudo borrar 
+No se pudo renombrar
+se cerró por un error
+se cerró por un error interno
+dejó de responder y Android la cerró
+Android la cerró por falta de memoria
+Android la cerró por usar demasiados recursos
+ · Android 
+Motivo: 
+La última vez Bóveda 
+Copia los detalles y mándaselos a quien hizo la app para arreglarlo.\n\n
+Copiar detalles
+Error de Bóveda
+Copiado
+Buscar en esta carpeta
+Desanclada
+Almacenamiento interno
+Tarjeta SD
+Bóveda necesita permiso
+Para ver y manejar todos tus archivos, Android pide el permiso «Acceso a todos los archivos». 
+En la pantalla que se abre, activa el interruptor de Bóveda y vuelve.
+Dar permiso
+Elige una carpeta
+¿Dónde guardarlo?
+Elige un archivo
+Accesos rápidos
+Descargas
+Cámara (DCIM)
+Documentos
+Música
+Con acceso
+Toca para dar acceso
+Ancladas
+Favoritas
+Mantén presionada una carpeta y elige «Favorita» para tenerla aquí.
+Nube y red
+Toca para iniciar sesión
+Conectado
+Toca para conectar
+Añadir servidor FTP
+Xbox 360, PC, NAS, otro celular…
+Editar
+Borrar este servidor
+Nombre (ej. Mi Xbox)
+Dirección IP (ej. 192.168.1.20)
+Puerto
+Usuario (vacío = anónimo)
+Modo pasivo
+Modo activo
+   (toca para cambiar)
+Modo: 
+pasivo → activo
+activo → pasivo
+Conexiones a la vez: 
+Letras: 
+Latin-1 → UTF-8
+UTF-8 → Latin-1 (servidores viejos)
+🎮 Xbox 360
+Pon la IP que muestra Aurora en la pantalla de la Xbox. Usuario y contraseña: xboxftp (en FreeStyle Dash: xbox)
+Nuevo servidor FTP
+Editar servidor
+Conectar
+Falta la dirección
+Probando…
+No se pudo conectar
+\n\nRevisa la IP, que el celular y el equipo estén en la misma red Wi-Fi y que el servidor FTP esté encendido. 
+Si sigue fallando, cambia el modo pasivo/activo.
+Desconectar la cuenta
+Cambiar el ID de aplicación
+ID de aplicación (cliente)
+Microsoft pide que cada app esté registrada. Se hace una sola vez, gratis:\n\n
+1. Entra a entra.microsoft.com (o portal.azure.com) con tu cuenta de Microsoft.\n
+2. Busca «Registros de aplicaciones» → «Nuevo registro».\n
+3. Nombre: Bóveda. En «Tipos de cuenta compatibles» elige la opción que incluye «cuentas personales de Microsoft».\n
+5. Toca «Registrar» y copia aquí el «Id. de aplicación (cliente)», que se ve así: 1a2b3c4d-…\n\n
+No hace falta secreto ni tarjeta para esto. Al conectar, Microsoft te pedirá permiso para que Bóveda vea tus archivos.
+Se abrirá el navegador para que entres con tu cuenta de Microsoft y le des permiso a Bóveda.
+Conectar OneDrive
+Copia el Id. de aplicación completo (8-4-4-4-12 letras y números)
+Entra con tu cuenta de Microsoft en el navegador y vuelve aquí
+No se conectó OneDrive
+OneDrive conectado
+Correo de MEGA
+Código de 6 números
+Tu cuenta tiene verificación en dos pasos. Escribe el código de tu app de autenticación.
+Entra con tu cuenta de MEGA. La contraseña no se guarda: solo se queda la sesión, cifrada en el celular. 
+Todo se descifra aquí mismo, como en la app de MEGA.
+Verificación de MEGA
+Iniciar sesión en MEGA
+Entrar
+Falta la contraseña
+Escribe tu correo
+El código tiene 6 números
+Entrando a MEGA…
+Preparando las llaves de cifrado. Puede tardar unos segundos.
+No se pudo entrar a MEGA
+MEGA conectado
+Cambiar el ID de cliente
+ID de cliente (termina en .apps.googleusercontent.com)
+Secreto del cliente
+Google pide que cada app esté registrada. Se hace una sola vez, gratis (unos 5 minutos):\n\n
+1. Entra a console.cloud.google.com con tu cuenta y crea un proyecto (por ejemplo «Bóveda»).\n
+2. «APIs y servicios» → «Biblioteca»: busca «Google Drive API» y actívala.\n
+3. «Pantalla de consentimiento de OAuth»: tipo Externo, nombre Bóveda y tu correo. 
+En «Usuarios de prueba» agrega tu correo. Luego toca «Publicar app» (así no te pide entrar cada semana).\n
+4. «Credenciales» → «Crear credenciales» → «ID de cliente de OAuth» → tipo «App de escritorio».\n
+5. Copia aquí el ID de cliente y el secreto.\n\n
+Al conectar, Google dirá «Google no verificó esta app»: es tu propia app, toca «Continuar».
+Se abrirá el navegador para que elijas tu cuenta de Google y le des permiso a Bóveda.
+Conectar Google Drive
+Copia el ID de cliente completo
+Falta el secreto
+Elige tu cuenta en el navegador y vuelve aquí
+No se conectó Google Drive
+Google Drive conectado
+Con Shizuku, Bóveda entra a Android/data y Android/obb en cualquier versión de Android, sin root.
+Conectar con Shizuku
+¿Cómo activo Shizuku?
+Acepta el permiso en la ventana de Shizuku
+Activar Shizuku
+1. Instala la app Shizuku (Play Store o GitHub).\n
+2. Ábrela y enciéndela con «Depuración inalámbrica» (sigue sus pasos; no necesita computador ni root).\n
+3. Vuelve a Bóveda y toca «Conectar con Shizuku».\n\n
+Hay que volver a encender Shizuku cada vez que se reinicia el celular.
+Abrir Play Store
+Carpeta vacía
+Nada coincide con «
+Carpeta protegida por Android
+Desde Android 11, Android/data y Android/obb están protegidas. Hay dos formas de entrar:
+1 · Con el selector del sistema
+Se abre el selector de Android dentro de la carpeta «Android»: entra a «
+», toca «Usar esta carpeta» y «Permitir». 
+Funciona en Android 11 y 12 (y en algunos 13). En Android 13–14 a veces sí deja con la carpeta de una app.
+Dar acceso a 
+Dar acceso a la carpeta de una app
+2 · Con Shizuku (cualquier Android)
+Este celular no tiene el selector de carpetas
+¿La carpeta de qué app?
+Acceso concedido
+Android no dejó guardar el permiso de esa carpeta
+Entra a la carpeta y toca «Usar esta carpeta»
+Los RAR no son bienvenidos en Bóveda 🦶
+Elegir
+Quitar
+Copiar
+Comprimir
+Más
+Dar acceso a «
+Usar esta carpeta
+Nombre del archivo
+Guardar aquí
+Descargar 
+ de MediaFire
+Descargar aquí
+Descargando de MediaFire…
+Extraer 
+ de «
+Extrayendo…
+Mantener la pantalla siempre encendida
+La pantalla no se apagará mientras trabaja
+La pantalla se apagará como siempre
+Copiar 
+Pegar aquí
+Ve a la carpeta destino y toca «Pegar aquí»
+No se puede pegar una carpeta dentro de sí misma
+Ya están en esta carpeta
+Reemplazar
+Mantener ambos (renombrar)
+Saltar los repetidos
+ elemento ya existe aquí
+ elementos ya existen aquí
+Moviendo…
+Copiando…
+Se borran para siempre (no van a una papelera).
+Comprimir en .zip
+Quitar de favoritas
+Añadir a favoritas
+Desanclar
+Anclar arriba
+Abrir con…
+Ver contenido
+Compartir
+Subir a MediaFire
+Elige la carpeta de MediaFire y toca «Subir aquí»
+Propiedades
+Nombre no válido
+Ya existe algo con ese nombre
+Nuevo archivo de texto (.txt)
+Nuevo PDF
+Documento
+Título (opcional)
+Escribe el contenido del PDF (opcional)
+Escribe el texto (opcional)
+Nuevo archivo de texto
+Crear
+No se pudo crear: 
+» creado
+Calculando…
+Ruta: 
+Modificado: 
+Archivos: 
+   Carpetas: 
+Abrir con
+Escribe un nombre válido
+Adjuntar / elegir archivos
+Abrir documentos
+Elegir carpetas (emuladores…)
+Abrir carpetas
+nadie (las apps se cierran) → toca para probar
+✓ Bóveda
+sin predeterminado → toca y elige Bóveda + «Siempre»
+ → toca para quitarlo
+Hacer a Bóveda el predeterminado
+Toca «Abrir de forma predeterminada» → «Borrar valores predeterminados» y vuelve
+Elige «Bóveda» y toca «Siempre»
+Android no dejó probarlo
+Bóveda ya es el predeterminado para esto
+Listo
+Ajustes
+Idioma e interfaz
+Idioma, pestañas y pantalla
+Vista y archivos
+Ocultos, orden, miniaturas y conteos
+Visores
+Reproductor, fotos, editor y PDF
+Transferencias
+Copiar, mover y la barra de progreso
+MEGA, OneDrive, Google Drive, MediaFire y FTP
+Acceso a carpetas
+Shizuku y permisos para otras apps
+Almacenamiento
+Archivos temporales
+Acerca de
+Versión y Forja Estudios
+Idioma
+Idioma de Bóveda
+Español
+Interfaz
+Pantalla encendida al copiar
+No deja que la pantalla se apague mientras hay una transferencia en curso
+Vista
+Mostrar archivos ocultos
+Los que empiezan con un punto (.nomedia, .thumbnails…)
+Ordenar por
+ (descendente)
+ (ascendente)
+Contar elementos de las carpetas
+«3 carpetas · 12 archivos» debajo de cada carpeta
+Archivos
+Miniaturas
+Vista previa de fotos y videos, e ícono de cada APK
+Íconos de apps en Android/data
+Muestra el ícono y el nombre de la app dueña de cada carpeta
+Abrir con los visores de Bóveda
+Música y video con el reproductor, imágenes con el visor de fotos, texto y código con el editor, y PDF con el visor. Apagado: con otras apps
+Verificar cada copia
+Vuelve a leer cada archivo copiado y lo compara con el original. Más seguro, un poco más lento
+Barra de progreso flotante
+Porcentaje, velocidad y tiempo al copiar, mover, borrar, comprimir o subir
+Ver transferencias
+Tareas en curso y terminadas
+Nubes
+Sesión iniciada
+Red
+Xbox 360, PC, otro celular…
+Gestor de archivos predeterminado
+Que Bóveda abra las carpetas y elija archivos para otras apps
+Dar carpetas a otras apps
+Emuladores y apps que piden una carpeta (Dolphin, Limbo…)
+Borrar archivos temporales
+ en caché (vistas previas, descargas de la nube y FTP)
+Archivos temporales borrados
+Gestor de archivos · compilación 
+Pestañas
+ pestañas · toca para cambiar cuántas
+Apagadas: una sola vista
+ pestañas
+¿Cuántas pestañas?
+⚙  Ajustes
+Ordenar por: 
+Desanclar esta carpeta
+Anclar esta carpeta
+Seleccionar todo
+Verificar cada copia (más seguro)
+Cada archivo copiado se vuelve a leer y se compara con el original
+Verificación apagada: copias más rápidas
+Shizuku: 
+Hacer a Bóveda el gestor predeterminado
+Dar carpetas a otras apps (emuladores…)
+Inicio
+Cuando una app (un emulador, por ejemplo) te pida elegir una carpeta o un archivo:\n\n
+1. En el selector de Android, abre el menú (☰) de la izquierda.\n
+2. Elige «Bóveda».\n
+3. Entra a la carpeta que quieras y toca «Usar esta carpeta».\n\n
+Con Bóveda puedes darle carpetas que el selector normal no deja (la raíz, Descargas) y, 
+si Bóveda tiene Shizuku o el permiso, también Android/data y Android/obb.\n\n
+Para que Bóveda sea tu gestor de archivos predeterminado, ábrelo desde «Abrir con» la primera vez 
+y elige «Siempre».
+Limpiar
+No hay copias ni movimientos.
+Cancelando… (lo que quedó a medias se borra)
+En cola
+Listo ✓
+  ·  verificado
+Error: 
+Pestaña 
+: entra a la carpeta y pega
+App no instalada  ·  
+Vacía
+ carpeta
+ carpetas
+ archivo
+ archivos
+No se pudo guardar la sesión de forma segura
+MediaFire no devolvió la sesión
+Primero inicia sesión en MediaFire
+MediaFire no respondió
+Error
+Error de MediaFire
+MediaFire respondió algo inesperado (
+Correo o contraseña incorrectos
+La sesión venció
+Esa carpeta ya no existe
+Ese archivo ya no existe
+No hay espacio suficiente en tu cuenta
+ (código 
+MediaFire no creó la carpeta
+MediaFire no dio el enlace de descarga de «
+El archivo cambió mientras se subía
+MediaFire rechazó la subida (resultado 
+MediaFire no aceptó el archivo (error 
+MediaFire tardó demasiado en procesar la subida
+MEGA no devolvió una sesión
+Respuesta inesperada de MEGA: 
+MEGA respondió 
+Respuesta inesperada de MEGA
+MEGA está ocupado, inténtalo en un rato
+MEGA rechazó la petición
+Correo o contraseña incorrectos (o el archivo ya no existe)
+MEGA no dio permiso
+La subida quedó incompleta
+Error de cifrado
+La sesión de MEGA se cerró: vuelve a iniciar sesión
+La cuenta de MEGA está bloqueada
+Se acabó el espacio o la cuota de transferencia de MEGA
+Falta el código de verificación en dos pasos
+MEGA respondió con el error 
+MEGA pidió una verificación desconocida
+No se pudo resolver la verificación de MEGA
+No se encontró la carpeta principal de MEGA
+No existe en MEGA: 
+MEGA mandó 
+ archivos y carpetas, pero no se pudieron leer: 
+ sin llave y 
+ sin nombre. Usuario: 
+). Llaves de: 
+. Mándale una captura de esto a Claude.
+Es una carpeta
+MEGA no dio el enlace de descarga
+Se acabó la cuota de descarga de MEGA (espera un rato)
+MEGA no abrió la subida
+MEGA no terminó la subida
+MEGA rechazó la subida (
+En MEGA solo se puede abrir para leer
+OneDrive quedó conectado. Vuelve a Bóveda.
+Microsoft: 
+Microsoft no respondió bien
+Microsoft no dio acceso permanente (vuelve a intentarlo)
+Microsoft pidió iniciar sesión de nuevo (toca OneDrive en el inicio)
+Microsoft no reconoce ese ID de aplicación
+Microsoft respondió algo inesperado (
+Conecta OneDrive desde el inicio de Bóveda
+Respuesta rara de OneDrive
+OneDrive no aceptó el acceso
+OneDrive no lo permite
+Ya no existe en OneDrive
+Ya existe algo con ese nombre en OneDrive
+No hay espacio en tu OneDrive
+OneDrive (
+Ya no existe
+OneDrive no abrió la subida
+OneDrive respondió 
+En OneDrive solo se puede abrir para leer
+No se pudo abrir el PDF
+\n\nPuede estar protegido con contraseña o dañado.
+ página
+ páginas
+Página 
+No se puede reproducir aquí
+» usa un formato que el celular no sabe reproducir
+ (algunos AVI, WMV o FLV antiguos). Puedes abrirlo con otra app, como VLC.
+Video
+Audio
+Es el último de la carpeta
+Fecha
+Tamaño
+Tipo
+Listo ✓ en 
+ promedio
+ en cola)
+En cola…
+Guardando
+Verificando
+  ·  faltan 
+Copiando
+Moviendo
+Borrando
+Comprimiendo
+Extrayendo
+Descargando
+Subiendo
+No se pudo escribir 
+No se pudo crear 
+No se pudo mover
+No se pudo cifrar
+Shizuku se desconectó
+Shizuku no está activo
+Falta darle permiso a Bóveda
+Conectando…
+Conectado: acceso completo a Android/data y obb
+Abre Bóveda y da acceso a 
+Hacemos apps para Android y mods para Minecraft desde cero: herramientas útiles, 
+oscuras y livianas, sin anuncios. Cada versión se prueba en un celular de verdad antes de salir, 
+y cada error que aparece se busca hasta arreglarlo.
+Bóveda · Nocturna · Yunque · Ventoy no oficial · Arnis no oficial · Arsenal Orbital · Arsenal Atómico
+Pruebas de cada actualización e identificación de errores
+Claude de Anthropic
+Código y corrección de errores
+Memoria interna
+Bajando de MediaFire 
+Subiendo a MediaFire 
+Copiando 
+Moviendo 
+Borrando 
+Comprimiendo 
+Extrayendo 
+Sin memoria suficiente
+Demasiadas carpetas una dentro de otra
+No se puede poner una carpeta dentro de sí misma
+Contando archivos
+Borrando los originales
+Borrando el original de 
+Ya no existe: 
+Guardando en la memoria (puede tardar)
+El tamaño no coincide al copiar 
+Verificando que se copió bien
+Verificando 
+La verificación falló en 
+Revisando en MediaFire
+Revisando…
+MediaFire mandó una página en vez del archivo
+Verificando que llegó bien
+Llegó incompleto: 
+Preparando 
+Preparando la subida
+MediaFire no aceptó las partes del archivo
+MediaFire está procesando el archivo
+MediaFire está procesando 
+Copias y movimientos
+Preparando…
+ en cola
+ min 
+ min
+sin conexión
+ se actualizó
+Versión #
+  ·  tienes la #
+Novedades
+Mejoras y arreglos
+Esta versión trae mejoras y arreglos para que todo funcione mejor.
+Se descarga desde aquí mismo y Android te pide confirmar la instalación. No se borra nada de lo tuyo.
+Actualizar ahora
+Más tarde
+Ahora no
+«Más tarde» te recuerda mañana. «Ahora no» no vuelve a avisar de esta versión.
+Un permiso, una sola vez
+Para que 
+ pueda instalar su propia actualización, activa «Permitir de esta fuente» 
+en la pantalla que se abre y vuelve con el botón atrás.
+No se pudo abrir el permiso
+Descargando 
+Abriendo el instalador…
+No se pudo actualizar
+\n\nRevisa tu internet e inténtalo otra vez.
+No se instaló la actualización
+No hay otra app para abrir este archivo
+Automático
+Automático (idioma del teléfono)
+Cambiando el idioma…

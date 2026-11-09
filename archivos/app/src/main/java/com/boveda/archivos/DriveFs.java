@@ -80,7 +80,7 @@ final class DriveFs implements Fs {
 
     private String need(String path) throws IOException {
         String id = id(path);
-        if (id == null) throw new IOException("Ya no existe en Google Drive: " + Paths.name(path));
+        if (id == null) throw new IOException(L.t("Ya no existe en Google Drive: ") + Paths.name(path));
         return id;
     }
 
@@ -149,7 +149,7 @@ final class DriveFs implements Fs {
         if (code >= 400) {
             String body = Drive.read(c.getErrorStream());
             if (code == 403 && body.contains("fileNotDownloadable")) {
-                throw new IOException("Los documentos de Google (Docs, Hojas, Presentaciones) se abren en la web");
+                throw new IOException(L.t("Los documentos de Google (Docs, Hojas, Presentaciones) se abren en la web"));
             }
             throw new IOException(Drive.errorText(code, body));
         }
@@ -207,7 +207,7 @@ final class DriveFs implements Fs {
         if (code >= 400) throw new IOException(Drive.errorText(code, Drive.read(c.getErrorStream())));
         String session = c.getHeaderField("Location");
         c.disconnect();
-        if (session == null) throw new IOException("Google Drive no abrió la subida");
+        if (session == null) throw new IOException(L.t("Google Drive no abrió la subida"));
         // 2) se manda por partes de 8 MB
         long total = file.length(), pos = 0;
         int chunk = 8 * 1024 * 1024;
@@ -243,14 +243,14 @@ final class DriveFs implements Fs {
                 if (rc != 308) throw new IOException(Drive.errorText(rc, Drive.read(u.getErrorStream())));
                 u.disconnect();
                 pos += len;
-                if (len == 0) throw new IOException("Google Drive no terminó la subida");
+                if (len == 0) throw new IOException(L.t("Google Drive no terminó la subida"));
             }
         }
     }
 
     @Override
     public ParcelFileDescriptor pfd(String path, String mode) throws IOException {
-        if (mode.contains("w")) throw new IOException("En Google Drive solo se puede abrir para leer");
+        if (mode.contains("w")) throw new IOException(L.t("En Google Drive solo se puede abrir para leer"));
         //noinspection ResultOfMethodCallIgnored
         cacheDir.mkdirs();
         File f = new File(cacheDir, Integer.toHexString(path.hashCode()) + "_" + Paths.name(path));

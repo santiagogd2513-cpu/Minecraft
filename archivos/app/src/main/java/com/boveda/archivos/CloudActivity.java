@@ -295,37 +295,37 @@ public class CloudActivity extends Activity implements TransferEngine.Listener {
         TextView logo = Ui.text(this, "MediaFire", 30, MF_COLOR, true);
         logo.setGravity(Gravity.CENTER);
         box.addView(logo);
-        TextView sub = Ui.text(this, "Inicia sesión para ver y manejar tus archivos de MediaFire desde Bóveda.", 14, Ui.SUB, false);
+        TextView sub = Ui.text(this, L.t("Inicia sesión para ver y manejar tus archivos de MediaFire desde Bóveda."), 14, Ui.SUB, false);
         sub.setGravity(Gravity.CENTER);
         sub.setPadding(0, dp(8), 0, dp(10));
         box.addView(sub);
-        EditText mail = field("Correo", InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-        EditText pass = field("Contraseña", InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        EditText mail = field(L.t("Correo"), InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+        EditText pass = field(L.t("Contraseña"), InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
         box.addView(mail, margins(dp(14)));
         box.addView(pass, margins(dp(10)));
         LinearLayout adv = Ui.column(this);
         adv.setVisibility(View.GONE);
-        EditText app = field("ID de aplicación (opcional)", InputType.TYPE_CLASS_NUMBER);
-        EditText key = field("Clave de API (opcional)", InputType.TYPE_CLASS_TEXT);
-        TextView advInfo = Ui.text(this, "Solo si MediaFire pide tu propia aplicación: se crea gratis en mediafire.com/developers.", 12, Ui.SUB, false);
+        EditText app = field(L.t("ID de aplicación (opcional)"), InputType.TYPE_CLASS_NUMBER);
+        EditText key = field(L.t("Clave de API (opcional)"), InputType.TYPE_CLASS_TEXT);
+        TextView advInfo = Ui.text(this, L.t("Solo si MediaFire pide tu propia aplicación: se crea gratis en mediafire.com/developers."), 12, Ui.SUB, false);
         advInfo.setPadding(dp(4), dp(8), dp(4), 0);
         adv.addView(app, margins(dp(10)));
         adv.addView(key, margins(dp(10)));
         adv.addView(advInfo);
         box.addView(adv);
-        TextView toggle = Ui.text(this, "Opciones avanzadas", 13, Ui.SUB, true);
+        TextView toggle = Ui.text(this, L.t("Opciones avanzadas"), 13, Ui.SUB, true);
         toggle.setPadding(dp(4), dp(12), dp(4), dp(4));
         toggle.setOnClickListener(v -> adv.setVisibility(adv.getVisibility() == View.VISIBLE ? View.GONE : View.VISIBLE));
         box.addView(toggle);
-        TextView go = bigButton("Iniciar sesión", null);
+        TextView go = bigButton(L.t("Iniciar sesión"), null);
         go.setOnClickListener(v -> {
             String m = mail.getText().toString().trim(), p = pass.getText().toString();
             if (m.isEmpty() || p.isEmpty()) {
-                Toast.makeText(this, "Escribe tu correo y tu contraseña", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, L.t("Escribe tu correo y tu contraseña"), Toast.LENGTH_SHORT).show();
                 return;
             }
             go.setEnabled(false);
-            go.setText("Entrando…");
+            go.setText(L.t("Entrando…"));
             loading.setVisibility(View.VISIBLE);
             io.execute(() -> {
                 String err = null;
@@ -338,10 +338,10 @@ public class CloudActivity extends Activity implements TransferEngine.Listener {
                 main.post(() -> {
                     loading.setVisibility(View.INVISIBLE);
                     go.setEnabled(true);
-                    go.setText("Iniciar sesión");
+                    go.setText(L.t("Iniciar sesión"));
                     if (fe != null) {
-                        new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog).setTitle("No se pudo entrar")
-                                .setMessage(fe).setPositiveButton("Entendido", null).show();
+                        new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog).setTitle(L.t("No se pudo entrar"))
+                                .setMessage(fe).setPositiveButton(L.t("Entendido"), null).show();
                         return;
                     }
                     body.removeView(loginView);
@@ -351,7 +351,7 @@ public class CloudActivity extends Activity implements TransferEngine.Listener {
             });
         });
         box.addView(go, margins(dp(18)));
-        TextView safe = Ui.text(this, "🔒 La contraseña se guarda cifrada en este celular con el almacén de claves de Android.", 12, Ui.SUB, false);
+        TextView safe = Ui.text(this, L.t("🔒 La contraseña se guarda cifrada en este celular con el almacén de claves de Android."), 12, Ui.SUB, false);
         safe.setGravity(Gravity.CENTER);
         safe.setPadding(0, dp(16), 0, 0);
         box.addView(safe);
@@ -366,7 +366,7 @@ public class CloudActivity extends Activity implements TransferEngine.Listener {
         if (!mf.loggedIn()) return;
         new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
                 .setTitle(mf.email())
-                .setItems(new String[]{"Ir al inicio de MediaFire", "Cerrar sesión"}, (d, w) -> {
+                .setItems(new String[]{L.t("Ir al inicio de MediaFire"), L.t("Cerrar sesión")}, (d, w) -> {
                     if (w == 0) openRoot();
                     else {
                         mf.logout();
@@ -383,7 +383,7 @@ public class CloudActivity extends Activity implements TransferEngine.Listener {
 
     private void openRoot() {
         stack.clear();
-        stack.add(new String[]{MediaFire.ROOT, "Mis archivos"});
+        stack.add(new String[]{MediaFire.ROOT, L.t("Mis archivos")});
         load(true);
         loadAccount();
     }
@@ -460,7 +460,7 @@ public class CloudActivity extends Activity implements TransferEngine.Listener {
                 selected.keySet().retainAll(keys(shown));
                 adapter.notifyDataSetChanged();
                 if (top) list.setSelection(0);
-                empty.setText(fe != null ? "No se pudo cargar: " + fe : "Esta carpeta está vacía");
+                empty.setText(fe != null ? L.t("No se pudo cargar: ") + fe : L.t("Esta carpeta está vacía"));
                 empty.setVisibility(shown.isEmpty() ? View.VISIBLE : View.GONE);
                 updateBottom();
             });
@@ -522,32 +522,32 @@ public class CloudActivity extends Activity implements TransferEngine.Listener {
         }
         if (!selected.isEmpty()) {
             List<MediaFire.Item> sel = new ArrayList<>(selected.values());
-            bottom.addView(action(R.drawable.ic_download, "Descargar", () -> download(sel, Paths.ROOT + "/Download")));
-            bottom.addView(action(R.drawable.ic_open, "Bajar a…", () -> downloadTo(sel)));
-            bottom.addView(action(R.drawable.ic_cut, "Mover", () -> {
+            bottom.addView(action(R.drawable.ic_download, L.t("Descargar"), () -> download(sel, Paths.ROOT + "/Download")));
+            bottom.addView(action(R.drawable.ic_open, L.t("Bajar a…"), () -> downloadTo(sel)));
+            bottom.addView(action(R.drawable.ic_cut, L.t("Mover"), () -> {
                 moveClip.clear();
                 moveClip.addAll(sel);
                 clearSelection();
-                Toast.makeText(this, "Ve a la carpeta de MediaFire destino y toca «Mover aquí»", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, L.t("Ve a la carpeta de MediaFire destino y toca «Mover aquí»"), Toast.LENGTH_LONG).show();
             }));
-            bottom.addView(action(R.drawable.ic_delete, "Borrar", () -> askDelete(sel)));
-            bottom.addView(action(R.drawable.ic_select_all, "Todo", () -> {
+            bottom.addView(action(R.drawable.ic_delete, L.t("Borrar"), () -> askDelete(sel)));
+            bottom.addView(action(R.drawable.ic_select_all, L.t("Todo"), () -> {
                 if (selected.size() == shown.size()) selected.clear();
                 else for (MediaFire.Item i : shown) selected.put(i.key, i);
                 adapter.notifyDataSetChanged();
                 updateBottom();
             }));
-            title.setText(selected.size() + (selected.size() == 1 ? " seleccionado" : " seleccionados"));
+            title.setText(selected.size() + (selected.size() == 1 ? L.t(" seleccionado") : L.t(" seleccionados")));
             bottom.setVisibility(View.VISIBLE);
             fab.setVisibility(View.GONE);
             return;
         }
         title.setText(stack.get(stack.size() - 1)[1]);
         if (!pendingUpload.isEmpty()) {
-            bar("Subir " + pendingUpload.size() + (pendingUpload.size() == 1 ? " elemento aquí" : " elementos aquí"), "Subir aquí", () -> {
+            bar(L.t("Subir ") + pendingUpload.size() + (pendingUpload.size() == 1 ? L.t(" elemento aquí") : L.t(" elementos aquí")), L.t("Subir aquí"), () -> {
                 TransferEngine.get(this).submitCloudUpload(new ArrayList<>(pendingUpload), currentKey(), stack.get(stack.size() - 1)[1]);
                 pendingUpload.clear();
-                Toast.makeText(this, "Subiendo a MediaFire…", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, L.t("Subiendo a MediaFire…"), Toast.LENGTH_SHORT).show();
                 updateBottom();
             }, () -> {
                 pendingUpload.clear();
@@ -556,7 +556,7 @@ public class CloudActivity extends Activity implements TransferEngine.Listener {
             return;
         }
         if (!moveClip.isEmpty()) {
-            bar("Mover " + moveClip.size() + (moveClip.size() == 1 ? " elemento" : " elementos"), "Mover aquí", this::moveHere, () -> {
+            bar(L.t("Mover ") + moveClip.size() + (moveClip.size() == 1 ? L.t(" elemento") : L.t(" elementos")), L.t("Mover aquí"), this::moveHere, () -> {
                 moveClip.clear();
                 updateBottom();
             });
@@ -570,7 +570,7 @@ public class CloudActivity extends Activity implements TransferEngine.Listener {
         TextView t = Ui.text(this, info, 14, Ui.TEXT, true);
         t.setPadding(dp(10), 0, 0, 0);
         bottom.addView(t, Ui.weight(1));
-        TextView c = Ui.text(this, "Cancelar", 14, Ui.SUB, true);
+        TextView c = Ui.text(this, L.t("Cancelar"), 14, Ui.SUB, true);
         c.setPadding(dp(14), dp(10), dp(14), dp(10));
         c.setOnClickListener(v -> cancel.run());
         bottom.addView(c);
@@ -599,7 +599,7 @@ public class CloudActivity extends Activity implements TransferEngine.Listener {
     // ------------------------------------------------------------------ acciones
 
     private void fileMenu(MediaFire.Item it) {
-        String[] opts = {"Abrir", "Descargar en «Download»", "Descargar a…", "Compartir enlace", "Copiar enlace", "Renombrar", "Mover…", "Borrar"};
+        String[] opts = {L.t("Abrir"), L.t("Descargar en «Download»"), L.t("Descargar a…"), L.t("Compartir enlace"), L.t("Copiar enlace"), L.t("Renombrar"), L.t("Mover…"), L.t("Borrar")};
         new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
                 .setTitle(it.name)
                 .setItems(opts, (d, w) -> {
@@ -614,7 +614,7 @@ public class CloudActivity extends Activity implements TransferEngine.Listener {
                             moveClip.clear();
                             moveClip.add(it);
                             updateBottom();
-                            Toast.makeText(this, "Ve a la carpeta destino y toca «Mover aquí»", Toast.LENGTH_LONG).show();
+                            Toast.makeText(this, L.t("Ve a la carpeta destino y toca «Mover aquí»"), Toast.LENGTH_LONG).show();
                         }
                         default -> askDelete(List.of(it));
                     }
@@ -625,13 +625,13 @@ public class CloudActivity extends Activity implements TransferEngine.Listener {
     private void download(List<MediaFire.Item> items, String dest) {
         TransferEngine.get(this).submitCloudDownload(items, dest);
         clearSelection();
-        Toast.makeText(this, "Descargando en " + Paths.name(dest) + "… (se verifica al terminar)", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, L.t("Descargando en ") + Paths.name(dest) + L.t("… (se verifica al terminar)"), Toast.LENGTH_SHORT).show();
     }
 
     private void downloadTo(List<MediaFire.Item> items) {
         MainActivity.setCloudDownloadClip(items);
         clearSelection();
-        Toast.makeText(this, "Elige la carpeta y toca «Descargar aquí»", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, L.t("Elige la carpeta y toca «Descargar aquí»"), Toast.LENGTH_LONG).show();
         for (int i = 1; i < Tabs.count(); i++) {
             int t = (Tabs.current + i) % Tabs.count();
             if (!Tabs.isMediaFire(t)) {
@@ -667,9 +667,9 @@ public class CloudActivity extends Activity implements TransferEngine.Listener {
 
     private void askDelete(List<MediaFire.Item> items) {
         new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
-                .setTitle("¿Borrar " + (items.size() == 1 ? "«" + items.get(0).name + "»" : items.size() + " elementos") + "?")
-                .setMessage("Van a la papelera de MediaFire (se pueden recuperar desde la web).")
-                .setPositiveButton("Borrar", (d, w) -> {
+                .setTitle(L.t("¿Borrar ") + (items.size() == 1 ? "«" + items.get(0).name + "»" : items.size() + L.t(" elementos")) + "?")
+                .setMessage(L.t("Van a la papelera de MediaFire (se pueden recuperar desde la web)."))
+                .setPositiveButton(L.t("Borrar"), (d, w) -> {
                     clearSelection();
                     loading.setVisibility(View.VISIBLE);
                     io.execute(() -> {
@@ -688,12 +688,12 @@ public class CloudActivity extends Activity implements TransferEngine.Listener {
                         });
                     });
                 })
-                .setNegativeButton("Cancelar", null)
+                .setNegativeButton(L.t("Cancelar"), null)
                 .show();
     }
 
     private void rename(MediaFire.Item it) {
-        askName("Renombrar", it.name, n -> run(() -> mf.rename(it, n)));
+        askName(L.t("Renombrar"), it.name, n -> run(() -> mf.rename(it, n)));
     }
 
     private interface Op {
@@ -722,7 +722,7 @@ public class CloudActivity extends Activity implements TransferEngine.Listener {
     }
 
     private void askName(String t, String initial, NameCb cb) {
-        EditText in = field("Nombre", InputType.TYPE_CLASS_TEXT);
+        EditText in = field(L.t("Nombre"), InputType.TYPE_CLASS_TEXT);
         in.setText(initial);
         int dot = initial.lastIndexOf('.');
         in.setSelection(0, dot > 0 ? dot : initial.length());
@@ -732,11 +732,11 @@ public class CloudActivity extends Activity implements TransferEngine.Listener {
         new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
                 .setTitle(t)
                 .setView(box)
-                .setPositiveButton("Aceptar", (d, w) -> {
+                .setPositiveButton(L.t("Aceptar"), (d, w) -> {
                     String n = in.getText().toString().trim();
                     if (Paths.validName(n)) cb.on(n);
                 })
-                .setNegativeButton("Cancelar", null)
+                .setNegativeButton(L.t("Cancelar"), null)
                 .show();
     }
 
@@ -747,10 +747,10 @@ public class CloudActivity extends Activity implements TransferEngine.Listener {
                 main.post(() -> {
                     if (share) {
                         Intent i = new Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, l);
-                        startActivity(Intent.createChooser(i, "Compartir enlace"));
+                        startActivity(Intent.createChooser(i, L.t("Compartir enlace")));
                     } else {
                         getSystemService(ClipboardManager.class).setPrimaryClip(ClipData.newPlainText("MediaFire", l));
-                        Toast.makeText(this, "Enlace copiado", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, L.t("Enlace copiado"), Toast.LENGTH_SHORT).show();
                     }
                 });
             } catch (IOException e) {
@@ -762,7 +762,7 @@ public class CloudActivity extends Activity implements TransferEngine.Listener {
     /** Lo baja a una carpeta temporal y lo abre con la app que corresponda. */
     private void openFile(MediaFire.Item it) {
         loading.setVisibility(View.VISIBLE);
-        Toast.makeText(this, "Abriendo " + it.name + "…", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, L.t("Abriendo ") + it.name + "…", Toast.LENGTH_SHORT).show();
         io.execute(() -> {
             File dir = new File(getCacheDir(), "mediafire");
             //noinspection ResultOfMethodCallIgnored
@@ -804,23 +804,23 @@ public class CloudActivity extends Activity implements TransferEngine.Listener {
                 try {
                     startActivity(i);
                 } catch (Exception ex) {
-                    Toast.makeText(this, "No hay ninguna app para abrir este archivo", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, L.t("No hay ninguna app para abrir este archivo"), Toast.LENGTH_SHORT).show();
                 }
             });
         });
     }
 
     private void createMenu() {
-        String[] opts = {"Nueva carpeta", "Subir archivos de este celular"};
+        String[] opts = {L.t("Nueva carpeta"), L.t("Subir archivos de este celular")};
         new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
                 .setItems(opts, (d, w) -> {
                     if (w == 0) {
                         String parent = currentKey();
-                        askName("Nueva carpeta", "Nueva carpeta", n -> run(() -> mf.createFolder(parent, n)));
+                        askName(L.t("Nueva carpeta"), L.t("Nueva carpeta"), n -> run(() -> mf.createFolder(parent, n)));
                     } else {
                         Intent i = new Intent(this, PickerActivity.class).setAction(Intent.ACTION_GET_CONTENT)
                                 .setType("*/*").putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true);
-                        Toast.makeText(this, "Toca un archivo, o mantén presionado para elegir varios", Toast.LENGTH_LONG).show();
+                        Toast.makeText(this, L.t("Toca un archivo, o mantén presionado para elegir varios"), Toast.LENGTH_LONG).show();
                         startActivityForResult(i, REQ_PICK);
                     }
                 })
@@ -839,7 +839,7 @@ public class CloudActivity extends Activity implements TransferEngine.Listener {
         }
         if (paths.isEmpty()) return;
         TransferEngine.get(this).submitCloudUpload(paths, currentKey(), stack.get(stack.size() - 1)[1]);
-        Toast.makeText(this, "Subiendo a MediaFire…", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, L.t("Subiendo a MediaFire…"), Toast.LENGTH_SHORT).show();
     }
 
     private void addPath(List<String> out, Uri u) {
@@ -922,7 +922,7 @@ public class CloudActivity extends Activity implements TransferEngine.Listener {
             h.box.setBackground(Ui.round((color & 0x00FFFFFF) | 0x26000000, dp(14)));
             h.check.setVisibility(sel ? View.VISIBLE : View.GONE);
             h.name.setText(it.name);
-            h.info.setText(it.folder ? it.count + (it.count == 1 ? " elemento" : " elementos")
+            h.info.setText(it.folder ? it.count + (it.count == 1 ? L.t(" elemento") : L.t(" elementos"))
                     : Ui.size(it.size) + (it.created > 0 ? "  ·  " + Ui.date(it.created) : ""));
             v.setBackground(sel ? Ui.round(0xFF102A52, dp(14)) : Ui.rippleRound(0x00000000, dp(14)));
             return v;

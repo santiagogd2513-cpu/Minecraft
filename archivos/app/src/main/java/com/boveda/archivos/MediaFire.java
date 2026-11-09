@@ -130,7 +130,7 @@ final class MediaFire {
             prefs.edit().putString("email", email).putString("clave", encrypt(pass))
                     .putString("app", appId).putString("key", apiKey).apply();
         } catch (Exception e) {
-            throw new IOException("No se pudo guardar la sesión de forma segura", e);
+            throw new IOException(L.t("No se pudo guardar la sesión de forma segura"), e);
         }
     }
 
@@ -150,13 +150,13 @@ final class MediaFire {
         p.put("token_version", "1");
         JSONObject r = post("user/get_session_token.php", p);
         String t = r.optString("session_token", "");
-        if (t.isEmpty()) throw new IOException("MediaFire no devolvió la sesión");
+        if (t.isEmpty()) throw new IOException(L.t("MediaFire no devolvió la sesión"));
         return t;
     }
 
     private synchronized String token() throws IOException {
         if (token == null) {
-            if (!loggedIn()) throw new IOException("Primero inicia sesión en MediaFire");
+            if (!loggedIn()) throw new IOException(L.t("Primero inicia sesión en MediaFire"));
             token = requestToken(email, password, appId, apiKey);
         }
         return token;
@@ -179,7 +179,7 @@ final class MediaFire {
                 throw e;
             }
         }
-        throw new IOException("MediaFire no respondió");
+        throw new IOException(L.t("MediaFire no respondió"));
     }
 
     static final class ApiError extends IOException {
@@ -229,11 +229,11 @@ final class MediaFire {
         try {
             JSONObject r = new JSONObject(body).getJSONObject("response");
             if ("Error".equalsIgnoreCase(r.optString("result"))) {
-                throw new ApiError(r.optInt("error"), friendly(r.optInt("error"), r.optString("message", "Error de MediaFire")));
+                throw new ApiError(r.optInt("error"), friendly(r.optInt("error"), r.optString("message", L.t("Error de MediaFire"))));
             }
             return r;
         } catch (org.json.JSONException e) {
-            throw new IOException("MediaFire respondió algo inesperado (" + code + ")");
+            throw new IOException(L.t("MediaFire respondió algo inesperado (") + code + ")");
         }
     }
 
@@ -244,7 +244,7 @@ final class MediaFire {
             case 114 -> "Esa carpeta ya no existe";
             case 110, 111 -> "Ese archivo ya no existe";
             case 129 -> "No hay espacio suficiente en tu cuenta";
-            default -> msg + " (código " + code + ")";
+            default -> msg + L.t(" (código ") + code + ")";
         };
     }
 
@@ -307,7 +307,7 @@ final class MediaFire {
         p.put("action_on_duplicate", "keep");
         JSONObject r = call("folder/create.php", p);
         String k = r.optString("folder_key", r.optString("folderkey", ""));
-        if (k.isEmpty()) throw new IOException("MediaFire no creó la carpeta");
+        if (k.isEmpty()) throw new IOException(L.t("MediaFire no creó la carpeta"));
         return k;
     }
 
@@ -387,7 +387,7 @@ final class MediaFire {
         c.disconnect();
         Matcher m = Pattern.compile("href=\"(https?://download[^\"]+)\"").matcher(html);
         if (m.find()) return m.group(1).replace("&amp;", "&");
-        throw new IOException("MediaFire no dio el enlace de descarga de «" + it.name + "»");
+        throw new IOException(L.t("MediaFire no dio el enlace de descarga de «") + it.name + "»");
     }
 
     // ------------------------------------------------------------------ subir
@@ -509,7 +509,7 @@ final class MediaFire {
                 left -= r;
                 if (pr != null) pr.sent(r);
             }
-            if (left > 0) throw new IOException("El archivo cambió mientras se subía");
+            if (left > 0) throw new IOException(L.t("El archivo cambió mientras se subía"));
         }
     }
 
@@ -518,7 +518,7 @@ final class MediaFire {
         String k = d == null ? "" : d.optString("key", "");
         if (k.isEmpty()) {
             String res = d == null ? "?" : d.optString("result");
-            throw new IOException("MediaFire rechazó la subida (resultado " + res + ")");
+            throw new IOException(L.t("MediaFire rechazó la subida (resultado ") + res + ")");
         }
         return k;
     }
@@ -531,16 +531,16 @@ final class MediaFire {
             JSONObject d = call("upload/poll_upload.php", p).optJSONObject("doupload");
             if (d != null) {
                 String err = d.optString("fileerror", "");
-                if (!err.isEmpty() && !err.equals("0")) throw new IOException("MediaFire no aceptó el archivo (error " + err + ")");
+                if (!err.isEmpty() && !err.equals("0")) throw new IOException(L.t("MediaFire no aceptó el archivo (error ") + err + ")");
                 if (d.optInt("status") == 99) return d.optString("quickkey", "");
             }
             try {
                 Thread.sleep(1500);
             } catch (InterruptedException e) {
-                throw new IOException("Cancelado");
+                throw new IOException(L.t("Cancelado"));
             }
         }
-        throw new IOException("MediaFire tardó demasiado en procesar la subida");
+        throw new IOException(L.t("MediaFire tardó demasiado en procesar la subida"));
     }
 
     // ------------------------------------------------------------------ utilidades

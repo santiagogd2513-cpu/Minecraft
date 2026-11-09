@@ -166,9 +166,9 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             }
             if (what == null) return;
             StringBuilder det = new StringBuilder();
-            det.append("Bóveda ").append(BuildConfig.VERSION_NAME).append(" · Android ").append(Build.VERSION.RELEASE)
+            det.append("Bóveda ").append(BuildConfig.VERSION_NAME).append(L.t(" · Android ")).append(Build.VERSION.RELEASE)
                     .append(" · ").append(Build.MODEL).append('\n');
-            det.append("Motivo: ").append(what).append(" (").append(x.getReason()).append(")\n");
+            det.append(L.t("Motivo: ")).append(what).append(" (").append(x.getReason()).append(")\n");
             if (x.getDescription() != null) det.append(x.getDescription()).append('\n');
             java.io.File crash = new java.io.File(getFilesDir(), "ultimo_error.txt");
             if (x.getReason() == android.app.ApplicationExitInfo.REASON_CRASH && crash.exists()) {
@@ -195,15 +195,15 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             }
             String text = det.toString();
             new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
-                    .setTitle("La última vez Bóveda " + what)
-                    .setMessage("Copia los detalles y mándaselos a quien hizo la app para arreglarlo.\n\n"
+                    .setTitle(L.t("La última vez Bóveda ") + what)
+                    .setMessage(L.t("Copia los detalles y mándaselos a quien hizo la app para arreglarlo.\n\n")
                             + (text.length() > 1800 ? text.substring(0, 1800) + "…" : text))
-                    .setPositiveButton("Copiar detalles", (d, w) -> {
+                    .setPositiveButton(L.t("Copiar detalles"), (d, w) -> {
                         android.content.ClipboardManager cm = getSystemService(android.content.ClipboardManager.class);
-                        cm.setPrimaryClip(android.content.ClipData.newPlainText("Error de Bóveda", text));
-                        Toast.makeText(this, "Copiado", Toast.LENGTH_SHORT).show();
+                        cm.setPrimaryClip(android.content.ClipData.newPlainText(L.t("Error de Bóveda"), text));
+                        Toast.makeText(this, L.t("Copiado"), Toast.LENGTH_SHORT).show();
                     })
-                    .setNegativeButton("Cerrar", null)
+                    .setNegativeButton(L.t("Cerrar"), null)
                     .show();
         } catch (Throwable ignored) {
         }
@@ -335,7 +335,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         col.addView(head);
 
         search = new EditText(this);
-        search.setHint("Buscar en esta carpeta");
+        search.setHint(L.t("Buscar en esta carpeta"));
         search.setHintTextColor(0xFF5D6B83);
         search.setTextColor(Ui.TEXT);
         search.setSingleLine(true);
@@ -470,7 +470,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             c.setOnLongClickListener(v -> {
                 prefs.togglePinned(p);
                 buildChips();
-                Toast.makeText(this, "Desanclada", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, L.t("Desanclada"), Toast.LENGTH_SHORT).show();
                 return true;
             });
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-2, -2);
@@ -503,9 +503,9 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         for (StorageVolume v : sm.getStorageVolumes()) {
             File dir = Build.VERSION.SDK_INT >= 30 ? v.getDirectory() : (v.isPrimary() ? Environment.getExternalStorageDirectory() : null);
             if (dir == null) continue;
-            out.add(new Volume(dir.getAbsolutePath(), v.isPrimary() ? "Almacenamiento interno" : v.getDescription(this), v.isRemovable()));
+            out.add(new Volume(dir.getAbsolutePath(), v.isPrimary() ? L.t("Almacenamiento interno") : v.getDescription(this), v.isRemovable()));
         }
-        if (out.isEmpty()) out.add(new Volume(Paths.ROOT, "Almacenamiento interno", false));
+        if (out.isEmpty()) out.add(new Volume(Paths.ROOT, L.t("Almacenamiento interno"), false));
         return out;
     }
 
@@ -527,7 +527,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
 
     private String label(String p) {
         Volume v = volumeOf(p);
-        if (v != null && v.path.equals(p)) return v.removable ? "Tarjeta SD" : v.shortName;
+        if (v != null && v.path.equals(p)) return v.removable ? L.t("Tarjeta SD") : v.shortName;
         return Paths.name(p);
     }
 
@@ -547,15 +547,15 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         ImageView i = new ImageView(this);
         i.setImageDrawable(Ui.icon(this, R.drawable.ic_key, Ui.ACCENT));
         box.addView(i, new LinearLayout.LayoutParams(dp(64), dp(64)));
-        TextView t = Ui.text(this, "Bóveda necesita permiso", 21, Ui.TEXT, true);
+        TextView t = Ui.text(this, L.t("Bóveda necesita permiso"), 21, Ui.TEXT, true);
         t.setGravity(Gravity.CENTER);
         t.setPadding(0, dp(16), 0, dp(8));
         box.addView(t);
-        TextView d = Ui.text(this, "Para ver y manejar todos tus archivos, Android pide el permiso «Acceso a todos los archivos». "
-                + "En la pantalla que se abre, activa el interruptor de Bóveda y vuelve.", 14.5f, Ui.SUB, false);
+        TextView d = Ui.text(this, L.t("Para ver y manejar todos tus archivos, Android pide el permiso «Acceso a todos los archivos». ")
+                + L.t("En la pantalla que se abre, activa el interruptor de Bóveda y vuelve."), 14.5f, Ui.SUB, false);
         d.setGravity(Gravity.CENTER);
         box.addView(d);
-        box.addView(bigButton("Dar permiso", v -> {
+        box.addView(bigButton(L.t("Dar permiso"), v -> {
             try {
                 startActivity(new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION, Uri.parse("package:" + getPackageName())));
             } catch (Exception e) {
@@ -623,8 +623,8 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         fab.setVisibility(View.GONE);
         loading.setVisibility(View.INVISIBLE);
         backBtn.setVisibility(View.GONE);
-        title.setText(!picker() ? "Bóveda" : pickMode() == PICK_TREE ? "Elige una carpeta"
-                : pickMode() == PICK_CREATE ? "¿Dónde guardarlo?" : "Elige un archivo");
+        title.setText(!picker() ? "Bóveda" : pickMode() == PICK_TREE ? L.t("Elige una carpeta")
+                : pickMode() == PICK_CREATE ? L.t("¿Dónde guardarlo?") : L.t("Elige un archivo"));
         crumbs.removeAllViews();
         buildChips();
 
@@ -666,53 +666,53 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             box.addView(card, cl);
         }
 
-        box.addView(section("Accesos rápidos"));
+        box.addView(section(L.t("Accesos rápidos")));
         String r0 = Paths.ROOT;
-        box.addView(shortcut(R.drawable.ic_download, 0xFF6FD6FF, "Descargas", r0 + "/Download", null));
-        box.addView(shortcut(R.drawable.ic_camera, 0xFFFF8A5C, "Cámara (DCIM)", r0 + "/DCIM", null));
-        box.addView(shortcut(R.drawable.ic_doc, 0xFFFFC14D, "Documentos", r0 + "/Documents", null));
-        box.addView(shortcut(R.drawable.ic_music, 0xFFB58CFF, "Música", r0 + "/Music", null));
+        box.addView(shortcut(R.drawable.ic_download, 0xFF6FD6FF, L.t("Descargas"), r0 + "/Download", null));
+        box.addView(shortcut(R.drawable.ic_camera, 0xFFFF8A5C, L.t("Cámara (DCIM)"), r0 + "/DCIM", null));
+        box.addView(shortcut(R.drawable.ic_doc, 0xFFFFC14D, L.t("Documentos"), r0 + "/Documents", null));
+        box.addView(shortcut(R.drawable.ic_music, 0xFFB58CFF, L.t("Música"), r0 + "/Music", null));
         boolean dataOk = FsRouter.hasAccess(this, Paths.DATA), obbOk = FsRouter.hasAccess(this, Paths.OBB);
         box.addView(shortcut(R.drawable.ic_android, 0xFF35D08A, "Android/data", Paths.DATA,
-                dataOk ? "Con acceso" : "Toca para dar acceso"));
+                dataOk ? L.t("Con acceso") : L.t("Toca para dar acceso")));
         box.addView(shortcut(R.drawable.ic_android, 0xFF35D08A, "Android/obb", Paths.OBB,
-                obbOk ? "Con acceso" : "Toca para dar acceso"));
+                obbOk ? L.t("Con acceso") : L.t("Toca para dar acceso")));
 
         List<String> pins = prefs.pinned();
         if (!pins.isEmpty()) {
-            box.addView(section("Ancladas"));
+            box.addView(section(L.t("Ancladas")));
             for (String p : pins) box.addView(shortcut(R.drawable.ic_pin, Ui.ACCENT2, label(p), p, p));
         }
         List<String> favs = prefs.favorites();
-        box.addView(section("Favoritas"));
+        box.addView(section(L.t("Favoritas")));
         if (favs.isEmpty()) {
-            TextView t = Ui.text(this, "Mantén presionada una carpeta y elige «Favorita» para tenerla aquí.", 13, Ui.SUB, false);
+            TextView t = Ui.text(this, L.t("Mantén presionada una carpeta y elige «Favorita» para tenerla aquí."), 13, Ui.SUB, false);
             t.setPadding(dp(6), 0, dp(6), dp(6));
             box.addView(t);
         }
         for (String p : favs) box.addView(shortcut(R.drawable.ic_star, Ui.WARN, Paths.name(p), p, p));
 
         if (!picker()) {
-            box.addView(section("Nube y red"));
+            box.addView(section(L.t("Nube y red")));
             MediaFire mf = MediaFire.get(this);
-            box.addView(cloudCard(mf.loggedIn() ? mf.email() : "Toca para iniciar sesión"));
+            box.addView(cloudCard(mf.loggedIn() ? mf.email() : L.t("Toca para iniciar sesión")));
             Drive gd = Drive.get(this);
             box.addView(netRow("GD", 0xFF34A853, 0xFF4285F4, "Google Drive",
-                    gd.connected() ? (gd.email().isEmpty() ? "Conectado" : gd.email()) : "Toca para conectar",
+                    gd.connected() ? (gd.email().isEmpty() ? L.t("Conectado") : gd.email()) : L.t("Toca para conectar"),
                     v -> openDrive(), v -> {
                         driveMenu();
                         return true;
                     }));
             OneDrive od = OneDrive.get(this);
             box.addView(netRow("OD", 0xFF0A64D6, 0xFF28A8EA, "OneDrive",
-                    od.connected() ? (od.email().isEmpty() ? "Conectado" : od.email()) : "Toca para conectar",
+                    od.connected() ? (od.email().isEmpty() ? L.t("Conectado") : od.email()) : L.t("Toca para conectar"),
                     v -> openOneDrive(), v -> {
                         oneDriveMenu();
                         return true;
                     }));
             Mega mg = Mega.get(this);
             box.addView(netRow("M", 0xFFD9272E, 0xFFF0545A, "MEGA",
-                    mg.loggedIn() ? mg.email() : "Toca para iniciar sesión",
+                    mg.loggedIn() ? mg.email() : L.t("Toca para iniciar sesión"),
                     v -> openMega(), v -> {
                         megaMenu();
                         return true;
@@ -724,7 +724,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                             return true;
                         }));
             }
-            box.addView(netRow("+", 0xFF2A3346, 0xFF2A3346, "Añadir servidor FTP", "Xbox 360, PC, NAS, otro celular…",
+            box.addView(netRow("+", 0xFF2A3346, 0xFF2A3346, L.t("Añadir servidor FTP"), L.t("Xbox 360, PC, NAS, otro celular…"),
                     v -> editFtp(null), null));
             box.addView(section("Shizuku"));
             box.addView(shizukuCard());
@@ -801,7 +801,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
     private void ftpMenu(FtpServers.Server sv) {
         new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
                 .setTitle(sv.name)
-                .setItems(new String[]{"Editar", "Borrar este servidor"}, (d, w) -> {
+                .setItems(new String[]{L.t("Editar"), L.t("Borrar este servidor")}, (d, w) -> {
                     if (w == 0) editFtp(sv);
                     else {
                         FtpServers.get(this).remove(sv.id);
@@ -846,28 +846,28 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         LinearLayout box = Ui.column(this);
         box.setPadding(dp(20), dp(8), dp(20), dp(4));
         LinearLayout presets = Ui.row(this);
-        EditText name = input("Nombre (ej. Mi Xbox)", sv.name, android.text.InputType.TYPE_CLASS_TEXT);
-        EditText host = input("Dirección IP (ej. 192.168.1.20)", sv.host, android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_URI);
-        EditText port = input("Puerto", String.valueOf(sv.port), android.text.InputType.TYPE_CLASS_NUMBER);
+        EditText name = input(L.t("Nombre (ej. Mi Xbox)"), sv.name, android.text.InputType.TYPE_CLASS_TEXT);
+        EditText host = input(L.t("Dirección IP (ej. 192.168.1.20)"), sv.host, android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_URI);
+        EditText port = input(L.t("Puerto"), String.valueOf(sv.port), android.text.InputType.TYPE_CLASS_NUMBER);
         // sin mayúscula automática ni autocorrector: el usuario y la contraseña van tal cual
-        EditText user = input("Usuario (vacío = anónimo)", sv.user, android.text.InputType.TYPE_CLASS_TEXT
+        EditText user = input(L.t("Usuario (vacío = anónimo)"), sv.user, android.text.InputType.TYPE_CLASS_TEXT
                 | android.text.InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD | android.text.InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
-        EditText pass = input("Contraseña", sv.pass, android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        EditText pass = input(L.t("Contraseña"), sv.pass, android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD);
         TextView opts = Ui.text(this, "", 12.5f, Ui.SUB, false);
-        Runnable showOpts = () -> opts.setText((sv.passive ? "Modo pasivo" : "Modo activo") + "  ·  " + sv.maxConnections
-                + (sv.maxConnections == 1 ? " conexión" : " conexiones") + "  ·  " + (sv.latin1 ? "Latin-1" : "UTF-8") + "   (toca para cambiar)");
+        Runnable showOpts = () -> opts.setText((sv.passive ? L.t("Modo pasivo") : L.t("Modo activo")) + "  ·  " + sv.maxConnections
+                + (sv.maxConnections == 1 ? L.t(" conexión") : L.t(" conexiones")) + "  ·  " + (sv.latin1 ? "Latin-1" : "UTF-8") + L.t("   (toca para cambiar)"));
         showOpts.run();
         opts.setPadding(dp(4), dp(10), dp(4), dp(4));
         opts.setOnClickListener(v -> new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
-                .setItems(new String[]{"Modo: " + (sv.passive ? "pasivo → activo" : "activo → pasivo"),
-                        "Conexiones a la vez: " + sv.maxConnections + " → " + (sv.maxConnections >= 4 ? 1 : sv.maxConnections * 2),
-                        "Letras: " + (sv.latin1 ? "Latin-1 → UTF-8" : "UTF-8 → Latin-1 (servidores viejos)")}, (d, w) -> {
+                .setItems(new String[]{L.t("Modo: ") + (sv.passive ? L.t("pasivo → activo") : L.t("activo → pasivo")),
+                        L.t("Conexiones a la vez: ") + sv.maxConnections + " → " + (sv.maxConnections >= 4 ? 1 : sv.maxConnections * 2),
+                        L.t("Letras: ") + (sv.latin1 ? L.t("Latin-1 → UTF-8") : L.t("UTF-8 → Latin-1 (servidores viejos)"))}, (d, w) -> {
                     if (w == 0) sv.passive = !sv.passive;
                     else if (w == 1) sv.maxConnections = sv.maxConnections >= 4 ? 1 : sv.maxConnections * 2;
                     else sv.latin1 = !sv.latin1;
                     showOpts.run();
                 }).show());
-        presets.addView(chip("🎮 Xbox 360", false, v -> {
+        presets.addView(chip(L.t("🎮 Xbox 360"), false, v -> {
             if (name.getText().toString().trim().isEmpty()) name.setText("Xbox 360");
             port.setText("21");
             user.setText("xboxftp");
@@ -876,7 +876,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             sv.passive = true;
             sv.latin1 = true;
             showOpts.run();
-            Toast.makeText(this, "Pon la IP que muestra Aurora en la pantalla de la Xbox. Usuario y contraseña: xboxftp (en FreeStyle Dash: xbox)", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, L.t("Pon la IP que muestra Aurora en la pantalla de la Xbox. Usuario y contraseña: xboxftp (en FreeStyle Dash: xbox)"), Toast.LENGTH_LONG).show();
         }));
         TextView sp = new TextView(this);
         sp.setWidth(dp(8));
@@ -894,15 +894,15 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         ScrollView scroll = new ScrollView(this);
         scroll.addView(box);
         AlertDialog d = new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
-                .setTitle(existing == null ? "Nuevo servidor FTP" : "Editar servidor")
+                .setTitle(existing == null ? L.t("Nuevo servidor FTP") : L.t("Editar servidor"))
                 .setView(scroll)
-                .setPositiveButton("Conectar", null)
-                .setNegativeButton("Cancelar", null)
+                .setPositiveButton(L.t("Conectar"), null)
+                .setNegativeButton(L.t("Cancelar"), null)
                 .create();
         d.setOnShowListener(x -> d.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
             String h = host.getText().toString().trim().replaceFirst("^ftp://", "");
             if (h.isEmpty()) {
-                host.setError("Falta la dirección");
+                host.setError(L.t("Falta la dirección"));
                 return;
             }
             sv.host = h;
@@ -915,7 +915,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             sv.user = user.getText().toString().trim();
             sv.pass = pass.getText().toString();
             d.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
-            d.getButton(AlertDialog.BUTTON_POSITIVE).setText("Probando…");
+            d.getButton(AlertDialog.BUTTON_POSITIVE).setText(L.t("Probando…"));
             io.execute(() -> {
                 String err = null;
                 FtpClient c = new FtpClient(sv.host, sv.port, sv.passive,
@@ -932,11 +932,11 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                 main.post(() -> {
                     if (fe != null) {
                         d.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
-                        d.getButton(AlertDialog.BUTTON_POSITIVE).setText("Conectar");
-                        new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog).setTitle("No se pudo conectar")
-                                .setMessage(fe + "\n\nRevisa la IP, que el celular y el equipo estén en la misma red Wi-Fi y que el servidor FTP esté encendido. "
-                                        + "Si sigue fallando, cambia el modo pasivo/activo.")
-                                .setPositiveButton("Entendido", null).show();
+                        d.getButton(AlertDialog.BUTTON_POSITIVE).setText(L.t("Conectar"));
+                        new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog).setTitle(L.t("No se pudo conectar"))
+                                .setMessage(fe + L.t("\n\nRevisa la IP, que el celular y el equipo estén en la misma red Wi-Fi y que el servidor FTP esté encendido. ")
+                                        + L.t("Si sigue fallando, cambia el modo pasivo/activo."))
+                                .setPositiveButton(L.t("Entendido"), null).show();
                         return;
                     }
                     FtpServers.get(this).save(sv);
@@ -963,7 +963,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         }
         new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
                 .setTitle("OneDrive")
-                .setItems(new String[]{"Desconectar la cuenta", "Cambiar el ID de aplicación"}, (d, w) -> {
+                .setItems(new String[]{L.t("Desconectar la cuenta"), L.t("Cambiar el ID de aplicación")}, (d, w) -> {
                     if (w == 0) od.disconnect();
                     else od.forgetClient();
                     showHome();
@@ -975,47 +975,47 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         OneDrive od = OneDrive.get(this);
         LinearLayout box = Ui.column(this);
         box.setPadding(dp(20), dp(8), dp(20), dp(4));
-        EditText id = input("ID de aplicación (cliente)", od.clientId(), android.text.InputType.TYPE_CLASS_TEXT);
+        EditText id = input(L.t("ID de aplicación (cliente)"), od.clientId(), android.text.InputType.TYPE_CLASS_TEXT);
         if (!od.configured()) {
-            TextView guide = Ui.text(this, "Microsoft pide que cada app esté registrada. Se hace una sola vez, gratis:\n\n"
-                    + "1. Entra a entra.microsoft.com (o portal.azure.com) con tu cuenta de Microsoft.\n"
-                    + "2. Busca «Registros de aplicaciones» → «Nuevo registro».\n"
-                    + "3. Nombre: Bóveda. En «Tipos de cuenta compatibles» elige la opción que incluye «cuentas personales de Microsoft».\n"
+            TextView guide = Ui.text(this, L.t("Microsoft pide que cada app esté registrada. Se hace una sola vez, gratis:\n\n")
+                    + L.t("1. Entra a entra.microsoft.com (o portal.azure.com) con tu cuenta de Microsoft.\n")
+                    + L.t("2. Busca «Registros de aplicaciones» → «Nuevo registro».\n")
+                    + L.t("3. Nombre: Bóveda. En «Tipos de cuenta compatibles» elige la opción que incluye «cuentas personales de Microsoft».\n")
                     + "4. En «URI de redirección» elige la plataforma «Cliente público/nativo (móvil y escritorio)» y escribe: http://localhost\n"
-                    + "5. Toca «Registrar» y copia aquí el «Id. de aplicación (cliente)», que se ve así: 1a2b3c4d-…\n\n"
-                    + "No hace falta secreto ni tarjeta para esto. Al conectar, Microsoft te pedirá permiso para que Bóveda vea tus archivos.", 13, Ui.SUB, false);
+                    + L.t("5. Toca «Registrar» y copia aquí el «Id. de aplicación (cliente)», que se ve así: 1a2b3c4d-…\n\n")
+                    + L.t("No hace falta secreto ni tarjeta para esto. Al conectar, Microsoft te pedirá permiso para que Bóveda vea tus archivos."), 13, Ui.SUB, false);
             guide.setTextIsSelectable(true);
             box.addView(guide);
             box.addView(id, topMargin(dp(12)));
         } else {
-            box.addView(Ui.text(this, "Se abrirá el navegador para que entres con tu cuenta de Microsoft y le des permiso a Bóveda.", 14, Ui.SUB, false));
+            box.addView(Ui.text(this, L.t("Se abrirá el navegador para que entres con tu cuenta de Microsoft y le des permiso a Bóveda."), 14, Ui.SUB, false));
         }
         ScrollView scroll = new ScrollView(this);
         scroll.addView(box);
         AlertDialog d = new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
-                .setTitle("Conectar OneDrive")
+                .setTitle(L.t("Conectar OneDrive"))
                 .setView(scroll)
-                .setPositiveButton("Conectar", null)
-                .setNegativeButton("Cancelar", null)
+                .setPositiveButton(L.t("Conectar"), null)
+                .setNegativeButton(L.t("Cancelar"), null)
                 .create();
         d.setOnShowListener(x -> d.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
             if (!od.configured()) {
                 String i = id.getText().toString().trim();
                 if (!i.matches("[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}")) {
-                    id.setError("Copia el Id. de aplicación completo (8-4-4-4-12 letras y números)");
+                    id.setError(L.t("Copia el Id. de aplicación completo (8-4-4-4-12 letras y números)"));
                     return;
                 }
                 od.setClient(i);
             }
             d.dismiss();
-            Toast.makeText(this, "Entra con tu cuenta de Microsoft en el navegador y vuelve aquí", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, L.t("Entra con tu cuenta de Microsoft en el navegador y vuelve aquí"), Toast.LENGTH_LONG).show();
             od.login(this, err -> {
                 if (err != null) {
-                    new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog).setTitle("No se conectó OneDrive")
-                            .setMessage(err).setPositiveButton("Entendido", null).show();
+                    new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog).setTitle(L.t("No se conectó OneDrive"))
+                            .setMessage(err).setPositiveButton(L.t("Entendido"), null).show();
                     return;
                 }
-                Toast.makeText(this, "OneDrive conectado", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, L.t("OneDrive conectado"), Toast.LENGTH_SHORT).show();
                 open(OneDriveFs.ROOT);
             });
         }));
@@ -1037,7 +1037,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         }
         new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
                 .setTitle("MEGA · " + mg.email())
-                .setItems(new String[]{"Cerrar sesión"}, (d, w) -> new Thread(() -> {
+                .setItems(new String[]{L.t("Cerrar sesión")}, (d, w) -> new Thread(() -> {
                     mg.logout();
                     main.post(this::showHome);
                 }).start())
@@ -1049,41 +1049,41 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         boolean askCode = password != null;
         LinearLayout box = Ui.column(this);
         box.setPadding(dp(20), dp(8), dp(20), dp(4));
-        EditText mail = input("Correo de MEGA", email == null ? Mega.get(this).email() : email,
+        EditText mail = input(L.t("Correo de MEGA"), email == null ? Mega.get(this).email() : email,
                 android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
-        EditText pass = input("Contraseña", "", android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD);
-        EditText code = input("Código de 6 números", "", android.text.InputType.TYPE_CLASS_NUMBER);
+        EditText pass = input(L.t("Contraseña"), "", android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        EditText code = input(L.t("Código de 6 números"), "", android.text.InputType.TYPE_CLASS_NUMBER);
         if (askCode) {
-            box.addView(Ui.text(this, "Tu cuenta tiene verificación en dos pasos. Escribe el código de tu app de autenticación.", 14, Ui.SUB, false));
+            box.addView(Ui.text(this, L.t("Tu cuenta tiene verificación en dos pasos. Escribe el código de tu app de autenticación."), 14, Ui.SUB, false));
             box.addView(code, topMargin(dp(12)));
         } else {
-            box.addView(Ui.text(this, "Entra con tu cuenta de MEGA. La contraseña no se guarda: solo se queda la sesión, cifrada en el celular. "
-                    + "Todo se descifra aquí mismo, como en la app de MEGA.", 13, Ui.SUB, false));
+            box.addView(Ui.text(this, L.t("Entra con tu cuenta de MEGA. La contraseña no se guarda: solo se queda la sesión, cifrada en el celular. ")
+                    + L.t("Todo se descifra aquí mismo, como en la app de MEGA."), 13, Ui.SUB, false));
             box.addView(mail, topMargin(dp(12)));
             box.addView(pass, topMargin(dp(8)));
         }
         AlertDialog d = new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
-                .setTitle(askCode ? "Verificación de MEGA" : "Iniciar sesión en MEGA")
+                .setTitle(askCode ? L.t("Verificación de MEGA") : L.t("Iniciar sesión en MEGA"))
                 .setView(box)
-                .setPositiveButton("Entrar", null)
-                .setNegativeButton("Cancelar", null)
+                .setPositiveButton(L.t("Entrar"), null)
+                .setNegativeButton(L.t("Cancelar"), null)
                 .create();
         d.setOnShowListener(x -> d.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
             String m = askCode ? email : mail.getText().toString().trim();
             String p = askCode ? password : pass.getText().toString();
             String c = askCode ? code.getText().toString().trim() : null;
             if (!askCode && (!m.contains("@") || p.isEmpty())) {
-                (m.contains("@") ? pass : mail).setError(m.contains("@") ? "Falta la contraseña" : "Escribe tu correo");
+                (m.contains("@") ? pass : mail).setError(m.contains("@") ? L.t("Falta la contraseña") : L.t("Escribe tu correo"));
                 return;
             }
             if (askCode && c.length() < 6) {
-                code.setError("El código tiene 6 números");
+                code.setError(L.t("El código tiene 6 números"));
                 return;
             }
             d.dismiss();
             AlertDialog wait = new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
-                    .setTitle("Entrando a MEGA…")
-                    .setMessage("Preparando las llaves de cifrado. Puede tardar unos segundos.")
+                    .setTitle(L.t("Entrando a MEGA…"))
+                    .setMessage(L.t("Preparando las llaves de cifrado. Puede tardar unos segundos."))
                     .setCancelable(false).show();
             new Thread(() -> {
                 String err = null;
@@ -1103,10 +1103,10 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                     if (fc) {
                         showMegaLogin(m, p);
                     } else if (fe != null) {
-                        new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog).setTitle("No se pudo entrar a MEGA")
-                                .setMessage(fe).setPositiveButton("Entendido", null).show();
+                        new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog).setTitle(L.t("No se pudo entrar a MEGA"))
+                                .setMessage(fe).setPositiveButton(L.t("Entendido"), null).show();
                     } else {
-                        Toast.makeText(this, "MEGA conectado", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, L.t("MEGA conectado"), Toast.LENGTH_SHORT).show();
                         open(MegaFs.ROOT);
                     }
                 });
@@ -1131,7 +1131,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         }
         new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
                 .setTitle("Google Drive")
-                .setItems(new String[]{"Desconectar la cuenta", "Cambiar el ID de cliente"}, (d, w) -> {
+                .setItems(new String[]{L.t("Desconectar la cuenta"), L.t("Cambiar el ID de cliente")}, (d, w) -> {
                     if (w == 0) gd.disconnect();
                     else gd.forgetClient();
                     showHome();
@@ -1143,54 +1143,54 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         Drive gd = Drive.get(this);
         LinearLayout box = Ui.column(this);
         box.setPadding(dp(20), dp(8), dp(20), dp(4));
-        EditText id = input("ID de cliente (termina en .apps.googleusercontent.com)", gd.clientId(), android.text.InputType.TYPE_CLASS_TEXT);
-        EditText sec = input("Secreto del cliente", "", android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        EditText id = input(L.t("ID de cliente (termina en .apps.googleusercontent.com)"), gd.clientId(), android.text.InputType.TYPE_CLASS_TEXT);
+        EditText sec = input(L.t("Secreto del cliente"), "", android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD);
         if (!gd.configured()) {
-            TextView guide = Ui.text(this, "Google pide que cada app esté registrada. Se hace una sola vez, gratis (unos 5 minutos):\n\n"
-                    + "1. Entra a console.cloud.google.com con tu cuenta y crea un proyecto (por ejemplo «Bóveda»).\n"
-                    + "2. «APIs y servicios» → «Biblioteca»: busca «Google Drive API» y actívala.\n"
-                    + "3. «Pantalla de consentimiento de OAuth»: tipo Externo, nombre Bóveda y tu correo. "
-                    + "En «Usuarios de prueba» agrega tu correo. Luego toca «Publicar app» (así no te pide entrar cada semana).\n"
-                    + "4. «Credenciales» → «Crear credenciales» → «ID de cliente de OAuth» → tipo «App de escritorio».\n"
-                    + "5. Copia aquí el ID de cliente y el secreto.\n\n"
-                    + "Al conectar, Google dirá «Google no verificó esta app»: es tu propia app, toca «Continuar».", 13, Ui.SUB, false);
+            TextView guide = Ui.text(this, L.t("Google pide que cada app esté registrada. Se hace una sola vez, gratis (unos 5 minutos):\n\n")
+                    + L.t("1. Entra a console.cloud.google.com con tu cuenta y crea un proyecto (por ejemplo «Bóveda»).\n")
+                    + L.t("2. «APIs y servicios» → «Biblioteca»: busca «Google Drive API» y actívala.\n")
+                    + L.t("3. «Pantalla de consentimiento de OAuth»: tipo Externo, nombre Bóveda y tu correo. ")
+                    + L.t("En «Usuarios de prueba» agrega tu correo. Luego toca «Publicar app» (así no te pide entrar cada semana).\n")
+                    + L.t("4. «Credenciales» → «Crear credenciales» → «ID de cliente de OAuth» → tipo «App de escritorio».\n")
+                    + L.t("5. Copia aquí el ID de cliente y el secreto.\n\n")
+                    + L.t("Al conectar, Google dirá «Google no verificó esta app»: es tu propia app, toca «Continuar»."), 13, Ui.SUB, false);
             guide.setTextIsSelectable(true);
             box.addView(guide);
             box.addView(id, topMargin(dp(12)));
             box.addView(sec, topMargin(dp(8)));
         } else {
-            box.addView(Ui.text(this, "Se abrirá el navegador para que elijas tu cuenta de Google y le des permiso a Bóveda.", 14, Ui.SUB, false));
+            box.addView(Ui.text(this, L.t("Se abrirá el navegador para que elijas tu cuenta de Google y le des permiso a Bóveda."), 14, Ui.SUB, false));
         }
         ScrollView scroll = new ScrollView(this);
         scroll.addView(box);
         AlertDialog d = new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
-                .setTitle("Conectar Google Drive")
+                .setTitle(L.t("Conectar Google Drive"))
                 .setView(scroll)
-                .setPositiveButton("Conectar", null)
-                .setNegativeButton("Cancelar", null)
+                .setPositiveButton(L.t("Conectar"), null)
+                .setNegativeButton(L.t("Cancelar"), null)
                 .create();
         d.setOnShowListener(x -> d.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
             if (!gd.configured()) {
                 String i = id.getText().toString().trim(), s2 = sec.getText().toString().trim();
                 if (!i.endsWith(".apps.googleusercontent.com")) {
-                    id.setError("Copia el ID de cliente completo");
+                    id.setError(L.t("Copia el ID de cliente completo"));
                     return;
                 }
                 if (s2.isEmpty()) {
-                    sec.setError("Falta el secreto");
+                    sec.setError(L.t("Falta el secreto"));
                     return;
                 }
                 gd.setClient(i, s2);
             }
             d.dismiss();
-            Toast.makeText(this, "Elige tu cuenta en el navegador y vuelve aquí", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, L.t("Elige tu cuenta en el navegador y vuelve aquí"), Toast.LENGTH_LONG).show();
             gd.login(this, err -> {
                 if (err != null) {
-                    new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog).setTitle("No se conectó Google Drive")
-                            .setMessage(err).setPositiveButton("Entendido", null).show();
+                    new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog).setTitle(L.t("No se conectó Google Drive"))
+                            .setMessage(err).setPositiveButton(L.t("Entendido"), null).show();
                     return;
                 }
-                Toast.makeText(this, "Google Drive conectado", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, L.t("Google Drive conectado"), Toast.LENGTH_SHORT).show();
                 open(DriveFs.ROOT);
             });
         }));
@@ -1233,11 +1233,11 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         r.addView(t, Ui.weight(1));
         card.addView(r);
         if (!ShizukuHelper.ready()) {
-            TextView d = Ui.text(this, "Con Shizuku, Bóveda entra a Android/data y Android/obb en cualquier versión de Android, sin root.",
+            TextView d = Ui.text(this, L.t("Con Shizuku, Bóveda entra a Android/data y Android/obb en cualquier versión de Android, sin root."),
                     12.5f, Ui.SUB, false);
             d.setPadding(0, dp(8), 0, 0);
             card.addView(d);
-            card.addView(ghostButton(ShizukuHelper.running() ? "Conectar con Shizuku" : "¿Cómo activo Shizuku?", v -> useShizuku()),
+            card.addView(ghostButton(ShizukuHelper.running() ? L.t("Conectar con Shizuku") : L.t("¿Cómo activo Shizuku?"), v -> useShizuku()),
                     topMargin(dp(12)));
         }
         return card;
@@ -1246,18 +1246,18 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
     private void useShizuku() {
         if (ShizukuHelper.running()) {
             ShizukuHelper.connect();
-            Toast.makeText(this, "Acepta el permiso en la ventana de Shizuku", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, L.t("Acepta el permiso en la ventana de Shizuku"), Toast.LENGTH_SHORT).show();
             return;
         }
         new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
-                .setTitle("Activar Shizuku")
-                .setMessage("1. Instala la app Shizuku (Play Store o GitHub).\n"
-                        + "2. Ábrela y enciéndela con «Depuración inalámbrica» (sigue sus pasos; no necesita computador ni root).\n"
-                        + "3. Vuelve a Bóveda y toca «Conectar con Shizuku».\n\n"
-                        + "Hay que volver a encender Shizuku cada vez que se reinicia el celular.")
-                .setPositiveButton("Abrir Play Store", (d, w) -> openUrl("market://details?id=moe.shizuku.privileged.api",
+                .setTitle(L.t("Activar Shizuku"))
+                .setMessage(L.t("1. Instala la app Shizuku (Play Store o GitHub).\n")
+                        + L.t("2. Ábrela y enciéndela con «Depuración inalámbrica» (sigue sus pasos; no necesita computador ni root).\n")
+                        + L.t("3. Vuelve a Bóveda y toca «Conectar con Shizuku».\n\n")
+                        + L.t("Hay que volver a encender Shizuku cada vez que se reinicia el celular."))
+                .setPositiveButton(L.t("Abrir Play Store"), (d, w) -> openUrl("market://details?id=moe.shizuku.privileged.api",
                         "https://play.google.com/store/apps/details?id=moe.shizuku.privileged.api"))
-                .setNegativeButton("Cerrar", null)
+                .setNegativeButton(L.t("Cerrar"), null)
                 .show();
     }
 
@@ -1324,7 +1324,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                         showDriveSetup();
                     } else if (FtpServers.isFtp(p)) {
                         showHome();
-                        Toast.makeText(this, "Ese servidor FTP ya no está guardado", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, L.t("Ese servidor FTP ya no está guardado"), Toast.LENGTH_SHORT).show();
                     } else {
                         showNeedAccess(p);
                     }
@@ -1420,7 +1420,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         }
         adapter.notifyDataSetChanged();
         if (path != null) {
-            empty.setText(filter.isEmpty() ? "Carpeta vacía" : "Nada coincide con «" + filter + "»");
+            empty.setText(filter.isEmpty() ? L.t("Carpeta vacía") : L.t("Nada coincide con «") + filter + "»");
             empty.setVisibility(shown.isEmpty() ? View.VISIBLE : View.GONE);
         }
     }
@@ -1466,24 +1466,24 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         LinearLayout.LayoutParams il = new LinearLayout.LayoutParams(dp(56), dp(56));
         il.gravity = Gravity.CENTER_HORIZONTAL;
         box.addView(i, il);
-        TextView t = Ui.text(this, "Carpeta protegida por Android", 19, Ui.TEXT, true);
+        TextView t = Ui.text(this, L.t("Carpeta protegida por Android"), 19, Ui.TEXT, true);
         t.setGravity(Gravity.CENTER);
         t.setPadding(0, dp(14), 0, dp(8));
         box.addView(t);
-        TextView d = Ui.text(this, "Desde Android 11, Android/data y Android/obb están protegidas. Hay dos formas de entrar:", 14, Ui.SUB, false);
+        TextView d = Ui.text(this, L.t("Desde Android 11, Android/data y Android/obb están protegidas. Hay dos formas de entrar:"), 14, Ui.SUB, false);
         d.setGravity(Gravity.CENTER);
         box.addView(d);
 
         String base = Paths.under(p, Paths.OBB) ? Paths.OBB : Paths.under(p, Paths.DATA) ? Paths.DATA : p;
-        box.addView(section("1 · Con el selector del sistema"));
-        TextView d1 = Ui.text(this, "Se abre el selector de Android dentro de la carpeta «Android»: entra a «" + Paths.name(base)
-                + "», toca «Usar esta carpeta» y «Permitir». "
-                + "Funciona en Android 11 y 12 (y en algunos 13). En Android 13–14 a veces sí deja con la carpeta de una app.", 13, Ui.SUB, false);
+        box.addView(section(L.t("1 · Con el selector del sistema")));
+        TextView d1 = Ui.text(this, L.t("Se abre el selector de Android dentro de la carpeta «Android»: entra a «") + Paths.name(base)
+                + L.t("», toca «Usar esta carpeta» y «Permitir». ")
+                + L.t("Funciona en Android 11 y 12 (y en algunos 13). En Android 13–14 a veces sí deja con la carpeta de una app."), 13, Ui.SUB, false);
         box.addView(d1);
-        box.addView(bigButton("Dar acceso a " + Paths.name(base), v -> requestTree(base)), topMargin(dp(12)));
-        box.addView(ghostButton("Dar acceso a la carpeta de una app", v -> chooseAppFolder(base)), topMargin(dp(8)));
+        box.addView(bigButton(L.t("Dar acceso a ") + Paths.name(base), v -> requestTree(base)), topMargin(dp(12)));
+        box.addView(ghostButton(L.t("Dar acceso a la carpeta de una app"), v -> chooseAppFolder(base)), topMargin(dp(8)));
 
-        box.addView(section("2 · Con Shizuku (cualquier Android)"));
+        box.addView(section(L.t("2 · Con Shizuku (cualquier Android)")));
         box.addView(shizukuCard());
         addExtraView(box);
     }
@@ -1500,7 +1500,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         try {
             startActivityForResult(i, REQ_TREE);
         } catch (Exception e) {
-            Toast.makeText(this, "Este celular no tiene el selector de carpetas", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, L.t("Este celular no tiene el selector de carpetas"), Toast.LENGTH_LONG).show();
         }
     }
 
@@ -1516,7 +1516,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         String[] labels = new String[rows.size()];
         for (int k = 0; k < rows.size(); k++) labels[k] = rows.get(k)[0] + "\n" + rows.get(k)[1];
         new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
-                .setTitle("¿La carpeta de qué app?")
+                .setTitle(L.t("¿La carpeta de qué app?"))
                 .setItems(labels, (d, w) -> requestTree(Paths.join(base, rows.get(w)[1])))
                 .show();
     }
@@ -1530,11 +1530,11 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                 getContentResolver().takePersistableUriPermission(u,
                         Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
                 String base = FsRouter.basePath(DocumentsContract.getTreeDocumentId(u));
-                Toast.makeText(this, "Acceso concedido", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, L.t("Acceso concedido"), Toast.LENGTH_SHORT).show();
                 if (base != null && Paths.restricted(base)) open(base);
                 else if (path != null) load(path, false);
             } catch (Exception e) {
-                Toast.makeText(this, "Android no dejó guardar el permiso de esa carpeta", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, L.t("Android no dejó guardar el permiso de esa carpeta"), Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -1547,11 +1547,11 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             return;
         }
         if (e.dir) open(e.path);
-        else if (pickMode() == PICK_TREE) Toast.makeText(this, "Entra a la carpeta y toca «Usar esta carpeta»", Toast.LENGTH_SHORT).show();
+        else if (pickMode() == PICK_TREE) Toast.makeText(this, L.t("Entra a la carpeta y toca «Usar esta carpeta»"), Toast.LENGTH_SHORT).show();
         else if (pickMode() == PICK_CREATE) {
             if (saveName != null) saveName.setText(e.name);
         } else if (picker()) pick(List.of(e.path));
-        else if (Archive.isRar(e.name)) Toast.makeText(this, "Los RAR no son bienvenidos en Bóveda 🦶", Toast.LENGTH_SHORT).show();
+        else if (Archive.isRar(e.name)) Toast.makeText(this, L.t("Los RAR no son bienvenidos en Bóveda 🦶"), Toast.LENGTH_SHORT).show();
         else if (Archive.opensOnTap(e.name)) openArchive(e.path);
         else openFile(e);
     }
@@ -1586,18 +1586,18 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
     private void updateBarsInner() {
         bottom.removeAllViews();
         if (path != null && !selected.isEmpty()) {
-            title.setText(selected.size() + (selected.size() == 1 ? " seleccionado" : " seleccionados"));
+            title.setText(selected.size() + (selected.size() == 1 ? L.t(" seleccionado") : L.t(" seleccionados")));
             if (picker()) {
-                bottom.addView(action(R.drawable.ic_check, "Elegir", () -> pick(new ArrayList<>(selected))));
-                bottom.addView(action(R.drawable.ic_select_all, "Todo", this::selectAll));
-                bottom.addView(action(R.drawable.ic_close, "Quitar", this::clearSelection));
+                bottom.addView(action(R.drawable.ic_check, L.t("Elegir"), () -> pick(new ArrayList<>(selected))));
+                bottom.addView(action(R.drawable.ic_select_all, L.t("Todo"), this::selectAll));
+                bottom.addView(action(R.drawable.ic_close, L.t("Quitar"), this::clearSelection));
             } else {
-                bottom.addView(action(R.drawable.ic_copy, "Copiar", () -> toClip(false)));
-                bottom.addView(action(R.drawable.ic_cut, "Mover", () -> toClip(true)));
-                bottom.addView(action(R.drawable.ic_delete, "Borrar", this::askDelete));
-                bottom.addView(action(R.drawable.ic_archive, "Comprimir", this::askZip));
-                bottom.addView(action(R.drawable.ic_select_all, "Todo", this::selectAll));
-                bottom.addView(action(R.drawable.ic_menu, "Más", this::showMore));
+                bottom.addView(action(R.drawable.ic_copy, L.t("Copiar"), () -> toClip(false)));
+                bottom.addView(action(R.drawable.ic_cut, L.t("Mover"), () -> toClip(true)));
+                bottom.addView(action(R.drawable.ic_delete, L.t("Borrar"), this::askDelete));
+                bottom.addView(action(R.drawable.ic_archive, L.t("Comprimir"), this::askZip));
+                bottom.addView(action(R.drawable.ic_select_all, L.t("Todo"), this::selectAll));
+                bottom.addView(action(R.drawable.ic_menu, L.t("Más"), this::showMore));
             }
             bottom.setVisibility(View.VISIBLE);
             fab.setVisibility(View.GONE);
@@ -1608,12 +1608,12 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             title.setText(v != null && v.path.equals(path) ? v.name : Paths.name(path));
         }
         if (path != null && pickMode() == PICK_TREE) {
-            TextView info = Ui.text(this, "Dar acceso a «" + label(path) + "»", 14, Ui.TEXT, true);
+            TextView info = Ui.text(this, L.t("Dar acceso a «") + label(path) + "»", 14, Ui.TEXT, true);
             info.setPadding(dp(10), 0, 0, 0);
             info.setSingleLine(true);
             info.setEllipsize(TextUtils.TruncateAt.MIDDLE);
             bottom.addView(info, Ui.weight(1));
-            TextView go = bigButton("Usar esta carpeta", v -> returnTree(path));
+            TextView go = bigButton(L.t("Usar esta carpeta"), v -> returnTree(path));
             go.setPadding(dp(16), dp(10), dp(16), dp(10));
             bottom.addView(go);
             bottom.setVisibility(View.VISIBLE);
@@ -1622,10 +1622,10 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         if (path != null && pickMode() == PICK_CREATE) {
             String suggested = getIntent().getStringExtra(Intent.EXTRA_TITLE);
             String current = saveName != null ? saveName.getText().toString() : null;
-            saveName = input("Nombre del archivo", current != null ? current : suggested == null ? "archivo" : suggested,
+            saveName = input(L.t("Nombre del archivo"), current != null ? current : suggested == null ? "archivo" : suggested,
                     android.text.InputType.TYPE_CLASS_TEXT);
             bottom.addView(saveName, Ui.weight(1));
-            TextView go = bigButton("Guardar aquí", v -> createAndReturn(saveName.getText().toString().trim()));
+            TextView go = bigButton(L.t("Guardar aquí"), v -> createAndReturn(saveName.getText().toString().trim()));
             go.setPadding(dp(16), dp(10), dp(16), dp(10));
             LinearLayout.LayoutParams gl = new LinearLayout.LayoutParams(-2, -2);
             gl.setMargins(dp(8), 0, 0, 0);
@@ -1634,24 +1634,24 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             return;
         }
         if (path != null && !cloudDownload.isEmpty() && !picker()) {
-            TextView info = Ui.text(this, "Descargar " + (cloudDownload.size() == 1 ? "«" + cloudDownload.get(0).name + "»"
-                    : cloudDownload.size() + " elementos") + " de MediaFire", 13.5f, Ui.TEXT, true);
+            TextView info = Ui.text(this, L.t("Descargar ") + (cloudDownload.size() == 1 ? "«" + cloudDownload.get(0).name + "»"
+                    : cloudDownload.size() + L.t(" elementos")) + L.t(" de MediaFire"), 13.5f, Ui.TEXT, true);
             info.setPadding(dp(10), 0, 0, 0);
             info.setMaxLines(2);
             info.setEllipsize(TextUtils.TruncateAt.MIDDLE);
             bottom.addView(info, Ui.weight(1));
-            TextView cancel = Ui.text(this, "Cancelar", 14, Ui.SUB, true);
+            TextView cancel = Ui.text(this, L.t("Cancelar"), 14, Ui.SUB, true);
             cancel.setPadding(dp(14), dp(10), dp(14), dp(10));
             cancel.setOnClickListener(v -> {
                 cloudDownload.clear();
                 updateBars();
             });
             bottom.addView(cancel);
-            TextView go = bigButton("Descargar aquí", v -> {
+            TextView go = bigButton(L.t("Descargar aquí"), v -> {
                 engine.submitCloudDownload(new ArrayList<>(cloudDownload), path);
                 cloudDownload.clear();
                 updateBars();
-                Toast.makeText(this, "Descargando de MediaFire…", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, L.t("Descargando de MediaFire…"), Toast.LENGTH_SHORT).show();
             });
             go.setPadding(dp(16), dp(10), dp(16), dp(10));
             bottom.addView(go);
@@ -1659,24 +1659,24 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             return;
         }
         if (path != null && extractArchive != null && !picker()) {
-            String what = extractPicks.isEmpty() ? "todo" : extractPicks.size() + (extractPicks.size() == 1 ? " elemento" : " elementos");
-            TextView info = Ui.text(this, "Extraer " + what + " de «" + Paths.name(extractArchive) + "»", 13.5f, Ui.TEXT, true);
+            String what = extractPicks.isEmpty() ? "todo" : extractPicks.size() + (extractPicks.size() == 1 ? L.t(" elemento") : L.t(" elementos"));
+            TextView info = Ui.text(this, L.t("Extraer ") + what + L.t(" de «") + Paths.name(extractArchive) + "»", 13.5f, Ui.TEXT, true);
             info.setPadding(dp(10), 0, 0, 0);
             info.setMaxLines(2);
             info.setEllipsize(TextUtils.TruncateAt.MIDDLE);
             bottom.addView(info, Ui.weight(1));
-            TextView cancel = Ui.text(this, "Cancelar", 14, Ui.SUB, true);
+            TextView cancel = Ui.text(this, L.t("Cancelar"), 14, Ui.SUB, true);
             cancel.setPadding(dp(14), dp(10), dp(14), dp(10));
             cancel.setOnClickListener(v -> {
                 extractArchive = null;
                 updateBars();
             });
             bottom.addView(cancel);
-            TextView go = bigButton("Extraer aquí", v -> {
+            TextView go = bigButton(L.t("Extraer aquí"), v -> {
                 engine.submitExtract(extractArchive, new ArrayList<>(extractPicks), extractBase, path);
                 extractArchive = null;
                 updateBars();
-                Toast.makeText(this, "Extrayendo…", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, L.t("Extrayendo…"), Toast.LENGTH_SHORT).show();
             });
             go.setPadding(dp(16), dp(10), dp(16), dp(10));
             bottom.addView(go);
@@ -1685,7 +1685,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         }
         if (transferring && !picker()) {
             // mientras copia o mueve: en vez de Pegar/Cancelar, la opción de no apagar la pantalla
-            TextView info = Ui.text(this, "Mantener la pantalla siempre encendida", 14, Ui.TEXT, true);
+            TextView info = Ui.text(this, L.t("Mantener la pantalla siempre encendida"), 14, Ui.TEXT, true);
             info.setPadding(dp(10), 0, 0, 0);
             info.setMaxLines(2);
             bottom.addView(info, Ui.weight(1));
@@ -1696,7 +1696,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             sw.setOnCheckedChangeListener((b, on) -> {
                 prefs.setKeepScreenOn(on);
                 applyKeepScreen();
-                Toast.makeText(this, on ? "La pantalla no se apagará mientras trabaja" : "La pantalla se apagará como siempre",
+                Toast.makeText(this, on ? L.t("La pantalla no se apagará mientras trabaja") : L.t("La pantalla se apagará como siempre"),
                         Toast.LENGTH_SHORT).show();
             });
             bottom.addView(sw);
@@ -1705,18 +1705,18 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             return;
         }
         if (path != null && !clip.isEmpty() && !picker()) {
-            TextView info = Ui.text(this, (clipMove ? "Mover " : "Copiar ") + clip.size() + (clip.size() == 1 ? " elemento" : " elementos"),
+            TextView info = Ui.text(this, (clipMove ? L.t("Mover ") : L.t("Copiar ")) + clip.size() + (clip.size() == 1 ? L.t(" elemento") : L.t(" elementos")),
                     14, Ui.TEXT, true);
             info.setPadding(dp(10), 0, 0, 0);
             bottom.addView(info, Ui.weight(1));
-            TextView cancel = Ui.text(this, "Cancelar", 14, Ui.SUB, true);
+            TextView cancel = Ui.text(this, L.t("Cancelar"), 14, Ui.SUB, true);
             cancel.setPadding(dp(14), dp(10), dp(14), dp(10));
             cancel.setOnClickListener(v -> {
                 clip.clear();
                 updateBars();
             });
             bottom.addView(cancel);
-            TextView paste = bigButton("Pegar aquí", v -> paste());
+            TextView paste = bigButton(L.t("Pegar aquí"), v -> paste());
             paste.setPadding(dp(20), dp(10), dp(20), dp(10));
             bottom.addView(paste);
             bottom.setVisibility(View.VISIBLE);
@@ -1756,7 +1756,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         clip.addAll(selected);
         clipMove = move;
         clearSelection();
-        Toast.makeText(this, "Ve a la carpeta destino y toca «Pegar aquí»", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, L.t("Ve a la carpeta destino y toca «Pegar aquí»"), Toast.LENGTH_SHORT).show();
     }
 
     private void paste() {
@@ -1766,7 +1766,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         boolean move = clipMove;
         for (String s : src) {
             if (Paths.under(dest, s)) {
-                Toast.makeText(this, "No se puede pegar una carpeta dentro de sí misma", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, L.t("No se puede pegar una carpeta dentro de sí misma"), Toast.LENGTH_LONG).show();
                 return;
             }
         }
@@ -1774,7 +1774,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             boolean same = true;
             for (String s : src) if (!Paths.parent(s).equals(dest)) same = false;
             if (same) {
-                Toast.makeText(this, "Ya están en esta carpeta", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, L.t("Ya están en esta carpeta"), Toast.LENGTH_SHORT).show();
                 return;
             }
         }
@@ -1787,12 +1787,12 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             submitTransfer(move, src, dest, TransferEngine.Conflict.KEEP_BOTH);
             return;
         }
-        String[] opts = {"Reemplazar", "Mantener ambos (renombrar)", "Saltar los repetidos"};
+        String[] opts = {L.t("Reemplazar"), L.t("Mantener ambos (renombrar)"), L.t("Saltar los repetidos")};
         new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
-                .setTitle(clashes + (clashes == 1 ? " elemento ya existe aquí" : " elementos ya existen aquí"))
+                .setTitle(clashes + (clashes == 1 ? L.t(" elemento ya existe aquí") : L.t(" elementos ya existen aquí")))
                 .setItems(opts, (d, w) -> submitTransfer(move, src, dest,
                         w == 0 ? TransferEngine.Conflict.REPLACE : w == 1 ? TransferEngine.Conflict.KEEP_BOTH : TransferEngine.Conflict.SKIP))
-                .setNegativeButton("Cancelar", null)
+                .setNegativeButton(L.t("Cancelar"), null)
                 .show();
     }
 
@@ -1800,26 +1800,26 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         engine.submit(move ? TransferEngine.Kind.MOVE : TransferEngine.Kind.COPY, src, dest, c);
         clip.clear();
         updateBars();
-        Toast.makeText(this, move ? "Moviendo…" : "Copiando…", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, move ? L.t("Moviendo…") : L.t("Copiando…"), Toast.LENGTH_SHORT).show();
     }
 
     private void askDelete() {
         List<String> src = new ArrayList<>(selected);
         new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
-                .setTitle("¿Borrar " + (src.size() == 1 ? "«" + Paths.name(src.get(0)) + "»" : src.size() + " elementos") + "?")
-                .setMessage("Se borran para siempre (no van a una papelera).")
-                .setPositiveButton("Borrar", (d, w) -> {
+                .setTitle(L.t("¿Borrar ") + (src.size() == 1 ? "«" + Paths.name(src.get(0)) + "»" : src.size() + L.t(" elementos")) + "?")
+                .setMessage(L.t("Se borran para siempre (no van a una papelera)."))
+                .setPositiveButton(L.t("Borrar"), (d, w) -> {
                     engine.submit(TransferEngine.Kind.DELETE, src, null, TransferEngine.Conflict.SKIP);
                     clearSelection();
                 })
-                .setNegativeButton("Cancelar", null)
+                .setNegativeButton(L.t("Cancelar"), null)
                 .show();
     }
 
     private void askZip() {
         List<String> src = new ArrayList<>(selected);
         String suggested = src.size() == 1 ? stripExt(Paths.name(src.get(0))) : Paths.name(path);
-        askName("Comprimir en .zip", suggested + ".zip", name -> {
+        askName(L.t("Comprimir en .zip"), suggested + ".zip", name -> {
             String n = name.toLowerCase().endsWith(".zip") ? name : name + ".zip";
             engine.submit(TransferEngine.Kind.ZIP, src, Paths.join(path, n), TransferEngine.Conflict.REPLACE);
             clearSelection();
@@ -1839,40 +1839,40 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         if (sel.size() == 1) for (Entry e : all) if (e.path.equals(sel.get(0))) one = e;
         final Entry single = one;
         if (single != null) {
-            labels.add("Renombrar");
+            labels.add(L.t("Renombrar"));
             acts.add(() -> askRename(single));
             if (single.dir) {
-                labels.add(prefs.isFavorite(single.path) ? "Quitar de favoritas" : "Añadir a favoritas");
+                labels.add(prefs.isFavorite(single.path) ? L.t("Quitar de favoritas") : L.t("Añadir a favoritas"));
                 acts.add(() -> {
                     prefs.toggleFavorite(single.path);
                     clearSelection();
                 });
-                labels.add(prefs.isPinned(single.path) ? "Desanclar" : "Anclar arriba");
+                labels.add(prefs.isPinned(single.path) ? L.t("Desanclar") : L.t("Anclar arriba"));
                 acts.add(() -> {
                     prefs.togglePinned(single.path);
                     clearSelection();
                     buildChips();
                 });
             } else {
-                labels.add("Abrir con…");
+                labels.add(L.t("Abrir con…"));
                 acts.add(() -> openWith(single, true));
                 if (Archive.supported(single.name)) {
-                    labels.add("Ver contenido");
+                    labels.add(L.t("Ver contenido"));
                     acts.add(() -> {
                         clearSelection();
                         openArchive(single.path);
                     });
-                    labels.add("Extraer aquí");
+                    labels.add(L.t("Extraer aquí"));
                     acts.add(() -> {
                         engine.submitExtract(single.path, new ArrayList<>(), "", Paths.join(path, Archive.baseName(single.name)));
                         clearSelection();
-                        Toast.makeText(this, "Extrayendo…", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, L.t("Extrayendo…"), Toast.LENGTH_SHORT).show();
                     });
-                    labels.add("Extraer a…");
+                    labels.add(L.t("Extraer a…"));
                     acts.add(() -> {
                         setExtractClip(single.path, new ArrayList<>(), "");
                         clearSelection();
-                        Toast.makeText(this, "Ve a la carpeta destino y toca «Extraer aquí»", Toast.LENGTH_LONG).show();
+                        Toast.makeText(this, L.t("Ve a la carpeta destino y toca «Extraer aquí»"), Toast.LENGTH_LONG).show();
                     });
                 }
             }
@@ -1880,18 +1880,18 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         boolean allFiles = true;
         for (String s : sel) for (Entry e : all) if (e.path.equals(s) && e.dir) allFiles = false;
         if (allFiles) {
-            labels.add("Compartir");
+            labels.add(L.t("Compartir"));
             acts.add(() -> share(sel));
         }
-        labels.add("Subir a MediaFire");
+        labels.add(L.t("Subir a MediaFire"));
         acts.add(() -> {
             CloudActivity.pendingUpload.clear();
             CloudActivity.pendingUpload.addAll(sel);
             clearSelection();
-            Toast.makeText(this, "Elige la carpeta de MediaFire y toca «Subir aquí»", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, L.t("Elige la carpeta de MediaFire y toca «Subir aquí»"), Toast.LENGTH_LONG).show();
             openMediaFire();
         });
-        labels.add("Propiedades");
+        labels.add(L.t("Propiedades"));
         acts.add(() -> properties(sel));
         new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
                 .setItems(labels.toArray(new String[0]), (d, w) -> acts.get(w).run())
@@ -1915,13 +1915,13 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         AlertDialog d = new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
                 .setTitle(titleText)
                 .setView(box)
-                .setPositiveButton("Aceptar", null)
-                .setNegativeButton("Cancelar", null)
+                .setPositiveButton(L.t("Aceptar"), null)
+                .setNegativeButton(L.t("Cancelar"), null)
                 .create();
         d.setOnShowListener(x -> d.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
             String n = in.getText().toString().trim();
             if (!Paths.validName(n)) {
-                in.setError("Nombre no válido");
+                in.setError(L.t("Nombre no válido"));
                 return;
             }
             d.dismiss();
@@ -1933,12 +1933,12 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
     }
 
     private void askRename(Entry e) {
-        askName("Renombrar", e.name, n -> io.execute(() -> {
+        askName(L.t("Renombrar"), e.name, n -> io.execute(() -> {
             String to = Paths.join(Paths.parent(e.path), n);
             String err = null;
             try {
                 Fs f = FsRouter.get(this, e.path);
-                if (f.stat(to) != null && !n.equalsIgnoreCase(e.name)) err = "Ya existe algo con ese nombre";
+                if (f.stat(to) != null && !n.equalsIgnoreCase(e.name)) err = L.t("Ya existe algo con ese nombre");
                 else f.rename(e.path, to);
             } catch (IOException ex) {
                 err = ex.getMessage();
@@ -1962,10 +1962,10 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
 
     private void showCreate() {
         if (path == null) return;
-        String[] opts = {"Nueva carpeta", "Nuevo archivo de texto (.txt)", "Nuevo PDF"};
+        String[] opts = {L.t("Nueva carpeta"), L.t("Nuevo archivo de texto (.txt)"), L.t("Nuevo PDF")};
         new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
                 .setItems(opts, (d, w) -> {
-                    if (w == 0) askName(opts[0], "Nueva carpeta", n -> create(n, null, false));
+                    if (w == 0) askName(opts[0], L.t("Nueva carpeta"), n -> create(n, null, false));
                     else askDocument(w == 2);
                 })
                 .show();
@@ -1975,16 +1975,16 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
     private void askDocument(boolean pdf) {
         LinearLayout box = Ui.column(this);
         box.setPadding(dp(20), dp(8), dp(20), dp(4));
-        EditText name = input("Nombre", pdf ? "Documento" : "nuevo", android.text.InputType.TYPE_CLASS_TEXT);
+        EditText name = input(L.t("Nombre"), pdf ? L.t("Documento") : "nuevo", android.text.InputType.TYPE_CLASS_TEXT);
         TextView ext = Ui.text(this, pdf ? ".pdf" : ".txt", 15, Ui.SUB, true);
         ext.setPadding(dp(8), 0, 0, 0);
         LinearLayout nameRow = Ui.row(this);
         nameRow.addView(name, Ui.weight(1));
         nameRow.addView(ext);
         box.addView(nameRow);
-        EditText title = input("Título (opcional)", "", android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
+        EditText title = input(L.t("Título (opcional)"), "", android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
         if (pdf) box.addView(title, topMargin(dp(8)));
-        EditText body = input(pdf ? "Escribe el contenido del PDF (opcional)" : "Escribe el texto (opcional)", "",
+        EditText body = input(pdf ? L.t("Escribe el contenido del PDF (opcional)") : L.t("Escribe el texto (opcional)"), "",
                 android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_FLAG_MULTI_LINE
                         | android.text.InputType.TYPE_TEXT_FLAG_CAP_SENTENCES);
         body.setSingleLine(false);
@@ -1996,17 +1996,17 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         ScrollView scroll = new ScrollView(this);
         scroll.addView(box);
         AlertDialog d = new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
-                .setTitle(pdf ? "Nuevo PDF" : "Nuevo archivo de texto")
+                .setTitle(pdf ? L.t("Nuevo PDF") : L.t("Nuevo archivo de texto"))
                 .setView(scroll)
-                .setPositiveButton("Crear", null)
-                .setNegativeButton("Cancelar", null)
+                .setPositiveButton(L.t("Crear"), null)
+                .setNegativeButton(L.t("Cancelar"), null)
                 .create();
         d.setOnShowListener(x -> d.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
             String n = name.getText().toString().trim();
             String suffix = pdf ? ".pdf" : ".txt";
             if (n.toLowerCase().endsWith(suffix)) n = n.substring(0, n.length() - 4);
             if (!Paths.validName(n + suffix)) {
-                name.setError("Nombre no válido");
+                name.setError(L.t("Nombre no válido"));
                 return;
             }
             d.dismiss();
@@ -2032,7 +2032,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             String err = null;
             try {
                 Fs f = FsRouter.get(this, target);
-                if (f.stat(target) != null) err = "Ya existe algo con ese nombre";
+                if (f.stat(target) != null) err = L.t("Ya existe algo con ese nombre");
                 else if (!file) f.mkdir(target);
                 else try (java.io.OutputStream o = f.out(target)) {
                         if (writer != null) writer.write(o);
@@ -2040,25 +2040,25 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             } catch (IOException ex) {
                 err = ex.getMessage();
             } catch (RuntimeException ex) {
-                err = "No se pudo crear: " + ex.getMessage();
+                err = L.t("No se pudo crear: ") + ex.getMessage();
             }
             String fe = err;
             main.post(() -> {
                 if (fe != null) Toast.makeText(this, fe, Toast.LENGTH_LONG).show();
-                else if (file) Toast.makeText(this, "«" + n + "» creado", Toast.LENGTH_SHORT).show();
+                else if (file) Toast.makeText(this, "«" + n + L.t("» creado"), Toast.LENGTH_SHORT).show();
                 if (dir.equals(path)) load(path, true);
             });
         });
     }
 
     private void properties(List<String> sel) {
-        TextView t = Ui.text(this, "Calculando…", 14, Ui.TEXT, false);
+        TextView t = Ui.text(this, L.t("Calculando…"), 14, Ui.TEXT, false);
         t.setPadding(dp(24), dp(12), dp(24), dp(8));
         t.setTextIsSelectable(true);
         AlertDialog d = new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
-                .setTitle(sel.size() == 1 ? Paths.name(sel.get(0)) : sel.size() + " elementos")
+                .setTitle(sel.size() == 1 ? Paths.name(sel.get(0)) : sel.size() + L.t(" elementos"))
                 .setView(t)
-                .setPositiveButton("Cerrar", null)
+                .setPositiveButton(L.t("Cerrar"), null)
                 .show();
         io.execute(() -> {
             long[] acc = {0, 0, 0};
@@ -2067,11 +2067,11 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                 for (String s : sel) measure(FsRouter.get(this, s), s, acc);
                 if (sel.size() == 1) {
                     Entry e = FsRouter.get(this, sel.get(0)).stat(sel.get(0));
-                    sb.append("Ruta: ").append(sel.get(0)).append("\n");
-                    if (e != null) sb.append("Modificado: ").append(Ui.date(e.modified)).append("\n");
+                    sb.append(L.t("Ruta: ")).append(sel.get(0)).append("\n");
+                    if (e != null) sb.append(L.t("Modificado: ")).append(Ui.date(e.modified)).append("\n");
                 }
-                sb.append("Tamaño: ").append(Ui.size(acc[0])).append(" (").append(String.format("%,d", acc[0])).append(" bytes)\n");
-                sb.append("Archivos: ").append(acc[1]).append("   Carpetas: ").append(acc[2]);
+                sb.append(L.t("Tamaño: ")).append(Ui.size(acc[0])).append(" (").append(String.format("%,d", acc[0])).append(" bytes)\n");
+                sb.append(L.t("Archivos: ")).append(acc[1]).append(L.t("   Carpetas: ")).append(acc[2]);
             } catch (IOException ex) {
                 sb.append(ex.getMessage());
             }
@@ -2110,15 +2110,15 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         i.setDataAndType(contentUri(e.path), FileTypes.mime(e.name));
         i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
         try {
-            startActivity(chooser ? Intent.createChooser(i, "Abrir con") : i);
+            startActivity(chooser ? Intent.createChooser(i, L.t("Abrir con")) : i);
         } catch (Exception ex) {
             Intent any = new Intent(Intent.ACTION_VIEW);
             any.setDataAndType(contentUri(e.path), "*/*");
             any.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
             try {
-                startActivity(Intent.createChooser(any, "Abrir con"));
+                startActivity(Intent.createChooser(any, L.t("Abrir con")));
             } catch (Exception ignored) {
-                Toast.makeText(this, "No hay ninguna app para abrir este archivo", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, L.t("No hay ninguna app para abrir este archivo"), Toast.LENGTH_SHORT).show();
             }
         }
     }
@@ -2131,7 +2131,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         if (uris.size() == 1) i.putExtra(Intent.EXTRA_STREAM, uris.get(0));
         else i.putParcelableArrayListExtra(Intent.EXTRA_STREAM, uris);
         i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-        startActivity(Intent.createChooser(i, "Compartir"));
+        startActivity(Intent.createChooser(i, L.t("Compartir")));
         clearSelection();
     }
 
@@ -2169,7 +2169,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
     /** «Guardar como»: crea el archivo vacío aquí y se lo entrega a la otra app para que escriba. */
     private void createAndReturn(String name) {
         if (!Paths.validName(name)) {
-            Toast.makeText(this, "Escribe un nombre válido", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, L.t("Escribe un nombre válido"), Toast.LENGTH_SHORT).show();
             return;
         }
         String dir = path;
@@ -2228,40 +2228,40 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                 new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE),
                 new Intent(Intent.ACTION_VIEW).setDataAndType(Uri.parse("content://x/y"), "resource/folder"),
         };
-        String[] what = {"Adjuntar / elegir archivos", "Abrir documentos", "Elegir carpetas (emuladores…)", "Abrir carpetas"};
+        String[] what = {L.t("Adjuntar / elegir archivos"), L.t("Abrir documentos"), L.t("Elegir carpetas (emuladores…)"), L.t("Abrir carpetas")};
         String[] rows = new String[tests.length];
         String[] owners = new String[tests.length];
         for (int k = 0; k < tests.length; k++) {
             String p = handlerOf(tests[k]);
             owners[k] = p;
             String state;
-            if (p == null) state = "nadie (las apps se cierran) → toca para probar";
-            else if (p.equals(getPackageName())) state = "✓ Bóveda";
-            else if (p.equals("android") || p.contains("resolver")) state = "sin predeterminado → toca y elige Bóveda + «Siempre»";
-            else state = appName(p) + " → toca para quitarlo";
+            if (p == null) state = L.t("nadie (las apps se cierran) → toca para probar");
+            else if (p.equals(getPackageName())) state = L.t("✓ Bóveda");
+            else if (p.equals("android") || p.contains("resolver")) state = L.t("sin predeterminado → toca y elige Bóveda + «Siempre»");
+            else state = appName(p) + L.t(" → toca para quitarlo");
             rows[k] = what[k] + "\n" + state;
         }
         new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
-                .setTitle("Hacer a Bóveda el predeterminado")
+                .setTitle(L.t("Hacer a Bóveda el predeterminado"))
                 .setItems(rows, (d, w) -> {
                     String p = owners[w];
                     if (p != null && !p.equals(getPackageName()) && !p.equals("android") && !p.contains("resolver")) {
                         // otra app está puesta como predeterminada: hay que quitarla desde sus ajustes
-                        Toast.makeText(this, "Toca «Abrir de forma predeterminada» → «Borrar valores predeterminados» y vuelve",
+                        Toast.makeText(this, L.t("Toca «Abrir de forma predeterminada» → «Borrar valores predeterminados» y vuelve"),
                                 Toast.LENGTH_LONG).show();
                         startActivity(new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, Uri.parse("package:" + p)));
                     } else if (p == null || !p.equals(getPackageName())) {
-                        Toast.makeText(this, "Elige «Bóveda» y toca «Siempre»", Toast.LENGTH_LONG).show();
+                        Toast.makeText(this, L.t("Elige «Bóveda» y toca «Siempre»"), Toast.LENGTH_LONG).show();
                         try {
                             startActivityForResult(tests[w], REQ_DEFAULT_TEST);
                         } catch (Exception e) {
-                            Toast.makeText(this, "Android no dejó probarlo", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(this, L.t("Android no dejó probarlo"), Toast.LENGTH_SHORT).show();
                         }
                     } else {
-                        Toast.makeText(this, "Bóveda ya es el predeterminado para esto", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, L.t("Bóveda ya es el predeterminado para esto"), Toast.LENGTH_SHORT).show();
                     }
                 })
-                .setPositiveButton("Listo", null)
+                .setPositiveButton(L.t("Listo"), null)
                 .show();
     }
 
@@ -2283,7 +2283,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         root.setFitsSystemWindows(true);
         LinearLayout head = Ui.row(this);
         head.setPadding(dp(4), dp(8), dp(12), dp(6));
-        TextView title = Ui.text(this, "Ajustes", 21, Ui.TEXT, true);
+        TextView title = Ui.text(this, L.t("Ajustes"), 21, Ui.TEXT, true);
         ScrollView sv = new ScrollView(this);
         LinearLayout col = Ui.column(this);
         col.setPadding(dp(14), dp(4), dp(14), dp(32));
@@ -2292,7 +2292,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         Runnable[] home = new Runnable[1];
         home[0] = () -> {
             page[0] = -1;
-            title.setText("Ajustes");
+            title.setText(L.t("Ajustes"));
             settingsCategories(col, d, i -> {
                 page[0] = i;
                 title.setText(SETTINGS_CATEGORIES[i][0]);
@@ -2328,14 +2328,14 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
 
     /** {título, descripción} de cada categoría, en orden. */
     private static final String[][] SETTINGS_CATEGORIES = {
-            {"Idioma e interfaz", "Idioma, pestañas y pantalla"},
-            {"Vista y archivos", "Ocultos, orden, miniaturas y conteos"},
-            {"Visores", "Reproductor, fotos, editor y PDF"},
-            {"Transferencias", "Copiar, mover y la barra de progreso"},
-            {"Nube y red", "MEGA, OneDrive, Google Drive, MediaFire y FTP"},
-            {"Acceso a carpetas", "Shizuku y permisos para otras apps"},
-            {"Almacenamiento", "Archivos temporales"},
-            {"Acerca de", "Versión y Forja Estudios"},
+            {L.t("Idioma e interfaz"), L.t("Idioma, pestañas y pantalla")},
+            {L.t("Vista y archivos"), L.t("Ocultos, orden, miniaturas y conteos")},
+            {L.t("Visores"), L.t("Reproductor, fotos, editor y PDF")},
+            {L.t("Transferencias"), L.t("Copiar, mover y la barra de progreso")},
+            {L.t("Nube y red"), L.t("MEGA, OneDrive, Google Drive, MediaFire y FTP")},
+            {L.t("Acceso a carpetas"), L.t("Shizuku y permisos para otras apps")},
+            {L.t("Almacenamiento"), L.t("Archivos temporales")},
+            {L.t("Acerca de"), L.t("Versión y Forja Estudios")},
     };
     private static final int[] SETTINGS_ICONS = {R.drawable.ic_menu, R.drawable.ic_folder, R.drawable.ic_play, R.drawable.ic_swap,
             R.drawable.ic_download, R.drawable.ic_shield, R.drawable.ic_sd, R.drawable.ic_info};
@@ -2377,23 +2377,20 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         Runnable refresh = () -> fillSettings(col, d, category);
         switch (category) {
             case 0 -> {
-                settingsSection(col, "Idioma");
-                settingsRow(col, "Idioma de Bóveda", "Español", () -> new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
-                        .setTitle("Idioma")
-                        .setMessage("Por ahora Bóveda está en español. Más idiomas llegarán en próximas versiones.")
-                        .setPositiveButton("Entendido", null).show());
-                settingsSection(col, "Interfaz");
+                settingsSection(col, L.t("Idioma"));
+                settingsRow(col, L.t("Idioma de Bóveda"), languageName(prefs.language()), this::pickLanguage);
+                settingsSection(col, L.t("Interfaz"));
                 tabsSetting(col, refresh);
-                settingsSwitch(col, "Pantalla encendida al copiar", "No deja que la pantalla se apague mientras hay una transferencia en curso",
+                settingsSwitch(col, L.t("Pantalla encendida al copiar"), L.t("No deja que la pantalla se apague mientras hay una transferencia en curso"),
                         prefs.keepScreenOn(), b -> prefs.setKeepScreenOn(b));
             }
             case 1 -> {
-                settingsSection(col, "Vista");
-                settingsSwitch(col, "Mostrar archivos ocultos", "Los que empiezan con un punto (.nomedia, .thumbnails…)",
+                settingsSection(col, L.t("Vista"));
+                settingsSwitch(col, L.t("Mostrar archivos ocultos"), L.t("Los que empiezan con un punto (.nomedia, .thumbnails…)"),
                         prefs.showHidden(), b -> prefs.setShowHidden(b));
-                settingsRow(col, "Ordenar por", Prefs.SORT_NAMES[prefs.sort()] + (prefs.sortDesc() ? " (descendente)" : " (ascendente)"),
+                settingsRow(col, L.t("Ordenar por"), Prefs.SORT_NAMES[prefs.sort()] + (prefs.sortDesc() ? L.t(" (descendente)") : L.t(" (ascendente)")),
                         () -> new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
-                                .setTitle("Ordenar por")
+                                .setTitle(L.t("Ordenar por"))
                                 .setSingleChoiceItems(Prefs.SORT_NAMES, prefs.sort(), (dd, w) -> {
                                     if (w == prefs.sort()) prefs.setSortDesc(!prefs.sortDesc());
                                     else {
@@ -2403,80 +2400,113 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                                     dd.dismiss();
                                     refresh.run();
                                 }).show());
-                settingsSwitch(col, "Contar elementos de las carpetas", "«3 carpetas · 12 archivos» debajo de cada carpeta",
+                settingsSwitch(col, L.t("Contar elementos de las carpetas"), L.t("«3 carpetas · 12 archivos» debajo de cada carpeta"),
                         prefs.showCounts(), b -> {
                             prefs.setShowCounts(b);
                             counts.clear();
                         });
-                settingsSection(col, "Archivos");
-                settingsSwitch(col, "Miniaturas", "Vista previa de fotos y videos, e ícono de cada APK",
+                settingsSection(col, L.t("Archivos"));
+                settingsSwitch(col, L.t("Miniaturas"), L.t("Vista previa de fotos y videos, e ícono de cada APK"),
                         prefs.thumbnails(), b -> prefs.setThumbnails(b));
-                settingsSwitch(col, "Íconos de apps en Android/data", "Muestra el ícono y el nombre de la app dueña de cada carpeta",
+                settingsSwitch(col, L.t("Íconos de apps en Android/data"), L.t("Muestra el ícono y el nombre de la app dueña de cada carpeta"),
                         prefs.appIcons(), b -> prefs.setAppIcons(b));
             }
             case 2 -> {
-                settingsSection(col, "Visores");
-                settingsSwitch(col, "Abrir con los visores de Bóveda", "Música y video con el reproductor, imágenes con el visor de fotos, texto y código con el editor, y PDF con el visor. Apagado: con otras apps",
+                settingsSection(col, L.t("Visores"));
+                settingsSwitch(col, L.t("Abrir con los visores de Bóveda"), L.t("Música y video con el reproductor, imágenes con el visor de fotos, texto y código con el editor, y PDF con el visor. Apagado: con otras apps"),
                         prefs.ownViewers(), b -> prefs.setOwnViewers(b));
             }
             case 3 -> {
-                settingsSection(col, "Transferencias");
-                settingsSwitch(col, "Verificar cada copia", "Vuelve a leer cada archivo copiado y lo compara con el original. Más seguro, un poco más lento",
+                settingsSection(col, L.t("Transferencias"));
+                settingsSwitch(col, L.t("Verificar cada copia"), L.t("Vuelve a leer cada archivo copiado y lo compara con el original. Más seguro, un poco más lento"),
                         prefs.verify(), b -> prefs.setVerify(b));
-                settingsSwitch(col, "Barra de progreso flotante", "Porcentaje, velocidad y tiempo al copiar, mover, borrar, comprimir o subir",
+                settingsSwitch(col, L.t("Barra de progreso flotante"), L.t("Porcentaje, velocidad y tiempo al copiar, mover, borrar, comprimir o subir"),
                         prefs.floatingProgress(), b -> prefs.setFloatingProgress(b));
-                settingsRow(col, "Ver transferencias", "Tareas en curso y terminadas", this::showTransfers);
+                settingsRow(col, L.t("Ver transferencias"), L.t("Tareas en curso y terminadas"), this::showTransfers);
             }
             case 4 -> {
-                settingsSection(col, "Nubes");
-                settingsRow(col, "MEGA", Mega.get(this).loggedIn() ? Mega.get(this).email() : "Iniciar sesión", () -> {
+                settingsSection(col, L.t("Nubes"));
+                settingsRow(col, "MEGA", Mega.get(this).loggedIn() ? Mega.get(this).email() : L.t("Iniciar sesión"), () -> {
                     d.dismiss();
                     if (Mega.get(this).loggedIn()) megaMenu();
                     else showMegaLogin(null, null);
                 });
-                settingsRow(col, "OneDrive", OneDrive.get(this).connected() ? "Conectado" : "Conectar", () -> {
+                settingsRow(col, "OneDrive", OneDrive.get(this).connected() ? L.t("Conectado") : L.t("Conectar"), () -> {
                     d.dismiss();
                     if (OneDrive.get(this).connected()) oneDriveMenu();
                     else showOneDriveSetup();
                 });
-                settingsRow(col, "Google Drive", Drive.get(this).connected() ? "Conectado" : "Conectar", () -> {
+                settingsRow(col, "Google Drive", Drive.get(this).connected() ? L.t("Conectado") : L.t("Conectar"), () -> {
                     d.dismiss();
                     if (Drive.get(this).connected()) driveMenu();
                     else showDriveSetup();
                 });
-                settingsRow(col, "MediaFire", MediaFire.get(this).loggedIn() ? "Sesión iniciada" : "Iniciar sesión", () -> {
+                settingsRow(col, "MediaFire", MediaFire.get(this).loggedIn() ? L.t("Sesión iniciada") : L.t("Iniciar sesión"), () -> {
                     d.dismiss();
                     openMediaFire();
                 });
-                settingsSection(col, "Red");
-                settingsRow(col, "Añadir servidor FTP", "Xbox 360, PC, otro celular…", () -> {
+                settingsSection(col, L.t("Red"));
+                settingsRow(col, L.t("Añadir servidor FTP"), L.t("Xbox 360, PC, otro celular…"), () -> {
                     d.dismiss();
                     editFtp(null);
                 });
             }
             case 5 -> {
-                settingsSection(col, "Acceso a carpetas");
+                settingsSection(col, L.t("Acceso a carpetas"));
                 settingsRow(col, "Shizuku", ShizukuHelper.status(), () -> {
                     useShizuku();
                     refresh.run();
                 });
-                settingsRow(col, "Gestor de archivos predeterminado", "Que Bóveda abra las carpetas y elija archivos para otras apps", this::showDefaultSetup);
-                settingsRow(col, "Dar carpetas a otras apps", "Emuladores y apps que piden una carpeta (Dolphin, Limbo…)", this::explainProvider);
+                settingsRow(col, L.t("Gestor de archivos predeterminado"), L.t("Que Bóveda abra las carpetas y elija archivos para otras apps"), this::showDefaultSetup);
+                settingsRow(col, L.t("Dar carpetas a otras apps"), L.t("Emuladores y apps que piden una carpeta (Dolphin, Limbo…)"), this::explainProvider);
             }
             case 6 -> {
-                settingsSection(col, "Almacenamiento");
-                settingsRow(col, "Borrar archivos temporales", Ui.size(dirSize(getCacheDir())) + " en caché (vistas previas, descargas de la nube y FTP)", () -> {
+                settingsSection(col, L.t("Almacenamiento"));
+                settingsRow(col, L.t("Borrar archivos temporales"), Ui.size(dirSize(getCacheDir())) + L.t(" en caché (vistas previas, descargas de la nube y FTP)"), () -> {
                     deleteChildren(getCacheDir());
-                    Toast.makeText(this, "Archivos temporales borrados", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, L.t("Archivos temporales borrados"), Toast.LENGTH_SHORT).show();
                     refresh.run();
                 });
             }
             default -> {
-                settingsSection(col, "Acerca de");
-                settingsRow(col, "Bóveda " + BuildConfig.VERSION_NAME, "Gestor de archivos · compilación " + BuildConfig.VERSION_CODE, null);
+                settingsSection(col, L.t("Acerca de"));
+                settingsRow(col, "Bóveda " + BuildConfig.VERSION_NAME, L.t("Gestor de archivos · compilación ") + BuildConfig.VERSION_CODE, null);
                 addCard(col, Studio.row(this, null));
             }
         }
+    }
+
+    private String languageName(String code) {
+        for (String[] l : L.LANGS) {
+            if (l[0].equals(code)) return l[0].equals("auto") ? L.t("Automático") + " · " + languageName(L.code()) : l[1];
+        }
+        return code;
+    }
+
+    /** Elegir idioma: Bóveda se reinicia sola para cambiar todos los textos. */
+    private void pickLanguage() {
+        String[] names = new String[L.LANGS.length];
+        int sel = 0;
+        for (int i = 0; i < names.length; i++) {
+            names[i] = i == 0 ? L.t("Automático (idioma del teléfono)") : L.LANGS[i][1];
+            if (L.LANGS[i][0].equals(prefs.language())) sel = i;
+        }
+        new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                .setTitle(L.t("Idioma"))
+                .setSingleChoiceItems(names, sel, (dd, w) -> {
+                    dd.dismiss();
+                    if (L.LANGS[w][0].equals(prefs.language())) return;
+                    prefs.setLanguage(L.LANGS[w][0]);
+                    Toast.makeText(this, L.t("Cambiando el idioma…"), Toast.LENGTH_SHORT).show();
+                    Intent restart = getPackageManager().getLaunchIntentForPackage(getPackageName());
+                    if (restart != null) {
+                        restart.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(restart);
+                    }
+                    main.postDelayed(() -> Runtime.getRuntime().exit(0), 300);
+                })
+                .setNegativeButton(L.t("Cancelar"), null)
+                .show();
     }
 
     /**
@@ -2484,7 +2514,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
      */
     private void tabsSetting(LinearLayout col, Runnable refresh) {
         boolean on = prefs.tabsEnabled();
-        LinearLayout r = settingsCard("Pestañas", on ? prefs.tabCount() + " pestañas · toca para cambiar cuántas" : "Apagadas: una sola vista");
+        LinearLayout r = settingsCard(L.t("Pestañas"), on ? prefs.tabCount() + L.t(" pestañas · toca para cambiar cuántas") : L.t("Apagadas: una sola vista"));
         android.widget.Switch sw = new android.widget.Switch(this);
         sw.setChecked(on);
         sw.setThumbTintList(android.content.res.ColorStateList.valueOf(Color.WHITE));
@@ -2499,16 +2529,16 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         r.addView(sw, sl);
         r.setOnClickListener(v -> {
             String[] names = new String[Tabs.MAX - 1];
-            for (int i = 0; i < names.length; i++) names[i] = (i + 2) + " pestañas";
+            for (int i = 0; i < names.length; i++) names[i] = (i + 2) + L.t(" pestañas");
             new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
-                    .setTitle("¿Cuántas pestañas?")
+                    .setTitle(L.t("¿Cuántas pestañas?"))
                     .setSingleChoiceItems(names, prefs.tabCount() - 2, (dd, w) -> {
                         prefs.setTabCount(w + 2);
                         prefs.setTabsEnabled(true);
                         dd.dismiss();
                         refresh.run();
                     })
-                    .setNegativeButton("Cancelar", null)
+                    .setNegativeButton(L.t("Cancelar"), null)
                     .show();
         });
         addCard(col, r);
@@ -2593,42 +2623,42 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         List<String> labels = new ArrayList<>();
         List<Runnable> acts = new ArrayList<>();
         if (!picker()) {
-            labels.add("⚙  Ajustes");
+            labels.add(L.t("⚙  Ajustes"));
             acts.add(this::showSettings);
         }
-        labels.add((prefs.showHidden() ? "✓ " : "") + "Mostrar archivos ocultos");
+        labels.add((prefs.showHidden() ? "✓ " : "") + L.t("Mostrar archivos ocultos"));
         acts.add(() -> {
             prefs.setShowHidden(!prefs.showHidden());
             if (path != null) load(path, true);
         });
-        labels.add("Ordenar por: " + Prefs.SORT_NAMES[prefs.sort()] + (prefs.sortDesc() ? " (descendente)" : ""));
+        labels.add(L.t("Ordenar por: ") + Prefs.SORT_NAMES[prefs.sort()] + (prefs.sortDesc() ? L.t(" (descendente)") : ""));
         acts.add(this::chooseSort);
         if (path != null && !picker()) {
-            labels.add(prefs.isPinned(path) ? "Desanclar esta carpeta" : "Anclar esta carpeta");
+            labels.add(prefs.isPinned(path) ? L.t("Desanclar esta carpeta") : L.t("Anclar esta carpeta"));
             acts.add(() -> {
                 prefs.togglePinned(path);
                 buildChips();
             });
-            labels.add(prefs.isFavorite(path) ? "Quitar de favoritas" : "Añadir a favoritas");
+            labels.add(prefs.isFavorite(path) ? L.t("Quitar de favoritas") : L.t("Añadir a favoritas"));
             acts.add(() -> prefs.toggleFavorite(path));
-            labels.add("Seleccionar todo");
+            labels.add(L.t("Seleccionar todo"));
             acts.add(this::selectAll);
         }
         if (!picker()) {
-            labels.add((prefs.verify() ? "✓ " : "") + "Verificar cada copia (más seguro)");
+            labels.add((prefs.verify() ? "✓ " : "") + L.t("Verificar cada copia (más seguro)"));
             acts.add(() -> {
                 prefs.setVerify(!prefs.verify());
-                Toast.makeText(this, prefs.verify() ? "Cada archivo copiado se vuelve a leer y se compara con el original"
-                        : "Verificación apagada: copias más rápidas", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, prefs.verify() ? L.t("Cada archivo copiado se vuelve a leer y se compara con el original")
+                        : L.t("Verificación apagada: copias más rápidas"), Toast.LENGTH_LONG).show();
             });
-            labels.add("Shizuku: " + ShizukuHelper.status());
+            labels.add(L.t("Shizuku: ") + ShizukuHelper.status());
             acts.add(this::useShizuku);
-            labels.add("Hacer a Bóveda el gestor predeterminado");
+            labels.add(L.t("Hacer a Bóveda el gestor predeterminado"));
             acts.add(this::showDefaultSetup);
-            labels.add("Dar carpetas a otras apps (emuladores…)");
+            labels.add(L.t("Dar carpetas a otras apps (emuladores…)"));
             acts.add(this::explainProvider);
         }
-        labels.add("Inicio");
+        labels.add(L.t("Inicio"));
         acts.add(this::showHome);
         new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
                 .setItems(labels.toArray(new String[0]), (d, w) -> acts.get(w).run())
@@ -2637,7 +2667,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
 
     private void chooseSort() {
         new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
-                .setTitle("Ordenar por")
+                .setTitle(L.t("Ordenar por"))
                 .setSingleChoiceItems(Prefs.SORT_NAMES, prefs.sort(), (d, w) -> {
                     if (w == prefs.sort()) prefs.setSortDesc(!prefs.sortDesc());
                     else {
@@ -2652,16 +2682,16 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
 
     private void explainProvider() {
         new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
-                .setTitle("Dar carpetas a otras apps")
-                .setMessage("Cuando una app (un emulador, por ejemplo) te pida elegir una carpeta o un archivo:\n\n"
-                        + "1. En el selector de Android, abre el menú (☰) de la izquierda.\n"
-                        + "2. Elige «Bóveda».\n"
-                        + "3. Entra a la carpeta que quieras y toca «Usar esta carpeta».\n\n"
-                        + "Con Bóveda puedes darle carpetas que el selector normal no deja (la raíz, Descargas) y, "
-                        + "si Bóveda tiene Shizuku o el permiso, también Android/data y Android/obb.\n\n"
-                        + "Para que Bóveda sea tu gestor de archivos predeterminado, ábrelo desde «Abrir con» la primera vez "
-                        + "y elige «Siempre».")
-                .setPositiveButton("Entendido", null)
+                .setTitle(L.t("Dar carpetas a otras apps"))
+                .setMessage(L.t("Cuando una app (un emulador, por ejemplo) te pida elegir una carpeta o un archivo:\n\n")
+                        + L.t("1. En el selector de Android, abre el menú (☰) de la izquierda.\n")
+                        + L.t("2. Elige «Bóveda».\n")
+                        + L.t("3. Entra a la carpeta que quieras y toca «Usar esta carpeta».\n\n")
+                        + L.t("Con Bóveda puedes darle carpetas que el selector normal no deja (la raíz, Descargas) y, ")
+                        + L.t("si Bóveda tiene Shizuku o el permiso, también Android/data y Android/obb.\n\n")
+                        + L.t("Para que Bóveda sea tu gestor de archivos predeterminado, ábrelo desde «Abrir con» la primera vez ")
+                        + L.t("y elige «Siempre»."))
+                .setPositiveButton(L.t("Entendido"), null)
                 .show();
     }
 
@@ -2680,8 +2710,8 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         bg.setCornerRadii(new float[]{r, r, r, r, 0, 0, 0, 0});
         box.setBackground(bg);
         LinearLayout head = Ui.row(this);
-        head.addView(Ui.text(this, "Transferencias", 20, Ui.TEXT, true), Ui.weight(1));
-        TextView clear = Ui.text(this, "Limpiar", 13, Ui.ACCENT, true);
+        head.addView(Ui.text(this, L.t("Transferencias"), 20, Ui.TEXT, true), Ui.weight(1));
+        TextView clear = Ui.text(this, L.t("Limpiar"), 13, Ui.ACCENT, true);
         clear.setPadding(dp(10), dp(8), dp(10), dp(8));
         clear.setOnClickListener(v -> {
             engine.clearFinished();
@@ -2709,7 +2739,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         if (transfersList == null) return;
         transfersList.removeAllViews();
         if (engine.jobs().isEmpty()) {
-            TextView t = Ui.text(this, "No hay copias ni movimientos.", 14, Ui.SUB, false);
+            TextView t = Ui.text(this, L.t("No hay copias ni movimientos."), 14, Ui.SUB, false);
             t.setPadding(0, dp(20), 0, 0);
             transfersList.addView(t);
         }
@@ -2724,7 +2754,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             top.addView(name, Ui.weight(1));
             if (j.state <= 1) top.addView(Ui.iconButton(this, R.drawable.ic_close, 36, v -> {
                 j.cancel = true;
-                Toast.makeText(this, "Cancelando… (lo que quedó a medias se borra)", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, L.t("Cancelando… (lo que quedó a medias se borra)"), Toast.LENGTH_SHORT).show();
             }));
             c.addView(top);
             View bar = new UsageBar(this, j.progress(), j.state == 3 ? Ui.BAD : j.state == 2 ? Ui.GOOD : Ui.ACCENT);
@@ -2734,11 +2764,11 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             String status = switch (j.state) {
                 case 0 -> "En cola";
                 case 1 -> (j.totalBytes > 0 ? Ui.size(j.doneBytes) + " de " + Ui.size(j.totalBytes) + " · " + Ui.speed(j.speed)
-                        : j.doneItems + " de " + j.totalItems) + (j.current.isEmpty() ? "" : "\n" + j.current);
+                        : j.doneItems + L.t(" de ") + j.totalItems) + (j.current.isEmpty() ? "" : "\n" + j.current);
                 case 2 -> "Listo ✓" + (j.kind == TransferEngine.Kind.COPY || j.kind == TransferEngine.Kind.MOVE
-                        ? (prefs.verify() ? "  ·  verificado" : "") : "");
+                        ? (prefs.verify() ? L.t("  ·  verificado") : "") : "");
                 case 3 -> "Error: " + j.error;
-                default -> "Cancelado";
+                default -> L.t("Cancelado");
             };
             c.addView(Ui.text(this, status, 12.5f, j.state == 3 ? Ui.BAD : j.state == 2 ? Ui.GOOD : Ui.SUB, false));
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, -2);
@@ -2810,7 +2840,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         content.setAlpha(0.3f);
         content.animate().translationX(0).alpha(1).setDuration(180).start();
         if (!clip.isEmpty()) {
-            Toast.makeText(this, "Pestaña " + (t + 1) + ": entra a la carpeta y pega", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, L.t("Pestaña ") + (t + 1) + L.t(": entra a la carpeta y pega"), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -2957,7 +2987,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                 h.name.setText(e.name);
                 h.name.setTextColor(e.hidden() ? Ui.SUB : Ui.TEXT);
                 String n = e.dir ? countOf(e.path) : null;
-                h.info.setText(e.dir ? (appsFolder && e.name.contains(".") ? "App no instalada  ·  " : "")
+                h.info.setText(e.dir ? (appsFolder && e.name.contains(".") ? L.t("App no instalada  ·  ") : "")
                         + (n != null && !n.isEmpty() ? n + "  ·  " : "") + Ui.date(e.modified)
                         : Ui.size(e.size) + "  ·  " + Ui.date(e.modified));
                 if (tk != Thumbs.NONE) {
@@ -3034,10 +3064,10 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
     }
 
     static String countText(int d, int f) {
-        if (d == 0 && f == 0) return "Vacía";
+        if (d == 0 && f == 0) return L.t("Vacía");
         StringBuilder b = new StringBuilder();
-        if (d > 0) b.append(d).append(d == 1 ? " carpeta" : " carpetas");
-        if (f > 0) b.append(b.length() > 0 ? " · " : "").append(f).append(f == 1 ? " archivo" : " archivos");
+        if (d > 0) b.append(d).append(d == 1 ? L.t(" carpeta") : L.t(" carpetas"));
+        if (f > 0) b.append(b.length() > 0 ? " · " : "").append(f).append(f == 1 ? L.t(" archivo") : L.t(" archivos"));
         return b.toString();
     }
 

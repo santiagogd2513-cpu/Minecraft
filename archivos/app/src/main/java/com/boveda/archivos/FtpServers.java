@@ -105,7 +105,7 @@ final class FtpServers {
         int slash = rest.indexOf('/');
         String id = slash < 0 ? rest : rest.substring(0, slash);
         Server s = byId(id);
-        if (s == null) throw new java.io.IOException("Ese servidor FTP ya no está guardado");
+        if (s == null) throw new java.io.IOException(L.t("Ese servidor FTP ya no está guardado"));
         FtpFs f = fss.get(id);
         if (f == null) {
             f = new FtpFs(s);

@@ -46,14 +46,14 @@ final class Studio {
         col.addView(tag);
 
         // 2. qué es el estudio
-        TextView about = text(a, "Hacemos apps para Android y mods para Minecraft desde cero: herramientas útiles, "
-                + "oscuras y livianas, sin anuncios. Cada versión se prueba en un celular de verdad antes de salir, "
-                + "y cada error que aparece se busca hasta arreglarlo.", 15, 0xFFC9D2E0, false);
+        TextView about = text(a, L.t("Hacemos apps para Android y mods para Minecraft desde cero: herramientas útiles, ")
+                + L.t("oscuras y livianas, sin anuncios. Cada versión se prueba en un celular de verdad antes de salir, ")
+                + L.t("y cada error que aparece se busca hasta arreglarlo."), 15, 0xFFC9D2E0, false);
         about.setGravity(Gravity.CENTER);
         about.setLineSpacing(0, 1.2f);
         about.setPadding(0, px(dp, 18), 0, px(dp, 6));
         col.addView(about);
-        TextView projects = text(a, "Bóveda · Nocturna · Yunque · Ventoy no oficial · Arnis no oficial · Arsenal Orbital · Arsenal Atómico",
+        TextView projects = text(a, L.t("Bóveda · Nocturna · Yunque · Ventoy no oficial · Arnis no oficial · Arsenal Orbital · Arsenal Atómico"),
                 12.5f, Ui.SUB, false);
         projects.setGravity(Gravity.CENTER);
         projects.setPadding(0, px(dp, 6), 0, 0);
@@ -65,11 +65,11 @@ final class Studio {
         h.setPadding(px(dp, 4), px(dp, 28), 0, px(dp, 10));
         LinearLayout.LayoutParams hl = new LinearLayout.LayoutParams(-1, -2);
         col.addView(h, hl);
-        col.addView(author(a, dp, "S", "santiagogd2513-cpu", "Pruebas de cada actualización e identificación de errores",
+        col.addView(author(a, dp, "S", "santiagogd2513-cpu", L.t("Pruebas de cada actualización e identificación de errores"),
                 0xFF3D8BFF, 0xFF36D1FF), cardParams(dp));
-        col.addView(author(a, dp, "C", "Claude de Anthropic", "Código y corrección de errores", 0xFFD97757, 0xFFFFB38A), cardParams(dp));
+        col.addView(author(a, dp, "C", L.t("Claude de Anthropic"), L.t("Código y corrección de errores"), 0xFFD97757, 0xFFFFB38A), cardParams(dp));
 
-        TextView close = text(a, "Cerrar", 16, 0xFF1A120C, true);
+        TextView close = text(a, L.t("Cerrar"), 16, 0xFF1A120C, true);
         close.setGravity(Gravity.CENTER);
         close.setPadding(0, px(dp, 14), 0, px(dp, 14));
         close.setBackground(Ui.gradient(px(dp, 26), ORANGE, GOLD));

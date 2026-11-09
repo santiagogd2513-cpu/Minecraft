@@ -97,7 +97,7 @@ final class OneDrive {
             ss = new ServerSocket(0, 1, InetAddress.getByName("127.0.0.1"));
             ss.setSoTimeout(5 * 60 * 1000);
         } catch (IOException e) {
-            cb.done("No se pudo preparar el inicio de sesión: " + e.getMessage());
+            cb.done(L.t("No se pudo preparar el inicio de sesión: ") + e.getMessage());
             return;
         }
         // Microsoft deja cualquier puerto si la dirección registrada es http://localhost
@@ -130,8 +130,8 @@ final class OneDrive {
                 String html = "<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width'>"
                         + "<style>body{background:#0b0d14;color:#e8ecf4;font-family:sans-serif;display:flex;align-items:center;"
                         + "justify-content:center;height:100vh;margin:0;text-align:center}h1{color:" + (ok ? "#35d08a" : "#ff5d6c") + "}</style>"
-                        + "</head><body><div><h1>" + (ok ? "¡Listo!" : "No se pudo") + "</h1><p>"
-                        + (ok ? "OneDrive quedó conectado. Vuelve a Bóveda." : "Vuelve a Bóveda e inténtalo otra vez.")
+                        + "</head><body><div><h1>" + (ok ? L.t("¡Listo!") : L.t("No se pudo")) + "</h1><p>"
+                        + (ok ? L.t("OneDrive quedó conectado. Vuelve a Bóveda.") : L.t("Vuelve a Bóveda e inténtalo otra vez."))
                         + "</p></div></body></html>";
                 byte[] body = html.getBytes(StandardCharsets.UTF_8);
                 OutputStream o = s.getOutputStream();
@@ -140,13 +140,13 @@ final class OneDrive {
                 o.write(body);
                 o.flush();
                 if (!ok) {
-                    if ("access_denied".equals(error)) throw new IOException("No diste permiso");
-                    throw new IOException(desc != null ? "Microsoft: " + desc : error != null ? error : "Microsoft no respondió bien");
+                    if ("access_denied".equals(error)) throw new IOException(L.t("No diste permiso"));
+                    throw new IOException(desc != null ? L.t("Microsoft: ") + desc : error != null ? error : L.t("Microsoft no respondió bien"));
                 }
                 JSONObject t = tokenRequest("client_id=" + Drive.enc(clientId) + "&scope=" + Drive.enc(SCOPE) + "&code=" + Drive.enc(code)
                         + "&redirect_uri=" + Drive.enc(redirect) + "&grant_type=authorization_code&code_verifier=" + Drive.enc(verifier));
                 keep(t);
-                if (refresh.isEmpty()) throw new IOException("Microsoft no dio acceso permanente (vuelve a intentarlo)");
+                if (refresh.isEmpty()) throw new IOException(L.t("Microsoft no dio acceso permanente (vuelve a intentarlo)"));
                 try {
                     JSONObject me = json("GET", GRAPH + "/me?$select=userPrincipalName,mail", null);
                     String mail = me.optString("mail", "");
@@ -155,7 +155,7 @@ final class OneDrive {
                 }
                 err = null;
             } catch (java.net.SocketTimeoutException e) {
-                err = "Se acabó el tiempo para iniciar sesión";
+                err = L.t("Se acabó el tiempo para iniciar sesión");
             } catch (Exception e) {
                 err = e.getMessage();
             }
@@ -193,23 +193,23 @@ final class OneDrive {
                 if (e.equals("invalid_grant")) {
                     refresh = "";
                     prefs.edit().remove("renovar").apply();
-                    throw new IOException("Microsoft pidió iniciar sesión de nuevo (toca OneDrive en el inicio)");
+                    throw new IOException(L.t("Microsoft pidió iniciar sesión de nuevo (toca OneDrive en el inicio)"));
                 }
                 String d = r.optString("error_description", e);
-                if (d.contains("AADSTS700016") || e.equals("unauthorized_client")) throw new IOException("Microsoft no reconoce ese ID de aplicación");
+                if (d.contains("AADSTS700016") || e.equals("unauthorized_client")) throw new IOException(L.t("Microsoft no reconoce ese ID de aplicación"));
                 if (d.contains("AADSTS50011")) throw new IOException("Falta la dirección http://localhost en la app registrada en Microsoft");
-                throw new IOException("Microsoft: " + d.split("\\r?\\n")[0]);
+                throw new IOException(L.t("Microsoft: ") + d.split("\\r?\\n")[0]);
             }
             return r;
         } catch (org.json.JSONException e) {
-            throw new IOException("Microsoft respondió algo inesperado (" + code + ")");
+            throw new IOException(L.t("Microsoft respondió algo inesperado (") + code + ")");
         }
     }
 
     // ------------------------------------------------------------------ llamadas
 
     synchronized String accessToken() throws IOException {
-        if (!connected()) throw new IOException("Conecta OneDrive desde el inicio de Bóveda");
+        if (!connected()) throw new IOException(L.t("Conecta OneDrive desde el inicio de Bóveda"));
         if (access == null || System.currentTimeMillis() > accessUntil) {
             keep(tokenRequest("client_id=" + Drive.enc(clientId) + "&scope=" + Drive.enc(SCOPE)
                     + "&refresh_token=" + Drive.enc(refresh) + "&grant_type=refresh_token"));
@@ -261,10 +261,10 @@ final class OneDrive {
             try {
                 return text.isEmpty() ? new JSONObject() : new JSONObject(text);
             } catch (org.json.JSONException e) {
-                throw new IOException("Respuesta rara de OneDrive");
+                throw new IOException(L.t("Respuesta rara de OneDrive"));
             }
         }
-        throw new IOException("OneDrive no aceptó el acceso");
+        throw new IOException(L.t("OneDrive no aceptó el acceso"));
     }
 
     static String errorText(int code, String body) {
@@ -278,7 +278,7 @@ final class OneDrive {
             case 404 -> "Ya no existe en OneDrive";
             case 409 -> "Ya existe algo con ese nombre en OneDrive";
             case 507 -> "No hay espacio en tu OneDrive";
-            default -> "OneDrive (" + code + ")" + (msg.isEmpty() ? "" : ": " + msg);
+            default -> L.t("OneDrive (") + code + ")" + (msg.isEmpty() ? "" : ": " + msg);
         };
     }
 

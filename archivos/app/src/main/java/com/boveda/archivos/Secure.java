@@ -38,7 +38,7 @@ final class Secure {
             return Base64.encodeToString(c.getIV(), Base64.NO_WRAP) + ":"
                     + Base64.encodeToString(c.doFinal(plain.getBytes(StandardCharsets.UTF_8)), Base64.NO_WRAP);
         } catch (Exception e) {
-            throw new IllegalStateException("No se pudo cifrar", e);
+            throw new IllegalStateException(L.t("No se pudo cifrar"), e);
         }
     }
 

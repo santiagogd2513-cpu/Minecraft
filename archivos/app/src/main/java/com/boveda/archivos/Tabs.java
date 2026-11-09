@@ -50,9 +50,9 @@ final class Tabs {
 
     /** Nombre corto para la pestaña (el explorador pone nombres más bonitos a los volúmenes). */
     static String label(String p) {
-        if (p == null) return "Inicio";
+        if (p == null) return L.t("Inicio");
         if (MEDIAFIRE.equals(p)) return "MediaFire";
-        if (p.equals(Paths.ROOT)) return "Memoria interna";
+        if (p.equals(Paths.ROOT)) return L.t("Memoria interna");
         if (DriveFs.isDrive(p) && p.equals(DriveFs.ROOT)) return "Google Drive";
         if (p.equals(MegaFs.ROOT)) return "MEGA";
         if (p.equals(OneDriveFs.ROOT)) return "OneDrive";

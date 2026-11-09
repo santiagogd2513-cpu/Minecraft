@@ -44,7 +44,7 @@ final class IsoReader {
         for (int s = 16; s < 64; s++) {
             byte[] vd = read((long) s * SECTOR, SECTOR);
             if (vd[1] != 'C' || vd[2] != 'D' || vd[3] != '0' || vd[4] != '0' || vd[5] != '1') {
-                if (s == 16) throw new IOException("No es una imagen ISO 9660 (puede ser un disco solo UDF)");
+                if (s == 16) throw new IOException(L.t("No es una imagen ISO 9660 (puede ser un disco solo UDF)"));
                 break;
             }
             int type = vd[0] & 0xFF;
@@ -55,7 +55,7 @@ final class IsoReader {
                 joliet = true;
             }
         }
-        if (root == null) throw new IOException("La imagen ISO no tiene volumen principal");
+        if (root == null) throw new IOException(L.t("La imagen ISO no tiene volumen principal"));
         walk(le32(root, 2), le32(root, 10), "", new HashSet<>(), 0);
     }
 

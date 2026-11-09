@@ -126,8 +126,8 @@ final class Ui {
     static String eta(long seconds) {
         if (seconds < 0 || seconds > 360000) return "--";
         if (seconds < 60) return seconds + " s";
-        if (seconds < 3600) return (seconds / 60) + " min " + (seconds % 60) + " s";
-        return (seconds / 3600) + " h " + ((seconds % 3600) / 60) + " min";
+        if (seconds < 3600) return (seconds / 60) + L.t(" min ") + (seconds % 60) + " s";
+        return (seconds / 3600) + " h " + ((seconds % 3600) / 60) + L.t(" min");
     }
 
     static String date(long t) {

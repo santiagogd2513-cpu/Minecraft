@@ -113,7 +113,7 @@ final class Drive {
             ss = new ServerSocket(0, 1, InetAddress.getByName("127.0.0.1"));
             ss.setSoTimeout(5 * 60 * 1000);
         } catch (IOException e) {
-            cb.done("No se pudo preparar el inicio de sesión: " + e.getMessage());
+            cb.done(L.t("No se pudo preparar el inicio de sesión: ") + e.getMessage());
             return;
         }
         String redirect = "http://127.0.0.1:" + ss.getLocalPort();
@@ -144,8 +144,8 @@ final class Drive {
                 String html = "<!doctype html><html><head><meta charset='utf-8'><meta name='viewport' content='width=device-width'>"
                         + "<style>body{background:#0b0d14;color:#e8ecf4;font-family:sans-serif;display:flex;align-items:center;"
                         + "justify-content:center;height:100vh;margin:0;text-align:center}h1{color:" + (ok ? "#35d08a" : "#ff5d6c") + "}</style>"
-                        + "</head><body><div><h1>" + (ok ? "¡Listo!" : "No se pudo") + "</h1><p>"
-                        + (ok ? "Google Drive quedó conectado. Vuelve a Bóveda." : "Vuelve a Bóveda e inténtalo otra vez.")
+                        + "</head><body><div><h1>" + (ok ? L.t("¡Listo!") : L.t("No se pudo")) + "</h1><p>"
+                        + (ok ? L.t("Google Drive quedó conectado. Vuelve a Bóveda.") : L.t("Vuelve a Bóveda e inténtalo otra vez."))
                         + "</p></div></body></html>";
                 byte[] body = html.getBytes(StandardCharsets.UTF_8);
                 OutputStream o = s.getOutputStream();
@@ -153,13 +153,13 @@ final class Drive {
                         + "\r\nConnection: close\r\n\r\n").getBytes(StandardCharsets.US_ASCII));
                 o.write(body);
                 o.flush();
-                if (!ok) throw new IOException(error != null ? (error.equals("access_denied") ? "No diste permiso" : error)
-                        : "Google no respondió bien");
+                if (!ok) throw new IOException(error != null ? (error.equals("access_denied") ? L.t("No diste permiso") : error)
+                        : L.t("Google no respondió bien"));
                 exchange(code, verifier, redirect);
                 fetchEmail();
                 err = null;
             } catch (java.net.SocketTimeoutException e) {
-                err = "Se acabó el tiempo para iniciar sesión";
+                err = L.t("Se acabó el tiempo para iniciar sesión");
             } catch (Exception e) {
                 err = e.getMessage();
             }
@@ -199,7 +199,7 @@ final class Drive {
         access = r.optString("access_token");
         accessUntil = System.currentTimeMillis() + (r.optLong("expires_in", 3600) - 60) * 1000;
         String rt = r.optString("refresh_token", "");
-        if (rt.isEmpty()) throw new IOException("Google no dio acceso permanente (vuelve a intentarlo)");
+        if (rt.isEmpty()) throw new IOException(L.t("Google no dio acceso permanente (vuelve a intentarlo)"));
         refresh = rt;
         prefs.edit().putString("renovar", Secure.encrypt(rt)).apply();
     }
@@ -222,14 +222,14 @@ final class Drive {
                 if (e.equals("invalid_grant")) {
                     refresh = "";
                     prefs.edit().remove("renovar").apply();
-                    throw new IOException("Google pidió iniciar sesión de nuevo (toca Google Drive en el inicio)");
+                    throw new IOException(L.t("Google pidió iniciar sesión de nuevo (toca Google Drive en el inicio)"));
                 }
-                if (e.equals("invalid_client")) throw new IOException("El ID de cliente o el secreto no son válidos");
+                if (e.equals("invalid_client")) throw new IOException(L.t("El ID de cliente o el secreto no son válidos"));
                 throw new IOException("Google: " + r.optString("error_description", e));
             }
             return r;
         } catch (org.json.JSONException e) {
-            throw new IOException("Google respondió algo inesperado (" + code + ")");
+            throw new IOException(L.t("Google respondió algo inesperado (") + code + ")");
         }
     }
 
@@ -244,7 +244,7 @@ final class Drive {
     // ------------------------------------------------------------------ llamadas
 
     synchronized String accessToken() throws IOException {
-        if (!connected()) throw new IOException("Conecta Google Drive desde el inicio de Bóveda");
+        if (!connected()) throw new IOException(L.t("Conecta Google Drive desde el inicio de Bóveda"));
         if (access == null || System.currentTimeMillis() > accessUntil) {
             JSONObject r = tokenRequest("client_id=" + enc(clientId) + "&client_secret=" + enc(secret)
                     + "&refresh_token=" + enc(refresh) + "&grant_type=refresh_token");
@@ -291,10 +291,10 @@ final class Drive {
             try {
                 return text.isEmpty() ? new JSONObject() : new JSONObject(text);
             } catch (org.json.JSONException e) {
-                throw new IOException("Respuesta rara de Google Drive");
+                throw new IOException(L.t("Respuesta rara de Google Drive"));
             }
         }
-        throw new IOException("Google Drive no aceptó el acceso");
+        throw new IOException(L.t("Google Drive no aceptó el acceso"));
     }
 
     static String errorText(int code, String body) {
@@ -307,7 +307,7 @@ final class Drive {
             case 403 -> "Google Drive no lo permite" + (msg.isEmpty() ? "" : ": " + msg);
             case 404 -> "Ya no existe en Google Drive";
             case 507 -> "No hay espacio en tu Google Drive";
-            default -> "Google Drive (" + code + ")" + (msg.isEmpty() ? "" : ": " + msg);
+            default -> L.t("Google Drive (") + code + ")" + (msg.isEmpty() ? "" : ": " + msg);
         };
     }
 

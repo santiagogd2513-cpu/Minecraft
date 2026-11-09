@@ -72,13 +72,13 @@ public class EditorActivity extends Activity {
         title = Ui.text(this, Paths.name(path), 16, Ui.TEXT, true);
         title.setSingleLine(true);
         title.setEllipsize(TextUtils.TruncateAt.MIDDLE);
-        status = Ui.text(this, "Abriendo…", 11.5f, Ui.SUB, false);
+        status = Ui.text(this, L.t("Abriendo…"), 11.5f, Ui.SUB, false);
         tt.addView(title);
         tt.addView(status);
         bar.addView(tt, Ui.weight(1));
         bar.addView(Ui.iconButton(this, R.drawable.ic_search, 44, v -> find()));
         bar.addView(Ui.iconButton(this, R.drawable.ic_menu, 44, v -> menu()));
-        TextView save = Ui.text(this, "Guardar", 14, 0xFF06101F, true);
+        TextView save = Ui.text(this, L.t("Guardar"), 14, 0xFF06101F, true);
         save.setGravity(Gravity.CENTER);
         save.setPadding(dp(14), dp(8), dp(14), dp(8));
         save.setBackground(Ui.ripple(Ui.gradient(dp(18), Ui.ACCENT, Ui.ACCENT2), Ui.round(0xFFFFFFFF, dp(18))));
@@ -130,12 +130,12 @@ public class EditorActivity extends Activity {
                     int n;
                     while ((n = in.read(buf)) > 0) {
                         bo.write(buf, 0, n);
-                        if (bo.size() > MAX_BYTES) throw new Exception("El archivo pasa de 6 MB: es muy grande para editarlo en el celular");
+                        if (bo.size() > MAX_BYTES) throw new Exception(L.t("El archivo pasa de 6 MB: es muy grande para editarlo en el celular"));
                     }
                 }
                 byte[] data = bo.toByteArray();
                 for (int i = 0; i < Math.min(data.length, 8192); i++) {
-                    if (data[i] == 0) throw new Exception("No es un archivo de texto (tiene datos binarios)");
+                    if (data[i] == 0) throw new Exception(L.t("No es un archivo de texto (tiene datos binarios)"));
                 }
                 text = decode(data);
             } catch (Exception e) {
@@ -146,13 +146,13 @@ public class EditorActivity extends Activity {
                 body.removeView(spin);
                 if (err != null) {
                     new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
-                            .setTitle("No se pudo abrir")
+                            .setTitle(L.t("No se pudo abrir"))
                             .setMessage(err)
-                            .setPositiveButton("Abrir con otra app", (d, w) -> {
+                            .setPositiveButton(L.t("Abrir con otra app"), (d, w) -> {
                                 Viewers.openWithOther(this, path, "text/plain");
                                 finish();
                             })
-                            .setNegativeButton("Cerrar", (d, w) -> finish())
+                            .setNegativeButton(L.t("Cerrar"), (d, w) -> finish())
                             .setOnCancelListener(d -> finish())
                             .show();
                     return;
@@ -198,8 +198,8 @@ public class EditorActivity extends Activity {
         }
         int lines = 1;
         for (int i = 0; i < s.length(); i++) if (s.charAt(i) == '\n') lines++;
-        status.setText((modified() ? "● Sin guardar  ·  " : "") + "Línea " + line + ", col " + colN + "  ·  " + lines + " líneas  ·  "
-                + (charset == StandardCharsets.UTF_8 ? "UTF-8" : "Latin-1") + (lineSep.equals("\r\n") ? " (Windows)" : ""));
+        status.setText((modified() ? L.t("● Sin guardar  ·  ") : "") + L.t("Línea ") + line + L.t(", col ") + colN + "  ·  " + lines + L.t(" líneas  ·  ")
+                + (charset == StandardCharsets.UTF_8 ? "UTF-8" : "Latin-1") + (lineSep.equals("\r\n") ? L.t(" (Windows)") : ""));
         title.setText((modified() ? "● " : "") + Paths.name(path));
     }
 
@@ -207,7 +207,7 @@ public class EditorActivity extends Activity {
         if (!loaded) return;
         String text = edit.getText().toString();
         String out = lineSep.equals("\n") ? text : text.replace("\n", lineSep);
-        status.setText("Guardando…");
+        status.setText(L.t("Guardando…"));
         new Thread(() -> {
             String error = null;
             try {
@@ -222,15 +222,15 @@ public class EditorActivity extends Activity {
             main.post(() -> {
                 if (err != null) {
                     new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
-                            .setTitle("No se pudo guardar")
+                            .setTitle(L.t("No se pudo guardar"))
                             .setMessage(err)
-                            .setPositiveButton("Entendido", null).show();
+                            .setPositiveButton(L.t("Entendido"), null).show();
                     refreshStatus();
                     return;
                 }
                 saved = text;
                 refreshStatus();
-                Toast.makeText(this, "Guardado ✓", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, L.t("Guardado ✓"), Toast.LENGTH_SHORT).show();
                 if (after != null) after.run();
             });
         }, "guardar-texto").start();
@@ -243,16 +243,16 @@ public class EditorActivity extends Activity {
         q.setSingleLine(true);
         q.setText(lastFind);
         q.setSelectAllOnFocus(true);
-        q.setHint("Buscar…");
+        q.setHint(L.t("Buscar…"));
         q.setPadding(dp(20), dp(12), dp(20), dp(12));
         new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
-                .setTitle("Buscar en el archivo")
+                .setTitle(L.t("Buscar en el archivo"))
                 .setView(q)
-                .setPositiveButton("Siguiente", (d, w) -> {
+                .setPositiveButton(L.t("Siguiente"), (d, w) -> {
                     lastFind = q.getText().toString();
                     findNext();
                 })
-                .setNegativeButton("Cancelar", null)
+                .setNegativeButton(L.t("Cancelar"), null)
                 .show();
     }
 
@@ -264,7 +264,7 @@ public class EditorActivity extends Activity {
         int i = s.indexOf(f, from);
         if (i < 0) i = s.indexOf(f);
         if (i < 0) {
-            Toast.makeText(this, "No aparece «" + lastFind + "»", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, L.t("No aparece «") + lastFind + "»", Toast.LENGTH_SHORT).show();
             return;
         }
         edit.requestFocus();
@@ -273,11 +273,11 @@ public class EditorActivity extends Activity {
 
     private void menu() {
         String[] items = {
-                "Buscar el siguiente «" + (lastFind.isEmpty() ? "…" : lastFind) + "»",
-                wrap ? "No ajustar las líneas largas" : "Ajustar las líneas largas a la pantalla",
-                "Ir al principio",
-                "Ir al final",
-                "Abrir con otra app",
+                L.t("Buscar el siguiente «") + (lastFind.isEmpty() ? "…" : lastFind) + "»",
+                wrap ? L.t("No ajustar las líneas largas") : L.t("Ajustar las líneas largas a la pantalla"),
+                L.t("Ir al principio"),
+                L.t("Ir al final"),
+                L.t("Abrir con otra app"),
         };
         new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
                 .setItems(items, (d, w) -> {
@@ -302,11 +302,11 @@ public class EditorActivity extends Activity {
             return;
         }
         new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
-                .setTitle("¿Guardar los cambios?")
-                .setMessage("«" + Paths.name(path) + "» tiene cambios sin guardar.")
-                .setPositiveButton("Guardar", (d, w) -> save(this::finish))
-                .setNeutralButton("Cancelar", null)
-                .setNegativeButton("Descartar", (d, w) -> finish())
+                .setTitle(L.t("¿Guardar los cambios?"))
+                .setMessage("«" + Paths.name(path) + L.t("» tiene cambios sin guardar."))
+                .setPositiveButton(L.t("Guardar"), (d, w) -> save(this::finish))
+                .setNeutralButton(L.t("Cancelar"), null)
+                .setNegativeButton(L.t("Descartar"), (d, w) -> finish())
                 .show();
     }
 }
