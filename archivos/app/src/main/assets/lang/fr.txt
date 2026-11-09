@@ -820,3 +820,8 @@
 820|Conditions générales
 821|Ce que Bóveda fait de tes informations
 822|Les règles d’utilisation de l’application
+823|⚠️ Copie modifiée
+824|Cette application n’est pas la version originale de Forja Estudios : quelqu’un l’a modifiée et re-signée. Elle peut contenir des pubs, des virus ou voler tes données.
+825|Désinstalle-la et télécharge l’originale, gratuite et sans pub, sur santiagogd2513-cpu.github.io
+826|Télécharger l’originale
+827|Continuer quand même

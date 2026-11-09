@@ -36,9 +36,19 @@ jobs:
         run: gradle assembleRelease --stacktrace
 
       - name: Preparar
+        env:
+          FIRMA_CLAVE: ${{ secrets.FIRMA_CLAVE }}
         run: |
           mkdir -p ../dist
           cp app/build/outputs/apk/release/app-release.apk ../dist/Boveda.apk
+          if [ -z "${FIRMA_CLAVE:-}" ]; then echo "::error::Falta el secreto FIRMA_CLAVE (Settings → Secrets and variables → Actions)"; exit 1; fi
+          BT="$ANDROID_HOME/build-tools/$(ls "$ANDROID_HOME/build-tools" | sort -V | tail -1)"
+          # firma con la llave nueva y la prueba de que la vieja la autorizó (rotación de llaves, APK Signature Scheme v3)
+          "$BT/apksigner" sign --ks app/boveda.jks --ks-key-alias boveda --ks-pass pass:boveda-archivos --key-pass pass:boveda-archivos \
+            --next-signer --ks app/firma-boveda.p12 --ks-key-alias boveda --ks-pass env:FIRMA_CLAVE --key-pass env:FIRMA_CLAVE \
+            --lineage app/firma-boveda.linaje --out firmado.apk ../dist/Boveda.apk
+          mv firmado.apk ../dist/Boveda.apk
+          "$BT/apksigner" verify --print-certs ../dist/Boveda.apk | head -2
           cp NOVEDADES.txt ../dist/novedades.txt
 
       - uses: actions/upload-artifact@v4

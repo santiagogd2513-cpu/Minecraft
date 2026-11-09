@@ -42,9 +42,19 @@ jobs:
         run: gradle assembleRelease --stacktrace
 
       - name: Preparar
+        env:
+          FIRMA_CLAVE: ${{ secrets.FIRMA_CLAVE }}
         run: |
           mkdir -p ../dist
           cp app/build/outputs/apk/release/app-release.apk ../dist/Yunque.apk
+          if [ -z "${FIRMA_CLAVE:-}" ]; then echo "::error::Falta el secreto FIRMA_CLAVE (Settings → Secrets and variables → Actions)"; exit 1; fi
+          BT="$ANDROID_HOME/build-tools/$(ls "$ANDROID_HOME/build-tools" | sort -V | tail -1)"
+          # firma con la llave nueva y la prueba de que la vieja la autorizó (rotación de llaves, APK Signature Scheme v3)
+          "$BT/apksigner" sign --ks app/forja.jks --ks-key-alias forja --ks-pass pass:forja-formateador --key-pass pass:forja-formateador \
+            --next-signer --ks app/firma-yunque.p12 --ks-key-alias yunque --ks-pass env:FIRMA_CLAVE --key-pass env:FIRMA_CLAVE \
+            --lineage app/firma-yunque.linaje --out firmado.apk ../dist/Yunque.apk
+          mv firmado.apk ../dist/Yunque.apk
+          "$BT/apksigner" verify --print-certs ../dist/Yunque.apk | head -2
           # copia con el nombre viejo, para que las versiones instaladas de «Forja» se actualicen solas
           cp ../dist/Yunque.apk ../dist/Forja.apk
           cp NOVEDADES.txt ../dist/novedades.txt

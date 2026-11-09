@@ -101,6 +101,7 @@ public class MainActivity extends Activity {
         // ¿hay versión nueva de la app?
         Updater.resume(this);
         Updater.check(this);
+        Integrity.check(this);
     }
 
     @Override

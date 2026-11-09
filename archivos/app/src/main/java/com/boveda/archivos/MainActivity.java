@@ -246,6 +246,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         if (!picker()) {
             Updater.resume(this);
             Updater.check(this);
+        Integrity.check(this);
         }
         // la Bóveda se cerró sola mientras estabas en otra app: no se queda mostrando sus archivos
         if (path != null && VaultFs.isVault(path) && !Vault.unlocked()) showHome();

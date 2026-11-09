@@ -56,13 +56,18 @@ jobs:
           APKTOOL="$PWD/apktool.jar" bash limbo/parchar.sh limbo-original.apk sin-firma.apk
 
       - name: Firmar
+        env:
+          FIRMA_CLAVE: ${{ secrets.FIRMA_CLAVE }}
         run: |
           set -euo pipefail
+          if [ -z "${FIRMA_CLAVE:-}" ]; then echo "::error::Falta el secreto FIRMA_CLAVE (Settings → Secrets and variables → Actions)"; exit 1; fi
           BT="$ANDROID_HOME/build-tools/$(ls "$ANDROID_HOME/build-tools" | sort -V | tail -1)"
           mkdir -p dist
           "$BT/zipalign" -p -f 4 sin-firma.apk alineado.apk
-          "$BT/apksigner" sign --ks limbo/limbo.jks --ks-pass pass:limbo-boveda --key-pass pass:limbo-boveda \
-            --ks-key-alias limbo --out dist/Limbo-Boveda.apk alineado.apk
+          # llave nueva + prueba de que la vieja la autorizó (rotación de llaves)
+          "$BT/apksigner" sign --ks limbo/limbo.jks --ks-pass pass:limbo-boveda --key-pass pass:limbo-boveda --ks-key-alias limbo \
+            --next-signer --ks limbo/firma-limbo.p12 --ks-key-alias limbo --ks-pass env:FIRMA_CLAVE --key-pass env:FIRMA_CLAVE \
+            --lineage limbo/firma-limbo.linaje --out dist/Limbo-Boveda.apk alineado.apk
           "$BT/apksigner" verify --print-certs dist/Limbo-Boveda.apk | head -3
           ls -la dist
 

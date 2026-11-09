@@ -1,3 +1,8 @@
+## 43
+🛡️ Sello de autenticidad
+- La app ahora está firmada con una llave nueva y privada de Forja Estudios. Se actualiza encima como siempre: no hay que desinstalar nada.
+- Si alguien copia la app, la modifica y la vuelve a firmar, al abrirla avisa que es una copia modificada y te lleva a descargar la original.
+
 ## 42
 Privacidad y términos
 - Nuevo en Ajustes → Acerca de: «Política de privacidad y seguridad» y «Términos y condiciones». Cuentan en palabras sencillas qué hace Bóveda con tu información (en resumen: tus datos se quedan en tu celular, sin anuncios ni rastreo) y las reglas para usar la app.

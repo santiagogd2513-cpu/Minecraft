@@ -61,7 +61,7 @@ jobs:
           mkdir -p /tmp/t/out
           F=../forja/app/src/main/java/com/forja/formateador
           javac -d /tmp/t/out app/src/main/java/com/ventoy/nooficial/{BlockDevice,Progress,Disk,ExFatFormatter,Fat16,VentoyInstaller}.java \
-            $(ls $F/*.java | grep -v -e MainActivity -e UsbDisk -e Ui.java -e Updater.java -e Studio.java -e Legal.java) test/*.java
+            $(ls $F/*.java | grep -v -e MainActivity -e UsbDisk -e Ui.java -e Updater.java -e Studio.java -e Legal.java -e Integrity.java) test/*.java
           bash ../forja/test/motor_ntfs_pc.sh /tmp/t/nb
           for CASO in "1024 EXFAT" "40960 EXFAT" "2048 NTFS" "2048 FAT32" "2048 EXT4" "40960 NTFS"; do
             set -- $CASO
@@ -89,9 +89,19 @@ jobs:
         run: gradle assembleRelease --stacktrace
 
       - name: Preparar
+        env:
+          FIRMA_CLAVE: ${{ secrets.FIRMA_CLAVE }}
         run: |
           mkdir -p ../dist
           cp app/build/outputs/apk/release/app-release.apk ../dist/Ventoy-no-oficial.apk
+          if [ -z "${FIRMA_CLAVE:-}" ]; then echo "::error::Falta el secreto FIRMA_CLAVE (Settings → Secrets and variables → Actions)"; exit 1; fi
+          BT="$ANDROID_HOME/build-tools/$(ls "$ANDROID_HOME/build-tools" | sort -V | tail -1)"
+          # firma con la llave nueva y la prueba de que la vieja la autorizó (rotación de llaves, APK Signature Scheme v3)
+          "$BT/apksigner" sign --ks app/ventoy.jks --ks-key-alias ventoy --ks-pass pass:ventoy-nooficial --key-pass pass:ventoy-nooficial \
+            --next-signer --ks app/firma-ventoy.p12 --ks-key-alias ventoy --ks-pass env:FIRMA_CLAVE --key-pass env:FIRMA_CLAVE \
+            --lineage app/firma-ventoy.linaje --out firmado.apk ../dist/Ventoy-no-oficial.apk
+          mv firmado.apk ../dist/Ventoy-no-oficial.apk
+          "$BT/apksigner" verify --print-certs ../dist/Ventoy-no-oficial.apk | head -2
           cp NOVEDADES.txt ../dist/novedades.txt
 
       - uses: actions/upload-artifact@v4
