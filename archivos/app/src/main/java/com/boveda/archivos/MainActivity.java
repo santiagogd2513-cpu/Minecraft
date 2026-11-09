@@ -140,6 +140,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
     protected void onCreate(Bundle b) {
         super.onCreate(b);
         Season.listener = () -> {
+            if (fab != null) styleFab();
             if (path == null && !picker()) showHome();
         };
         prefs = new Prefs(this);
@@ -423,12 +424,12 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         // botón flotante (+)
         TextView plus = Ui.text(this, "+", 30, 0xFF06101F, true);
         plus.setGravity(Gravity.CENTER);
-        plus.setBackground(Ui.ripple(Ui.gradient(dp(28), Ui.ACCENT2, Ui.ACCENT), Ui.round(Color.WHITE, dp(28))));
         plus.setElevation(dp(6));
         plus.setOnClickListener(v -> showCreate());
         FrameLayout.LayoutParams fl = new FrameLayout.LayoutParams(dp(58), dp(58), Gravity.BOTTOM | Gravity.END);
         fl.setMargins(0, 0, dp(18), dp(22));
         fab = plus;
+        styleFab();
         root.addView(plus, fl);
         if (!picker()) progressCard = new ProgressCard(this, root, 92, this::showTransfers);
         setContentView(root);
@@ -768,6 +769,21 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             box.addView(shizukuCard());
         }
         addExtraView(box);
+    }
+
+    /** El botón de crear: «+» normal, una estrella en Navidad o un mechero prendiendo una velita en Velitas. */
+    private void styleFab() {
+        TextView plus = (TextView) fab;
+        int season = SeasonFx.active(this);
+        int icon = season == Season.NAVIDAD ? R.drawable.ic_fab_star : season == Season.VELITAS ? R.drawable.ic_fab_candle : 0;
+        int c1 = season == Season.NAVIDAD ? 0xFFE63946 : season == Season.VELITAS ? 0xFF8A4A10 : Ui.ACCENT2;
+        int c2 = season == Season.NAVIDAD ? 0xFF7A1020 : season == Season.VELITAS ? 0xFF3A1A06 : Ui.ACCENT;
+        android.graphics.drawable.GradientDrawable g = new android.graphics.drawable.GradientDrawable(
+                android.graphics.drawable.GradientDrawable.Orientation.TL_BR, new int[]{c1, c2});
+        g.setCornerRadius(dp(28));
+        plus.setBackground(Ui.ripple(g, Ui.round(Color.WHITE, dp(28))));
+        plus.setText(icon == 0 ? "+" : "");
+        plus.setForeground(icon == 0 ? null : new android.graphics.drawable.InsetDrawable(getDrawable(icon), dp(11)));
     }
 
     private View section(String s) {

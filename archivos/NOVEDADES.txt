@@ -1,3 +1,8 @@
+## 48
+✨ El botón de crear (+) también se viste de temporada
+- En Navidad es la estrella del arbolito, sobre rojo.
+- En el Día de las Velitas es un mechero prendiendo una velita.
+
 ## 47
 🎄 Temas de temporada (etapa 2): Navidad y Día de las Velitas
 - Navidad (1 de diciembre al 6 de enero): nieve que cae por toda la pantalla, y las tarjetas de almacenamiento con borde de nieve y una tira de lucecitas de colores que titilan.

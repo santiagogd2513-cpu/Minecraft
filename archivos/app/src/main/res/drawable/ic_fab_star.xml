@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- botón de crear en Navidad: la estrella del arbolito, con un + chiquito -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="34dp" android:height="34dp" android:viewportWidth="34" android:viewportHeight="34">
+    <path android:fillColor="#40FFE08A" android:pathData="M17,1 a15,15 0 1,1 -0.01,0 Z" />
+    <path android:pathData="M17,3 L20.6,12 L30,12.6 L22.8,18.8 L25.2,28 L17,22.8 L8.8,28 L11.2,18.8 L4,12.6 L13.4,12 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient android:type="linear" android:startX="17" android:startY="3" android:endX="17" android:endY="28">
+                <item android:offset="0" android:color="#FFFFF4B0" />
+                <item android:offset="0.5" android:color="#FFFFD23F" />
+                <item android:offset="1" android:color="#FFFFA000" />
+            </gradient>
+        </aapt:attr>
+    </path>
+    <path android:fillColor="#B3FFFFFF" android:pathData="M17,6 L18.8,12.2 L17,11 Z" />
+    <path android:fillColor="#FFFFFFFF" android:pathData="M27,24 a5,5 0 1,1 -0.01,0 Z" />
+    <path android:fillColor="#FFB71C2A" android:pathData="M26.2,26 L27.8,26 L27.8,28.2 L30,28.2 L30,29.8 L27.8,29.8 L27.8,32 L26.2,32 L26.2,29.8 L24,29.8 L24,28.2 L26.2,28.2 Z" />
+</vector>
