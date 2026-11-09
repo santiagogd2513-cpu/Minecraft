@@ -89,7 +89,8 @@ final class MegaFs implements Fs {
     private synchronized void load(boolean force) throws IOException {
         if (!force && !nodes.isEmpty() && System.currentTimeMillis() - loadedAt < REFRESH) return;
         try {
-            JSONObject r = (JSONObject) mega.api(new JSONObject().put("a", "f").put("c", 1));
+            // «r»: con todo lo que hay adentro (sin eso MEGA manda solo las carpetas principales, vacías)
+            JSONObject r = (JSONObject) mega.api(new JSONObject().put("a", "f").put("c", 1).put("r", 1));
             JSONArray f = r.optJSONArray("f");
             Map<String, Node> fresh = new HashMap<>();
             String root = null, trash = null;

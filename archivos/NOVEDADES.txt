@@ -1,3 +1,6 @@
+## 33
+- Arreglado: MEGA mostraba «Carpeta vacía» aunque la cuenta tuviera archivos.
+
 ## 32
 OneDrive en Bóveda
 - Nuevo en «Nube y red»: OneDrive. Se registra la app una sola vez en Microsoft (los pasos están en Bóveda) y luego entras con tu cuenta.
