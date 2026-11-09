@@ -25,6 +25,7 @@ public final class ClientEvents {
     public static void onClientTick(TickEvent.ClientTickEvent e) {
         if (e.phase != TickEvent.Phase.END) return;
         Cinematic.clientTick();
+        ImpactFx.tick();
         Minecraft mc = Minecraft.getInstance();
         while (ClientSetup.WEAPONS.consumeClick()) {
             if (mc.screen == null && !Cinematic.isActive() && mc.player != null) mc.setScreen(new WeaponSelectScreen());
@@ -37,6 +38,8 @@ public final class ClientEvents {
         if (e.getStage() == RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
             LauncherRenderer.render(e.getPoseStack(), e.getCamera(), e.getPartialTick());
             TwinRenderer.render(e.getPoseStack(), e.getCamera(), e.getPartialTick());
+            ImpactFx.render(e.getPoseStack(), e.getCamera(), e.getPartialTick());
+            GroundGlow.render(e.getPoseStack(), e.getCamera(), e.getPartialTick());
         }
     }
 
@@ -86,6 +89,7 @@ public final class ClientEvents {
     @SubscribeEvent
     public static void onLogout(ClientPlayerNetworkEvent.LoggingOut e) {
         Cinematic.stop();
+        ImpactFx.clear();
     }
 
     private ClientEvents() {}

@@ -38,6 +38,7 @@ public final class MissileSounds {
     }
 
     public static void impact(Vec3 at, int kind) {
+        ImpactFx.spawn(at, kind == 1 ? ImpactFx.Kind.ICBM : ImpactFx.Kind.SALVO);
         float big = kind == 1 ? 1 : 0;
         Minecraft.getInstance().getSoundManager().play(at(ModSounds.FAR_BOOM.get(), at, 3f + big * 5, 0.8f - big * 0.25f + (float) Math.random() * 0.3f));
     }

@@ -52,6 +52,8 @@ public final class Cinematic {
     static TwinPlan twin;
     /** Despegues e impactos que hacen temblar la cámara: {segundo, x, y, z, fuerza, duración, alcance}. */
     private static final java.util.List<double[]> quakes = new java.util.ArrayList<>();
+    /** Impactos de la cinemática: {segundo, x, y, z, grande (1/0), ya dibujado (1/0)}. */
+    private static final java.util.List<double[]> blasts = new java.util.ArrayList<>();
     private static int duration;
     private static long startTick, clientTicks;
     private static Marker camera;
@@ -104,6 +106,7 @@ public final class Cinematic {
         site = p.site;
         yaw = p.yaw;
         quakes.clear();
+        blasts.clear();
         if (type == WeaponType.TWIN) {
             plan = null;
             twin = new TwinPlan(p.mode, site, yaw, target, p.seed);
@@ -111,6 +114,7 @@ public final class Cinematic {
                 Vec3 a = twin.paths[i].p0, b = twin.paths[i].p3;
                 quakes.add(new double[]{twin.launchTick[i] / 20.0, a.x, a.y, a.z, 1.2, 3, 60});
                 quakes.add(new double[]{(twin.launchTick[i] + twin.paths[i].flightTicks) / 20.0, b.x, b.y, b.z, 2.5, 4, 120});
+                blasts.add(new double[]{(twin.launchTick[i] + twin.paths[i].flightTicks) / 20.0, b.x, b.y, b.z, 1, 0});
             }
         } else {
             twin = null;
@@ -119,6 +123,7 @@ public final class Cinematic {
                 Vec3 a = plan.paths[i].p0, b = plan.paths[i].p3;
                 quakes.add(new double[]{plan.launchTick[i] / 20.0, a.x, a.y, a.z, 0.25, 0.6, 30});
                 quakes.add(new double[]{(plan.launchTick[i] + plan.paths[i].flightTicks) / 20.0, b.x, b.y, b.z, 0.6, 1.2, 30});
+                blasts.add(new double[]{(plan.launchTick[i] + plan.paths[i].flightTicks) / 20.0, b.x, b.y, b.z, 0, 0});
             }
         }
         duration = p.ticks;
@@ -166,6 +171,14 @@ public final class Cinematic {
         camera.setPos(p.pos());
         camera.setYRot(p.yaw());
         camera.setXRot(p.pitch());
+        // las explosiones se dibujan a su hora aunque el misil no se haya visto
+        float now = seconds(0);
+        for (double[] b : blasts) {
+            if (b[5] == 0 && now >= b[0]) {
+                b[5] = 1;
+                ImpactFx.spawn(new Vec3(b[1], b[2], b[3]), b[4] > 0 ? ImpactFx.Kind.ICBM : ImpactFx.Kind.SALVO);
+            }
+        }
         if (twin != null) {
             TwinScenes.sounds(seconds(0));
             TwinScenes.particles(seconds(0));
@@ -477,6 +490,12 @@ public final class Cinematic {
 
     static Vec3 lerp(Vec3 a, Vec3 b, double u) {
         return a.add(b.subtract(a).scale(u));
+    }
+
+    static float easeOutCubic(float x) {
+        x = Mth.clamp(x, 0, 1);
+        float u = 1 - x;
+        return 1 - u * u * u;
     }
 
     static float smooth(float x) {
