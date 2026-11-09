@@ -69,6 +69,9 @@ public final class CiTest {
 
         // Protocolo Hongo: el búnker a 190 bloques del inicio y el blanco 200 más allá (lejos de todo lo demás)
         int bx = spawn.getX(), bz = spawn.getZ() + 190;
+        // que esas zonas estén generadas antes de medir la altura del suelo (si no, da el fondo del mundo)
+        level.getChunk(bx >> 4, bz >> 4);
+        level.getChunk(spawn.getX() >> 4, (spawn.getZ() + 390) >> 4);
         int bg = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, bx, bz);
         bunker = new Vec3(bx + 0.5, com.arsenalatomico.strike.BunkerBuilder.rimHeight(level, bg), bz + 0.5);
         nukeTarget = surface(level, spawn.getX(), spawn.getZ() + 390);
