@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <!-- luna creciente azul con degradado -->
+    <path android:pathData="M58,30 A24,24 0 1,0 78,66 A19,19 0 1,1 58,30 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient android:type="linear"
+                android:startX="34" android:startY="30" android:endX="78" android:endY="78">
+                <item android:offset="0" android:color="#FF8FD3FF" />
+                <item android:offset="0.5" android:color="#FF3D8BFF" />
+                <item android:offset="1" android:color="#FF2A4FD6" />
+            </gradient>
+        </aapt:attr>
+    </path>
+    <!-- órbita del "mundo" (navegador) -->
+    <path android:strokeColor="#CC8FD3FF" android:strokeWidth="1.6" android:fillColor="#00000000"
+        android:pathData="M26,60 C30,72 66,70 82,50" />
+    <!-- estrella de cuatro puntas -->
+    <path android:fillColor="#FFFFFFFF"
+        android:pathData="M70,32 L71.6,37.4 L77,39 L71.6,40.6 L70,46 L68.4,40.6 L63,39 L68.4,37.4 Z" />
+    <path android:fillColor="#FFCFE9FF"
+        android:pathData="M80,48 L80.8,50.2 L83,51 L80.8,51.8 L80,54 L79.2,51.8 L77,51 L79.2,50.2 Z" />
+    <!-- temporada: amistad -->
+    <group android:translateX="74" android:translateY="76" android:rotation="0" android:scaleX="0.9" android:scaleY="0.9">
+        <path android:fillColor="#FFFF4D6D" android:pathData="M-10,-12 L10,-12 L10,3 L-10,3 Z" />
+        <path android:fillColor="#FFFF7A90" android:pathData="M-11.5,-16 L11.5,-16 L11.5,-11.5 L-11.5,-11.5 Z" />
+        <path android:fillColor="#FFFFD23F" android:pathData="M-1.8,-16 L1.8,-16 L1.8,3 L-1.8,3 Z" />
+        <path android:fillColor="#E6FFD23F" android:pathData="M-10,-7 L10,-7 L10,-4.4 L-10,-4.4 Z" />
+        <path android:fillColor="#FFFFC23D" android:pathData="M0,-16 C-4,-23 -10,-20 -6.5,-16 Z" />
+        <path android:fillColor="#FFFFC23D" android:pathData="M0,-16 C4,-23 10,-20 6.5,-16 Z" />
+        <path android:fillColor="#FFFFB020" android:pathData="M-1.6,-16.2 a1.6,1.6 0 1,0 3.2,0 a1.6,1.6 0 1,0 -3.2,0" />
+    </group>
+</vector>

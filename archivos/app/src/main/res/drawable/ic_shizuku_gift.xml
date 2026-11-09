@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Shizuku («gota») en Amor y Amistad: una gota envuelta para regalo, con su lazo -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
+    <path android:pathData="M12,5 Q18.5,12.5 18.5,16 Q18.5,23 12,23 Q5.5,23 5.5,16 Q5.5,12.5 12,5 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient android:type="linear" android:startX="6" android:startY="5" android:endX="18" android:endY="23">
+                <item android:offset="0" android:color="#FF7FE0FF" />
+                <item android:offset="0.5" android:color="#FF3FB8FF" />
+                <item android:offset="1" android:color="#FFB06BFF" />
+            </gradient>
+        </aapt:attr>
+    </path>
+    <path android:fillColor="#FFFFD23F" android:pathData="M11,7.5 L13,7.5 L13,23 L11,23 Z M6,15.2 L18,15.2 L18,17 L6,17 Z" />
+    <path android:fillColor="#FFFF4D6D" android:pathData="M12,5 C9,0.5 4.5,2.5 8,5.2 Q10,5.8 12,5 Z M12,5 C15,0.5 19.5,2.5 16,5.2 Q14,5.8 12,5 Z" />
+    <path android:fillColor="#FFE0153F" android:pathData="M12,5 m-1.4,0 a1.4,1.4 0 1,1 2.8,0 a1.4,1.4 0 1,1 -2.8,0" />
+</vector>

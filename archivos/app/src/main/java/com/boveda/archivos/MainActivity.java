@@ -771,13 +771,21 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         addExtraView(box);
     }
 
-    /** El botón de crear: «+» normal, una estrella en Navidad o un mechero prendiendo una velita en Velitas. */
+    /**
+     * El botón de crear: «+» normal, una estrella en Navidad, un mechero prendiendo una velita en
+     * Velitas, una carta de amor en San Valentín o un regalito en Amor y Amistad.
+     */
     private void styleFab() {
         TextView plus = (TextView) fab;
         int season = SeasonFx.active(this);
-        int icon = season == Season.NAVIDAD ? R.drawable.ic_fab_star : season == Season.VELITAS ? R.drawable.ic_fab_candle : 0;
-        int c1 = season == Season.NAVIDAD ? 0xFFE63946 : season == Season.VELITAS ? 0xFF8A4A10 : Ui.ACCENT2;
-        int c2 = season == Season.NAVIDAD ? 0xFF7A1020 : season == Season.VELITAS ? 0xFF3A1A06 : Ui.ACCENT;
+        int icon, c1, c2;
+        switch (season) {
+            case Season.NAVIDAD -> { icon = R.drawable.ic_fab_star; c1 = 0xFFE63946; c2 = 0xFF7A1020; }
+            case Season.VELITAS -> { icon = R.drawable.ic_fab_candle; c1 = 0xFF8A4A10; c2 = 0xFF3A1A06; }
+            case Season.VALENTIN -> { icon = R.drawable.ic_fab_letter; c1 = 0xFFFF4D8D; c2 = 0xFF8A1040; }
+            case Season.AMISTAD -> { icon = R.drawable.ic_fab_gift; c1 = 0xFF3FB8FF; c2 = 0xFF7B2CBF; }
+            default -> { icon = 0; c1 = Ui.ACCENT2; c2 = Ui.ACCENT; }
+        }
         android.graphics.drawable.GradientDrawable g = new android.graphics.drawable.GradientDrawable(
                 android.graphics.drawable.GradientDrawable.Orientation.TL_BR, new int[]{c1, c2});
         g.setCornerRadius(dp(28));
@@ -2469,6 +2477,8 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         int season = SeasonFx.active(this);
         if (season == Season.NAVIDAD) i.setImageResource(R.drawable.ic_shizuku_icicle);
         else if (season == Season.VELITAS) i.setImageResource(R.drawable.ic_shizuku_wax);
+        else if (season == Season.VALENTIN) i.setImageResource(R.drawable.ic_shizuku_heart);
+        else if (season == Season.AMISTAD) i.setImageResource(R.drawable.ic_shizuku_gift);
         else i.setImageDrawable(Ui.icon(this, R.drawable.ic_shield, ShizukuHelper.ready() ? Ui.GOOD : Ui.SUB));
         int isz = season == Season.NONE ? 22 : 28;
         r.addView(i, new LinearLayout.LayoutParams(dp(isz), dp(isz)));

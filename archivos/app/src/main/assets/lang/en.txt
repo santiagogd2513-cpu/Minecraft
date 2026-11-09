@@ -907,3 +907,4 @@
 907|❌ Rendering error
 908|Light mode could not start: Bóveda detected too much white and protected itself by staying in dark mode.\n\nThis feature will remain in testing.
 909|Fine 🌙
+910|🎃 Halloween arrives in the next update. The other seasons already have their decorations and icons.

@@ -14,12 +14,28 @@ final class HomePage {
     /** Los efectos de temporada de la página (los mismos de SeasonFx.java, en JavaScript). */
     private static final String SEASON_JS = """
 // Efectos de temporada para páginas web (Nocturna y Arnis): lo mismo que SeasonFx.java.
-// season: "navidad" o "velitas".
+// season: "navidad", "velitas", "valentin" o "amistad".
 //   SeasonFx.sky(season)          nieve que cae o chispitas que suben, por toda la pantalla
 //   SeasonFx.card(el, season, r)  borde de nieve con lucecitas, o guirnalda de faroles, arriba de el
 //                                 (noPad: no correr el contenido hacia abajo)
 var SeasonFx = (function () {
   var D = window.devicePixelRatio || 1;
+
+  function heart(x, cx, cy, s) {
+    x.beginPath();
+    x.moveTo(cx, cy + s * 0.75);
+    x.bezierCurveTo(cx - s * 1.9, cy - s * 0.4, cx - s * 0.9, cy - s * 1.7, cx, cy - s * 0.65);
+    x.bezierCurveTo(cx + s * 0.9, cy - s * 1.7, cx + s * 1.9, cy - s * 0.4, cx, cy + s * 0.75);
+    x.closePath();
+  }
+  function star(x, cx, cy, s) {
+    x.beginPath();
+    for (var k = 0; k < 10; k++) {
+      var rr = k % 2 ? s * 0.45 : s, a = -Math.PI / 2 + k * Math.PI / 5;
+      if (k) x.lineTo(cx + rr * Math.cos(a), cy + rr * Math.sin(a)); else x.moveTo(cx + rr * Math.cos(a), cy + rr * Math.sin(a));
+    }
+    x.closePath();
+  }
 
   function sky(season) {
     var c = document.createElement("canvas");
@@ -28,6 +44,8 @@ var SeasonFx = (function () {
     document.body.appendChild(c);
     var x = c.getContext("2d"), P = [], W = 0, H = 0, last = 0;
     var warm = ["#FFD27A", "#FFA63D", "#FF7A1A", "#FFE9A8"];
+    var pink = ["#FF4D8D", "#FF7AA8", "#E63946", "#FFB3CC", "#C9184A"];
+    var party = ["#FF4D6D", "#FFC23D", "#3DDC84", "#3FB8FF", "#B06BFF", "#FF7AC8", "#FF8A3D"];
     function spawn(p, anywhere) {
       p.x = Math.random() * W;
       p.ph = Math.random() * 6.28;
@@ -36,6 +54,17 @@ var SeasonFx = (function () {
         p.v = (16 + Math.random() * 34) * D * (p.r / (2.4 * D));
         p.y = anywhere ? Math.random() * H : -p.r * 2;
         p.a = (90 + Math.random() * 120) / 255;
+      } else if (season === "valentin") {
+        p.r = (3.5 + Math.random() * 4) * D;
+        p.v = (16 + Math.random() * 22) * D;
+        p.y = anywhere ? Math.random() * H : H + p.r * 2;
+        p.c = pink[(Math.random() * pink.length) | 0];
+      } else if (season === "amistad") {
+        p.k = Math.random() < 0.6 ? 0 : Math.random() < 0.6 ? 1 : 2;
+        p.r = (p.k === 0 ? 2.5 + Math.random() * 2.5 : 4 + Math.random() * 4) * D;
+        p.v = (22 + Math.random() * 36) * D;
+        p.y = anywhere ? Math.random() * H : -p.r * 3;
+        p.c = party[(Math.random() * party.length) | 0];
       } else {
         p.r = (1 + Math.random() * 1.8) * D;
         p.v = (14 + Math.random() * 26) * D;
@@ -47,7 +76,7 @@ var SeasonFx = (function () {
       W = c.width = innerWidth * D;
       H = c.height = innerHeight * D;
       P = [];
-      var n = season === "navidad" ? 46 : 30;
+      var n = season === "navidad" ? 46 : season === "valentin" ? 22 : season === "amistad" ? 40 : 30;
       for (var i = 0; i < n; i++) { var p = {}; spawn(p, true); P.push(p); }
     }
     size();
@@ -73,6 +102,27 @@ var SeasonFx = (function () {
           x.fillStyle = "#fff";
           x.beginPath(); x.arc(sx, p.y, p.r, 0, 7); x.fill();
           if (p.r > 2.6 * D) { x.globalAlpha = 0.06; x.beginPath(); x.arc(sx, p.y, p.r * 2, 0, 7); x.fill(); }
+        } else if (season === "valentin") {
+          p.y -= p.v * dt;
+          if (p.y < -p.r * 2) spawn(p, false);
+          var hx = p.x + Math.sin(t * 1.1 + p.ph) * 14 * D;
+          var fade = Math.min(1, Math.max(0, p.y / (H * 0.35)));
+          x.save();
+          x.translate(hx, p.y); x.rotate(Math.sin(t * 1.3 + p.ph) * 0.25);
+          x.globalAlpha = Math.min(0.9, (110 + p.r / D * 8) / 255) * fade;
+          x.fillStyle = p.c; heart(x, 0, 0, p.r); x.fill();
+          x.restore();
+        } else if (season === "amistad") {
+          p.y += p.v * dt;
+          if (p.y > H + p.r * 3) spawn(p, false);
+          var cx2 = p.x + Math.sin(t * 1.4 + p.ph) * 12 * D;
+          x.save();
+          x.translate(cx2, p.y); x.rotate(((t * 90 + p.ph * 57) % 360) * Math.PI / 180);
+          x.globalAlpha = 0.82; x.fillStyle = p.c;
+          if (p.k === 0) { x.scale(Math.cos(t * 4 + p.ph), 1); x.fillRect(-p.r, -p.r * 0.45, p.r * 2, p.r * 0.9); }
+          else if (p.k === 1) { heart(x, 0, 0, p.r); x.fill(); }
+          else { star(x, 0, 0, p.r); x.fill(); }
+          x.restore();
         } else {
           p.y -= p.v * dt;
           var ex = p.x + Math.sin(t * 1.6 + p.ph) * 6 * D;
@@ -122,7 +172,10 @@ var SeasonFx = (function () {
       x.clearRect(0, 0, w, 30);
       x.save();
       roundClip();
-      if (season === "navidad") christmas(t); else velitas(t);
+      if (season === "navidad") christmas(t);
+      else if (season === "valentin") hearts(t);
+      else if (season === "amistad") bunting(t);
+      else velitas(t);
       x.restore();
       requestAnimationFrame(f);
     })(0);
@@ -162,6 +215,45 @@ var SeasonFx = (function () {
         x.fillStyle = "rgba(255,255,255," + (0.4 + 0.4 * Math.sin(t * 3 + k)) + ")";
         x.beginPath(); x.arc(d[0] + 6, 2.5, 0.9, 0, 7); x.fill();
       });
+    }
+
+    function hearts(t) {
+      var span = Math.max(60, w / Math.max(1, Math.round(w / 90))), y0 = 2, depth = 6;
+      x.strokeStyle = "#B0406A"; x.lineWidth = 1.3;
+      x.beginPath(); x.moveTo(0, y0);
+      for (var px = 0; px <= w; px += 3) x.lineTo(px, sag(px, span, y0, depth));
+      x.stroke();
+      var cols = [[255, 45, 85], [255, 122, 168], [230, 57, 70], [255, 179, 204]], i = 0;
+      for (var hx = 14; hx < w - 8; hx += 30, i++) {
+        var hy = sag(hx, span, y0, depth), col = cols[i % cols.length];
+        var ph = (t * 1.2 + i * 0.17) % 1;
+        var beat = ph < 0.12 ? Math.sin(ph / 0.12 * Math.PI) : (ph > 0.2 && ph < 0.32 ? 0.7 * Math.sin((ph - 0.2) / 0.12 * Math.PI) : 0);
+        var s = 5.2 + 1.2 * beat;
+        x.fillStyle = "#8A3A5A"; x.fillRect(hx - 0.5, hy, 1, 4);
+        var g = x.createRadialGradient(hx, hy + 10, 0, hx, hy + 10, 12);
+        g.addColorStop(0, "rgba(" + col + "," + ((60 + 70 * beat) / 255) + ")"); g.addColorStop(1, "rgba(" + col + ",0)");
+        x.fillStyle = g; x.beginPath(); x.arc(hx, hy + 10, 12, 0, 7); x.fill();
+        x.fillStyle = "rgb(" + col + ")"; heart(x, hx, hy + 10, s); x.fill();
+        x.fillStyle = "rgba(255,255,255,.55)"; x.beginPath(); x.arc(hx - s * 0.55, hy + 10 - s * 0.55, s * 0.22, 0, 7); x.fill();
+      }
+    }
+
+    function bunting(t) {
+      var span = Math.max(60, w / Math.max(1, Math.round(w / 100))), y0 = 2, depth = 7, fw = 7;
+      x.strokeStyle = "#E8D7B0"; x.lineWidth = 1.3;
+      x.beginPath(); x.moveTo(0, y0);
+      for (var px = 0; px <= w; px += 3) x.lineTo(px, sag(px, span, y0, depth));
+      x.stroke();
+      var cols = ["#FF4D6D", "#FFC23D", "#3DDC84", "#3FB8FF", "#B06BFF", "#FF7AC8"], i = 0;
+      for (var bx = 9; bx < w - fw; bx += 19, i++) {
+        var ya = sag(bx - fw, span, y0, depth), yb = sag(bx + fw, span, y0, depth);
+        var sway = Math.sin(t * 2.2 + i * 0.8) * 3, len = 14 + Math.sin(t * 1.7 + i) * 1.2;
+        x.fillStyle = cols[i % cols.length];
+        x.beginPath(); x.moveTo(bx - fw, ya); x.lineTo(bx + fw, yb); x.lineTo(bx + sway, (ya + yb) / 2 + len); x.closePath(); x.fill();
+        x.fillStyle = "rgba(255,255,255,.8)";
+        if (i % 3 === 1) { heart(x, bx + sway * 0.3, (ya + yb) / 2 + len * 0.36, 2.2); x.fill(); }
+        else { x.beginPath(); x.arc(bx + sway * 0.3, (ya + yb) / 2 + len * 0.36, 1.4, 0, 7); x.fill(); }
+      }
     }
 
     function velitas(t) {
@@ -230,8 +322,13 @@ var SeasonFx = (function () {
                 ? new String[]{"#E63946", "#2DC653", "#FFD23F", "#E63946", "#2DC653", "#FF7A7A", "#4CB4FF", "#2DC653"}
                 : season == Season.VELITAS
                 ? new String[]{"#FF4D4D", "#FFB020", "#3DDC84", "#B06BFF", "#FF7AC8", "#3FB8FF", "#FFD27A", "#FF7A1A"}
+                : season == Season.VALENTIN
+                ? new String[]{"#FF2D55", "#FF7AA8", "#E63946", "#FFB3CC", "#C9184A", "#FF4D8D", "#FF8FA3", "#B0406A"}
+                : season == Season.AMISTAD
+                ? new String[]{"#FF4D6D", "#FFC23D", "#3DDC84", "#3FB8FF", "#B06BFF", "#FF7AC8", "#FF8A3D", "#36D1FF"}
                 : new String[]{"#3D8BFF", "#36D1FF", "#7B8CFF", "#35D08A", "#FFB547", "#FF6A7A", "#B58CFF", "#5CC8FF"};
-        String name = season == Season.NAVIDAD ? "navidad" : season == Season.VELITAS ? "velitas" : null;
+        String name = season == Season.NAVIDAD ? "navidad" : season == Season.VELITAS ? "velitas"
+                : season == Season.VALENTIN ? "valentin" : season == Season.AMISTAD ? "amistad" : null;
         // gorro de Papá Noel sobre la luna, o dos velitas al lado
         String logoExtra = season == Season.NAVIDAD
                 ? "<g transform='translate(34,42) rotate(-36) scale(.72)'>"
@@ -243,6 +340,15 @@ var SeasonFx = (function () {
                 + "<path fill='#FF8A1A' d='M3,-21 Q6,-16.5 5,-14.5 Q4.2,-13.2 3,-13.2 Q1.8,-13.2 1,-14.5 Q0,-16.5 3,-21 Z'><animate attributeName='opacity' values='1;.7;1;.85;1' dur='.9s' repeatCount='indefinite'/></path></g>"
                 + "<g transform='translate(77,70) scale(.9)'><rect y='-8' width='6' height='8' fill='#FFF3D6'/>"
                 + "<path fill='#FF8A1A' d='M3,-17 Q6,-12.5 5,-10.5 Q4.2,-9.2 3,-9.2 Q1.8,-9.2 1,-10.5 Q0,-12.5 3,-17 Z'><animate attributeName='opacity' values='.8;1;.75;1;.8' dur='1.1s' repeatCount='indefinite'/></path></g>"
+                : season == Season.VALENTIN
+                ? "<g transform='translate(73,66) scale(.85)'>"
+                + "<path fill='#FF2D55' d='M0,6.75 C-17.1,-3.6 -8.1,-15.3 0,-5.85 C8.1,-15.3 17.1,-3.6 0,6.75 Z'>"
+                + "<animateTransform attributeName='transform' type='scale' values='1;1.15;1;1.08;1;1' dur='1.2s' repeatCount='indefinite'/></path>"
+                + "<path stroke='#7A4A10' stroke-width='1' d='M-15,9 L14,-9'/><path fill='#FFD23F' d='M14,-9 L9.5,-8.6 L12.3,-6 Z M14,-9 L13.6,-4.5 L11,-7.3 Z'/></g>"
+                : season == Season.AMISTAD
+                ? "<g transform='translate(74,76) scale(.9)'><path fill='#FF4D6D' d='M-10,-12 L10,-12 L10,3 L-10,3 Z'/>"
+                + "<path fill='#FF7A90' d='M-11.5,-16 L11.5,-16 L11.5,-11.5 L-11.5,-11.5 Z'/><path fill='#FFD23F' d='M-1.8,-16 L1.8,-16 L1.8,3 L-1.8,3 Z'/>"
+                + "<path fill='#FFC23D' d='M0,-16 C-4,-23 -10,-20 -6.5,-16 Z M0,-16 C4,-23 10,-20 6.5,-16 Z'/></g>"
                 : "";
         for (int i = 0; i < tiles.size(); i++) {
             String title = tiles.get(i)[0], url = tiles.get(i)[1];

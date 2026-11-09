@@ -20,11 +20,13 @@ final class Icons {
         return switch (icon) {
             case Season.NAVIDAD -> "InicioNavidad";
             case Season.VELITAS -> "InicioVelitas";
+            case Season.VALENTIN -> "InicioValentin";
+            case Season.AMISTAD -> "InicioAmistad";
             default -> ORIGINAL;
         };
     }
 
-    private static final String[] ALL = {ORIGINAL, "InicioNavidad", "InicioVelitas"};
+    private static final String[] ALL = {ORIGINAL, "InicioNavidad", "InicioVelitas", "InicioValentin", "InicioAmistad"};
 
     private static ComponentName cn(Context c, String name) {
         return new ComponentName(c.getPackageName(), c.getPackageName() + "." + name);

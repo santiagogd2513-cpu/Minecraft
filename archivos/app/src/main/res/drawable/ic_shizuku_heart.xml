@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Shizuku («gota») en San Valentín: una gota con forma de corazón -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
+    <path android:pathData="M12,1.5 Q15,6 16.2,8.4 Q21.5,7.6 21.6,13 Q21.6,17.4 12,23 Q2.4,17.4 2.4,13 Q2.5,7.6 7.8,8.4 Q9,6 12,1.5 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient android:type="linear" android:startX="4" android:startY="2" android:endX="20" android:endY="23">
+                <item android:offset="0" android:color="#FFFFB3CC" />
+                <item android:offset="0.5" android:color="#FFFF4D8D" />
+                <item android:offset="1" android:color="#FFC9184A" />
+            </gradient>
+        </aapt:attr>
+    </path>
+    <path android:fillColor="#B3FFFFFF" android:pathData="M6,11.5 Q6.6,9.6 8.6,9.6 Q7,10.8 7.2,13 Q5.8,13 6,11.5 Z" />
+</vector>

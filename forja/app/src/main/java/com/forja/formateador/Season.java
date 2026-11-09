@@ -51,9 +51,9 @@ final class Season {
      * Si el tema de cada temporada ya trae decoraciones. Mientras sea false, el tema se puede
      * elegir pero todavía no cambia nada en pantalla.
      */
-    static final boolean[] THEME_READY = {true, true, false, false, false};
+    static final boolean[] THEME_READY = {true, true, true, true, false};
     /** Si ya está dibujado el ícono de cada temporada. */
-    static final boolean[] ICON_READY = {true, true, false, false, false};
+    static final boolean[] ICON_READY = {true, true, true, true, false};
 
     /** Lo avisa la app para volver a dibujar su pantalla cuando cambia el tema. */
     static Runnable listener;
@@ -198,7 +198,7 @@ final class Season {
         boolean ready = true;
         for (boolean b : THEME_READY) ready &= b;
         if (!ready) {
-            TextView soon = Ui.text(a, tr("🎨 Navidad y el Día de las Velitas ya tienen sus decoraciones. Las de San Valentín, Amor y Amistad y Halloween llegan en las próximas actualizaciones."),
+            TextView soon = Ui.text(a, tr("🎃 Halloween llega en la próxima actualización. Las demás temporadas ya tienen sus decoraciones e íconos."),
                     12.5f, Ui.WARN, false);
             soon.setPadding(Kit.dp(a, 14), Kit.dp(a, 12), Kit.dp(a, 14), Kit.dp(a, 12));
             soon.setBackground(Ui.round(0x1AFFB547, Kit.dp(a, 14)));

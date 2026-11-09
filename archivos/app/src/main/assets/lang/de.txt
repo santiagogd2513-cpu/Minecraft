@@ -907,3 +907,4 @@
 907|❌ Darstellungsfehler
 908|Der helle Modus konnte nicht starten: Bóveda hat zu viel Weiß erkannt und sich geschützt, indem es im dunklen Modus bleibt.\n\nDiese Funktion bleibt im Test.
 909|Schon gut 🌙
+910|🎃 Halloween kommt mit dem nächsten Update. Die anderen Saisons haben schon ihre Dekorationen und Symbole.

@@ -907,3 +907,4 @@
 907|❌ Erreur d'affichage
 908|Le mode clair n'a pas pu démarrer : Bóveda a détecté trop de blanc et s'est protégée en restant en mode sombre.\n\nCette fonction restera en test.
 909|D'accord 🌙
+910|🎃 Halloween arrive dans la prochaine mise à jour. Les autres saisons ont déjà leurs décorations et icônes.

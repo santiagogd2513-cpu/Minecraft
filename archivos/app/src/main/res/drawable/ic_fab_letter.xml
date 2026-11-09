@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- botón de crear en San Valentín: una carta de amor con su corazón, y un + chiquito -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="34dp" android:height="34dp" android:viewportWidth="34" android:viewportHeight="34">
+    <path android:fillColor="#FFFFF0F4" android:pathData="M4,9 L30,9 Q31,9 31,10 L31,26 Q31,27 30,27 L4,27 Q3,27 3,26 L3,10 Q3,9 4,9 Z" />
+    <path android:fillColor="#FFFFD6E2" android:pathData="M3,26 L14,17 L17,19.4 L20,17 L31,26 Z" />
+    <path android:fillColor="#FFFFC2D4" android:pathData="M3,10 L17,21 L31,10 L31,9.6 Q31,9 30,9 L4,9 Q3,9 3,9.6 Z" />
+    <path android:fillColor="#FFE0153F" android:pathData="M17,23.5 C9.5,18.8 12.5,13.4 17,16.6 C21.5,13.4 24.5,18.8 17,23.5 Z" />
+    <path android:fillColor="#99FFFFFF" android:pathData="M14.4,17.6 a1,1 0 1,1 2,0 a1,1 0 1,1 -2,0" />
+    <path android:fillColor="#FFFFFFFF" android:pathData="M27,24 a5,5 0 1,1 -0.01,0 Z" />
+    <path android:fillColor="#FFC9184A" android:pathData="M26.2,26 L27.8,26 L27.8,28.2 L30,28.2 L30,29.8 L27.8,29.8 L27.8,32 L26.2,32 L26.2,29.8 L24,29.8 L24,28.2 L26.2,28.2 Z" />
+</vector>

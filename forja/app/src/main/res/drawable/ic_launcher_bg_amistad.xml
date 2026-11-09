@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108">
+    <path android:pathData="M0,0 L108,0 L108,108 L0,108 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient android:type="radial" android:centerX="54" android:centerY="70" android:gradientRadius="78">
+                <item android:offset="0" android:color="#FF3A1C10" />
+                <item android:offset="1" android:color="#FF0A0A0E" />
+            </gradient>
+        </aapt:attr>
+    </path>
+    <!-- temporada: amistad -->
+    <group android:translateX="0" android:translateY="0" android:rotation="0" android:scaleX="1" android:scaleY="1">
+        <path android:fillColor="#E6FF4D6D" android:pathData="M16.56,22 a1.4400000000000002,1.4400000000000002 0 1,0 2.8800000000000003,0 a1.4400000000000002,1.4400000000000002 0 1,0 -2.8800000000000003,0" />
+        <path android:fillColor="#E6FFC23D" android:pathData="M29.01,14 a0.9900000000000001,0.9900000000000001 0 1,0 1.9800000000000002,0 a0.9900000000000001,0.9900000000000001 0 1,0 -1.9800000000000002,0" />
+        <path android:fillColor="#E63DDC84" android:pathData="M44.74,20 a1.26,1.26 0 1,0 2.52,0 a1.26,1.26 0 1,0 -2.52,0" />
+        <path android:fillColor="#E63FB8FF" android:pathData="M64.92,12 a1.08,1.08 0 1,0 2.16,0 a1.08,1.08 0 1,0 -2.16,0" />
+        <path android:fillColor="#E6B06BFF" android:pathData="M82.47,20 a1.53,1.53 0 1,0 3.06,0 a1.53,1.53 0 1,0 -3.06,0" />
+        <path android:fillColor="#E6FF7AC8" android:pathData="M91.01,36 a0.9900000000000001,0.9900000000000001 0 1,0 1.9800000000000002,0 a0.9900000000000001,0.9900000000000001 0 1,0 -1.9800000000000002,0" />
+        <path android:fillColor="#E6FF4D6D" android:pathData="M12.92,44 a1.08,1.08 0 1,0 2.16,0 a1.08,1.08 0 1,0 -2.16,0" />
+        <path android:fillColor="#E6FFC23D" android:pathData="M94.74,58 a1.26,1.26 0 1,0 2.52,0 a1.26,1.26 0 1,0 -2.52,0" />
+        <path android:fillColor="#E63DDC84" android:pathData="M18.65,66 a1.35,1.35 0 1,0 2.7,0 a1.35,1.35 0 1,0 -2.7,0" />
+        <path android:fillColor="#E63FB8FF" android:pathData="M87.01,72 a0.9900000000000001,0.9900000000000001 0 1,0 1.9800000000000002,0 a0.9900000000000001,0.9900000000000001 0 1,0 -1.9800000000000002,0" />
+        <path android:fillColor="#E6B06BFF" android:pathData="M75.19,28 a0.81,0.81 0 1,0 1.62,0 a0.81,0.81 0 1,0 -1.62,0" />
+        <path android:fillColor="#E6FF7AC8" android:pathData="M33.19,30 a0.81,0.81 0 1,0 1.62,0 a0.81,0.81 0 1,0 -1.62,0" />
+    </group>
+</vector>

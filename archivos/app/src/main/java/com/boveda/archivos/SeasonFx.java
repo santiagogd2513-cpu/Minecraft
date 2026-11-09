@@ -29,6 +29,10 @@ import java.util.Random;
  *   con una tira de lucecitas de colores que titilan.</li>
  *   <li>Día de las Velitas: chispitas que suben desde abajo con un resplandor cálido y, en las
  *   tarjetas grandes, una guirnalda de faroles de colores que se mecen y brillan.</li>
+ *   <li>San Valentín: corazones que suben flotando y, en las tarjetas, una guirnalda de corazones
+ *   que laten.</li>
+ *   <li>Amor y Amistad: confeti, corazones y estrellitas de colores que caen y, en las tarjetas,
+ *   banderines de fiesta que ondean.</li>
  * </ul>
  * Nada de esto recibe toques: todo pasa por debajo hacia la app.
  */
@@ -49,6 +53,8 @@ final class SeasonFx {
         return switch (active(c)) {
             case Season.NAVIDAD -> new int[]{0xFF17482F, 0xFF4E1424};
             case Season.VELITAS -> new int[]{0xFF5A340C, 0xFF2C1508};
+            case Season.VALENTIN -> new int[]{0xFF5C1232, 0xFF2A0816};
+            case Season.AMISTAD -> new int[]{0xFF5A3A10, 0xFF4A1438};
             default -> new int[]{c1, c2};
         };
     }
@@ -80,6 +86,9 @@ final class SeasonFx {
         private final Paint glow = new Paint(Paint.ANTI_ALIAS_FLAG);
         private float[] x, y, r, v, ph;
         private int[] col;
+        /** Amor y Amistad: 0 confeti, 1 corazón, 2 estrellita. */
+        private int[] kind;
+        private final Path shape = new Path();
         private long last;
         private final Runnable tick = this::invalidate;
 
@@ -99,13 +108,14 @@ final class SeasonFx {
 
         @Override
         protected void onSizeChanged(int w, int h, int ow, int oh) {
-            int n = season == Season.NAVIDAD ? 46 : 30;
+            int n = season == Season.NAVIDAD ? 46 : season == Season.VALENTIN ? 22 : season == Season.AMISTAD ? 40 : 30;
             x = new float[n];
             y = new float[n];
             r = new float[n];
             v = new float[n];
             ph = new float[n];
             col = new int[n];
+            kind = new int[n];
             for (int i = 0; i < n; i++) spawn(i, w, h, true);
             if (season == Season.VELITAS && h > 0) {
                 glow.setShader(new LinearGradient(0, h, 0, h - 170 * d, 0x40FF9A2E, 0x00FF9A2E, Shader.TileMode.CLAMP));
@@ -120,6 +130,19 @@ final class SeasonFx {
                 v[i] = (16 + rnd.nextFloat() * 34) * d * (r[i] / (2.4f * d));
                 y[i] = anywhere ? rnd.nextFloat() * h : -r[i] * 2;
                 col[i] = Color.argb(90 + rnd.nextInt(120), 255, 255, 255);
+            } else if (season == Season.VALENTIN) {
+                r[i] = (3.5f + rnd.nextFloat() * 4) * d;
+                v[i] = (16 + rnd.nextFloat() * 22) * d;
+                y[i] = anywhere ? rnd.nextFloat() * h : h + r[i] * 2;
+                int[] pink = {0xFFFF4D8D, 0xFFFF7AA8, 0xFFE63946, 0xFFFFB3CC, 0xFFC9184A};
+                col[i] = pink[rnd.nextInt(pink.length)];
+            } else if (season == Season.AMISTAD) {
+                kind[i] = rnd.nextInt(10) < 6 ? 0 : rnd.nextInt(10) < 6 ? 1 : 2;
+                r[i] = (kind[i] == 0 ? 2.5f + rnd.nextFloat() * 2.5f : 4 + rnd.nextFloat() * 4) * d;
+                v[i] = (22 + rnd.nextFloat() * 36) * d;
+                y[i] = anywhere ? rnd.nextFloat() * h : -r[i] * 3;
+                int[] party = {0xFFFF4D6D, 0xFFFFC23D, 0xFF3DDC84, 0xFF3FB8FF, 0xFFB06BFF, 0xFFFF7AC8, 0xFFFF8A3D};
+                col[i] = party[rnd.nextInt(party.length)];
             } else {
                 r[i] = (1.0f + rnd.nextFloat() * 1.8f) * d;
                 v[i] = (14 + rnd.nextFloat() * 26) * d;
@@ -145,6 +168,38 @@ final class SeasonFx {
                     if (y[i] > h + r[i] * 2) spawn(i, w, h, false);
                     p.setColor(col[i]);
                     c.drawCircle(sx, y[i], r[i], p);
+                } else if (season == Season.VALENTIN) {
+                    // corazones que suben meciéndose y se desvanecen arriba
+                    y[i] -= v[i] * dt;
+                    if (y[i] < -r[i] * 2) spawn(i, w, h, false);
+                    float sx = x[i] + (float) Math.sin(t * 1.1f + ph[i]) * 14 * d;
+                    float fade = Math.min(1, Math.max(0, y[i] / (h * 0.35f)));
+                    int a = (int) ((110 + (r[i] / d) * 8) * fade);
+                    c.save();
+                    c.rotate((float) Math.sin(t * 1.3f + ph[i]) * 14, sx, y[i]);
+                    p.setColor((col[i] & 0x00FFFFFF) | (Math.min(230, a) << 24));
+                    heart(shape, sx, y[i], r[i]);
+                    c.drawPath(shape, p);
+                    c.restore();
+                } else if (season == Season.AMISTAD) {
+                    // confeti que cae girando, con corazones y estrellitas
+                    y[i] += v[i] * dt;
+                    if (y[i] > h + r[i] * 3) spawn(i, w, h, false);
+                    float sx = x[i] + (float) Math.sin(t * 1.4f + ph[i]) * 12 * d;
+                    p.setColor((col[i] & 0x00FFFFFF) | 0xD0000000);
+                    c.save();
+                    c.rotate((t * 90 + ph[i] * 57) % 360, sx, y[i]);
+                    if (kind[i] == 0) {
+                        c.scale((float) Math.cos(t * 4 + ph[i]), 1, sx, y[i]);
+                        c.drawRect(sx - r[i], y[i] - r[i] * 0.45f, sx + r[i], y[i] + r[i] * 0.45f, p);
+                    } else if (kind[i] == 1) {
+                        heart(shape, sx, y[i], r[i]);
+                        c.drawPath(shape, p);
+                    } else {
+                        star(shape, sx, y[i], r[i]);
+                        c.drawPath(shape, p);
+                    }
+                    c.restore();
                 } else {
                     y[i] -= v[i] * dt;
                     float sx = x[i] + (float) Math.sin(t * 1.6f + ph[i]) * 6 * d;
@@ -178,6 +233,28 @@ final class SeasonFx {
             super.onDetachedFromWindow();
             H.removeCallbacks(tick);
         }
+    }
+
+    /** Un corazón centrado en (cx, cy) de ancho ~2·s. */
+    static void heart(Path p, float cx, float cy, float s) {
+        p.reset();
+        p.moveTo(cx, cy + s * 0.75f);
+        p.cubicTo(cx - s * 1.9f, cy - s * 0.4f, cx - s * 0.9f, cy - s * 1.7f, cx, cy - s * 0.65f);
+        p.cubicTo(cx + s * 0.9f, cy - s * 1.7f, cx + s * 1.9f, cy - s * 0.4f, cx, cy + s * 0.75f);
+        p.close();
+    }
+
+    /** Una estrella de cinco puntas centrada en (cx, cy). */
+    static void star(Path p, float cx, float cy, float s) {
+        p.reset();
+        for (int k = 0; k < 10; k++) {
+            float rr = k % 2 == 0 ? s : s * 0.45f;
+            double a = -Math.PI / 2 + k * Math.PI / 5;
+            float px = cx + rr * (float) Math.cos(a), py = cy + rr * (float) Math.sin(a);
+            if (k == 0) p.moveTo(px, py);
+            else p.lineTo(px, py);
+        }
+        p.close();
     }
 
     // ------------------------------------------------------------------ tarjetas grandes
@@ -248,6 +325,8 @@ final class SeasonFx {
             clip.addRoundRect(rect, radius, radius, Path.Direction.CW);
             c.clipPath(clip);
             if (season == Season.NAVIDAD) drawChristmas(c, w, t);
+            else if (season == Season.VALENTIN) drawHearts(c, w, t);
+            else if (season == Season.AMISTAD) drawBunting(c, w, t);
             else drawVelitas(c, w, t);
             c.restore();
             H.removeCallbacks(tick);
@@ -366,6 +445,75 @@ final class SeasonFx {
                 rect.set(x - 3 * d, y + 14.6f * d, x + 3 * d, y + 16 * d);
                 c.drawRoundRect(rect, d, d, p);
                 c.restore();
+            }
+        }
+
+        private final Path shape = new Path();
+
+        /** San Valentín: una guirnalda de corazones que laten como un corazón de verdad. */
+        private void drawHearts(Canvas c, int w, float t) {
+            float span = Math.max(60 * d, w / Math.max(1, Math.round(w / (90 * d))));
+            float y0 = 2 * d, depth = 6 * d;
+            path.reset();
+            path.moveTo(0, y0);
+            for (float x = 0; x <= w; x += 3 * d) path.lineTo(x, sag(x, span, y0, depth));
+            wire.setColor(0xFFB0406A);
+            c.drawPath(path, wire);
+            int[] colors = {0xFFFF2D55, 0xFFFF7AA8, 0xFFE63946, 0xFFFFB3CC};
+            int i = 0;
+            for (float x = 14 * d; x < w - 8 * d; x += 30 * d, i++) {
+                float y = sag(x, span, y0, depth);
+                int col = colors[i % colors.length];
+                // latido: dos golpes rápidos y una pausa
+                float ph = (t * 1.2f + i * 0.17f) % 1f;
+                float beat = ph < 0.12f ? (float) Math.sin(ph / 0.12f * Math.PI) : ph > 0.2f && ph < 0.32f
+                        ? 0.7f * (float) Math.sin((ph - 0.2f) / 0.12f * Math.PI) : 0;
+                float s = (5.2f + 1.2f * beat) * d;
+                p.setColor(0xFF8A3A5A);
+                c.drawRect(x - 0.5f * d, y, x + 0.5f * d, y + 4 * d, p);
+                p.setShader(new RadialGradient(x, y + 10 * d, 12 * d, (col & 0x00FFFFFF) | ((int) (60 + 70 * beat) << 24),
+                        col & 0x00FFFFFF, Shader.TileMode.CLAMP));
+                c.drawCircle(x, y + 10 * d, 12 * d, p);
+                p.setShader(null);
+                p.setColor(col);
+                heart(shape, x, y + 10 * d, s);
+                c.drawPath(shape, p);
+                p.setColor(0x88FFFFFF);
+                c.drawCircle(x - s * 0.55f, y + 10 * d - s * 0.55f, s * 0.22f, p);
+            }
+        }
+
+        /** Amor y Amistad: banderines de fiesta de colores que ondean con el viento. */
+        private void drawBunting(Canvas c, int w, float t) {
+            float span = Math.max(60 * d, w / Math.max(1, Math.round(w / (100 * d))));
+            float y0 = 2 * d, depth = 7 * d;
+            path.reset();
+            path.moveTo(0, y0);
+            for (float x = 0; x <= w; x += 3 * d) path.lineTo(x, sag(x, span, y0, depth));
+            wire.setColor(0xFFE8D7B0);
+            c.drawPath(path, wire);
+            int[] colors = {0xFFFF4D6D, 0xFFFFC23D, 0xFF3DDC84, 0xFF3FB8FF, 0xFFB06BFF, 0xFFFF7AC8};
+            int i = 0;
+            float fw = 7 * d;
+            for (float x = 9 * d; x < w - fw; x += 19 * d, i++) {
+                float ya = sag(x - fw, span, y0, depth), yb = sag(x + fw, span, y0, depth);
+                float sway = (float) Math.sin(t * 2.2f + i * 0.8f) * 3 * d;
+                float len = (14 + (float) Math.sin(t * 1.7f + i) * 1.2f) * d;
+                path.reset();
+                path.moveTo(x - fw, ya);
+                path.lineTo(x + fw, yb);
+                path.lineTo(x + sway, (ya + yb) / 2 + len);
+                path.close();
+                p.setColor(colors[i % colors.length]);
+                c.drawPath(path, p);
+                // un puntito o un corazoncito en cada banderín
+                p.setColor(0xCCFFFFFF);
+                if (i % 3 == 1) {
+                    heart(shape, x + sway * 0.3f, (ya + yb) / 2 + len * 0.36f, 2.2f * d);
+                    c.drawPath(shape, p);
+                } else {
+                    c.drawCircle(x + sway * 0.3f, (ya + yb) / 2 + len * 0.36f, 1.4f * d, p);
+                }
             }
         }
 
