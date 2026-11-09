@@ -738,6 +738,14 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                         vaultMenu();
                         return true;
                     }));
+            View trashRow = netRow("🗑️", 0xFF4A5670, 0xFF6E7A8E, L.t("Papelera"), L.t("Lo que borres se guarda 30 días"),
+                    v -> showTrash(), null);
+            box.addView(trashRow);
+            TextView trashSub = (TextView) ((LinearLayout) ((LinearLayout) trashRow).getChildAt(1)).getChildAt(1);
+            io.execute(() -> {
+                String s = trashSubtitle();
+                main.post(() -> trashSub.setText(s));
+            });
             box.addView(section("Shizuku"));
             box.addView(shizukuCard());
         }
@@ -1032,6 +1040,185 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             });
         }));
         d.show();
+    }
+
+    // ------------------------------------------------------------------ papelera
+
+    private void moveToTrash(List<String> src) {
+        clearSelection();
+        io.execute(() -> {
+            int ok = 0;
+            List<String> failed = new ArrayList<>();
+            for (String s : src) {
+                try {
+                    Trash.put(s);
+                    ok++;
+                } catch (IOException e) {
+                    failed.add(s);
+                }
+            }
+            int fok = ok;
+            main.post(() -> {
+                if (path != null) load(path, true);
+                if (fok > 0) Toast.makeText(this, fok == 1 ? L.t("Se movió a la papelera") : fok + L.t(" elementos se movieron a la papelera"), Toast.LENGTH_SHORT).show();
+                if (!failed.isEmpty()) {
+                    new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                            .setTitle(failed.size() == 1 ? "«" + Paths.name(failed.get(0)) + L.t("» no pudo ir a la papelera") : failed.size() + L.t(" elementos no pudieron ir a la papelera"))
+                            .setMessage(L.t("¿Borrarlos para siempre?"))
+                            .setPositiveButton(L.t("Borrar para siempre"), (d, w) -> engine.submit(TransferEngine.Kind.DELETE, failed, null, TransferEngine.Conflict.SKIP))
+                            .setNegativeButton(L.t("Cancelar"), null)
+                            .show();
+                }
+            });
+        });
+    }
+
+    private String trashSubtitle() {
+        List<Trash.Item> items = Trash.list(this);
+        if (items.isEmpty()) return L.t("Vacía · lo que borres se guarda 30 días");
+        long total = 0;
+        for (Trash.Item it : items) total += it.size;
+        return items.size() + (items.size() == 1 ? L.t(" elemento") : L.t(" elementos")) + "  ·  " + Ui.size(total);
+    }
+
+    private void showTrash() {
+        android.app.Dialog dlg = new android.app.Dialog(this, android.R.style.Theme_Material_NoActionBar);
+        LinearLayout root = Ui.column(this);
+        root.setBackgroundColor(Ui.BG);
+        root.setFitsSystemWindows(true);
+        LinearLayout head = Ui.row(this);
+        head.setPadding(dp(8), dp(10), dp(12), dp(6));
+        head.addView(Ui.iconButton(this, R.drawable.ic_back, 44, v -> dlg.dismiss()));
+        LinearLayout ht = Ui.column(this);
+        ht.setPadding(dp(6), 0, 0, 0);
+        ht.addView(Ui.text(this, L.t("Papelera"), 20, Ui.TEXT, true));
+        TextView sub = Ui.text(this, "", 12.5f, Ui.SUB, false);
+        ht.addView(sub);
+        head.addView(ht, Ui.weight(1));
+        root.addView(head);
+        TextView note = Ui.text(this, L.t("Lo que borras se queda aquí 30 días y luego se borra solo. Toca algo para restaurarlo o borrarlo para siempre."), 13, Ui.SUB, false);
+        note.setPadding(dp(18), 0, dp(18), dp(8));
+        root.addView(note);
+        LinearLayout actions = Ui.row(this);
+        actions.setPadding(dp(14), 0, dp(14), dp(8));
+        TextView restoreAll = Ui.text(this, L.t("Restaurar todo"), 14, Ui.ACCENT2, true);
+        TextView empty = Ui.text(this, L.t("Vaciar papelera"), 14, Ui.BAD, true);
+        for (TextView b : new TextView[]{restoreAll, empty}) {
+            b.setGravity(Gravity.CENTER);
+            b.setPadding(0, dp(11), 0, dp(11));
+            b.setBackground(Ui.rippleRound(Ui.SURFACE, dp(14)));
+        }
+        LinearLayout.LayoutParams al = Ui.weight(1);
+        al.setMargins(0, 0, dp(8), 0);
+        actions.addView(restoreAll, al);
+        actions.addView(empty, Ui.weight(1));
+        root.addView(actions);
+        ScrollView sc = new ScrollView(this);
+        LinearLayout box = Ui.column(this);
+        box.setPadding(dp(14), 0, dp(14), dp(30));
+        sc.addView(box);
+        root.addView(sc, new LinearLayout.LayoutParams(-1, 0, 1));
+
+        Runnable[] refresh = new Runnable[1];
+        refresh[0] = () -> io.execute(() -> {
+            List<Trash.Item> items = Trash.list(this);
+            main.post(() -> {
+                box.removeAllViews();
+                long total = 0;
+                for (Trash.Item it : items) total += it.size;
+                sub.setText(items.isEmpty() ? L.t("Vacía") : items.size() + (items.size() == 1 ? L.t(" elemento") : L.t(" elementos")) + "  ·  " + Ui.size(total));
+                actions.setVisibility(items.isEmpty() ? View.GONE : View.VISIBLE);
+                if (items.isEmpty()) {
+                    TextView t = Ui.text(this, "🗑️\n\n" + L.t("La papelera está vacía"), 15, Ui.SUB, false);
+                    t.setGravity(Gravity.CENTER);
+                    t.setPadding(0, dp(80), 0, 0);
+                    box.addView(t);
+                }
+                for (Trash.Item it : items) {
+                    LinearLayout r = Ui.row(this);
+                    r.setPadding(dp(12), dp(11), dp(12), dp(11));
+                    r.setBackground(Ui.rippleRound(Ui.SURFACE, dp(16)));
+                    ImageView ic = new ImageView(this);
+                    ic.setImageDrawable(Ui.icon(this, it.dir ? R.drawable.ic_folder : R.drawable.ic_file, it.dir ? Ui.WARN : Ui.ACCENT2));
+                    r.addView(ic, new LinearLayout.LayoutParams(dp(26), dp(26)));
+                    LinearLayout tx = Ui.column(this);
+                    tx.setPadding(dp(12), 0, 0, 0);
+                    TextView n = Ui.text(this, it.name(), 15, Ui.TEXT, true);
+                    n.setSingleLine(true);
+                    n.setEllipsize(TextUtils.TruncateAt.MIDDLE);
+                    tx.addView(n);
+                    TextView w = Ui.text(this, Paths.parent(it.original).replace(Paths.ROOT, L.t("Interno")), 12, Ui.SUB, false);
+                    w.setSingleLine(true);
+                    w.setEllipsize(TextUtils.TruncateAt.MIDDLE);
+                    tx.addView(w);
+                    tx.addView(Ui.text(this, Ui.size(it.size) + "  ·  " + L.t("borrado ") + Ui.date(it.deleted) + "  ·  "
+                            + (it.daysLeft() == 1 ? L.t("queda 1 día") : L.t("quedan ") + it.daysLeft() + L.t(" días")), 11.5f, 0xFF6E7A8E, false));
+                    r.addView(tx, Ui.weight(1));
+                    r.setOnClickListener(v -> new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                            .setTitle(it.name())
+                            .setItems(new String[]{L.t("Restaurar"), L.t("Borrar para siempre")}, (d, which) -> io.execute(() -> {
+                                String err = null;
+                                try {
+                                    if (which == 0) Trash.restore(it);
+                                    else Trash.deleteForever(it);
+                                } catch (IOException e) {
+                                    err = e.getMessage();
+                                }
+                                String fe = err;
+                                main.post(() -> {
+                                    if (fe != null) Toast.makeText(this, fe, Toast.LENGTH_LONG).show();
+                                    else Toast.makeText(this, which == 0 ? L.t("Restaurado") : L.t("Borrado para siempre"), Toast.LENGTH_SHORT).show();
+                                    refresh[0].run();
+                                });
+                            }))
+                            .show());
+                    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, -2);
+                    lp.setMargins(0, 0, 0, dp(6));
+                    box.addView(r, lp);
+                }
+                restoreAll.setOnClickListener(v -> io.execute(() -> {
+                    int fails = 0;
+                    for (Trash.Item it : items) {
+                        try {
+                            Trash.restore(it);
+                        } catch (IOException e) {
+                            fails++;
+                        }
+                    }
+                    int ff = fails;
+                    main.post(() -> {
+                        Toast.makeText(this, ff == 0 ? L.t("Todo restaurado") : ff + L.t(" no se pudieron restaurar"), Toast.LENGTH_SHORT).show();
+                        refresh[0].run();
+                    });
+                }));
+                empty.setOnClickListener(v -> new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                        .setTitle(L.t("¿Vaciar la papelera?"))
+                        .setMessage(L.t("Todo lo que hay aquí se borra para siempre."))
+                        .setPositiveButton(L.t("Vaciar"), (d, w) -> io.execute(() -> {
+                            for (Trash.Item it : items) {
+                                try {
+                                    Trash.deleteForever(it);
+                                } catch (IOException ignored) {
+                                }
+                            }
+                            main.post(refresh[0]);
+                        }))
+                        .setNegativeButton(L.t("Cancelar"), null)
+                        .show());
+            });
+        });
+        refresh[0].run();
+        dlg.setContentView(root, new ViewGroup.LayoutParams(-1, -1));
+        dlg.setOnDismissListener(x -> {
+            if (path == null) showHome();
+            else load(path, true);
+        });
+        if (dlg.getWindow() != null) {
+            dlg.getWindow().setStatusBarColor(Ui.BG);
+            dlg.getWindow().setNavigationBarColor(Ui.BG);
+            dlg.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        }
+        dlg.show();
     }
 
     // ------------------------------------------------------------------ la Bóveda (carpeta secreta cifrada)
@@ -1671,7 +1858,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                 if (res != null) {
                     boolean hidden = prefs.showHidden();
                     for (Entry e : res) {
-                        if (e.name.endsWith(".boveda-parte") || e.path.equals(Vault.DIR)) continue;
+                        if (e.name.endsWith(".boveda-parte") || e.path.equals(Vault.DIR) || e.name.equals(Trash.NAME)) continue;
                         if (!hidden && e.hidden()) continue;
                         all.add(e);
                     }
@@ -2141,6 +2328,21 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
 
     private void askDelete() {
         List<String> src = new ArrayList<>(selected);
+        boolean bin = true;
+        for (String s : src) if (!Trash.supported(s)) bin = false;
+        if (bin) {
+            new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                    .setTitle(L.t("¿Borrar ") + (src.size() == 1 ? "«" + Paths.name(src.get(0)) + "»" : src.size() + L.t(" elementos")) + "?")
+                    .setMessage(L.t("Se van a la papelera: puedes restaurarlos durante 30 días."))
+                    .setPositiveButton(L.t("A la papelera"), (d, w) -> moveToTrash(src))
+                    .setNeutralButton(L.t("Borrar para siempre"), (d, w) -> {
+                        engine.submit(TransferEngine.Kind.DELETE, src, null, TransferEngine.Conflict.SKIP);
+                        clearSelection();
+                    })
+                    .setNegativeButton(L.t("Cancelar"), null)
+                    .show();
+            return;
+        }
         new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
                 .setTitle(L.t("¿Borrar ") + (src.size() == 1 ? "«" + Paths.name(src.get(0)) + "»" : src.size() + L.t(" elementos")) + "?")
                 .setMessage(L.t("Se borran para siempre (no van a una papelera)."))

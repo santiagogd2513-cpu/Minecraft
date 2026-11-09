@@ -18,6 +18,13 @@ public class App extends Application {
             if (prev != null) prev.uncaughtException(t, e);
         });
         Vault.watch(this);
+        // lo que lleva más de 30 días en la papelera se borra solo
+        new Thread(() -> {
+            try {
+                Trash.purge(this);
+            } catch (Throwable ignored) {
+            }
+        }, "papelera").start();
         try {
             ShizukuHelper.init(this);
         } catch (Throwable ignored) {

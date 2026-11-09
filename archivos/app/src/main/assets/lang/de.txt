@@ -708,3 +708,35 @@
 708|Beschädigte oder nicht unterstützte Datei
 709|Im Tresor kann nur zum Lesen geöffnet werden
 710|Konnte nicht gelöscht werden: 
+711|Papierkorb
+712|Gelöschtes wird 30 Tage aufbewahrt
+713|In den Papierkorb verschoben
+714| Elemente wurden in den Papierkorb verschoben
+715|“ konnte nicht in den Papierkorb
+716| Elemente konnten nicht in den Papierkorb
+717|Für immer löschen?
+718|Für immer löschen
+719|Leer · Gelöschtes wird 30 Tage aufbewahrt
+720|Was du löschst, bleibt 30 Tage hier und wird dann automatisch gelöscht. Tippe auf etwas, um es wiederherzustellen oder für immer zu löschen.
+721|Alles wiederherstellen
+722|Papierkorb leeren
+723|Der Papierkorb ist leer
+724|Intern
+725|gelöscht 
+726|noch 1 Tag
+727|noch 
+728| Tage
+729|Wiederherstellen
+730|Wiederhergestellt
+731|Für immer gelöscht
+732|Alles wiederhergestellt
+733| konnten nicht wiederhergestellt werden
+734|Papierkorb leeren?
+735|Alles hier wird für immer gelöscht.
+736|Leeren
+737|Sie kommen in den Papierkorb: Du kannst sie 30 Tage lang wiederherstellen.
+738|In den Papierkorb
+739|Das kann nicht in den Papierkorb
+740|Papierkorb konnte nicht erstellt werden
+741|Konnte nicht in den Papierkorb verschoben werden: 
+742|Konnte nicht wiederhergestellt werden: 

@@ -708,3 +708,35 @@
 708|Ficheiro danificado ou não compatível
 709|No Cofre só pode ser aberto para leitura
 710|Não foi possível eliminar: 
+711|Reciclagem
+712|O que eliminar fica guardado 30 dias
+713|Movido para a reciclagem
+714| itens foram para a reciclagem
+715|» não pôde ir para a reciclagem
+716| itens não puderam ir para a reciclagem
+717|Eliminar para sempre?
+718|Eliminar para sempre
+719|Vazia · o que eliminar fica guardado 30 dias
+720|O que elimina fica aqui 30 dias e depois é eliminado automaticamente. Toque num item para o restaurar ou eliminar para sempre.
+721|Restaurar tudo
+722|Esvaziar reciclagem
+723|A reciclagem está vazia
+724|Interno
+725|eliminado 
+726|falta 1 dia
+727|faltam 
+728| dias
+729|Restaurar
+730|Restaurado
+731|Eliminado para sempre
+732|Tudo restaurado
+733| não puderam ser restaurados
+734|Esvaziar a reciclagem?
+735|Tudo o que está aqui será eliminado para sempre.
+736|Esvaziar
+737|Vão para a reciclagem: pode restaurá-los durante 30 dias.
+738|Para a reciclagem
+739|Isto não pode ir para a reciclagem
+740|Não foi possível criar a reciclagem
+741|Não foi possível mover para a reciclagem: 
+742|Não foi possível restaurar: 

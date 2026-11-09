@@ -708,3 +708,35 @@ No se pudo guardar en la Bóveda
 Archivo dañado o no compatible
 En la Bóveda solo se puede abrir para leer
 No se pudo borrar: 
+Papelera
+Lo que borres se guarda 30 días
+Se movió a la papelera
+ elementos se movieron a la papelera
+» no pudo ir a la papelera
+ elementos no pudieron ir a la papelera
+¿Borrarlos para siempre?
+Borrar para siempre
+Vacía · lo que borres se guarda 30 días
+Lo que borras se queda aquí 30 días y luego se borra solo. Toca algo para restaurarlo o borrarlo para siempre.
+Restaurar todo
+Vaciar papelera
+La papelera está vacía
+Interno
+borrado 
+queda 1 día
+quedan 
+ días
+Restaurar
+Restaurado
+Borrado para siempre
+Todo restaurado
+ no se pudieron restaurar
+¿Vaciar la papelera?
+Todo lo que hay aquí se borra para siempre.
+Vaciar
+Se van a la papelera: puedes restaurarlos durante 30 días.
+A la papelera
+Esto no puede ir a la papelera
+No se pudo crear la papelera
+No se pudo mover a la papelera: 
+No se pudo restaurar: 

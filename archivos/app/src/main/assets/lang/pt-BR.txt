@@ -708,3 +708,35 @@
 708|Arquivo danificado ou não compatível
 709|No Cofre só pode ser aberto para leitura
 710|Não foi possível apagar: 
+711|Lixeira
+712|O que você apagar fica guardado 30 dias
+713|Movido para a lixeira
+714| itens foram para a lixeira
+715|» não pôde ir para a lixeira
+716| itens não puderam ir para a lixeira
+717|Apagar para sempre?
+718|Apagar para sempre
+719|Vazia · o que você apagar fica guardado 30 dias
+720|O que você apaga fica aqui 30 dias e depois é apagado sozinho. Toque em algo para restaurar ou apagar para sempre.
+721|Restaurar tudo
+722|Esvaziar lixeira
+723|A lixeira está vazia
+724|Interno
+725|apagado 
+726|resta 1 dia
+727|restam 
+728| dias
+729|Restaurar
+730|Restaurado
+731|Apagado para sempre
+732|Tudo restaurado
+733| não puderam ser restaurados
+734|Esvaziar a lixeira?
+735|Tudo o que está aqui será apagado para sempre.
+736|Esvaziar
+737|Vão para a lixeira: você pode restaurar durante 30 dias.
+738|Para a lixeira
+739|Isto não pode ir para a lixeira
+740|Não foi possível criar a lixeira
+741|Não foi possível mover para a lixeira: 
+742|Não foi possível restaurar: 

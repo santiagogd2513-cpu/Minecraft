@@ -123,7 +123,7 @@ public class StorageProvider extends DocumentsProvider {
         MatrixCursor c = new MatrixCursor(projection != null ? projection : DOC_COLS);
         try {
             for (Entry e : fs(parentId).list(parentId)) {
-                if (e.name.endsWith(".boveda-parte") || e.path.equals(Vault.DIR)) continue;
+                if (e.name.endsWith(".boveda-parte") || e.path.equals(Vault.DIR) || e.name.equals(Trash.NAME)) continue;
                 addRow(c, e);
             }
         } catch (IOException ex) {

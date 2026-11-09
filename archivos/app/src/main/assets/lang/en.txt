@@ -708,3 +708,35 @@
 708|Damaged or unsupported file
 709|In the Vault it can only be opened for reading
 710|Couldn't delete: 
+711|Recycle bin
+712|Whatever you delete is kept for 30 days
+713|Moved to the recycle bin
+714| items were moved to the recycle bin
+715|» couldn't go to the recycle bin
+716| items couldn't go to the recycle bin
+717|Delete them forever?
+718|Delete forever
+719|Empty · whatever you delete is kept for 30 days
+720|What you delete stays here for 30 days and is then deleted automatically. Tap something to restore it or delete it forever.
+721|Restore all
+722|Empty bin
+723|The recycle bin is empty
+724|Internal
+725|deleted 
+726|1 day left
+727|Remaining: 
+728| days
+729|Restore
+730|Restored
+731|Deleted forever
+732|Everything restored
+733| couldn't be restored
+734|Empty the recycle bin?
+735|Everything here will be deleted forever.
+736|Empty
+737|They go to the recycle bin: you can restore them for 30 days.
+738|To the bin
+739|This can't go to the recycle bin
+740|Couldn't create the recycle bin
+741|Couldn't move to the recycle bin: 
+742|Couldn't restore: 

@@ -708,3 +708,35 @@
 708|Fichier endommagé ou non pris en charge
 709|Dans le Coffre, ouverture en lecture seule uniquement
 710|Impossible de supprimer : 
+711|Corbeille
+712|Ce que tu supprimes est gardé 30 jours
+713|Déplacé vers la corbeille
+714| éléments ont été déplacés vers la corbeille
+715| » n’a pas pu aller dans la corbeille
+716| éléments n’ont pas pu aller dans la corbeille
+717|Les supprimer définitivement ?
+718|Supprimer définitivement
+719|Vide · ce que tu supprimes est gardé 30 jours
+720|Ce que tu supprimes reste ici 30 jours puis est supprimé automatiquement. Touche un élément pour le restaurer ou le supprimer définitivement.
+721|Tout restaurer
+722|Vider la corbeille
+723|La corbeille est vide
+724|Interne
+725|supprimé 
+726|reste 1 jour
+727|reste 
+728| jours
+729|Restaurer
+730|Restauré
+731|Supprimé définitivement
+732|Tout a été restauré
+733| n’ont pas pu être restaurés
+734|Vider la corbeille ?
+735|Tout ce qui est ici sera supprimé définitivement.
+736|Vider
+737|Ils vont dans la corbeille : tu peux les restaurer pendant 30 jours.
+738|À la corbeille
+739|Ceci ne peut pas aller dans la corbeille
+740|Impossible de créer la corbeille
+741|Impossible de déplacer vers la corbeille : 
+742|Impossible de restaurer : 

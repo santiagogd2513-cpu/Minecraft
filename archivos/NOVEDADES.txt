@@ -1,3 +1,10 @@
+## 39
+🗑️ Papelera de reciclaje
+- Ahora al borrar, Bóveda te pregunta: «A la papelera» o «Borrar para siempre». Lo que va a la papelera se puede restaurar durante 30 días; después se borra solo.
+- Mandar a la papelera es instantáneo, aunque sean carpetas enormes: no se copia nada.
+- La papelera está en el inicio, en «Análisis y seguridad». Ahí ves qué borraste, de qué carpeta venía y cuántos días le quedan. Puedes restaurar una cosa, todo, o vaciarla.
+- Funciona en la memoria interna, la tarjeta SD y las USB. En la nube, el FTP y La Bóveda borrar sigue siendo para siempre.
+
 ## 38
 🔐 La Bóveda: tu carpeta secreta cifrada
 - Nuevo en el inicio, en «Análisis y seguridad»: La Bóveda. La primera vez eliges un PIN de 4 a 12 números y, si quieres, también tu huella.
