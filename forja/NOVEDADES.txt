@@ -1,3 +1,9 @@
+## 10
+Forja ahora se llama Yunque
+- La app cambió de nombre: ahora es Yunque, la herramienta de Forja Estudios. Funciona igual y no se borra nada.
+- En «Acerca de» está la ficha de Forja Estudios: qué hacemos y quiénes somos.
+- Autores: santiagogd2513-cpu (pruebas de cada actualización e identificación de errores) y Claude de Anthropic (código y corrección de errores).
+
 ## 9
 Avisos de actualización nuevos
 - Cuando hay una versión nueva, el aviso sale en toda la pantalla y te cuenta las novedades.

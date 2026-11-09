@@ -73,7 +73,7 @@ final class Fat32Formatter {
         System.arraycopy(lab11, 0, boot, 71, 11);
         System.arraycopy("FAT32   ".getBytes(StandardCharsets.US_ASCII), 0, boot, 82, 8);
         // código mínimo: si alguien intenta arrancar, muestra un aviso
-        byte[] msg = "Este disco no arranca: es solo de datos (Forja).\r\n".getBytes(StandardCharsets.US_ASCII);
+        byte[] msg = "Este disco no arranca: es solo de datos (Yunque).\r\n".getBytes(StandardCharsets.US_ASCII);
         byte[] code = {(byte) 0x0E, 0x1F, (byte) 0xBE, 0x77, 0x7C, (byte) 0xAC, 0x22, (byte) 0xC0, 0x74, 0x0B, 0x56,
                 (byte) 0xB4, 0x0E, (byte) 0xBB, 0x07, 0x00, (byte) 0xCD, 0x10, 0x5E, (byte) 0xEB, (byte) 0xF0,
                 0x32, (byte) 0xE4, (byte) 0xCD, 0x16, (byte) 0xCD, 0x19, (byte) 0xEB, (byte) 0xFE};

@@ -37,7 +37,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-/** Forja: elegir la unidad USB, el formato, la tabla de particiones y el clúster, y formatear. */
+/** Yunque (antes Forja): elegir la unidad USB, el formato, la tabla de particiones y el clúster, y formatear. */
 public class MainActivity extends Activity {
     private static final String ACTION_PERM = "com.forja.formateador.PERMISO_USB";
 
@@ -123,7 +123,7 @@ public class MainActivity extends Activity {
         @Override
         public void uncaughtException(Thread t, Throwable e) {
             try (java.io.PrintWriter w = new java.io.PrintWriter(new java.io.FileWriter(file))) {
-                w.println("Forja " + version + " · Android " + Build.VERSION.RELEASE + " · " + Build.MODEL);
+                w.println("Yunque " + version + " · Android " + Build.VERSION.RELEASE + " · " + Build.MODEL);
                 w.println("Hilo: " + t.getName());
                 e.printStackTrace(w);
             } catch (Exception ignored) {
@@ -145,7 +145,7 @@ public class MainActivity extends Activity {
         f.delete();
         final String t = text.length() > 6000 ? text.substring(0, 6000) : text;
         new AlertDialog.Builder(this, R.style.Theme_Forja_Dialog)
-                .setTitle("Forja se cerró la última vez")
+                .setTitle("Yunque se cerró la última vez")
                 .setMessage("Copia esto y mándaselo a quien te ayuda con la app:\n\n" + t)
                 .setPositiveButton("Copiar", (d, w) -> {
                     getSystemService(android.content.ClipboardManager.class)
@@ -201,7 +201,7 @@ public class MainActivity extends Activity {
                 case ACTION_PERM -> {
                     if (d != null && i.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) select(d);
                     else {
-                        error = "Sin el permiso, Forja no puede formatear la unidad.";
+                        error = "Sin el permiso, Yunque no puede formatear la unidad.";
                         render();
                     }
                 }
@@ -428,7 +428,7 @@ public class MainActivity extends Activity {
         head.addView(logo, new LinearLayout.LayoutParams(dp(52), dp(52)));
         LinearLayout titles = Ui.column(this);
         titles.setPadding(dp(12), 0, 0, 0);
-        titles.addView(Ui.text(this, "Forja", 26, Ui.TEXT, true));
+        titles.addView(Ui.text(this, "Yunque", 26, Ui.TEXT, true));
         titles.addView(Ui.text(this, "Formateador de unidades · sin root · sin anuncios", 12.5f, Ui.SUB, false));
         head.addView(titles, Ui.weight(1));
         head.addView(Ui.iconButton(this, R.drawable.ic_info, 42, v -> showAbout()));
@@ -729,14 +729,15 @@ public class MainActivity extends Activity {
 
     private void showAbout() {
         new AlertDialog.Builder(this, R.style.Theme_Forja_Dialog)
-                .setTitle("Forja")
+                .setTitle("Yunque")
                 .setMessage("Formatea memorias USB, discos externos y tarjetas (por lector USB) desde el celular, sin root y sin anuncios.\n\n"
                         + "• FAT32, exFAT, NTFS y ext4 (Linux), con tabla MBR o GPT y el tamaño de clúster que elijas (solo te deja los que sirven).\n"
                         + "• Discos de 1 GB a 4 TB, con sectores de 512 B o 4 KB.\n"
                         + "• NTFS se crea con mkntfs de ntfs-3g (GPLv2+), el mismo de Linux, compilado dentro de la app.\n\n"
                         + "Cada formato se prueba con las herramientas oficiales de Linux (fsck.fat, fsck.exfat, e2fsck, ntfsfix, sgdisk) antes de publicarse.\n\n"
                         + "Un disco grande de escritorio necesita su propia fuente de corriente: el celular no puede alimentarlo.\n\n"
-                        + "Hecho por santiagogd2513-cpu (idea, diseño y pruebas) y Claude de Anthropic (código).")
+                        + "Hecho por " + Studio.NAME + "\n" + Studio.AUTHORS)
+                .setNeutralButton(Studio.NAME, (dd, w) -> Studio.show(this))
                 .setPositiveButton("Cerrar", null)
                 .show();
     }

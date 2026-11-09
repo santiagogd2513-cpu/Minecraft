@@ -1,4 +1,4 @@
-name: Forja
+name: Yunque (antes Forja)
 
 on:
   push:
@@ -44,27 +44,30 @@ jobs:
       - name: Preparar
         run: |
           mkdir -p ../dist
-          cp app/build/outputs/apk/release/app-release.apk ../dist/Forja.apk
+          cp app/build/outputs/apk/release/app-release.apk ../dist/Yunque.apk
+          # copia con el nombre viejo, para que las versiones instaladas de «Forja» se actualicen solas
+          cp ../dist/Yunque.apk ../dist/Forja.apk
           cp NOVEDADES.txt ../dist/novedades.txt
 
       - uses: actions/upload-artifact@v4
         with:
-          name: Forja-apk
-          path: dist/Forja.apk
+          name: Yunque-apk
+          path: dist/Yunque.apk
 
       - name: Publicar
         uses: softprops/action-gh-release@v2
         with:
           tag_name: forja-${{ github.run_number }}
-          name: "Forja #${{ github.run_number }} (formateador de unidades para Android)"
+          name: "Yunque #${{ github.run_number }} (formateador de unidades para Android, antes Forja)"
           target_commitish: ${{ github.sha }}
           make_latest: false
           body: |
-            **Forja**: formatea memorias USB y discos externos desde el celular, sin root y sin anuncios.
+            **Yunque** (antes Forja), de Forja Estudios: formatea memorias USB y discos externos desde el celular, sin root y sin anuncios.
             FAT32, exFAT, NTFS y ext4 · tabla MBR o GPT · clúster a elección · de 1 GB a 4 TB.
-            Descarga `Forja.apk`, conecta la unidad por OTG y elige cómo formatearla.
+            Descarga `Yunque.apk`, conecta la unidad por OTG y elige cómo formatearla.
 
             NTFS se crea con `mkntfs` de [ntfs-3g](https://github.com/tuxera/ntfs-3g) (GPLv2+), compilado dentro de la app.
           files: |
+            dist/Yunque.apk
             dist/Forja.apk
             dist/novedades.txt

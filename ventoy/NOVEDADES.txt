@@ -1,3 +1,8 @@
+## 9
+Ahora somos Forja Estudios
+- Ventoy no oficial es parte de Forja Estudios, nuestro estudio. En «Acerca de» está su ficha: qué hacemos y quiénes somos.
+- Autores: santiagogd2513-cpu (pruebas de cada actualización e identificación de errores) y Claude de Anthropic (código y corrección de errores).
+
 ## 8
 Avisos de actualización nuevos
 - Cuando hay una versión nueva, el aviso sale en toda la pantalla y te cuenta las novedades.

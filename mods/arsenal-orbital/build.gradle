@@ -44,11 +44,11 @@ tasks.named('jar', Jar).configure {
     manifest {
         attributes([
                 'Specification-Title'     : 'arsenalorbital',
-                'Specification-Vendor'    : 'santiagogd2513-cpu y Claude',
+                'Specification-Vendor'    : 'Forja Estudios',
                 'Specification-Version'   : '1',
                 'Implementation-Title'    : project.name,
                 'Implementation-Version'  : project.version,
-                'Implementation-Vendor'   : 'santiagogd2513-cpu y Claude'
+                'Implementation-Vendor'   : 'Forja Estudios'
         ])
     }
     finalizedBy 'reobfJar'

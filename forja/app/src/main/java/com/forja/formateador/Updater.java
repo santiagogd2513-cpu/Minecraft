@@ -54,8 +54,8 @@ final class Updater {
     private static final String RELEASES = "https://api.github.com/repos/" + REPO + "/releases?per_page=100";
     private static final String DOWNLOAD = "https://github.com/" + REPO + "/releases/download/";
     private static final String PREFIX = "forja-";
-    private static final String ASSET = "Forja.apk";
-    private static final String APP = "Forja";
+    private static final String ASSET = "Yunque.apk";
+    private static final String APP = "Yunque";
     private static final int THEME = R.style.Theme_Forja_Dialog;
     private static final String ACTION_STATUS = "com.forja.formateador.UPDATE_STATUS";
     private static final long CHECK_EVERY = 15 * 60 * 1000L;       // como mucho cada 15 minutos

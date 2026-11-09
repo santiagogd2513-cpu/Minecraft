@@ -6,7 +6,8 @@ license="All rights reserved"
 modId="arsenalorbital"
 version="1.0.0"
 displayName="Arsenal Orbital"
-authors="santiagogd2513-cpu (idea, pruebas y diseño), Claude de Anthropic (código)"
+logoFile="forja_estudios.png"
+authors="Forja Estudios — santiagogd2513-cpu (pruebas de cada actualización e identificación de errores) y Claude de Anthropic (código y corrección de errores)"
 description='''
 Armas espaciales. El Designador Orbital es un artefacto: búscalo en la bóveda de los
 raros búnkeres militares ÉGIDA-7, escondidos bajo tierra. Marca un objetivo y mira la

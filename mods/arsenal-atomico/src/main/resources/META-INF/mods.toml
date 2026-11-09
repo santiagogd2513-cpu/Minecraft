@@ -6,7 +6,8 @@ license="All rights reserved"
 modId="arsenalatomico"
 version="1.0.0"
 displayName="Arsenal Atómico"
-authors="santiagogd2513-cpu (idea, diseño y pruebas), Claude de Anthropic (código)"
+logoFile="forja_estudios.png"
+authors="Forja Estudios — santiagogd2513-cpu (pruebas de cada actualización e identificación de errores) y Claude de Anthropic (código y corrección de errores)"
 description='''
 Misiles en el mundo de Minecraft, con cinemáticas: marca un objetivo con el Marcador de
 objetivos, elige el arma con la tecla J y mira el lanzamiento desde la batería o el silo.

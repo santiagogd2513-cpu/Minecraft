@@ -1084,7 +1084,8 @@ public class MainActivity extends Activity {
                             new AlertDialog.Builder(this, R.style.Theme_Nocturna_Dialog)
                                     .setTitle("Nocturna" + ver)
                                     .setMessage("Navegador oscuro, liviano y sin anuncios, con descargas rápidas y gestor de contraseñas.\n\n"
-                                            + "Hecho por santiagogd2513-cpu (idea, diseño y pruebas) y Claude de Anthropic (código).")
+                                            + "Hecho por " + Studio.NAME + "\n" + Studio.AUTHORS)
+                                    .setNeutralButton(Studio.NAME, (dd, w) -> Studio.show(this))
                                     .setPositiveButton("Cerrar", null).show();
                         }
                         default -> { }
