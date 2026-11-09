@@ -827,3 +827,22 @@ Descargar la original
 Seguir de todos modos
 COPIA MODIFICADA
 Esta no es la app original
+⚠️ ÚLTIMO INTENTO. Si el PIN es incorrecto, todo lo que hay en La Bóveda se borrará para siempre.
+La Bóveda se borró
+Se equivocaron de PIN 7 veces seguidas y el autoborrado estaba encendido: todo lo que había en La Bóveda se borró para siempre.
+ intentos
+Pide el PIN actual y el nuevo
+Abrir con la huella
+Además del PIN
+Pide el PIN o la huella la próxima vez
+Autoborrado
+Si alguien se equivoca de PIN 
+ veces seguidas, todo lo que hay en La Bóveda se borra para siempre. Antes del último intento sale un aviso.
+Autoborrado apagado
+¿Encender el autoborrado?
+Continuar
+⚠️ ¿Estás seguro?
+Nadie podrá recuperar los archivos borrados, ni tú ni nosotros. Si alguien más usa tu celular (por ejemplo, un niño), podría borrarlo todo sin querer.
+Sí, encenderlo
+Autoborrado encendido
+PIN, huella y autoborrado · pide tu PIN o tu huella

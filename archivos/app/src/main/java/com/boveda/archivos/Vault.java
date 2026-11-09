@@ -180,8 +180,54 @@ final class Vault {
         return c.getSharedPreferences("boveda_segura", Context.MODE_PRIVATE);
     }
 
+    // ------------------------------------------------------------------ autoborrado
+
+    /** Intentos de PIN fallidos seguidos que borran todo (si el autoborrado está encendido). */
+    static final int WIPE_AFTER = 7;
+    private static boolean wiped;
+
+    static boolean autoWipe(Context c) {
+        return prefs(c).getBoolean("autoborrado", false);
+    }
+
+    static void setAutoWipe(Context c, boolean on) {
+        prefs(c).edit().putBoolean("autoborrado", on).putInt("fallos", 0).putLong("espera_hasta", 0).apply();
+    }
+
+    static int fails(Context c) {
+        return prefs(c).getInt("fallos", 0);
+    }
+
+    /** ¿El último intento con el PIN acabó borrando La Bóveda? */
+    static boolean justWiped() {
+        boolean w = wiped;
+        wiped = false;
+        return w;
+    }
+
+    /**
+     * Borra La Bóveda para siempre. Primero se destruye la llave: sin ella, lo cifrado ya es ruido aunque
+     * quede en el disco; después se borran los archivos.
+     */
+    static void wipe(Context c) {
+        lock();
+        //noinspection ResultOfMethodCallIgnored
+        new File(DIR, KEY_FILE).delete();
+        deleteTree(dir());
+        forgetBiometric(c);
+        prefs(c).edit().putInt("fallos", 0).putLong("espera_hasta", 0).apply();
+    }
+
+    private static void deleteTree(File f) {
+        File[] kids = f.listFiles();
+        if (kids != null) for (File k : kids) deleteTree(k);
+        //noinspection ResultOfMethodCallIgnored
+        f.delete();
+    }
+
     /** Segundos que faltan para poder volver a intentar con el PIN (0 = ya se puede). */
     static long waitSeconds(Context c) {
+        if (autoWipe(c)) return 0;   // con autoborrado no hay esperas: el séptimo error borra todo
         long until = prefs(c).getLong("espera_hasta", 0);
         return Math.max(0, (until - System.currentTimeMillis() + 999) / 1000);
     }
@@ -193,7 +239,16 @@ final class Vault {
         SharedPreferences p = prefs(c);
         if (master == null) {
             int fails = p.getInt("fallos", 0) + 1;
+            if (autoWipe(c) && fails >= WIPE_AFTER) {
+                wipe(c);
+                wiped = true;
+                return false;
+            }
             SharedPreferences.Editor e = p.edit().putInt("fallos", fails);
+            if (autoWipe(c)) {
+                e.apply();
+                return false;
+            }
             if (fails >= 5) e.putLong("espera_hasta", System.currentTimeMillis() + 30_000L * (1L << Math.min(fails - 5, 6)));
             e.apply();
             return false;

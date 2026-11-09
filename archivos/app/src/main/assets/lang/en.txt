@@ -827,3 +827,22 @@
 827|Continue anyway
 828|MODIFIED COPY
 829|This is not the original app
+830|⚠️ LAST ATTEMPT. If the PIN is wrong, everything in the Vault will be deleted forever.
+831|The Vault was deleted
+832|The PIN was wrong 7 times in a row and auto-wipe was on: everything in the Vault was deleted forever.
+833| attempts
+834|Asks for the current PIN and the new one
+835|Open with fingerprint
+836|Besides the PIN
+837|Asks for the PIN or fingerprint next time
+838|Auto-wipe
+839|If someone enters the wrong PIN 
+840| times in a row, everything in the Vault is deleted forever. A warning appears before the last attempt.
+841|Auto-wipe off
+842|Turn on auto-wipe?
+843|Continue
+844|⚠️ Are you sure?
+845|Nobody will be able to recover the deleted files, not you and not us. If someone else uses your phone (a child, for example), they could delete everything by accident.
+846|Yes, turn it on
+847|Auto-wipe on
+848|PIN, fingerprint and auto-wipe · asks for your PIN or fingerprint

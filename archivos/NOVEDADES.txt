@@ -1,3 +1,8 @@
+## 45
+🔐 Ajustes de La Bóveda
+- Nuevo en Ajustes: la sección «La Bóveda». Solo se abre con tu PIN o tu huella. Ahí puedes cambiar el PIN, activar o quitar la huella y cerrar La Bóveda.
+- Autoborrado (apagado por defecto): si alguien se equivoca de PIN 7 veces seguidas, todo lo que hay en La Bóveda se borra para siempre. Antes del último intento sale un aviso en rojo, y al encenderlo pide confirmar dos veces.
+
 ## 44
 - El aviso de «Copia modificada» ahora ocupa toda la pantalla, y una copia modificada ya no ofrece actualizaciones (no se pueden instalar encima de la original).
 

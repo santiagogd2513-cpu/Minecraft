@@ -827,3 +827,22 @@
 827|Continuar mesmo assim
 828|CÓPIA MODIFICADA
 829|Este não é o app original
+830|⚠️ ÚLTIMA TENTATIVA. Se o PIN estiver errado, tudo o que há no Cofre será apagado para sempre.
+831|O Cofre foi apagado
+832|Erraram o PIN 7 vezes seguidas e o autoapagamento estava ligado: tudo o que havia no Cofre foi apagado para sempre.
+833| tentativas
+834|Pede o PIN atual e o novo
+835|Abrir com a digital
+836|Além do PIN
+837|Pede o PIN ou a digital na próxima vez
+838|Autoapagamento
+839|Se alguém errar o PIN 
+840| vezes seguidas, tudo o que há no Cofre é apagado para sempre. Antes da última tentativa aparece um aviso.
+841|Autoapagamento desligado
+842|Ligar o autoapagamento?
+843|Continuar
+844|⚠️ Tem certeza?
+845|Ninguém poderá recuperar os arquivos apagados, nem você nem nós. Se outra pessoa usar seu celular (uma criança, por exemplo), pode apagar tudo sem querer.
+846|Sim, ligar
+847|Autoapagamento ligado
+848|PIN, digital e autoapagamento · pede seu PIN ou digital

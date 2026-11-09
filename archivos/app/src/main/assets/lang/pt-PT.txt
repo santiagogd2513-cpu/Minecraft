@@ -827,3 +827,22 @@
 827|Continuar mesmo assim
 828|CÓPIA MODIFICADA
 829|Esta não é a app original
+830|⚠️ ÚLTIMA TENTATIVA. Se o PIN estiver errado, tudo o que está no Cofre será eliminado para sempre.
+831|O Cofre foi eliminado
+832|Erraram o PIN 7 vezes seguidas e a autoeliminação estava ativa: tudo o que havia no Cofre foi eliminado para sempre.
+833| tentativas
+834|Pede o PIN atual e o novo
+835|Abrir com a impressão digital
+836|Além do PIN
+837|Pede o PIN ou a impressão digital da próxima vez
+838|Autoeliminação
+839|Se alguém errar o PIN 
+840| vezes seguidas, tudo o que está no Cofre é eliminado para sempre. Antes da última tentativa aparece um aviso.
+841|Autoeliminação desativada
+842|Ativar a autoeliminação?
+843|Continuar
+844|⚠️ Tem a certeza?
+845|Ninguém poderá recuperar os ficheiros eliminados, nem o utilizador nem nós. Se outra pessoa usar o seu telemóvel (uma criança, por exemplo), pode eliminar tudo sem querer.
+846|Sim, ativar
+847|Autoeliminação ativada
+848|PIN, impressão digital e autoeliminação · pede o seu PIN ou impressão digital

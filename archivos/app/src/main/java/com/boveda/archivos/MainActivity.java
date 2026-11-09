@@ -1972,6 +1972,12 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         }
         LinearLayout box = Ui.column(this);
         box.setPadding(dp(20), dp(8), dp(20), dp(4));
+        boolean last = Vault.autoWipe(this) && Vault.fails(this) >= Vault.WIPE_AFTER - 1;
+        if (last) {
+            TextView warn = Ui.text(this, L.t("⚠️ ÚLTIMO INTENTO. Si el PIN es incorrecto, todo lo que hay en La Bóveda se borrará para siempre."), 14, Ui.BAD, true);
+            warn.setPadding(0, 0, 0, dp(10));
+            box.addView(warn);
+        }
         EditText pin = pinInput("PIN");
         box.addView(pin);
         AlertDialog d = new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
@@ -2002,9 +2008,28 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                         then.run();
                         return;
                     }
+                    if (Vault.justWiped()) {
+                        d.dismiss();
+                        if (path != null && VaultFs.isVault(path)) showHome();
+                        else if (path == null) showHome();
+                        new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                                .setTitle(L.t("La Bóveda se borró"))
+                                .setMessage(L.t("Se equivocaron de PIN 7 veces seguidas y el autoborrado estaba encendido: todo lo que había en La Bóveda se borró para siempre."))
+                                .setPositiveButton(L.t("Entendido"), null)
+                                .show();
+                        return;
+                    }
+                    if (Vault.autoWipe(this) && Vault.fails(this) >= Vault.WIPE_AFTER - 1) {
+                        // el próximo es el último: se vuelve a abrir con el aviso en rojo
+                        d.dismiss();
+                        askVaultPin(then);
+                        return;
+                    }
                     long w = Vault.waitSeconds(this);
                     pin.setText("");
-                    pin.setError(w > 0 ? L.t("Demasiados intentos. Espera ") + w + L.t(" segundos") : L.t("PIN incorrecto"));
+                    int left = Vault.WIPE_AFTER - Vault.fails(this);
+                    pin.setError(w > 0 ? L.t("Demasiados intentos. Espera ") + w + L.t(" segundos")
+                            : Vault.autoWipe(this) ? L.t("PIN incorrecto") + " · " + L.t("quedan ") + left + L.t(" intentos") : L.t("PIN incorrecto"));
                     if (w > 0) d.dismiss();
                 });
             }).start();
@@ -2133,6 +2158,68 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             }).start();
         }));
         d.show();
+    }
+
+    /** Ajustes de La Bóveda: PIN, huella, cerrarla y el autoborrado. */
+    private void vaultSettings(LinearLayout col, Runnable refresh) {
+        settingsSection(col, L.t("La Bóveda"));
+        settingsRow(col, L.t("Cambiar el PIN"), L.t("Pide el PIN actual y el nuevo"), this::changeVaultPin);
+        if (biometricAvailable() || Vault.biometricOn(this)) {
+            settingsSwitch(col, L.t("Abrir con la huella"), L.t("Además del PIN"), Vault.biometricOn(this), on -> {
+                if (on) askPinThen(L.t("Activar la huella"), p -> enableVaultBiometric(p, refresh));
+                else {
+                    Vault.forgetBiometric(this);
+                    Toast.makeText(this, L.t("Ahora la Bóveda se abre solo con el PIN"), Toast.LENGTH_SHORT).show();
+                }
+            });
+        }
+        if (Vault.unlocked()) {
+            settingsRow(col, L.t("Cerrar la Bóveda ahora"), L.t("Pide el PIN o la huella la próxima vez"), () -> {
+                Vault.lock();
+                Toast.makeText(this, L.t("Bóveda cerrada"), Toast.LENGTH_SHORT).show();
+                refresh.run();
+            });
+        }
+        settingsSection(col, L.t("Autoborrado"));
+        LinearLayout r = settingsCard(L.t("Autoborrado"), "");
+        TextView warn = Ui.text(this, L.t("Si alguien se equivoca de PIN ") + Vault.WIPE_AFTER
+                + L.t(" veces seguidas, todo lo que hay en La Bóveda se borra para siempre. Antes del último intento sale un aviso."), 12.5f, Ui.BAD, false);
+        warn.setPadding(0, dp(2), 0, 0);
+        ((LinearLayout) r.getChildAt(0)).addView(warn);
+        android.widget.Switch sw = new android.widget.Switch(this);
+        sw.setChecked(Vault.autoWipe(this));
+        sw.setThumbTintList(android.content.res.ColorStateList.valueOf(Color.WHITE));
+        sw.setTrackTintList(new android.content.res.ColorStateList(new int[][]{{android.R.attr.state_checked}, {}}, new int[]{Ui.BAD, 0xFF3A4458}));
+        sw.setOnCheckedChangeListener((b, on) -> {
+            if (!on) {
+                Vault.setAutoWipe(this, false);
+                Toast.makeText(this, L.t("Autoborrado apagado"), Toast.LENGTH_SHORT).show();
+                return;
+            }
+            if (Vault.autoWipe(this)) return;
+            sw.setChecked(false);
+            // dos confirmaciones: esto puede borrar todo
+            new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                    .setTitle(L.t("¿Encender el autoborrado?"))
+                    .setMessage(L.t("Si alguien se equivoca de PIN ") + Vault.WIPE_AFTER + L.t(" veces seguidas, todo lo que hay en La Bóveda se borra para siempre. Antes del último intento sale un aviso."))
+                    .setPositiveButton(L.t("Continuar"), (d1, w1) -> new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                            .setTitle(L.t("⚠️ ¿Estás seguro?"))
+                            .setMessage(L.t("Nadie podrá recuperar los archivos borrados, ni tú ni nosotros. Si alguien más usa tu celular (por ejemplo, un niño), podría borrarlo todo sin querer."))
+                            .setPositiveButton(L.t("Sí, encenderlo"), (d2, w2) -> {
+                                Vault.setAutoWipe(this, true);
+                                Toast.makeText(this, L.t("Autoborrado encendido"), Toast.LENGTH_SHORT).show();
+                                refresh.run();
+                            })
+                            .setNegativeButton(L.t("Cancelar"), null)
+                            .show())
+                    .setNegativeButton(L.t("Cancelar"), null)
+                    .show();
+        });
+        LinearLayout.LayoutParams sl = new LinearLayout.LayoutParams(-2, -2);
+        sl.setMargins(dp(10), 0, 0, 0);
+        r.addView(sw, sl);
+        r.setOnClickListener(v -> sw.toggle());
+        addCard(col, r);
     }
 
     private void moveToVault(List<String> sel) {
@@ -3502,12 +3589,13 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             {L.t("Nube y red"), L.t("MEGA, OneDrive, Google Drive, MediaFire y FTP")},
             {L.t("Acceso a carpetas"), L.t("Shizuku y permisos para otras apps")},
             {L.t("Almacenamiento"), L.t("Archivos temporales")},
+            {L.t("La Bóveda"), L.t("PIN, huella y autoborrado · pide tu PIN o tu huella")},
             {L.t("Acerca de"), L.t("Versión y Forja Estudios")},
     };
     private static final int[] SETTINGS_ICONS = {R.drawable.ic_menu, R.drawable.ic_folder, R.drawable.ic_play, R.drawable.ic_swap,
-            R.drawable.ic_download, R.drawable.ic_shield, R.drawable.ic_sd, R.drawable.ic_info};
+            R.drawable.ic_download, R.drawable.ic_shield, R.drawable.ic_sd, R.drawable.ic_key, R.drawable.ic_info};
     private static final int[][] SETTINGS_COLORS = {{0xFF4C9DFF, 0xFF6FD6FF}, {0xFFFFB547, 0xFFF07C2C}, {0xFF35D08A, 0xFF1EA97C},
-            {0xFFB47CFF, 0xFF7C4DFF}, {0xFF28A8EA, 0xFF0A64D6}, {0xFFFF6B8A, 0xFFE0405F}, {0xFF8B97AB, 0xFF5D6B83}, {0xFFFF8A3D, 0xFFFFC857}};
+            {0xFFB47CFF, 0xFF7C4DFF}, {0xFF28A8EA, 0xFF0A64D6}, {0xFFFF6B8A, 0xFFE0405F}, {0xFF8B97AB, 0xFF5D6B83}, {0xFF7B4DFF, 0xFFB86BFF}, {0xFFFF8A3D, 0xFFFFC857}};
 
     private void settingsCategories(LinearLayout col, android.app.Dialog d, java.util.function.IntConsumer open) {
         col.removeAllViews();
@@ -3533,15 +3621,26 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             ImageView ch = new ImageView(this);
             ch.setImageDrawable(Ui.icon(this, R.drawable.ic_chevron, 0xFF4A5670));
             r.addView(ch, new LinearLayout.LayoutParams(dp(20), dp(20)));
-            r.setOnClickListener(v -> open.accept(c));
+            // los ajustes de La Bóveda solo se abren con el PIN o la huella
+            r.setOnClickListener(v -> {
+                if (c != VAULT_SETTINGS) open.accept(c);
+                else if (!Vault.exists()) createVault(() -> open.accept(c));
+                else unlockVault(() -> open.accept(c));
+            });
             addCard(col, r);
         }
         addCard(col, Studio.row(this, null));
     }
 
+    private static final int VAULT_SETTINGS = 7;
+
     private void fillSettings(LinearLayout col, android.app.Dialog d, int category) {
         col.removeAllViews();
         Runnable refresh = () -> fillSettings(col, d, category);
+        if (category == VAULT_SETTINGS) {
+            vaultSettings(col, refresh);
+            return;
+        }
         switch (category) {
             case 0 -> {
                 settingsSection(col, L.t("Idioma"));

@@ -827,3 +827,22 @@
 827|Continuer quand même
 828|COPIE MODIFIÉE
 829|Ce n’est pas l’application originale
+830|⚠️ DERNIÈRE TENTATIVE. Si le PIN est faux, tout le contenu du Coffre sera supprimé définitivement.
+831|Le Coffre a été supprimé
+832|Le PIN a été faux 7 fois de suite et l’autodestruction était activée : tout le contenu du Coffre a été supprimé définitivement.
+833| tentatives
+834|Demande le PIN actuel et le nouveau
+835|Ouvrir avec l’empreinte
+836|En plus du PIN
+837|Demande le PIN ou l’empreinte la prochaine fois
+838|Autodestruction
+839|Si quelqu’un se trompe de PIN 
+840| fois de suite, tout le contenu du Coffre est supprimé définitivement. Un avertissement apparaît avant la dernière tentative.
+841|Autodestruction désactivée
+842|Activer l’autodestruction ?
+843|Continuer
+844|⚠️ Tu es sûr ?
+845|Personne ne pourra récupérer les fichiers supprimés, ni toi ni nous. Si quelqu’un d’autre utilise ton téléphone (un enfant, par exemple), il pourrait tout supprimer sans le vouloir.
+846|Oui, l’activer
+847|Autodestruction activée
+848|PIN, empreinte et autodestruction · demande ton PIN ou ton empreinte

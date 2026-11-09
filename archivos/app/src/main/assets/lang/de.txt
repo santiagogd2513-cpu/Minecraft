@@ -827,3 +827,22 @@
 827|Trotzdem fortfahren
 828|VERÄNDERTE KOPIE
 829|Das ist nicht die Original-App
+830|⚠️ LETZTER VERSUCH. Ist die PIN falsch, wird alles im Tresor für immer gelöscht.
+831|Der Tresor wurde gelöscht
+832|Die PIN war 7-mal hintereinander falsch und die Selbstlöschung war an: Alles im Tresor wurde für immer gelöscht.
+833| Versuche
+834|Fragt nach der aktuellen und der neuen PIN
+835|Mit Fingerabdruck öffnen
+836|Zusätzlich zur PIN
+837|Fragt beim nächsten Mal nach PIN oder Fingerabdruck
+838|Selbstlöschung
+839|Gibt jemand die PIN 
+840|Mal hintereinander falsch ein, wird alles im Tresor für immer gelöscht. Vor dem letzten Versuch erscheint eine Warnung.
+841|Selbstlöschung aus
+842|Selbstlöschung einschalten?
+843|Weiter
+844|⚠️ Bist du sicher?
+845|Niemand kann die gelöschten Dateien wiederherstellen, weder du noch wir. Wenn jemand anderes dein Handy benutzt (zum Beispiel ein Kind), könnte er versehentlich alles löschen.
+846|Ja, einschalten
+847|Selbstlöschung an
+848|PIN, Fingerabdruck und Selbstlöschung · fragt nach PIN oder Fingerabdruck
