@@ -4,6 +4,7 @@ import com.arsenalatomico.ArsenalAtomico;
 import com.arsenalatomico.Config;
 import com.arsenalatomico.CondorPlan;
 import com.arsenalatomico.MissilePath;
+import com.arsenalatomico.NukePlan;
 import com.arsenalatomico.SalvoPlan;
 import com.arsenalatomico.TwinPlan;
 import com.arsenalatomico.WeaponType;
@@ -85,6 +86,9 @@ public final class LaunchManager {
         /** El silo del Cóndor (se construye de a poco y al final se cierra). */
         SiloBuilder silo;
         Vec3 siloSite;
+        /** El búnker del Protocolo Hongo y el cráter que deja la bomba. */
+        BunkerBuilder bunker;
+        NukeCrater crater;
 
         Strike(@Nullable UUID owner, ServerLevel level, WeaponType type, long start, int lastImpact, BlockPos ticketOwner) {
             this.owner = owner;
@@ -157,6 +161,24 @@ public final class LaunchManager {
 
     /** Busca dónde poner las lanzadoras (cerca del jugador, para que su juego las tenga dibujadas). */
     public static Site chooseSite(ServerLevel level, WeaponType type, Vec3 player, Vec3 target, RandomSource r) {
+        if (type == WeaponType.NUKE) {
+            // el búnker es enorme: lejos del jugador (para no enterrarlo) y muy lejos del blanco (para que la bomba no lo alcance)
+            Vec3 land = null;
+            for (int tries = 0; tries < 12 && land == null; tries++) {
+                Vec3 c = Sites.land(level, player, target, r, 80, 125, 14, 14);
+                if (Math.hypot(c.x - target.x, c.z - target.z) >= NukePlan.SCORCH_R + 70) land = c;
+            }
+            if (land == null) {
+                // todo cerca del blanco: el búnker va del otro lado del jugador
+                Vec3 away = player.subtract(target).multiply(1, 0, 1);
+                away = away.lengthSqr() < 1 ? new Vec3(1, 0, 0) : away.normalize();
+                Vec3 c = player.add(away.scale(100));
+                Integer y = Sites.ground(level, Mth.floor(c.x), Mth.floor(c.z));
+                land = new Vec3(Mth.floor(c.x) + 0.5, y != null ? y : player.y, Mth.floor(c.z) + 0.5);
+            }
+            Vec3 rim = new Vec3(land.x, BunkerBuilder.rimHeight(level, land.y), land.z);
+            return new Site(rim, NukePlan.snap(Sites.yawTowards(rim, target)), TwinPlan.LAND);
+        }
         if (type == WeaponType.ICBM) {
             // el silo: suelo firme y parejo, cerca del jugador; el borde va en el suelo o más arriba (loma)
             Vec3 land = Sites.land(level, player, target, r, 40, 70, 9, 9);
@@ -177,7 +199,18 @@ public final class LaunchManager {
     public static Strike begin(ServerLevel level, @Nullable UUID owner, WeaponType type, Vec3 target, Site site, long seed) {
         long now = level.getGameTime();
         Strike s;
-        if (type == WeaponType.ICBM) {
+        if (type == WeaponType.NUKE) {
+            NukePlan plan = new NukePlan(site.pos(), site.yaw(), target, seed);
+            s = new Strike(owner, level, type, now, plan.impactTick(), BlockPos.containing(target));
+            s.shots.add(new Shot(plan.launchTick, plan.path, 1f, 3, 0, 0f, true));
+            int ground = level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                    Mth.floor(site.pos().x), Mth.floor(site.pos().z));
+            s.bunker = BunkerBuilder.build(level, site.pos(), plan.yaw, ground);
+            s.siloSite = site.pos();
+            // el cráter y lo quemado llegan a 104 bloques del blanco; el búnker y su loma también son grandes
+            keepLoaded(level, s, target, 7);
+            keepLoaded(level, s, site.pos(), 5);
+        } else if (type == WeaponType.ICBM) {
             CondorPlan plan = new CondorPlan(site.pos(), site.yaw(), target, seed);
             s = new Strike(owner, level, type, now, plan.impactTick(), BlockPos.containing(target));
             s.shots.add(new Shot(plan.launchTick, plan.path, CondorPlan.SCALE, 2, 0, 12f, true));
@@ -224,6 +257,11 @@ public final class LaunchManager {
             s.silo.step(Integer.MAX_VALUE);
             SiloBuilder.close(level, s.siloSite);
         }
+        if (level != null && s.bunker != null) {
+            s.bunker.step(Integer.MAX_VALUE);
+            BunkerBuilder.close(level, s.siloSite);
+        }
+        if (s.crater != null) s.crater.step(Integer.MAX_VALUE);
         if (level != null) {
             for (ChunkPos c : s.chunks) ForgeChunkManager.forceChunk(level, ArsenalAtomico.MODID, s.ticketOwner, c.x, c.z, false, true);
         }
@@ -247,6 +285,8 @@ public final class LaunchManager {
             }
             long t = level.getGameTime() - s.start;
             if (s.silo != null && !s.silo.done()) s.silo.step(3000);
+            if (s.bunker != null && !s.bunker.done()) s.bunker.step(8000);
+            if (s.crater != null && !s.crater.done()) s.crater.step(900);
             for (Shot shot : s.shots) {
                 if (!shot.fired && t >= shot.launch) {
                     shot.fired = true;
@@ -256,7 +296,8 @@ public final class LaunchManager {
                 if (shot.fired && !shot.hit && t >= shot.launch + shot.path.flightTicks) {
                     shot.hit = true;
                     if (shot.entity != null) shot.entity.discard();
-                    if (shot.kind == 2) Impacts.huge(level, shot.path.p3, shot.power);
+                    if (shot.kind == 3) s.crater = NukeCrater.detonate(level, shot.path.p3);
+                    else if (shot.kind == 2) Impacts.huge(level, shot.path.p3, shot.power);
                     else if (shot.big) Impacts.big(level, shot.path.p3, shot.power);
                     else Impacts.missile(level, shot.path.p3, shot.power);
                 }

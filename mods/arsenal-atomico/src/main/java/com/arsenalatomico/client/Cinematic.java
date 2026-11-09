@@ -3,6 +3,7 @@ package com.arsenalatomico.client;
 import com.arsenalatomico.Launcher;
 import com.arsenalatomico.SalvoPlan;
 import com.arsenalatomico.CondorPlan;
+import com.arsenalatomico.NukePlan;
 import com.arsenalatomico.TwinPlan;
 import com.arsenalatomico.WeaponType;
 import com.arsenalatomico.net.StartCinematicPacket;
@@ -53,6 +54,8 @@ public final class Cinematic {
     static TwinPlan twin;
     /** Plan del Cóndor (null en las otras armas). */
     static CondorPlan condor;
+    /** Plan del Protocolo Hongo (null en las otras armas). */
+    static NukePlan nuke;
     /** Despegues e impactos que hacen temblar la cámara: {segundo, x, y, z, fuerza, duración, alcance}. */
     private static final java.util.List<double[]> quakes = new java.util.ArrayList<>();
     /** Impactos de la cinemática: {segundo, x, y, z, grande (1/0), ya dibujado (1/0)}. */
@@ -111,7 +114,17 @@ public final class Cinematic {
         quakes.clear();
         blasts.clear();
         condor = null;
-        if (type == WeaponType.ICBM) {
+        nuke = null;
+        if (type == WeaponType.NUKE) {
+            plan = null;
+            twin = null;
+            nuke = new NukePlan(site, yaw, target, p.seed);
+            NukeScenes.reset();
+            Vec3 a = nuke.path.p0, b = nuke.path.p3;
+            quakes.add(new double[]{nuke.launchTick / 20.0, a.x, a.y + 12, a.z, 1.8, 8, 110});
+            quakes.add(new double[]{nuke.impactSecond(), b.x, b.y, b.z, 3.6, 9, 700});
+            blasts.add(new double[]{nuke.impactSecond(), b.x, b.y, b.z, 3, 0});
+        } else if (type == WeaponType.ICBM) {
             plan = null;
             twin = null;
             condor = new CondorPlan(site, yaw, target, p.seed);
@@ -150,7 +163,8 @@ public final class Cinematic {
         previous = mc.options.getCameraType();
         mc.options.setCameraType(CameraType.FIRST_PERSON);
         mc.setCameraEntity(camera);
-        if (condor != null) SiloRenderer.show(condor, startTick, duration);
+        if (nuke != null) NukeRenderer.show(nuke, startTick, duration);
+        else if (condor != null) SiloRenderer.show(condor, startTick, duration);
         else if (twin != null) TwinRenderer.show(twin, startTick, duration);
         else LauncherRenderer.show(site, yaw, startTick, duration);
         active = true;
@@ -189,10 +203,17 @@ public final class Cinematic {
         for (double[] b : blasts) {
             if (b[5] == 0 && now >= b[0]) {
                 b[5] = 1;
+                if (b[4] > 2) {
+                    NukeFx.spawn(new Vec3(b[1], b[2], b[3]));
+                    continue;
+                }
                 ImpactFx.spawn(new Vec3(b[1], b[2], b[3]), b[4] > 1 ? ImpactFx.Kind.CONDOR : b[4] > 0 ? ImpactFx.Kind.ICBM : ImpactFx.Kind.SALVO);
             }
         }
-        if (condor != null) {
+        if (nuke != null) {
+            NukeScenes.sounds(seconds(0));
+            NukeScenes.particles(seconds(0));
+        } else if (condor != null) {
             CondorScenes.sounds(seconds(0));
             CondorScenes.particles(seconds(0));
         } else if (twin != null) {
@@ -248,7 +269,7 @@ public final class Cinematic {
         float s = seconds(partial);
         Pose p = raw(s);
         // dentro del silo la cámara sí va bajo tierra
-        if (!(condor != null && s >= 59 && s < 99)) p = ground(p);
+        if (!(condor != null && s >= 59 && s < 99) && !(nuke != null && NukeScenes.underground(s))) p = ground(p);
         float shake = shake(s);
         if (shake > 0.001f) {
             double t = s * 37;
@@ -259,6 +280,7 @@ public final class Cinematic {
     }
 
     private static Pose raw(float s) {
+        if (nuke != null) return NukeScenes.pose(s);
         if (condor != null) return CondorScenes.pose(s);
         return twin != null ? TwinScenes.pose(s) : salvo(s);
     }
@@ -284,7 +306,7 @@ public final class Cinematic {
             double dist = cam.distanceTo(new Vec3(q[1], q[2], q[3]));
             sum += (float) ((q[5] - d) / q[5] * q[4] * Mth.clamp(q[6] / Math.max(10, dist), 0, 1));
         }
-        return Math.min(condor != null ? 2.6f : twin != null ? 2.2f : 0.9f, sum);
+        return Math.min(nuke != null ? 3.4f : condor != null ? 2.6f : twin != null ? 2.2f : 0.9f, sum);
     }
 
     private static float near(Vec3 a, Vec3 b) {
@@ -448,6 +470,10 @@ public final class Cinematic {
     static int[] counts(float s) {
         double ticks = s * 20;
         int flying = 0, hit = 0;
+        if (nuke != null) {
+            double t = ticks - nuke.launchTick;
+            return new int[]{t >= 0 && t < nuke.path.flightTicks ? 1 : 0, t >= nuke.path.flightTicks ? 1 : 0, 1};
+        }
         if (condor != null) {
             double t = ticks - condor.launchTick;
             return new int[]{t >= 0 && t < condor.path.flightTicks ? 1 : 0, t >= condor.path.flightTicks ? 1 : 0, 1};
@@ -471,6 +497,7 @@ public final class Cinematic {
 
     /** Texto de abajo según el momento de la cinemática. */
     static String caption(float s) {
+        if (nuke != null) return NukeScenes.caption(s);
         if (condor != null) return CondorScenes.caption(s);
         if (twin != null) return TwinScenes.caption(s);
         if (s < 8) return "locked";
@@ -490,17 +517,19 @@ public final class Cinematic {
 
     /** Segundo en que termina la cuenta regresiva (despega el primero). */
     static float launchSecond() {
+        if (nuke != null) return NukePlan.LAUNCH_S;
         if (condor != null) return CondorPlan.LAUNCH_S;
         return twin != null ? TwinPlan.LAUNCH_S[0] : SalvoPlan.FIRST_LAUNCH_S;
     }
 
     /** Desde cuándo suena la alarma (el texto parpadea en rojo). */
     static float alarmSecond() {
-        return twin != null ? 46 : 44;
+        return twin != null || nuke != null ? 46 : 44;
     }
 
     /** Destello blanco de los impactos grandes (0 = nada, 1 = todo blanco). */
     static float flash(float s) {
+        if (nuke != null) return NukeScenes.flash(s);
         if (condor != null) {
             float d = s - condor.impactTick() / 20f;
             return d >= 0 && d < 1.8f ? 1 - d / 1.8f : 0;
@@ -512,6 +541,11 @@ public final class Cinematic {
             if (d >= 0 && d < 1.2f) f = Math.max(f, 1 - d / 1.2f);
         }
         return f;
+    }
+
+    /** Un temblor más (por ejemplo, cuando la onda expansiva llega a la cámara). */
+    static void addQuake(float s, Vec3 at, double strength, double duration, double reach) {
+        quakes.add(new double[]{s, at.x, at.y, at.z, strength, duration, reach});
     }
 
     static Pose look(Vec3 from, Vec3 to, float roll, float fov) {

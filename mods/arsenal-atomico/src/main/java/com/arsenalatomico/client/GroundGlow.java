@@ -64,6 +64,7 @@ public final class GroundGlow {
             LIGHTS.add(new float[]{(float) tail.x, (float) tail.y, (float) tail.z, radius, near * near * grow * flick * (big ? 1f : 0.75f)});
         }
         ImpactFx.lights(LIGHTS);
+        NukeFx.lights(LIGHTS);
         if (LIGHTS.isEmpty()) return;
 
         ps.pushPose();

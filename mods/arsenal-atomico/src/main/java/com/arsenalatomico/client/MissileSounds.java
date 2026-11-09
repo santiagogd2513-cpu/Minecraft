@@ -16,6 +16,16 @@ public final class MissileSounds {
 
     public static void start(MissileEntity m) {
         var sm = Minecraft.getInstance().getSoundManager();
+        if (m.kind() == 3) {
+            // Protocolo Hongo: el rugido del encendido dentro del silo y el motor que lo sigue
+            if (m.age() < 10) {
+                sm.play(at(ModSounds.MISSILE_LAUNCH.get(), m.position(), 16f, 0.48f));
+                sm.play(at(ModSounds.FAR_BOOM.get(), m.position(), 8f, 0.8f));
+                sm.play(at(SoundEvents.GENERIC_EXPLODE, m.position(), 6f, 0.45f));
+            }
+            sm.play(new Engine(m, 9f, 0.5f));
+            return;
+        }
         if (m.kind() == 2) {
             // el Cóndor: rugido enorme dentro del silo
             if (m.age() < 10) {
@@ -56,6 +66,10 @@ public final class MissileSounds {
     }
 
     public static void impact(Vec3 at, int kind) {
+        if (kind == 3) {
+            NukeFx.spawn(at);
+            return;
+        }
         ImpactFx.spawn(at, kind == 2 ? ImpactFx.Kind.CONDOR : kind == 1 ? ImpactFx.Kind.ICBM : ImpactFx.Kind.SALVO);
         float big = kind >= 1 ? 1 : 0;
         Minecraft.getInstance().getSoundManager().play(at(ModSounds.FAR_BOOM.get(), at, 3f + big * 5, 0.8f - big * 0.25f + (float) Math.random() * 0.3f));

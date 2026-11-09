@@ -52,5 +52,32 @@
         "attenuation_distance": 96
       }
     ]
+  },
+  "nuke_blast": {
+    "subtitle": "subtitles.arsenalatomico.nuke_blast",
+    "sounds": [
+      {
+        "name": "arsenalatomico:nuke_blast",
+        "attenuation_distance": 512
+      }
+    ]
+  },
+  "nuke_wind": {
+    "subtitle": "subtitles.arsenalatomico.nuke_wind",
+    "sounds": [
+      {
+        "name": "arsenalatomico:nuke_wind",
+        "attenuation_distance": 128
+      }
+    ]
+  },
+  "siren": {
+    "subtitle": "subtitles.arsenalatomico.siren",
+    "sounds": [
+      {
+        "name": "arsenalatomico:siren",
+        "attenuation_distance": 96
+      }
+    ]
   }
 }

@@ -102,7 +102,9 @@ public class MissileEntity extends Entity implements IEntityAdditionalSpawnData 
                 boomed = true;
                 com.arsenalatomico.client.MissileSounds.impact(path.p3, kind);
             }
-            if (kind == 2) {
+            if (kind == 3) {
+                nukeTrail(p, d);
+            } else if (kind == 2) {
                 if (age == com.arsenalatomico.CondorPlan.SEP1 || age == com.arsenalatomico.CondorPlan.SEP2) {
                     com.arsenalatomico.client.MissileSounds.separate(this, age == com.arsenalatomico.CondorPlan.SEP1 ? 1 : 2);
                 }
@@ -137,6 +139,34 @@ public class MissileEntity extends Entity implements IEntityAdditionalSpawnData 
             }
             l.addAlwaysVisibleParticle(ParticleTypes.LARGE_SMOKE, true, tail.x, tail.y, tail.z,
                     (random.nextDouble() - 0.5) * 0.2, 0.05, (random.nextDouble() - 0.5) * 0.2);
+        }
+    }
+
+    /** Estela del Protocolo Hongo: fuego y humo espeso, y al principio el humo y el fuego que salen por la boca del silo. */
+    private void nukeTrail(Vec3 p, Vec3 d) {
+        Level l = level();
+        Vec3 tail = p.subtract(d.scale(9.8 * scale));
+        for (int i = 0; i < 9; i++) {
+            double k = 0.8 + random.nextDouble() * 0.8;
+            l.addAlwaysVisibleParticle(ParticleTypes.FLAME, true, tail.x, tail.y, tail.z,
+                    -d.x * k + (random.nextDouble() - 0.5) * 0.25, -d.y * k + (random.nextDouble() - 0.5) * 0.25,
+                    -d.z * k + (random.nextDouble() - 0.5) * 0.25);
+        }
+        if (age % 2 == 0) l.addAlwaysVisibleParticle(ParticleTypes.LAVA, true, tail.x, tail.y, tail.z, 0, 0, 0);
+        for (int i = 0; i < 4; i++) {
+            Vec3 q = tail.subtract(d.scale(4 + i * 3)).add((random.nextDouble() - 0.5) * 2, (random.nextDouble() - 0.5) * 2,
+                    (random.nextDouble() - 0.5) * 2);
+            l.addAlwaysVisibleParticle(ParticleTypes.CAMPFIRE_COSY_SMOKE, true, q.x, q.y, q.z,
+                    (random.nextDouble() - 0.5) * 0.04, 0.01, (random.nextDouble() - 0.5) * 0.04);
+        }
+        if (age < 80) {
+            // el silo vomita humo y fuego por la boca mientras el misil sube
+            Vec3 rim = path.p0.add(0, com.arsenalatomico.NukePlan.DEPTH - 1 - com.arsenalatomico.NukePlan.HALF_LEN, 0);
+            for (int i = 0; i < 12; i++) {
+                l.addAlwaysVisibleParticle(i % 3 == 0 ? ParticleTypes.LARGE_SMOKE : i % 3 == 1 ? ParticleTypes.CAMPFIRE_SIGNAL_SMOKE : ParticleTypes.FLAME, true,
+                        rim.x + (random.nextDouble() - 0.5) * 6, rim.y, rim.z + (random.nextDouble() - 0.5) * 6,
+                        (random.nextDouble() - 0.5) * 0.9, 0.05 + random.nextDouble() * 0.25, (random.nextDouble() - 0.5) * 0.9);
+            }
         }
     }
 

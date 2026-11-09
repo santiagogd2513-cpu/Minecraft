@@ -17,6 +17,9 @@ public final class ModSounds {
     public static final RegistryObject<SoundEvent> BEEP = register("beep");
     public static final RegistryObject<SoundEvent> HYDRAULIC = register("hydraulic");
     public static final RegistryObject<SoundEvent> FAR_BOOM = register("far_boom");
+    public static final RegistryObject<SoundEvent> NUKE_BLAST = register("nuke_blast");
+    public static final RegistryObject<SoundEvent> NUKE_WIND = register("nuke_wind");
+    public static final RegistryObject<SoundEvent> SIREN = register("siren");
 
     private ModSounds() {}
 

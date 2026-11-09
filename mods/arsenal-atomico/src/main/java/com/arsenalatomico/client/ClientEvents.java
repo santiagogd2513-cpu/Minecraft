@@ -27,6 +27,7 @@ public final class ClientEvents {
         Cinematic.clientTick();
         ImpactFx.tick();
         CondorFx.tick();
+        NukeFx.tick();
         Minecraft mc = Minecraft.getInstance();
         while (ClientSetup.WEAPONS.consumeClick()) {
             if (mc.screen == null && !Cinematic.isActive() && mc.player != null) mc.setScreen(new WeaponSelectScreen());
@@ -40,8 +41,10 @@ public final class ClientEvents {
             LauncherRenderer.render(e.getPoseStack(), e.getCamera(), e.getPartialTick());
             TwinRenderer.render(e.getPoseStack(), e.getCamera(), e.getPartialTick());
             SiloRenderer.render(e.getPoseStack(), e.getCamera(), e.getPartialTick());
+            NukeRenderer.render(e.getPoseStack(), e.getCamera(), e.getPartialTick());
             CondorFx.render(e.getPoseStack(), e.getCamera(), e.getPartialTick());
             ImpactFx.render(e.getPoseStack(), e.getCamera(), e.getPartialTick());
+            NukeFx.render(e.getPoseStack(), e.getCamera(), e.getPartialTick());
             GroundGlow.render(e.getPoseStack(), e.getCamera(), e.getPartialTick());
         }
     }
@@ -93,6 +96,7 @@ public final class ClientEvents {
     public static void onLogout(ClientPlayerNetworkEvent.LoggingOut e) {
         Cinematic.stop();
         ImpactFx.clear();
+        NukeFx.clear();
     }
 
     private ClientEvents() {}

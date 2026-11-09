@@ -8,8 +8,8 @@ public enum WeaponType {
     TWIN("twin", true, 210),
     /** Cóndor: un misil intercontinental (no nuclear) desde un búnker subterráneo. */
     ICBM("icbm", true, 210),
-    /** Protocolo Hongo: misil nuclear desde un silo subterráneo. */
-    NUKE("nuke", false, 210),
+    /** Protocolo Hongo: bomba nuclear pequeña desde el búnker más detallado (silo, cuarto de control, pasillo, caseta). */
+    NUKE("nuke", true, 210),
     /** Protocolo Sol Negro: termonuclear desde el búnker más profundo. */
     THERMO("thermo", false, 210);
 

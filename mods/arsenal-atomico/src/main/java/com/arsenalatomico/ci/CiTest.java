@@ -28,7 +28,11 @@ public final class CiTest {
     private static long until;
     private static BlockPos salvoTarget, twinTarget, condorTarget;
     private static int salvoAir, twinAir, condorAir;
-    private static LaunchManager.Strike salvo, twin, condor;
+    private static LaunchManager.Strike salvo, twin, condor, nuke;
+    private static BlockPos nukeTarget;
+    private static int nukeAir;
+    private static Vec3 bunker;
+    private static float bunkerYaw;
     private static net.minecraft.world.phys.Vec3 silo;
     private static int twinMode;
 
@@ -63,7 +67,19 @@ public final class CiTest {
         condor = LaunchManager.begin(level, null, WeaponType.ICBM, c, sc, 777L);
         System.out.println("PRUEBA: Cóndor sobre " + condorTarget.toShortString() + " desde el silo en " + BlockPos.containing(sc.pos()).toShortString());
 
-        until = Math.max(Math.max(salvo.lastImpactGameTime(), twin.lastImpactGameTime()), condor.lastImpactGameTime()) + 60;
+        // Protocolo Hongo: el búnker a 190 bloques del inicio y el blanco 200 más allá (lejos de todo lo demás)
+        int bx = spawn.getX(), bz = spawn.getZ() + 190;
+        int bg = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, bx, bz);
+        bunker = new Vec3(bx + 0.5, com.arsenalatomico.strike.BunkerBuilder.rimHeight(level, bg), bz + 0.5);
+        nukeTarget = surface(level, spawn.getX(), spawn.getZ() + 390);
+        nukeAir = air(level, nukeTarget);
+        Vec3 n = Vec3.atBottomCenterOf(nukeTarget).add(0, 0.5, 0);
+        bunkerYaw = com.arsenalatomico.NukePlan.snap(com.arsenalatomico.strike.Sites.yawTowards(bunker, n));
+        nuke = LaunchManager.begin(level, null, WeaponType.NUKE, n, new LaunchManager.Site(bunker, bunkerYaw, TwinPlan.LAND), 999L);
+        System.out.println("PRUEBA: Protocolo Hongo sobre " + nukeTarget.toShortString() + " desde el búnker en " + BlockPos.containing(bunker).toShortString());
+
+        until = Math.max(Math.max(Math.max(salvo.lastImpactGameTime(), twin.lastImpactGameTime()), condor.lastImpactGameTime()),
+                nuke.lastImpactGameTime() + 100) + 60;
         System.out.println("PRUEBA: Lluvia de Acero sobre " + salvoTarget.toShortString() + " desde " + BlockPos.containing(sa.pos()).toShortString());
         System.out.println("PRUEBA: Cóndor Doble sobre " + twinTarget.toShortString() + " desde " + BlockPos.containing(sb.pos()).toShortString()
                 + (twinMode == TwinPlan.SEA ? " (submarino)" : " (lanzadoras en tierra)"));
@@ -74,7 +90,7 @@ public final class CiTest {
         if (server == null || e.phase != TickEvent.Phase.END) return;
         ServerLevel level = server.overworld();
         if (level.getGameTime() < until) return;
-        int expected = SalvoPlan.COUNT + 3;
+        int expected = SalvoPlan.COUNT + 4;
         int dSalvo = air(level, salvoTarget) - salvoAir, dTwin = air(level, twinTarget) - twinAir, dCondor = air(level, condorTarget) - condorAir;
         // el silo: piso de concreto (o magma en el centro), pozo vacío y luces en la pared
         BlockPos center = BlockPos.containing(silo);
@@ -86,14 +102,38 @@ public final class CiTest {
             if (level.getBlockState(q).is(net.minecraft.world.level.block.Blocks.SEA_LANTERN)) lights++;
         }
         boolean siloOk = floor.is(net.minecraft.world.level.block.Blocks.BLACK_CONCRETE) && shaftEmpty && lights >= 12;
+        // el cráter de la bomba: hondo, con roca derretida en el fondo
+        int dNuke = air(level, nukeTarget) - nukeAir;
+        int craterFloor = nukeTarget.getY() - com.arsenalatomico.NukePlan.CRATER_DEPTH;
+        boolean molten = false;
+        for (int y = craterFloor - 3; y <= craterFloor + 3; y++) {
+            var st = level.getBlockState(new BlockPos(nukeTarget.getX(), y, nukeTarget.getZ()));
+            if (st.is(net.minecraft.world.level.block.Blocks.OBSIDIAN) || st.is(net.minecraft.world.level.block.Blocks.MAGMA_BLOCK)
+                    || st.is(net.minecraft.world.level.block.Blocks.GREEN_STAINED_GLASS) || st.is(net.minecraft.world.level.block.Blocks.CRYING_OBSIDIAN)) molten = true;
+        }
+        boolean hollow = level.getBlockState(new BlockPos(nukeTarget.getX(), craterFloor + 6, nukeTarget.getZ())).isAir();
+        // el búnker: vidrio de la ventana, escalones del caracol, luces del pozo y la puerta de la caseta
+        int glass = 0, steps = 0, shaftLights = 0, doors = 0;
+        BlockPos bc = BlockPos.containing(bunker);
+        for (BlockPos q : BlockPos.betweenClosed(bc.offset(-32, -36, -32), bc.offset(32, 6, 32))) {
+            var st = level.getBlockState(q);
+            if (st.is(net.minecraft.world.level.block.Blocks.GLASS)) glass++;
+            else if (st.is(net.minecraft.world.level.block.Blocks.POLISHED_ANDESITE_STAIRS)) steps++;
+            else if (st.is(net.minecraft.world.level.block.Blocks.DARK_OAK_DOOR)) doors++;
+            else if (st.is(net.minecraft.world.level.block.Blocks.SEA_LANTERN) && Math.abs(q.getX() - bc.getX()) <= 5 && Math.abs(q.getZ() - bc.getZ()) <= 5) shaftLights++;
+        }
+        boolean bunkerOk = glass >= 20 && steps >= 18 && shaftLights >= 20 && doors == 2;
+        boolean nukeOk = nuke.allHit() && dNuke > 10000 && molten && hollow;
         boolean ok = Impacts.IMPACTS == expected && salvo.allHit() && twin.allHit() && condor.allHit()
-                && dSalvo > 60 && dTwin > 150 && dCondor > 300 && siloOk;
+                && dSalvo > 60 && dTwin > 150 && dCondor > 300 && siloOk && nukeOk && bunkerOk;
         System.out.println("==== PRUEBA DE ARSENAL ATÓMICO ====");
         System.out.println("Misiles caídos: " + Impacts.IMPACTS + " de " + expected);
         System.out.println("Lluvia de Acero: " + dSalvo + " bloques destruidos");
         System.out.println("Cóndor Doble (" + (twinMode == TwinPlan.SEA ? "submarino" : "en tierra") + "): " + dTwin + " bloques destruidos");
         System.out.println("Cóndor: " + dCondor + " bloques destruidos");
         System.out.println("Silo: piso " + floor.getBlock().getDescriptionId() + ", pozo vacío " + shaftEmpty + ", luces " + lights);
+        System.out.println("Protocolo Hongo: " + dNuke + " bloques destruidos, fondo derretido " + molten + ", cráter hueco " + hollow);
+        System.out.println("Búnker: vidrio " + glass + ", escalones " + steps + ", luces del pozo " + shaftLights + ", puerta " + doors);
         System.out.println(ok ? "RESULTADO OK" : "RESULTADO FALLO");
         System.out.println("==== FIN ====");
         server.halt(false);
