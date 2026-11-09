@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-/** Qué archivos abre Bóveda por su cuenta (reproductor, editor y visor de PDF) y cómo. */
+/** Qué archivos abre Bóveda por su cuenta (reproductor, visor de imágenes, editor y visor de PDF) y cómo. */
 final class Viewers {
     private Viewers() {}
 
@@ -23,6 +23,11 @@ final class Viewers {
             "yml", "yaml", "toml", "ini", "cfg", "conf", "config", "properties", "prop", "env", "sql", "svg",
             "mcmeta", "lang", "mcfunction", "gitignore", "gitattributes", "editorconfig", "srt", "vtt", "ass", "sub", "nfo",
             "tex", "rtf", "vbs", "asm", "s", "makefile", "cmake", "dockerfile", "m3u", "m3u8", "pls", "cue");
+
+    static final Set<String> IMAGE = set("jpg", "jpeg", "jpe", "jfif", "pjpeg", "pjp", "png", "apng", "gif", "webp", "bmp", "dib",
+            "wbmp", "ico", "cur", "heic", "heif", "hif", "avif", "dng", "cr2", "cr3", "nef", "nrw", "arw", "srf", "sr2", "orf",
+            "rw2", "raf", "pef", "srw", "x3f", "jxl", "svg", "svgz",
+            "tga", "tpic", "icb", "vda", "vst", "tif", "tiff", "psd", "psb", "qoi", "ppm", "pgm", "pbm", "pnm", "pam");
 
     /** Conjunto que tolera repetidos (Set.of se cae si hay uno, y eso tumbaba la app). */
     private static Set<String> set(String... items) {
@@ -52,6 +57,10 @@ final class Viewers {
         return TEXT.contains(ext(name));
     }
 
+    static boolean isImage(String name) {
+        return IMAGE.contains(ext(name));
+    }
+
     static boolean isPdf(String name) {
         return ext(name).equals("pdf");
     }
@@ -73,6 +82,23 @@ final class Viewers {
             }
             if (list.isEmpty()) list.add(e.path);
             a.startActivity(new Intent(a, PlayerActivity.class)
+                    .putExtra("paths", list.toArray(new String[0]))
+                    .putExtra("index", index));
+            return true;
+        }
+        if (isImage(e.name)) {
+            // galería: las imágenes de la misma carpeta, para pasar con el dedo
+            ArrayList<String> list = new ArrayList<>();
+            int index = 0;
+            if (siblings != null) {
+                for (Entry s : siblings) {
+                    if (s.dir || !isImage(s.name)) continue;
+                    if (s.path.equals(e.path)) index = list.size();
+                    list.add(s.path);
+                }
+            }
+            if (list.isEmpty()) list.add(e.path);
+            a.startActivity(new Intent(a, ImageActivity.class)
                     .putExtra("paths", list.toArray(new String[0]))
                     .putExtra("index", index));
             return true;

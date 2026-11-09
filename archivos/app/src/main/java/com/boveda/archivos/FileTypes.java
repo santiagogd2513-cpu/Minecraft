@@ -9,7 +9,8 @@ final class FileTypes {
     static int icon(Entry e) {
         if (e.dir) return R.drawable.ic_folder;
         switch (e.extension()) {
-            case "jpg", "jpeg", "png", "gif", "webp", "bmp", "heic", "svg": return R.drawable.ic_image;
+            case "jpg", "jpeg", "jfif", "png", "gif", "webp", "bmp", "heic", "heif", "avif", "svg", "ico", "tga", "tif", "tiff",
+                 "psd", "qoi", "ppm", "pgm", "pbm", "dng", "cr2", "nef", "arw", "orf", "rw2", "raf": return R.drawable.ic_image;
             case "mp4", "mkv", "webm", "avi", "mov", "3gp", "m4v": return R.drawable.ic_movie;
             case "mp3", "ogg", "wav", "flac", "m4a", "aac", "opus": return R.drawable.ic_music;
             case "zip", "rar", "7z", "tar", "gz", "tgz", "xz", "txz", "bz2", "tbz2", "lz4", "lzma", "z", "cpio", "arj", "deb", "iso", "obb", "jar", "cbz", "cb7":

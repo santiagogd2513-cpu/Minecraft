@@ -282,6 +282,42 @@ final class DownloadEngine {
         changed(true);
     }
 
+    /**
+     * Quita del historial las descargas terminadas cuyo archivo ya no está donde se guardó
+     * (lo borraron, lo movieron a otra carpeta o se borró la memoria).
+     */
+    void forgetMissing() {
+        pool.execute(() -> {
+            boolean any = false;
+            for (DownloadItem d : items) {
+                if (d.status != DownloadItem.DONE || d.uri == null || d.url.equals("data:") && d.uri.isEmpty()) continue;
+                if (!stillThere(d)) {
+                    items.remove(d);
+                    any = true;
+                }
+            }
+            if (any) changed(true);
+        });
+    }
+
+    private boolean stillThere(DownloadItem d) {
+        try {
+            if (isPlainFile(d)) return fileOf(d).isFile();
+            Uri u = Uri.parse(d.uri);
+            try (Cursor c = app.getContentResolver().query(u,
+                    new String[]{MediaStore.MediaColumns.RELATIVE_PATH, MediaStore.MediaColumns.DISPLAY_NAME}, null, null, null)) {
+                if (c == null || !c.moveToFirst()) return false;
+                // si otra app lo movió, Android lo cambia de carpeta en su lista: también cuenta como que ya no está
+                String rel = c.getString(0);
+                return rel == null || rel.replace("/", "").equalsIgnoreCase("DownloadNocturna");
+            }
+        } catch (SecurityException e) {
+            return true;    // sin permiso para mirar: mejor no borrar nada del historial
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     void clearFinished() {
         items.removeIf(d -> d.status == DownloadItem.DONE);
         changed(true);
@@ -867,6 +903,7 @@ final class DownloadEngine {
             }
         } catch (Exception ignored) {
         }
+        forgetMissing();
     }
 
     private void createChannels() {

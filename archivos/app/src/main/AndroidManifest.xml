@@ -96,7 +96,7 @@
             android:configChanges="orientation|screenSize|uiMode"
             android:windowSoftInputMode="adjustResize" />
 
-        <!-- visores propios: reproductor, editor de texto y código, PDF -->
+        <!-- visores propios: reproductor, imágenes, editor de texto y código, PDF -->
         <activity
             android:name=".PlayerActivity"
             android:exported="false"
@@ -108,6 +108,12 @@
             android:exported="false"
             android:configChanges="orientation|screenSize|uiMode|keyboardHidden"
             android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".ImageActivity"
+            android:exported="false"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
+            android:theme="@style/Theme.Boveda" />
 
         <activity
             android:name=".PdfActivity"

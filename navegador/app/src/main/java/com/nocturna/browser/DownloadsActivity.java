@@ -109,6 +109,7 @@ public class DownloadsActivity extends Activity implements DownloadEngine.Listen
     protected void onResume() {
         super.onResume();
         engine.addListener(this);
+        engine.forgetMissing();
         refresh();
     }
 
