@@ -145,10 +145,6 @@ final class SeasonFx {
                     if (y[i] > h + r[i] * 2) spawn(i, w, h, false);
                     p.setColor(col[i]);
                     c.drawCircle(sx, y[i], r[i], p);
-                    if (r[i] > 2.6f * d) {
-                        p.setColor((col[i] & 0x00FFFFFF) | 0x10000000);
-                        c.drawCircle(sx, y[i], r[i] * 2f, p);
-                    }
                 } else {
                     y[i] -= v[i] * dt;
                     float sx = x[i] + (float) Math.sin(t * 1.6f + ph[i]) * 6 * d;
@@ -162,8 +158,8 @@ final class SeasonFx {
                     int a = (int) (230 * (1 - life) * flick);
                     p.setColor((col[i] & 0x00FFFFFF) | (Math.max(0, a) << 24));
                     c.drawCircle(sx, y[i], r[i], p);
-                    p.setColor((col[i] & 0x00FFFFFF) | (Math.max(0, a / 5) << 24));
-                    c.drawCircle(sx, y[i], r[i] * 3, p);
+                    p.setColor((col[i] & 0x00FFFFFF) | (Math.max(0, a / 9) << 24));
+                    c.drawCircle(sx, y[i], r[i] * 2.2f, p);
                 }
             }
             H.removeCallbacks(tick);

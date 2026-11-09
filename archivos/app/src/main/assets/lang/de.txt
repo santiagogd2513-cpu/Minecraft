@@ -889,3 +889,21 @@
 889|Weihnachten, Velitas, Halloween und mehr
 890|🎨 Weihnachten und der Tag der Kerzen haben schon ihre Dekorationen. Valentinstag, Liebe und Freundschaft und Halloween kommen mit den nächsten Updates.
 891|Das Symbol ändert sich, wenn du die App verlässt
+892|Experimentell und Test
+893|Funktionen im Test · Nutzung auf eigene Gefahr
+894|🧪 Diese Funktionen werden getestet. Sie können in jeder Version fehlschlagen, sich ändern oder verschwinden.
+895|Darstellung
+896|Hellen Modus erlauben
+897|Experimentell · kann Bildfehler verursachen
+898|⚠️ WARNUNG: heller Modus
+899|Du bist dabei, eine experimentelle und instabile Funktion einzuschalten.\n\nDer helle Modus kann Bildverzerrungen, Darstellungsfehler, invertierte Farben, unsichtbare Texte, Bildschirmflackern und einen plötzlichen Helligkeitsschub verursachen, der dich und alle in der Nähe blenden kann.\n\nForja Estudios haftet nicht für gereizte Augen, leere Akkus oder den Verlust der dunklen Eleganz deines Handys.\n\nWillst du wirklich fortfahren?
+900|Abbrechen (empfohlen)
+901|Trotzdem einschalten
+902|☠️ Ganz sicher?
+903|Das ist deine letzte Chance, in die Dunkelheit zurückzukehren.\n\nWenn das Weiß erst einmal drin ist, ist nichts mehr wie vorher.
+904|Zurück in die Dunkelheit 🌙
+905|Ja, ich bin sicher
+906|Heller Modus wird eingeschaltet…
+907|❌ Darstellungsfehler
+908|Der helle Modus konnte nicht starten: Bóveda hat zu viel Weiß erkannt und sich geschützt, indem es im dunklen Modus bleibt.\n\nDiese Funktion bleibt im Test.
+909|Schon gut 🌙

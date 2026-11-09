@@ -1,3 +1,8 @@
+## 49
+🧪 Nueva sección en Ajustes: «Experimentales y de prueba»
+- Ahí vive «Permitir modo claro», una función muy experimental. Úsala bajo tu propio riesgo.
+- La nieve de Navidad y las chispitas de Velitas se ven más limpias (sin el anillo gris alrededor).
+
 ## 48
 ✨ El botón de crear (+) también se viste de temporada
 - En Navidad es la estrella del arbolito, sobre rojo.

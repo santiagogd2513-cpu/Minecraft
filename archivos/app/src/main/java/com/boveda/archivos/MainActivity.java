@@ -3627,12 +3627,13 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             {L.t("Almacenamiento"), L.t("Archivos temporales")},
             {L.t("La Bóveda"), L.t("PIN, huella y autoborrado · pide tu PIN o tu huella")},
             {L.t("Temas de temporada"), L.t("Navidad, Velitas, Halloween y más")},
+            {L.t("Experimentales y de prueba"), L.t("Funciones en pruebas · úsalas bajo tu propio riesgo")},
             {L.t("Acerca de"), L.t("Versión y Forja Estudios")},
     };
     private static final int[] SETTINGS_ICONS = {R.drawable.ic_menu, R.drawable.ic_folder, R.drawable.ic_play, R.drawable.ic_swap,
-            R.drawable.ic_download, R.drawable.ic_shield, R.drawable.ic_sd, R.drawable.ic_key, R.drawable.ic_season, R.drawable.ic_info};
+            R.drawable.ic_download, R.drawable.ic_shield, R.drawable.ic_sd, R.drawable.ic_key, R.drawable.ic_season, R.drawable.ic_code, R.drawable.ic_info};
     private static final int[][] SETTINGS_COLORS = {{0xFF4C9DFF, 0xFF6FD6FF}, {0xFFFFB547, 0xFFF07C2C}, {0xFF35D08A, 0xFF1EA97C},
-            {0xFFB47CFF, 0xFF7C4DFF}, {0xFF28A8EA, 0xFF0A64D6}, {0xFFFF6B8A, 0xFFE0405F}, {0xFF8B97AB, 0xFF5D6B83}, {0xFF7B4DFF, 0xFFB86BFF}, {0xFFE63946, 0xFF2DC653}, {0xFFFF8A3D, 0xFFFFC857}};
+            {0xFFB47CFF, 0xFF7C4DFF}, {0xFF28A8EA, 0xFF0A64D6}, {0xFFFF6B8A, 0xFFE0405F}, {0xFF8B97AB, 0xFF5D6B83}, {0xFF7B4DFF, 0xFFB86BFF}, {0xFFE63946, 0xFF2DC653}, {0xFFFFB547, 0xFFFF5D6C}, {0xFFFF8A3D, 0xFFFFC857}};
 
     private void settingsCategories(LinearLayout col, android.app.Dialog d, java.util.function.IntConsumer open) {
         col.removeAllViews();
@@ -3671,6 +3672,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
 
     private static final int VAULT_SETTINGS = 7;
     private static final int SEASON_SETTINGS = 8;
+    private static final int LAB_SETTINGS = 9;
 
     private void fillSettings(LinearLayout col, android.app.Dialog d, int category) {
         col.removeAllViews();
@@ -3681,6 +3683,10 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         }
         if (category == SEASON_SETTINGS) {
             Season.settings(this, col, refresh);
+            return;
+        }
+        if (category == LAB_SETTINGS) {
+            labSettings(col);
             return;
         }
         switch (category) {
@@ -3784,6 +3790,62 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                 settingsRow(col, "📄  " + L.t("Términos y condiciones"), L.t("Las reglas para usar la app"), () -> Legal.show(this, Legal.TERMS));
             }
         }
+    }
+
+    /** Ajustes experimentales y de prueba. El modo claro vive aquí… y de aquí no sale. */
+    private void labSettings(LinearLayout col) {
+        TextView warn = Ui.text(this, L.t("🧪 Estas funciones están en pruebas. Pueden fallar, cambiar o desaparecer en cualquier versión."),
+                12.5f, Ui.WARN, false);
+        warn.setPadding(dp(14), dp(12), dp(14), dp(12));
+        warn.setBackground(Ui.round(0x1AFFB547, dp(14)));
+        LinearLayout.LayoutParams wl = new LinearLayout.LayoutParams(-1, -2);
+        wl.setMargins(0, dp(8), 0, 0);
+        col.addView(warn, wl);
+        settingsSection(col, L.t("Apariencia"));
+        LinearLayout r = settingsCard(L.t("Permitir modo claro"), L.t("Experimental · puede causar distorsiones visuales"));
+        android.widget.Switch sw = new android.widget.Switch(this);
+        sw.setChecked(false);
+        sw.setThumbTintList(android.content.res.ColorStateList.valueOf(Color.WHITE));
+        sw.setTrackTintList(new android.content.res.ColorStateList(new int[][]{{android.R.attr.state_checked}, {}}, new int[]{Ui.WARN, 0xFF3A4458}));
+        sw.setOnCheckedChangeListener((b, on) -> {
+            if (!on) return;
+            sw.setChecked(false);
+            lightModeWarning();
+        });
+        LinearLayout.LayoutParams sl = new LinearLayout.LayoutParams(-2, -2);
+        sl.setMargins(dp(10), 0, 0, 0);
+        r.addView(sw, sl);
+        r.setOnClickListener(v -> sw.toggle());
+        addCard(col, r);
+    }
+
+    /** Tres avisos cada vez más dramáticos, y al final Bóveda se queda en modo oscuro. */
+    private void lightModeWarning() {
+        new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                .setTitle(L.t("⚠️ ADVERTENCIA: modo claro"))
+                .setMessage(L.t("Estás a punto de activar una función experimental e inestable.\n\nEl modo claro puede provocar distorsiones visuales, errores de renderizado, colores invertidos, textos invisibles, parpadeos de pantalla y un aumento repentino del brillo capaz de deslumbrarte a ti y a cualquiera que esté cerca.\n\nForja Estudios no se hace responsable por ojos irritados, baterías agotadas ni por la pérdida de la elegancia oscura de tu celular.\n\n¿De verdad quieres continuar?"))
+                .setNegativeButton(L.t("Cancelar (recomendado)"), null)
+                .setPositiveButton(L.t("Activar de todos modos"), (d1, w1) -> new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                        .setTitle(L.t("☠️ ¿Completamente seguro?"))
+                        .setMessage(L.t("Esta es tu última oportunidad de volver a la oscuridad.\n\nUna vez que el blanco entra, ya nada vuelve a ser igual."))
+                        .setNegativeButton(L.t("Volver a la oscuridad 🌙"), null)
+                        .setPositiveButton(L.t("Sí, estoy seguro"), (d2, w2) -> {
+                            android.app.ProgressDialog pd = new android.app.ProgressDialog(this, R.style.Theme_Boveda_Dialog);
+                            pd.setMessage(L.t("Activando el modo claro…"));
+                            pd.setCancelable(false);
+                            pd.show();
+                            main.postDelayed(() -> {
+                                pd.dismiss();
+                                new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                                        .setTitle(L.t("❌ Error de renderizado"))
+                                        .setMessage(L.t("El modo claro no pudo iniciarse: Bóveda detectó demasiado blanco y se protegió quedándose en modo oscuro.\n\nEsta función seguirá en pruebas."))
+                                        .setPositiveButton(L.t("Está bien 🌙"), null)
+                                        .setCancelable(false)
+                                        .show();
+                            }, 2600);
+                        })
+                        .show())
+                .show();
     }
 
     private String languageName(String code) {

@@ -889,3 +889,21 @@
 889|Christmas, Little Candles, Halloween and more
 890|🎨 Christmas and the Day of the Little Candles already have their decorations. Valentine's Day, Love and Friendship and Halloween arrive in the next updates.
 891|The icon changes when you leave the app
+892|Experimental and test
+893|Features in testing · use them at your own risk
+894|🧪 These features are being tested. They may fail, change or disappear in any version.
+895|Appearance
+896|Allow light mode
+897|Experimental · may cause visual distortions
+898|⚠️ WARNING: light mode
+899|You are about to turn on an experimental and unstable feature.\n\nLight mode may cause visual distortions, rendering errors, inverted colors, invisible text, screen flicker and a sudden burst of brightness able to dazzle you and anyone nearby.\n\nForja Estudios is not responsible for irritated eyes, drained batteries or the loss of your phone's dark elegance.\n\nDo you really want to continue?
+900|Cancel (recommended)
+901|Turn on anyway
+902|☠️ Absolutely sure?
+903|This is your last chance to return to the darkness.\n\nOnce the white gets in, nothing is ever the same again.
+904|Back to the darkness 🌙
+905|Yes, I'm sure
+906|Turning on light mode…
+907|❌ Rendering error
+908|Light mode could not start: Bóveda detected too much white and protected itself by staying in dark mode.\n\nThis feature will remain in testing.
+909|Fine 🌙

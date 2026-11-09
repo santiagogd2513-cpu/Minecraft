@@ -889,3 +889,21 @@
 889|Natal, Velinhas, Halloween e mais
 890|🎨 Natal e o Dia das Velinhas já têm suas decorações. Dia dos Namorados, Amor e Amizade e Halloween chegam nas próximas atualizações.
 891|O ícone muda quando você sair do app
+892|Experimentais e de teste
+893|Funções em teste · use por sua conta e risco
+894|🧪 Estas funções estão em teste. Podem falhar, mudar ou desaparecer em qualquer versão.
+895|Aparência
+896|Permitir modo claro
+897|Experimental · pode causar distorções visuais
+898|⚠️ AVISO: modo claro
+899|Você está prestes a ativar uma função experimental e instável.\n\nO modo claro pode provocar distorções visuais, erros de renderização, cores invertidas, textos invisíveis, tela piscando e um aumento repentino de brilho capaz de ofuscar você e qualquer um por perto.\n\nA Forja Estudios não se responsabiliza por olhos irritados, baterias esgotadas nem pela perda da elegância escura do seu celular.\n\nQuer mesmo continuar?
+900|Cancelar (recomendado)
+901|Ativar mesmo assim
+902|☠️ Totalmente certo?
+903|Esta é sua última chance de voltar à escuridão.\n\nQuando o branco entra, nada volta a ser igual.
+904|Voltar à escuridão 🌙
+905|Sim, tenho certeza
+906|Ativando o modo claro…
+907|❌ Erro de renderização
+908|O modo claro não conseguiu iniciar: o Bóveda detectou branco demais e se protegeu ficando no modo escuro.\n\nEsta função continuará em teste.
+909|Tudo bem 🌙

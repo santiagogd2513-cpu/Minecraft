@@ -889,3 +889,21 @@
 889|Noël, Petites Bougies, Halloween et plus
 890|🎨 Noël et la Fête des Petites Bougies ont déjà leurs décorations. Saint-Valentin, Amour et Amitié et Halloween arrivent dans les prochaines mises à jour.
 891|L'icône change quand vous quittez l'app
+892|Expérimental et test
+893|Fonctions en test · à utiliser à vos risques
+894|🧪 Ces fonctions sont en test. Elles peuvent échouer, changer ou disparaître à chaque version.
+895|Apparence
+896|Autoriser le mode clair
+897|Expérimental · peut causer des distorsions visuelles
+898|⚠️ AVERTISSEMENT : mode clair
+899|Vous êtes sur le point d'activer une fonction expérimentale et instable.\n\nLe mode clair peut provoquer des distorsions visuelles, des erreurs d'affichage, des couleurs inversées, des textes invisibles, des scintillements et une hausse soudaine de luminosité capable de vous éblouir, vous et votre entourage.\n\nForja Estudios n'est pas responsable des yeux irrités, des batteries vidées ni de la perte de l'élégance sombre de votre téléphone.\n\nVoulez-vous vraiment continuer ?
+900|Annuler (recommandé)
+901|Activer quand même
+902|☠️ Absolument sûr ?
+903|C'est votre dernière chance de retourner dans l'obscurité.\n\nUne fois que le blanc entre, plus rien n'est pareil.
+904|Retour à l'obscurité 🌙
+905|Oui, j'en suis sûr
+906|Activation du mode clair…
+907|❌ Erreur d'affichage
+908|Le mode clair n'a pas pu démarrer : Bóveda a détecté trop de blanc et s'est protégée en restant en mode sombre.\n\nCette fonction restera en test.
+909|D'accord 🌙

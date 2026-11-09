@@ -889,3 +889,21 @@ Todo octubre
 Navidad, Velitas, Halloween y más
 🎨 Navidad y el Día de las Velitas ya tienen sus decoraciones. Las de San Valentín, Amor y Amistad y Halloween llegan en las próximas actualizaciones.
 El ícono cambia cuando salgas de la app
+Experimentales y de prueba
+Funciones en pruebas · úsalas bajo tu propio riesgo
+🧪 Estas funciones están en pruebas. Pueden fallar, cambiar o desaparecer en cualquier versión.
+Apariencia
+Permitir modo claro
+Experimental · puede causar distorsiones visuales
+⚠️ ADVERTENCIA: modo claro
+Estás a punto de activar una función experimental e inestable.\n\nEl modo claro puede provocar distorsiones visuales, errores de renderizado, colores invertidos, textos invisibles, parpadeos de pantalla y un aumento repentino del brillo capaz de deslumbrarte a ti y a cualquiera que esté cerca.\n\nForja Estudios no se hace responsable por ojos irritados, baterías agotadas ni por la pérdida de la elegancia oscura de tu celular.\n\n¿De verdad quieres continuar?
+Cancelar (recomendado)
+Activar de todos modos
+☠️ ¿Completamente seguro?
+Esta es tu última oportunidad de volver a la oscuridad.\n\nUna vez que el blanco entra, ya nada vuelve a ser igual.
+Volver a la oscuridad 🌙
+Sí, estoy seguro
+Activando el modo claro…
+❌ Error de renderizado
+El modo claro no pudo iniciarse: Bóveda detectó demasiado blanco y se protegió quedándose en modo oscuro.\n\nEsta función seguirá en pruebas.
+Está bien 🌙
