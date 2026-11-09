@@ -25,8 +25,8 @@ public class OpenConsolePacket {
     }
 
     public void handle(Supplier<NetworkEvent.Context> ctx) {
-        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> net.minecraft.client.Minecraft.getInstance()
-                .setScreen(new com.arsenalatomico.client.ConsoleScreen(target)));
+        // por un método del cliente: así el servidor nunca carga las clases de pantallas
+        DistExecutor.unsafeRunWhenOn(Dist.CLIENT, () -> () -> com.arsenalatomico.client.ConsoleScreen.open(target));
         ctx.get().setPacketHandled(true);
     }
 }

@@ -23,6 +23,10 @@ public class ConsoleScreen extends Screen {
     private float cover, key, press;
     private long pressedAt = -1;
 
+    public static void open(BlockPos target) {
+        net.minecraft.client.Minecraft.getInstance().setScreen(new ConsoleScreen(target));
+    }
+
     public ConsoleScreen(BlockPos target) {
         super(Component.translatable("screen.arsenalatomico.console.title"));
         this.target = target;
