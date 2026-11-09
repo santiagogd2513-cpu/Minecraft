@@ -13,21 +13,33 @@ import java.util.List;
 import java.util.function.IntConsumer;
 
 /**
- * Las tres pestañas de Bóveda, compartidas entre el explorador y MediaFire:
+ * Las pestañas de Bóveda (de 2 a 8, o apagadas), compartidas entre el explorador y MediaFire:
  * cada una recuerda dónde está (una carpeta, el inicio o MediaFire).
  */
 final class Tabs {
-    static final int COUNT = 3;
+    static final int MAX = 8;
+    /** Cuántas hay ahora (1 si están apagadas). */
+    private static int active = 3;
+
+    static int count() {
+        return active;
+    }
+
+    /** Lee de los ajustes cuántas pestañas usar; si la actual queda fuera, vuelve a la primera. */
+    static void configure(Prefs p) {
+        active = p.tabsEnabled() ? p.tabCount() : 1;
+        if (current >= active) current = 0;
+    }
     /** Marca de una pestaña que está en MediaFire. */
     static final String MEDIAFIRE = "/mediafire";
 
-    static final String[] path = new String[COUNT];   // null = inicio
+    static final String[] path = new String[MAX];   // null = inicio
     static int current;
     /** Carpeta de MediaFire abierta en cada pestaña ({clave, nombre} por nivel). */
     @SuppressWarnings("unchecked")
-    static final List<String[]>[] mfStack = new List[COUNT];
+    static final List<String[]>[] mfStack = new List[MAX];
     /** A dónde vuelve cada pestaña al salir de MediaFire con «atrás». */
-    static final String[] mfReturn = new String[COUNT];
+    static final String[] mfReturn = new String[MAX];
 
     private Tabs() {
     }
@@ -48,9 +60,21 @@ final class Tabs {
     }
 
     static LinearLayout strip(Context c, TextView[] views, IntConsumer onTap) {
+        LinearLayout outer = Ui.row(c);
         LinearLayout row = Ui.row(c);
         row.setPadding(Ui.dp(c, 10), 0, Ui.dp(c, 10), Ui.dp(c, 4));
-        for (int i = 0; i < COUNT; i++) {
+        // hasta 4 caben a lo ancho; con más, la barra se desliza de lado
+        boolean scroll = count() > 4;
+        if (scroll) {
+            android.widget.HorizontalScrollView hs = new android.widget.HorizontalScrollView(c);
+            hs.setHorizontalScrollBarEnabled(false);
+            hs.addView(row);
+            outer.addView(hs, new LinearLayout.LayoutParams(-1, -2));
+        } else {
+            outer.addView(row, new LinearLayout.LayoutParams(-1, -2));
+        }
+        java.util.Arrays.fill(views, null);
+        for (int i = 0; i < count(); i++) {
             final int t = i;
             TextView tv = Ui.text(c, "", 12.5f, Ui.SUB, true);
             tv.setGravity(Gravity.CENTER);
@@ -58,16 +82,18 @@ final class Tabs {
             tv.setEllipsize(TextUtils.TruncateAt.END);
             tv.setPadding(Ui.dp(c, 8), Ui.dp(c, 6), Ui.dp(c, 8), Ui.dp(c, 6));
             tv.setOnClickListener(v -> onTap.accept(t));
-            LinearLayout.LayoutParams tl = new LinearLayout.LayoutParams(0, -2, 1);
+            LinearLayout.LayoutParams tl = scroll ? new LinearLayout.LayoutParams(-2, -2) : new LinearLayout.LayoutParams(0, -2, 1);
+            if (scroll) tv.setMinWidth(Ui.dp(c, 96));
             if (i > 0) tl.setMargins(Ui.dp(c, 6), 0, 0, 0);
             row.addView(tv, tl);
             views[i] = tv;
         }
-        return row;
+        outer.setVisibility(count() > 1 ? android.view.View.VISIBLE : android.view.View.GONE);
+        return outer;
     }
 
     static void paint(Context c, TextView[] views, String[] names) {
-        for (int i = 0; i < COUNT; i++) {
+        for (int i = 0; i < count(); i++) {
             TextView tv = views[i];
             if (tv == null) continue;
             boolean on = i == current;
@@ -95,7 +121,7 @@ final class Tabs {
 
         @Override
         public boolean onInterceptTouchEvent(MotionEvent e) {
-            if (!enabled) return false;
+            if (!enabled || count() < 2) return false;
             switch (e.getActionMasked()) {
                 case MotionEvent.ACTION_DOWN:
                     downX = e.getX();
@@ -127,7 +153,7 @@ final class Tabs {
                     int dir = dx < 0 ? 1 : -1;
                     int target = current + dir;
                     if (e.getActionMasked() == MotionEvent.ACTION_UP && Math.abs(dx) > Ui.dp(getContext(), 70)
-                            && target >= 0 && target < COUNT) {
+                            && target >= 0 && target < count()) {
                         setTranslationX(0);
                         onSwipe.accept(dir);
                     } else {

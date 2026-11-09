@@ -97,7 +97,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
     private FrameLayout content;
     // tres pestañas: cada una recuerda su carpeta (null = inicio); se cambia deslizando
     private LinearLayout tabStrip;
-    private final TextView[] tabViews = new TextView[Tabs.COUNT];
+    private final TextView[] tabViews = new TextView[Tabs.MAX];
     private Tabs.SwipeFrame swipe;
     private ListView list;
     private Adapter adapter;
@@ -363,8 +363,9 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         col.addView(chipScroll);
 
         // pestañas 1 · 2 · 3 (compartidas con MediaFire)
+        Tabs.configure(prefs);
         tabStrip = Tabs.strip(this, tabViews, this::switchTab);
-        tabStrip.setVisibility(picker() ? View.GONE : View.VISIBLE);
+        if (picker()) tabStrip.setVisibility(View.GONE);
         col.addView(tabStrip);
 
         loading = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
@@ -2269,6 +2270,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
     // ------------------------------------------------------------------ ajustes
 
     /** Pantalla de ajustes: todo lo que se puede configurar de Bóveda, ordenado por secciones. */
+    /** Ajustes divididos en categorías: primero la lista de categorías y al tocar una, sus opciones. */
     private void showSettings() {
         android.app.Dialog d = new android.app.Dialog(this, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
         android.view.Window win = d.getWindow();
@@ -2281,17 +2283,42 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         root.setFitsSystemWindows(true);
         LinearLayout head = Ui.row(this);
         head.setPadding(dp(4), dp(8), dp(12), dp(6));
-        head.addView(Ui.iconButton(this, R.drawable.ic_back, 46, v -> d.dismiss()));
-        head.addView(Ui.text(this, "Ajustes", 21, Ui.TEXT, true), Ui.weight(1));
-        root.addView(head);
+        TextView title = Ui.text(this, "Ajustes", 21, Ui.TEXT, true);
         ScrollView sv = new ScrollView(this);
         LinearLayout col = Ui.column(this);
         col.setPadding(dp(14), dp(4), dp(14), dp(32));
         sv.addView(col);
+        int[] page = {-1};
+        Runnable[] home = new Runnable[1];
+        home[0] = () -> {
+            page[0] = -1;
+            title.setText("Ajustes");
+            settingsCategories(col, d, i -> {
+                page[0] = i;
+                title.setText(SETTINGS_CATEGORIES[i][0]);
+                fillSettings(col, d, i);
+                sv.scrollTo(0, 0);
+            });
+            sv.scrollTo(0, 0);
+        };
+        head.addView(Ui.iconButton(this, R.drawable.ic_back, 46, v -> {
+            if (page[0] >= 0) home[0].run();
+            else d.dismiss();
+        }));
+        head.addView(title, Ui.weight(1));
+        root.addView(head);
         root.addView(sv, new LinearLayout.LayoutParams(-1, 0, 1));
         d.setContentView(root);
-        fillSettings(col, d);
+        d.setOnKeyListener((dd, key, ev) -> {
+            if (key == android.view.KeyEvent.KEYCODE_BACK && ev.getAction() == android.view.KeyEvent.ACTION_UP && page[0] >= 0) {
+                home[0].run();
+                return true;
+            }
+            return false;
+        });
+        home[0].run();
         d.setOnDismissListener(x -> {
+            rebuildTabs();
             if (path != null) load(path, true);
             else showHome();
             updateTransfersBadge();
@@ -2299,87 +2326,192 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         d.show();
     }
 
-    private void fillSettings(LinearLayout col, android.app.Dialog d) {
+    /** {título, descripción} de cada categoría, en orden. */
+    private static final String[][] SETTINGS_CATEGORIES = {
+            {"Idioma e interfaz", "Idioma, pestañas y pantalla"},
+            {"Vista y archivos", "Ocultos, orden, miniaturas y conteos"},
+            {"Visores", "Reproductor, fotos, editor y PDF"},
+            {"Transferencias", "Copiar, mover y la barra de progreso"},
+            {"Nube y red", "MEGA, OneDrive, Google Drive, MediaFire y FTP"},
+            {"Acceso a carpetas", "Shizuku y permisos para otras apps"},
+            {"Almacenamiento", "Archivos temporales"},
+            {"Acerca de", "Versión y Forja Estudios"},
+    };
+    private static final int[] SETTINGS_ICONS = {R.drawable.ic_menu, R.drawable.ic_folder, R.drawable.ic_play, R.drawable.ic_swap,
+            R.drawable.ic_download, R.drawable.ic_shield, R.drawable.ic_sd, R.drawable.ic_info};
+    private static final int[][] SETTINGS_COLORS = {{0xFF4C9DFF, 0xFF6FD6FF}, {0xFFFFB547, 0xFFF07C2C}, {0xFF35D08A, 0xFF1EA97C},
+            {0xFFB47CFF, 0xFF7C4DFF}, {0xFF28A8EA, 0xFF0A64D6}, {0xFFFF6B8A, 0xFFE0405F}, {0xFF8B97AB, 0xFF5D6B83}, {0xFFFF8A3D, 0xFFFFC857}};
+
+    private void settingsCategories(LinearLayout col, android.app.Dialog d, java.util.function.IntConsumer open) {
         col.removeAllViews();
-        Runnable refresh = () -> fillSettings(col, d);
-
-        settingsSection(col, "Vista");
-        settingsSwitch(col, "Mostrar archivos ocultos", "Los que empiezan con un punto (.nomedia, .thumbnails…)",
-                prefs.showHidden(), b -> prefs.setShowHidden(b));
-        settingsRow(col, "Ordenar por", Prefs.SORT_NAMES[prefs.sort()] + (prefs.sortDesc() ? " (descendente)" : " (ascendente)"),
-                () -> new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
-                        .setTitle("Ordenar por")
-                        .setSingleChoiceItems(Prefs.SORT_NAMES, prefs.sort(), (dd, w) -> {
-                            if (w == prefs.sort()) prefs.setSortDesc(!prefs.sortDesc());
-                            else {
-                                prefs.setSort(w);
-                                prefs.setSortDesc(w == Prefs.SORT_DATE || w == Prefs.SORT_SIZE);
-                            }
-                            dd.dismiss();
-                            refresh.run();
-                        }).show());
-        settingsSwitch(col, "Contar elementos de las carpetas", "«3 carpetas · 12 archivos» debajo de cada carpeta",
-                prefs.showCounts(), b -> {
-                    prefs.setShowCounts(b);
-                    counts.clear();
-                });
-        settingsSwitch(col, "Miniaturas", "Vista previa de fotos y videos, e ícono de cada APK",
-                prefs.thumbnails(), b -> prefs.setThumbnails(b));
-        settingsSwitch(col, "Íconos de apps en Android/data", "Muestra el ícono y el nombre de la app dueña de cada carpeta",
-                prefs.appIcons(), b -> prefs.setAppIcons(b));
-
-        settingsSection(col, "Transferencias");
-        settingsSwitch(col, "Verificar cada copia", "Vuelve a leer cada archivo copiado y lo compara con el original. Más seguro, un poco más lento",
-                prefs.verify(), b -> prefs.setVerify(b));
-        settingsSwitch(col, "Barra de progreso flotante", "Porcentaje, velocidad y tiempo al copiar, mover, borrar, comprimir o subir",
-                prefs.floatingProgress(), b -> prefs.setFloatingProgress(b));
-        settingsSwitch(col, "Abrir con los visores de Bóveda", "Música y video con el reproductor, imágenes con el visor de fotos, texto y código con el editor, y PDF con el visor. Apagado: con otras apps",
-                prefs.ownViewers(), b -> prefs.setOwnViewers(b));
-        settingsRow(col, "Ver transferencias", "Tareas en curso y terminadas", this::showTransfers);
-
-        settingsSection(col, "Acceso a carpetas");
-        settingsRow(col, "Shizuku", ShizukuHelper.status(), () -> {
-            useShizuku();
-            refresh.run();
-        });
-        settingsRow(col, "Gestor de archivos predeterminado", "Que Bóveda abra las carpetas y elija archivos para otras apps", this::showDefaultSetup);
-        settingsRow(col, "Dar carpetas a otras apps", "Emuladores y apps que piden una carpeta (Dolphin, Limbo…)", this::explainProvider);
-
-        settingsSection(col, "Nube y red");
-        settingsRow(col, "MediaFire", MediaFire.get(this).loggedIn() ? "Sesión iniciada" : "Iniciar sesión", () -> {
-            d.dismiss();
-            openMediaFire();
-        });
-        settingsRow(col, "OneDrive", OneDrive.get(this).connected() ? "Conectado" : "Conectar", () -> {
-            d.dismiss();
-            if (OneDrive.get(this).connected()) oneDriveMenu();
-            else showOneDriveSetup();
-        });
-        settingsRow(col, "MEGA", Mega.get(this).loggedIn() ? Mega.get(this).email() : "Iniciar sesión", () -> {
-            d.dismiss();
-            if (Mega.get(this).loggedIn()) megaMenu();
-            else showMegaLogin(null, null);
-        });
-        settingsRow(col, "Google Drive", Drive.get(this).connected() ? "Conectado" : "Conectar", () -> {
-            d.dismiss();
-            if (Drive.get(this).connected()) driveMenu();
-            else showDriveSetup();
-        });
-        settingsRow(col, "Añadir servidor FTP", "Xbox 360, PC, otro celular…", () -> {
-            d.dismiss();
-            editFtp(null);
-        });
-
-        settingsSection(col, "Almacenamiento");
-        settingsRow(col, "Borrar archivos temporales", Ui.size(dirSize(getCacheDir())) + " en caché (vistas previas, descargas de FTP y Drive)", () -> {
-            deleteChildren(getCacheDir());
-            Toast.makeText(this, "Archivos temporales borrados", Toast.LENGTH_SHORT).show();
-            refresh.run();
-        });
-
-        settingsSection(col, "Acerca de");
-        settingsRow(col, "Bóveda " + BuildConfig.VERSION_NAME, "Gestor de archivos · compilación " + BuildConfig.VERSION_CODE, null);
+        for (int i = 0; i < SETTINGS_CATEGORIES.length; i++) {
+            final int c = i;
+            LinearLayout r = Ui.row(this);
+            r.setGravity(Gravity.CENTER_VERTICAL);
+            r.setPadding(dp(14), dp(13), dp(12), dp(13));
+            r.setBackground(Ui.ripple(Ui.roundStroke(Ui.SURFACE, dp(16), dp(1), Ui.STROKE), Ui.round(Color.WHITE, dp(16))));
+            FrameLayout badge = new FrameLayout(this);
+            badge.setBackground(Ui.gradient(dp(12), SETTINGS_COLORS[i][0], SETTINGS_COLORS[i][1]));
+            ImageView ic = new ImageView(this);
+            ic.setImageDrawable(Ui.icon(this, SETTINGS_ICONS[i], 0xFF0A0E16));
+            badge.addView(ic, new FrameLayout.LayoutParams(dp(22), dp(22), Gravity.CENTER));
+            r.addView(badge, new LinearLayout.LayoutParams(dp(40), dp(40)));
+            LinearLayout texts = Ui.column(this);
+            texts.setPadding(dp(14), 0, 0, 0);
+            texts.addView(Ui.text(this, SETTINGS_CATEGORIES[i][0], 15.5f, Ui.TEXT, true));
+            TextView sub = Ui.text(this, SETTINGS_CATEGORIES[i][1], 12.5f, Ui.SUB, false);
+            sub.setPadding(0, dp(2), 0, 0);
+            texts.addView(sub);
+            r.addView(texts, Ui.weight(1));
+            ImageView ch = new ImageView(this);
+            ch.setImageDrawable(Ui.icon(this, R.drawable.ic_chevron, 0xFF4A5670));
+            r.addView(ch, new LinearLayout.LayoutParams(dp(20), dp(20)));
+            r.setOnClickListener(v -> open.accept(c));
+            addCard(col, r);
+        }
         addCard(col, Studio.row(this, null));
+    }
+
+    private void fillSettings(LinearLayout col, android.app.Dialog d, int category) {
+        col.removeAllViews();
+        Runnable refresh = () -> fillSettings(col, d, category);
+        switch (category) {
+            case 0 -> {
+                settingsSection(col, "Idioma");
+                settingsRow(col, "Idioma de Bóveda", "Español", () -> new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                        .setTitle("Idioma")
+                        .setMessage("Por ahora Bóveda está en español. Más idiomas llegarán en próximas versiones.")
+                        .setPositiveButton("Entendido", null).show());
+                settingsSection(col, "Interfaz");
+                tabsSetting(col, refresh);
+                settingsSwitch(col, "Pantalla encendida al copiar", "No deja que la pantalla se apague mientras hay una transferencia en curso",
+                        prefs.keepScreenOn(), b -> prefs.setKeepScreenOn(b));
+            }
+            case 1 -> {
+                settingsSection(col, "Vista");
+                settingsSwitch(col, "Mostrar archivos ocultos", "Los que empiezan con un punto (.nomedia, .thumbnails…)",
+                        prefs.showHidden(), b -> prefs.setShowHidden(b));
+                settingsRow(col, "Ordenar por", Prefs.SORT_NAMES[prefs.sort()] + (prefs.sortDesc() ? " (descendente)" : " (ascendente)"),
+                        () -> new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                                .setTitle("Ordenar por")
+                                .setSingleChoiceItems(Prefs.SORT_NAMES, prefs.sort(), (dd, w) -> {
+                                    if (w == prefs.sort()) prefs.setSortDesc(!prefs.sortDesc());
+                                    else {
+                                        prefs.setSort(w);
+                                        prefs.setSortDesc(w == Prefs.SORT_DATE || w == Prefs.SORT_SIZE);
+                                    }
+                                    dd.dismiss();
+                                    refresh.run();
+                                }).show());
+                settingsSwitch(col, "Contar elementos de las carpetas", "«3 carpetas · 12 archivos» debajo de cada carpeta",
+                        prefs.showCounts(), b -> {
+                            prefs.setShowCounts(b);
+                            counts.clear();
+                        });
+                settingsSection(col, "Archivos");
+                settingsSwitch(col, "Miniaturas", "Vista previa de fotos y videos, e ícono de cada APK",
+                        prefs.thumbnails(), b -> prefs.setThumbnails(b));
+                settingsSwitch(col, "Íconos de apps en Android/data", "Muestra el ícono y el nombre de la app dueña de cada carpeta",
+                        prefs.appIcons(), b -> prefs.setAppIcons(b));
+            }
+            case 2 -> {
+                settingsSection(col, "Visores");
+                settingsSwitch(col, "Abrir con los visores de Bóveda", "Música y video con el reproductor, imágenes con el visor de fotos, texto y código con el editor, y PDF con el visor. Apagado: con otras apps",
+                        prefs.ownViewers(), b -> prefs.setOwnViewers(b));
+            }
+            case 3 -> {
+                settingsSection(col, "Transferencias");
+                settingsSwitch(col, "Verificar cada copia", "Vuelve a leer cada archivo copiado y lo compara con el original. Más seguro, un poco más lento",
+                        prefs.verify(), b -> prefs.setVerify(b));
+                settingsSwitch(col, "Barra de progreso flotante", "Porcentaje, velocidad y tiempo al copiar, mover, borrar, comprimir o subir",
+                        prefs.floatingProgress(), b -> prefs.setFloatingProgress(b));
+                settingsRow(col, "Ver transferencias", "Tareas en curso y terminadas", this::showTransfers);
+            }
+            case 4 -> {
+                settingsSection(col, "Nubes");
+                settingsRow(col, "MEGA", Mega.get(this).loggedIn() ? Mega.get(this).email() : "Iniciar sesión", () -> {
+                    d.dismiss();
+                    if (Mega.get(this).loggedIn()) megaMenu();
+                    else showMegaLogin(null, null);
+                });
+                settingsRow(col, "OneDrive", OneDrive.get(this).connected() ? "Conectado" : "Conectar", () -> {
+                    d.dismiss();
+                    if (OneDrive.get(this).connected()) oneDriveMenu();
+                    else showOneDriveSetup();
+                });
+                settingsRow(col, "Google Drive", Drive.get(this).connected() ? "Conectado" : "Conectar", () -> {
+                    d.dismiss();
+                    if (Drive.get(this).connected()) driveMenu();
+                    else showDriveSetup();
+                });
+                settingsRow(col, "MediaFire", MediaFire.get(this).loggedIn() ? "Sesión iniciada" : "Iniciar sesión", () -> {
+                    d.dismiss();
+                    openMediaFire();
+                });
+                settingsSection(col, "Red");
+                settingsRow(col, "Añadir servidor FTP", "Xbox 360, PC, otro celular…", () -> {
+                    d.dismiss();
+                    editFtp(null);
+                });
+            }
+            case 5 -> {
+                settingsSection(col, "Acceso a carpetas");
+                settingsRow(col, "Shizuku", ShizukuHelper.status(), () -> {
+                    useShizuku();
+                    refresh.run();
+                });
+                settingsRow(col, "Gestor de archivos predeterminado", "Que Bóveda abra las carpetas y elija archivos para otras apps", this::showDefaultSetup);
+                settingsRow(col, "Dar carpetas a otras apps", "Emuladores y apps que piden una carpeta (Dolphin, Limbo…)", this::explainProvider);
+            }
+            case 6 -> {
+                settingsSection(col, "Almacenamiento");
+                settingsRow(col, "Borrar archivos temporales", Ui.size(dirSize(getCacheDir())) + " en caché (vistas previas, descargas de la nube y FTP)", () -> {
+                    deleteChildren(getCacheDir());
+                    Toast.makeText(this, "Archivos temporales borrados", Toast.LENGTH_SHORT).show();
+                    refresh.run();
+                });
+            }
+            default -> {
+                settingsSection(col, "Acerca de");
+                settingsRow(col, "Bóveda " + BuildConfig.VERSION_NAME, "Gestor de archivos · compilación " + BuildConfig.VERSION_CODE, null);
+                addCard(col, Studio.row(this, null));
+            }
+        }
+    }
+
+    /**
+     * Pestañas: el interruptor las prende o apaga; tocar el resto de la fila abre cuántas usar (2 a 8).
+     */
+    private void tabsSetting(LinearLayout col, Runnable refresh) {
+        boolean on = prefs.tabsEnabled();
+        LinearLayout r = settingsCard("Pestañas", on ? prefs.tabCount() + " pestañas · toca para cambiar cuántas" : "Apagadas: una sola vista");
+        android.widget.Switch sw = new android.widget.Switch(this);
+        sw.setChecked(on);
+        sw.setThumbTintList(android.content.res.ColorStateList.valueOf(Color.WHITE));
+        sw.setTrackTintList(new android.content.res.ColorStateList(
+                new int[][]{{android.R.attr.state_checked}, {}}, new int[]{Ui.ACCENT, 0xFF3A4458}));
+        sw.setOnCheckedChangeListener((b, c) -> {
+            prefs.setTabsEnabled(c);
+            refresh.run();
+        });
+        LinearLayout.LayoutParams sl = new LinearLayout.LayoutParams(-2, -2);
+        sl.setMargins(dp(10), 0, 0, 0);
+        r.addView(sw, sl);
+        r.setOnClickListener(v -> {
+            String[] names = new String[Tabs.MAX - 1];
+            for (int i = 0; i < names.length; i++) names[i] = (i + 2) + " pestañas";
+            new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                    .setTitle("¿Cuántas pestañas?")
+                    .setSingleChoiceItems(names, prefs.tabCount() - 2, (dd, w) -> {
+                        prefs.setTabCount(w + 2);
+                        prefs.setTabsEnabled(true);
+                        dd.dismiss();
+                        refresh.run();
+                    })
+                    .setNegativeButton("Cancelar", null)
+                    .show();
+        });
+        addCard(col, r);
     }
 
     private static long dirSize(java.io.File f) {
@@ -2617,6 +2749,21 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
 
     // ------------------------------------------------------------------ pestañas
 
+    /** Después de cambiar los ajustes de pestañas: rehace la barra (y si la actual ya no existe, vuelve a la primera). */
+    private void rebuildTabs() {
+        if (tabStrip == null || picker()) return;
+        int before = Tabs.current;
+        Tabs.path[before] = path;
+        Tabs.configure(prefs);
+        android.view.ViewGroup parent = (android.view.ViewGroup) tabStrip.getParent();
+        int at = parent.indexOfChild(tabStrip);
+        parent.removeView(tabStrip);
+        tabStrip = Tabs.strip(this, tabViews, this::switchTab);
+        parent.addView(tabStrip, at);
+        if (Tabs.current != before) showTab(Tabs.path[Tabs.current]);
+        updateTabs();
+    }
+
     private String tabName(int t) {
         String p = Tabs.path[t];
         if (p == null || Tabs.MEDIAFIRE.equals(p)) return Tabs.label(p);
@@ -2626,8 +2773,8 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
 
     private void updateTabs() {
         if (tabStrip == null || picker()) return;
-        String[] names = new String[Tabs.COUNT];
-        for (int i = 0; i < Tabs.COUNT; i++) names[i] = tabName(i);
+        String[] names = new String[Tabs.MAX];
+        for (int i = 0; i < Tabs.count(); i++) names[i] = tabName(i);
         Tabs.paint(this, tabViews, names);
     }
 
@@ -2643,7 +2790,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
 
     /** Cambia de pestaña; lo copiado o cortado sigue listo para pegar en la otra (también en MediaFire). */
     private void switchTab(int t) {
-        if (picker() || t < 0 || t >= Tabs.COUNT || t == Tabs.current) return;
+        if (picker() || t < 0 || t >= Tabs.count() || t == Tabs.current) return;
         int dir = t > Tabs.current ? 1 : -1;
         if (path != null) scroll.put(path, list.getFirstVisiblePosition());
         Tabs.path[Tabs.current] = path;

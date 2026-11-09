@@ -47,6 +47,10 @@ final class Prefs {
     boolean ownViewers() { return p.getBoolean("own_viewers", true); }
     void setOwnViewers(boolean b) { p.edit().putBoolean("own_viewers", b).apply(); }
 
+    boolean tabsEnabled() { return p.getBoolean("tabs_on", true); }
+    void setTabsEnabled(boolean b) { p.edit().putBoolean("tabs_on", b).apply(); }
+    int tabCount() { return Math.max(2, Math.min(Tabs.MAX, p.getInt("tabs_count", 3))); }
+    void setTabCount(int n) { p.edit().putInt("tabs_count", n).apply(); }
     boolean keepScreenOn() { return p.getBoolean("keep_screen", true); }
     void setKeepScreenOn(boolean b) { p.edit().putBoolean("keep_screen", b).apply(); }
 

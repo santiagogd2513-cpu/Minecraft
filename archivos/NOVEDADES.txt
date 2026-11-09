@@ -1,3 +1,8 @@
+## 35
+Ajustes por categorías y pestañas a tu gusto
+- Los ajustes ahora están ordenados en categorías: Idioma e interfaz, Vista y archivos, Visores, Transferencias, Nube y red, Acceso a carpetas, Almacenamiento y Acerca de.
+- Nuevo en Interfaz: «Pestañas». El interruptor las prende o las apaga, y tocando el resto de la fila eliges cuántas: de 2 a 8. Con más de 4, la barra de pestañas se desliza de lado.
+
 ## 34
 - MEGA: si la lista llega pero no se puede leer, ahora Bóveda muestra un diagnóstico para encontrar el problema.
 

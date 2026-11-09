@@ -69,7 +69,7 @@ public class CloudActivity extends Activity implements TransferEngine.Listener {
     private View fab;
     private int lastDone;
     static final String EXTRA_DIR = "dir";
-    private final TextView[] tabViews = new TextView[Tabs.COUNT];
+    private final TextView[] tabViews = new TextView[Tabs.MAX];
     private LinearLayout tabStrip;
     private ProgressCard progressCard;
 
@@ -91,8 +91,8 @@ public class CloudActivity extends Activity implements TransferEngine.Listener {
     // ------------------------------------------------------------------ pestañas
 
     private void paintTabs() {
-        String[] names = new String[Tabs.COUNT];
-        for (int i = 0; i < Tabs.COUNT; i++) names[i] = Tabs.label(Tabs.path[i]);
+        String[] names = new String[Tabs.MAX];
+        for (int i = 0; i < Tabs.count(); i++) names[i] = Tabs.label(Tabs.path[i]);
         Tabs.paint(this, tabViews, names);
     }
 
@@ -124,7 +124,7 @@ public class CloudActivity extends Activity implements TransferEngine.Listener {
     }
 
     private void switchTab(int t) {
-        if (t < 0 || t >= Tabs.COUNT || t == Tabs.current) return;
+        if (t < 0 || t >= Tabs.count() || t == Tabs.current) return;
         int dir = t > Tabs.current ? 1 : -1;
         Tabs.mfStack[Tabs.current] = new ArrayList<>(stack);
         Tabs.current = t;
@@ -632,8 +632,8 @@ public class CloudActivity extends Activity implements TransferEngine.Listener {
         MainActivity.setCloudDownloadClip(items);
         clearSelection();
         Toast.makeText(this, "Elige la carpeta y toca «Descargar aquí»", Toast.LENGTH_LONG).show();
-        for (int i = 1; i < Tabs.COUNT; i++) {
-            int t = (Tabs.current + i) % Tabs.COUNT;
+        for (int i = 1; i < Tabs.count(); i++) {
+            int t = (Tabs.current + i) % Tabs.count();
             if (!Tabs.isMediaFire(t)) {
                 switchTab(t);
                 return;
