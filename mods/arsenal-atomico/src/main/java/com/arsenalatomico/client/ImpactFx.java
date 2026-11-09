@@ -62,10 +62,6 @@ final class ImpactFx {
             fire = new float[]{1f, 0.55f, 0.18f};       // naranja, como la llama de los misiles
             smoke = new float[]{0.22f, 0.21f, 0.2f};
             dust = new float[]{0.5f, 0.45f, 0.37f};
-                case BLACKHOLE -> new float[]{0.32f, 0.27f, 0.36f};
-                case GENESIS -> new float[]{0.86f, 0.78f, 0.96f};
-                default -> new float[]{0.5f, 0.45f, 0.37f};
-            };
             int n = type == Kind.ICBM ? 190 : 14;
             debris = new Debris[n];
             for (int i = 0; i < n; i++) {
