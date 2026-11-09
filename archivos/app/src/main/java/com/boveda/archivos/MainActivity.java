@@ -3638,6 +3638,8 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                 settingsSection(col, L.t("Acerca de"));
                 settingsRow(col, "Bóveda " + BuildConfig.VERSION_NAME, L.t("Gestor de archivos · compilación ") + BuildConfig.VERSION_CODE, null);
                 addCard(col, Studio.row(this, null));
+                settingsRow(col, "🔒  " + L.t("Política de privacidad y seguridad"), L.t("Qué hace Bóveda con tu información"), () -> Legal.show(this, Legal.PRIVACY));
+                settingsRow(col, "📄  " + L.t("Términos y condiciones"), L.t("Las reglas para usar la app"), () -> Legal.show(this, Legal.TERMS));
             }
         }
     }

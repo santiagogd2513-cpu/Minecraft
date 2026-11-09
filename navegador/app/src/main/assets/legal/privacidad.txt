@@ -1,0 +1,55 @@
+# Política de privacidad y seguridad
+Vigente desde el 9 de noviembre de 2026
+
+Nocturna es una app de Forja Estudios. Esta política explica, en palabras sencillas, qué hace la app con tu información. La resumimos en una frase: tus datos se quedan en tu celular.
+
+## Lo más importante
+- Nocturna no tiene anuncios.
+- No usa herramientas de estadísticas, rastreo ni publicidad, ni de nosotros ni de terceros.
+- No tenemos servidores propios: no recibimos, no guardamos y no vendemos tu información.
+- No te pedimos crear una cuenta con nosotros.
+
+## Qué hace la app
+Nocturna es un navegador de internet oscuro y liviano, con bloqueo de anuncios, descargas, traductor de páginas y gestor de contraseñas.
+
+## Qué se guarda en tu celular
+- El historial, las pestañas abiertas, las descargas y tus ajustes.
+- Las cookies y datos que guardan las páginas (como cualquier navegador). Puedes borrarlos desde el menú.
+- El gestor de contraseñas: tus usuarios y contraseñas van cifrados con el almacén de llaves de Android y para verlos o rellenarlos se usa tu huella. Nunca salen de tu celular.
+
+Todo esto se queda en la memoria de tu celular, dentro de la app. Se borra si borras los datos de la app o la desinstalas.
+
+## Cuándo se conecta a internet
+- Para buscar actualizaciones: cada vez que abres la app consulta las versiones publicadas en GitHub (github.com). GitHub puede ver tu dirección IP como cualquier página web; no se envía nada más.
+- Las páginas que visitas: como cualquier navegador, Nocturna se conecta a las páginas que abres. Cada página ve tu dirección IP y trata tu información según su propia política (incluidas sus cookies).
+- El buscador que elijas (Google, DuckDuckGo, Bing o Brave) recibe lo que buscas desde la barra de direcciones.
+- Los íconos de las páginas: para mostrar el ícono de un sitio, Nocturna le pide a un servicio de Google («s2/favicons») el ícono de ese dominio. Google recibe el nombre del sitio (por ejemplo, «youtube.com»), no la página exacta.
+- El traductor: solo cuando tú tocas «Traducir», el texto de la página se envía a Google Translate para traducirlo.
+- El bloqueador de anuncios funciona dentro del celular, con una lista propia: no consulta a nadie.
+
+## Permisos que pide y para qué
+- Internet y estado de la red: para navegar y descargar.
+- Acceso a los archivos: para guardar tus descargas donde elijas.
+- Notificaciones y servicio en primer plano: para que las descargas sigan aunque salgas de la app y ver su progreso.
+- Mantener la pantalla encendida: para que las descargas largas no se corten.
+- Instalar apps: para instalar las actualizaciones de Nocturna y los APK que descargues, si tú lo decides.
+- Huella (biometría): para proteger tus contraseñas guardadas.
+
+Puedes quitar cualquier permiso cuando quieras desde los Ajustes de Android; la app seguirá funcionando en lo que no lo necesite.
+
+## Seguridad
+- Las contraseñas y sesiones que se guardan van cifradas con el almacén de llaves de Android: la llave nunca sale de tu celular.
+- Las conexiones a internet que hace la app por su cuenta van cifradas (HTTPS), salvo las que tú configures sin cifrado, como un servidor FTP de tu casa.
+- Las actualizaciones se descargan de las versiones oficiales publicadas en GitHub y Android te pide confirmar antes de instalarlas.
+
+## Menores de edad
+La app no está dirigida especialmente a niños y no recoge datos de nadie, tampoco de menores.
+
+## Errores de la app
+Si la app se cierra por un error, guarda una nota técnica del error solo en tu celular, para mostrártela la próxima vez que la abras. Nunca se envía sola: tú decides si la copias y nos la mandas.
+
+## Cambios a esta política
+Si algún día cambia lo que hace la app con tu información, actualizaremos esta política y lo contaremos en las novedades de la actualización.
+
+## Contacto
+Si tienes preguntas, escríbenos abriendo un reporte («Issue») en github.com/santiagogd2513-cpu/Minecraft.

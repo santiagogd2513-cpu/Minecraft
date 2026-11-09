@@ -816,3 +816,7 @@
 816|Pronto: agora você assina com sua chave «
 817|Assinar APK ✍️
 818|Usar como chave de assinatura
+819|Política de privacidade e segurança
+820|Termos e condições
+821|O que o Bóveda faz com suas informações
+822|As regras para usar o app

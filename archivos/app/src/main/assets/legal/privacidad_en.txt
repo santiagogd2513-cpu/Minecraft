@@ -1,0 +1,58 @@
+# Privacy and security policy
+Effective as of November 9, 2026
+
+Bóveda is an app by Forja Estudios. This policy explains, in plain words, what the app does with your information. In one sentence: your data stays on your phone.
+
+## The most important part
+- Bóveda has no ads.
+- It doesn't use analytics, tracking or advertising tools, neither ours nor anyone else's.
+- We have no servers of our own: we don't receive, store or sell your information.
+- We don't ask you to create an account with us.
+
+## What the app does
+Bóveda is a file manager: it lets you view, organize, copy, move, compress, encrypt and open your files, and connect cloud services and FTP servers that you choose.
+
+## What is stored on your phone
+- Your settings (language, tabs, favorite and pinned folders, sorting, etc.).
+- The sessions of the clouds you connect (MediaFire, Google Drive, OneDrive, MEGA) and the FTP servers you add. Passwords and session keys are encrypted. Your MEGA password is not stored: only the session.
+- The Vault (secret folder): its files and names are stored encrypted with AES-256 in the hidden folder ".Boveda-segura". The key is protected by your PIN and, if you turn it on, your fingerprint. We don't know your PIN and can't recover the files if you forget it.
+- The recycle bin: what you send to the bin is kept in the hidden folder ".Boveda-papelera" on the same storage for 30 days and is then deleted automatically.
+- The APK signing key that Bóveda creates (or yours, if you import it).
+- Thumbnails and temporary files in the app's cache, which you can clear from Settings.
+
+All of this stays in your phone's memory, inside the app. It's deleted if you clear the app's data or uninstall it.
+
+## When it connects to the internet
+- To look for updates: every time you open the app it checks the versions published on GitHub (github.com). GitHub can see your IP address like any website; nothing else is sent.
+- Only if you connect an account: MediaFire, Google Drive, OneDrive or MEGA. The app talks directly to the service you chose (not through our servers) to show, upload and download your files. Each service handles your information according to its own privacy policy.
+- Only if you add an FTP server: the app connects to that address (for example, your Xbox or your PC on your network).
+- If none of those connections is set up, the app doesn't connect to anything else.
+
+## Permissions it asks for and why
+- Access to all files: to show and manage all your files, which is the app's main purpose.
+- Internet and network state: for the clouds, FTP and updates.
+- Notifications and foreground service: to show the progress of long copies and transfers so they don't get cut off.
+- Keep the screen on: only if you turn it on, during transfers.
+- Install apps: to install Bóveda's updates and the APKs you choose to open or sign.
+- See installed apps: to show each app's icon and name next to its folder in Android/data. That list never leaves your phone.
+- Fingerprint (biometrics): only if you turn it on to open the Vault.
+- Shizuku (optional): to get into Android/data and Android/obb without root, if you connect it.
+
+You can remove any permission whenever you want from Android's Settings; the app will keep working in whatever doesn't need it.
+
+## Security
+- Saved passwords and sessions are encrypted with the Android keystore: the key never leaves your phone.
+- The internet connections the app makes on its own are encrypted (HTTPS), except the ones you set up without encryption, like an FTP server at home.
+- Updates are downloaded from the official versions published on GitHub, and Android asks you to confirm before installing them.
+
+## Minors
+The app is not specially aimed at children and doesn't collect anyone's data, minors included.
+
+## App errors
+If the app closes because of an error, it saves a technical note about the error only on your phone, to show it to you the next time you open it. It's never sent on its own: you decide whether to copy it and send it to us.
+
+## Changes to this policy
+If what the app does with your information ever changes, we'll update this policy and mention it in the update's release notes.
+
+## Contact
+If you have questions, write to us by opening a report ("Issue") at github.com/santiagogd2513-cpu/Minecraft.

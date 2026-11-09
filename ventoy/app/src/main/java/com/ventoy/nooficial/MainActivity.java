@@ -566,6 +566,7 @@ public class MainActivity extends Activity {
                         + "Ventoy es obra de longpanda y se distribuye con licencia GPLv3. Código y créditos: github.com/ventoy/Ventoy · ventoy.net\n\n"
                         + "Esta app no es oficial ni está hecha por los autores de Ventoy.\n\n"
                         + "Adaptación para Android: " + Studio.NAME + "\n" + Studio.AUTHORS)
+                .setView(Legal.buttons(this))
                 .setNeutralButton(Studio.NAME, (dd, w) -> Studio.show(this))
                 .setPositiveButton("Cerrar", null)
                 .show();

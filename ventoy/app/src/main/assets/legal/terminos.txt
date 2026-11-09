@@ -1,0 +1,40 @@
+# Términos y condiciones
+Vigentes desde el 9 de noviembre de 2026
+
+Al instalar o usar Ventoy no oficial aceptas estos términos. Si no estás de acuerdo, no uses la app.
+
+## Quiénes somos
+Ventoy no oficial es una app de Forja Estudios, hecha por santiagogd2513-cpu y Claude de Anthropic. Es gratis y no tiene anuncios.
+
+## Para qué es
+Ventoy no oficial sirve para instalar o actualizar Ventoy en una memoria USB. Es una adaptación para Android: no es la app oficial y no está hecha ni respaldada por los autores de Ventoy.
+
+## Cómo debes usarla
+- Úsala solo de forma legal y respetando los derechos de otras personas.
+- No la uses para entrar a cuentas, dispositivos, servidores o archivos que no son tuyos o para los que no tienes permiso.
+- No la uses para distribuir contenido pirata, malicioso o que viole derechos de autor.
+- Tú eres responsable de lo que haces con la app y con tus archivos.
+
+## Riesgos y copias de seguridad
+- Instalar Ventoy BORRA TODO lo que hay en la memoria y no se puede deshacer. Revisa bien cuál eliges antes de confirmar.
+- Desconectar la memoria durante la instalación puede dañarla.
+- Haz copias de seguridad antes de instalar.
+- Usa solo archivos ISO que tengas derecho a usar.
+
+## Servicios de terceros
+Ventoy es obra de longpanda y se distribuye con licencia GPLv3 (github.com/ventoy/Ventoy · ventoy.net). Los archivos de arranque de Ventoy se incluyen sin modificar y siguen esa licencia. Para todo lo oficial de Ventoy, consulta su página.
+
+## Sin garantía
+La app se entrega «tal cual», sin garantía de ningún tipo. Probamos cada versión en celulares de verdad, pero no podemos asegurar que no tenga errores ni que funcione en todos los dispositivos.
+
+## Límite de responsabilidad
+Hasta donde lo permita la ley, Forja Estudios y sus autores no son responsables por pérdida de datos, daños a dispositivos o memorias, ni por ningún otro perjuicio que resulte del uso o de la imposibilidad de usar la app.
+
+## Actualizaciones
+La app puede avisarte cuando haya una versión nueva. Instalarla es tu decisión. Podemos cambiar, agregar o quitar funciones en cualquier versión.
+
+## Cambios a estos términos
+Podemos actualizar estos términos. La versión vigente siempre está dentro de la app, en «Acerca de».
+
+## Contacto
+Escríbenos abriendo un reporte («Issue») en github.com/santiagogd2513-cpu/Minecraft.

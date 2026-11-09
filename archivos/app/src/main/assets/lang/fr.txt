@@ -816,3 +816,7 @@
 816|C’est fait : tu signes maintenant avec ta clé «
 817|Signer l’APK ✍️
 818|Utiliser comme clé de signature
+819|Politique de confidentialité et de sécurité
+820|Conditions générales
+821|Ce que Bóveda fait de tes informations
+822|Les règles d’utilisation de l’application

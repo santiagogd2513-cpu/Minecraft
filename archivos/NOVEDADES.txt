@@ -1,3 +1,7 @@
+## 42
+Privacidad y términos
+- Nuevo en Ajustes → Acerca de: «Política de privacidad y seguridad» y «Términos y condiciones». Cuentan en palabras sencillas qué hace Bóveda con tu información (en resumen: tus datos se quedan en tu celular, sin anuncios ni rastreo) y las reglas para usar la app.
+
 ## 41
 ✍️ Firmador de APK
 - Mantén presionado un APK y elige «Firmar APK». Bóveda crea una copia firmada en la misma carpeta («nombre_firmado.apk»), con las firmas que pide Android (v1, v2 y v3) y alineada, lista para instalar.

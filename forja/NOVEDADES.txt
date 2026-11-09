@@ -1,3 +1,7 @@
+## 13
+Privacidad y términos
+- Nuevo en «Acerca de»: «Política de privacidad y seguridad» y «Términos y condiciones». Cuentan en palabras sencillas qué hace Yunque con tu información (en resumen: tus datos se quedan en tu celular, sin anuncios ni rastreo) y las reglas para usar la app.
+
 ## 11
 Aviso de actualización cada vez que abres la app
 - Ahora la app busca una versión nueva cada vez que la abres, y si hay una te muestra el aviso.

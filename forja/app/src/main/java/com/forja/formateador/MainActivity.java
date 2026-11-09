@@ -737,6 +737,7 @@ public class MainActivity extends Activity {
                         + "Cada formato se prueba con las herramientas oficiales de Linux (fsck.fat, fsck.exfat, e2fsck, ntfsfix, sgdisk) antes de publicarse.\n\n"
                         + "Un disco grande de escritorio necesita su propia fuente de corriente: el celular no puede alimentarlo.\n\n"
                         + "Hecho por " + Studio.NAME + "\n" + Studio.AUTHORS)
+                .setView(Legal.buttons(this))
                 .setNeutralButton(Studio.NAME, (dd, w) -> Studio.show(this))
                 .setPositiveButton("Cerrar", null)
                 .show();

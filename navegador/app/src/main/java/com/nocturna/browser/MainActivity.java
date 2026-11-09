@@ -1085,6 +1085,7 @@ public class MainActivity extends Activity {
                                     .setTitle("Nocturna" + ver)
                                     .setMessage("Navegador oscuro, liviano y sin anuncios, con descargas rápidas y gestor de contraseñas.\n\n"
                                             + "Hecho por " + Studio.NAME + "\n" + Studio.AUTHORS)
+                                    .setView(Legal.buttons(this))
                                     .setNeutralButton(Studio.NAME, (dd, w) -> Studio.show(this))
                                     .setPositiveButton("Cerrar", null).show();
                         }

@@ -22,7 +22,7 @@ android {
         main {
             java {
                 srcDir '../../forja/app/src/main/java'
-                exclude '**/formateador/MainActivity.java', '**/formateador/UsbDisk.java', '**/formateador/Ui.java', '**/formateador/Updater.java', '**/formateador/Studio.java'
+                exclude '**/formateador/MainActivity.java', '**/formateador/UsbDisk.java', '**/formateador/Ui.java', '**/formateador/Updater.java', '**/formateador/Studio.java', '**/formateador/Legal.java'
             }
         }
     }

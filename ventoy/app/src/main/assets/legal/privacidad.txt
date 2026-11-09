@@ -1,0 +1,46 @@
+# Política de privacidad y seguridad
+Vigente desde el 9 de noviembre de 2026
+
+Ventoy no oficial es una app de Forja Estudios. Esta política explica, en palabras sencillas, qué hace la app con tu información. La resumimos en una frase: tus datos se quedan en tu celular.
+
+## Lo más importante
+- Ventoy no oficial no tiene anuncios.
+- No usa herramientas de estadísticas, rastreo ni publicidad, ni de nosotros ni de terceros.
+- No tenemos servidores propios: no recibimos, no guardamos y no vendemos tu información.
+- No te pedimos crear una cuenta con nosotros.
+
+## Qué hace la app
+Ventoy no oficial instala Ventoy en una memoria USB desde el celular, para que puedas arrancar tu PC con archivos ISO.
+
+## Qué se guarda en tu celular
+- Tus ajustes. La app no lee los archivos de tus memorias: prepara la memoria y la deja lista para tus ISO.
+
+Todo esto se queda en la memoria de tu celular, dentro de la app. Se borra si borras los datos de la app o la desinstalas.
+
+## Cuándo se conecta a internet
+- Para buscar actualizaciones: cada vez que abres la app consulta las versiones publicadas en GitHub (github.com). GitHub puede ver tu dirección IP como cualquier página web; no se envía nada más.
+- Instalar Ventoy no necesita internet: los archivos oficiales de Ventoy vienen dentro de la app.
+
+## Permisos que pide y para qué
+- Acceso a USB: Android te pregunta cada vez que conectas una memoria si dejas que la app la use. Solo se usa la que tú elijas.
+- Internet: solo para buscar e instalar actualizaciones.
+- Instalar apps: para instalar las actualizaciones de la app.
+
+Puedes quitar cualquier permiso cuando quieras desde los Ajustes de Android; la app seguirá funcionando en lo que no lo necesite.
+
+## Seguridad
+- Las contraseñas y sesiones que se guardan van cifradas con el almacén de llaves de Android: la llave nunca sale de tu celular.
+- Las conexiones a internet que hace la app por su cuenta van cifradas (HTTPS), salvo las que tú configures sin cifrado, como un servidor FTP de tu casa.
+- Las actualizaciones se descargan de las versiones oficiales publicadas en GitHub y Android te pide confirmar antes de instalarlas.
+
+## Menores de edad
+La app no está dirigida especialmente a niños y no recoge datos de nadie, tampoco de menores.
+
+## Errores de la app
+Si la app se cierra por un error, guarda una nota técnica del error solo en tu celular, para mostrártela la próxima vez que la abras. Nunca se envía sola: tú decides si la copias y nos la mandas.
+
+## Cambios a esta política
+Si algún día cambia lo que hace la app con tu información, actualizaremos esta política y lo contaremos en las novedades de la actualización.
+
+## Contacto
+Si tienes preguntas, escríbenos abriendo un reporte («Issue») en github.com/santiagogd2513-cpu/Minecraft.

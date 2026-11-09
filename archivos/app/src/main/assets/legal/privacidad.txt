@@ -1,0 +1,58 @@
+# Política de privacidad y seguridad
+Vigente desde el 9 de noviembre de 2026
+
+Bóveda es una app de Forja Estudios. Esta política explica, en palabras sencillas, qué hace la app con tu información. La resumimos en una frase: tus datos se quedan en tu celular.
+
+## Lo más importante
+- Bóveda no tiene anuncios.
+- No usa herramientas de estadísticas, rastreo ni publicidad, ni de nosotros ni de terceros.
+- No tenemos servidores propios: no recibimos, no guardamos y no vendemos tu información.
+- No te pedimos crear una cuenta con nosotros.
+
+## Qué hace la app
+Bóveda es un gestor de archivos: te deja ver, organizar, copiar, mover, comprimir, cifrar y abrir tus archivos, y conectar servicios en la nube y servidores FTP que tú elijas.
+
+## Qué se guarda en tu celular
+- Tus ajustes (idioma, pestañas, carpetas favoritas y ancladas, orden, etc.).
+- Las sesiones de las nubes que conectes (MediaFire, Google Drive, OneDrive, MEGA) y los servidores FTP que agregues. Las contraseñas y llaves de sesión van cifradas. La contraseña de MEGA no se guarda: solo la sesión.
+- La Bóveda (carpeta secreta): sus archivos y nombres se guardan cifrados con AES-256 en la carpeta oculta «.Boveda-segura». La llave está protegida con tu PIN y, si la activas, con tu huella. Nosotros no conocemos tu PIN y no podemos recuperar los archivos si lo olvidas.
+- La papelera: lo que mandas a la papelera se guarda en la carpeta oculta «.Boveda-papelera» del mismo almacenamiento durante 30 días y luego se borra solo.
+- La llave de firma de APK que crea Bóveda (o la tuya, si la importas).
+- Miniaturas y archivos temporales en la caché de la app, que puedes borrar desde Ajustes.
+
+Todo esto se queda en la memoria de tu celular, dentro de la app. Se borra si borras los datos de la app o la desinstalas.
+
+## Cuándo se conecta a internet
+- Para buscar actualizaciones: cada vez que abres la app consulta las versiones publicadas en GitHub (github.com). GitHub puede ver tu dirección IP como cualquier página web; no se envía nada más.
+- Solo si tú conectas una cuenta: MediaFire, Google Drive, OneDrive o MEGA. La app habla directamente con el servicio que elegiste (no pasa por servidores nuestros) para mostrar, subir y bajar tus archivos. Cada servicio trata tu información según su propia política de privacidad.
+- Solo si tú agregas un servidor FTP: la app se conecta a esa dirección (por ejemplo, tu Xbox o tu PC en tu red).
+- Si la app no tiene una de esas conexiones configuradas, no se conecta a nada más.
+
+## Permisos que pide y para qué
+- Acceso a todos los archivos: para poder mostrar y manejar todos tus archivos, que es la función principal de la app.
+- Internet y estado de la red: para las nubes, el FTP y las actualizaciones.
+- Notificaciones y servicio en primer plano: para mostrar el progreso de copias y transferencias largas y que no se corten.
+- Mantener la pantalla encendida: solo si lo activas, durante las transferencias.
+- Instalar apps: para instalar las actualizaciones de Bóveda y los APK que tú elijas abrir o firmar.
+- Ver las apps instaladas: para mostrar el ícono y el nombre de cada app junto a su carpeta en Android/data. Esa lista no sale de tu celular.
+- Huella (biometría): solo si la activas para abrir La Bóveda.
+- Shizuku (opcional): para entrar a Android/data y Android/obb sin root, si tú lo conectas.
+
+Puedes quitar cualquier permiso cuando quieras desde los Ajustes de Android; la app seguirá funcionando en lo que no lo necesite.
+
+## Seguridad
+- Las contraseñas y sesiones que se guardan van cifradas con el almacén de llaves de Android: la llave nunca sale de tu celular.
+- Las conexiones a internet que hace la app por su cuenta van cifradas (HTTPS), salvo las que tú configures sin cifrado, como un servidor FTP de tu casa.
+- Las actualizaciones se descargan de las versiones oficiales publicadas en GitHub y Android te pide confirmar antes de instalarlas.
+
+## Menores de edad
+La app no está dirigida especialmente a niños y no recoge datos de nadie, tampoco de menores.
+
+## Errores de la app
+Si la app se cierra por un error, guarda una nota técnica del error solo en tu celular, para mostrártela la próxima vez que la abras. Nunca se envía sola: tú decides si la copias y nos la mandas.
+
+## Cambios a esta política
+Si algún día cambia lo que hace la app con tu información, actualizaremos esta política y lo contaremos en las novedades de la actualización.
+
+## Contacto
+Si tienes preguntas, escríbenos abriendo un reporte («Issue») en github.com/santiagogd2513-cpu/Minecraft.

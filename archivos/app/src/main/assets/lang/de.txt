@@ -816,3 +816,7 @@
 816|Fertig: Jetzt signierst du mit deinem Schlüssel «
 817|APK signieren ✍️
 818|Als Signaturschlüssel verwenden
+819|Datenschutz- und Sicherheitsrichtlinie
+820|Nutzungsbedingungen
+821|Was Bóveda mit deinen Daten macht
+822|Die Regeln für die Nutzung der App

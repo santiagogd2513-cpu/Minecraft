@@ -816,3 +816,7 @@
 816|Done: now you sign with your key «
 817|Sign APK ✍️
 818|Use as signing key
+819|Privacy and security policy
+820|Terms and conditions
+821|What Bóveda does with your information
+822|The rules for using the app
