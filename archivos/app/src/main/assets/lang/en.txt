@@ -825,3 +825,5 @@
 825|Uninstall it and download the original, free and ad-free, at santiagogd2513-cpu.github.io
 826|Download the original
 827|Continue anyway
+828|MODIFIED COPY
+829|This is not the original app

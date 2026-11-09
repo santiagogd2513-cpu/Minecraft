@@ -1,3 +1,6 @@
+## 44
+- El aviso de «Copia modificada» ahora ocupa toda la pantalla, y una copia modificada ya no ofrece actualizaciones (no se pueden instalar encima de la original).
+
 ## 43
 🛡️ Sello de autenticidad
 - La app ahora está firmada con una llave nueva y privada de Forja Estudios. Se actualiza encima como siempre: no hay que desinstalar nada.

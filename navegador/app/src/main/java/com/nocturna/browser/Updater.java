@@ -86,6 +86,8 @@ final class Updater {
 
     /** Llamar al abrir o volver a la app. Revisa en segundo plano y, si hay versión nueva, avisa. */
     static void check(Activity a) {
+        // una copia modificada no se puede actualizar encima (la firma no coincide): solo se avisa que no es la original
+        if (!Integrity.genuine(a)) return;
         watch(a);
         if (checking || installing || showing || closedThisVisit) return;
         int current = currentVersion(a);
