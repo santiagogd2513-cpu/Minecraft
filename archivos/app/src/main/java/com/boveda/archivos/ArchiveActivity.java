@@ -322,7 +322,7 @@ public class ArchiveActivity extends Activity {
     /** Abre un archivo de adentro: se saca a una carpeta temporal y se abre con la app que corresponda. */
     private void openInside(Entry e) {
         loading.setVisibility(View.VISIBLE);
-        Toast.makeText(this, "Abriendo " + e.name + "…", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, (Viewers.isMedia(e.name) ? "Sacando del comprimido " : "Abriendo ") + e.name + "…", Toast.LENGTH_SHORT).show();
         io.execute(() -> {
             File dir = new File(getCacheDir(), "dentro");
             deleteRec(dir);
@@ -359,6 +359,8 @@ public class ArchiveActivity extends Activity {
                     startActivity(new Intent(this, ArchiveActivity.class).putExtra(EXTRA, out.getAbsolutePath()));
                     return;
                 }
+                // música, video, fotos, texto y PDF: con los visores de Bóveda, igual que fuera del comprimido
+                if (new Prefs(this).ownViewers() && Viewers.openPath(this, out.getAbsolutePath())) return;
                 Uri u = androidx.core.content.FileProvider.getUriForFile(this, getPackageName() + ".files", out);
                 Intent i = new Intent(Intent.ACTION_VIEW);
                 i.setDataAndType(u, FileTypes.mime(e.name));

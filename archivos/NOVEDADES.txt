@@ -1,3 +1,7 @@
+## 28
+Música y videos dentro de comprimidos
+- Si tocas una canción, un video, una foto, un texto o un PDF dentro de un ZIP, RAR, 7z u otro comprimido, se abre con el reproductor y los visores de Bóveda, sin tener que extraer todo.
+
 ## 27
 Ahora somos Forja Estudios
 - Bóveda es parte de Forja Estudios, nuestro estudio. En «Acerca de» está su ficha: qué hacemos y quiénes somos.

@@ -114,6 +114,12 @@ final class Viewers {
         return false;
     }
 
+    /** Abre con un visor propio un archivo suelto (por ejemplo, el que se sacó de un comprimido). */
+    static boolean openPath(Activity a, String path) {
+        java.io.File f = new java.io.File(path);
+        return open(a, new Entry(path, Paths.name(path), false, f.length(), f.lastModified()), null);
+    }
+
     /** «Abrir con otra app» desde los visores. */
     static void openWithOther(Activity a, String path, String mime) {
         Intent i = new Intent(Intent.ACTION_VIEW);
