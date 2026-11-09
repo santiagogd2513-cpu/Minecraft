@@ -49,4 +49,6 @@ dependencies {
     implementation 'org.tukaani:xz:1.10'
     implementation 'dev.rikka.shizuku:api:13.1.5'
     implementation 'dev.rikka.shizuku:provider:13.1.5'
+    // firmador de APK (v1, v2 y v3), la misma librería del apksigner oficial de Android
+    implementation 'com.android.tools.build:apksig:8.5.0'
 }

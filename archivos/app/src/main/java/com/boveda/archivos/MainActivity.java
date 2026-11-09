@@ -1044,6 +1044,159 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         d.show();
     }
 
+    // ------------------------------------------------------------------ firmador de APK
+
+    private static boolean isKeyFile(String name) {
+        String n = name.toLowerCase(java.util.Locale.ROOT);
+        return n.endsWith(".p12") || n.endsWith(".pfx") || n.endsWith(".bks") || n.endsWith(".jks") || n.endsWith(".keystore");
+    }
+
+    private void askSignApk(Entry e) {
+        clearSelection();
+        io.execute(() -> {
+            String label;
+            try {
+                label = ApkSign.signer(this).label;
+            } catch (Exception ex) {
+                label = L.t("Llave de Bóveda");
+            }
+            String fl = label;
+            main.post(() -> new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                    .setTitle(L.t("Firmar «") + e.name + "»")
+                    .setMessage(L.t("Se crea una copia firmada en la misma carpeta, lista para instalar (firmas v1, v2 y v3, y alineada).")
+                            + "\n\n" + L.t("Llave: ") + fl + "\n\n"
+                            + L.t("Ojo: si esa app o juego ya está instalado con otra firma, primero toca desinstalarlo, y eso borra sus datos (como las partidas). Guarda una copia antes."))
+                    .setPositiveButton(L.t("Firmar"), (d, w) -> signApk(e))
+                    .setNeutralButton(L.t("Llave…"), (d, w) -> signKeyMenu())
+                    .setNegativeButton(L.t("Cancelar"), null)
+                    .show());
+        });
+    }
+
+    private void signApk(Entry e) {
+        File in = new File(e.path);
+        String name = e.name, base = name.toLowerCase(java.util.Locale.ROOT).endsWith(".apk") ? name.substring(0, name.length() - 4) : name;
+        File dir = in.getParentFile();
+        File out = new File(dir, base + "_firmado.apk");
+        for (int i = 1; out.exists(); i++) out = new File(dir, base + "_firmado (" + i + ").apk");
+        File target = out, tmp = new File(dir, "." + out.getName() + ".boveda-parte");
+        AlertDialog wait = new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                .setTitle(L.t("Firmando…"))
+                .setMessage(name + "\n\n" + L.t("Los APK grandes pueden tardar un poco."))
+                .setCancelable(false).show();
+        io.execute(() -> {
+            String err = null, fp = null;
+            try {
+                ApkSign.Signer s = ApkSign.signer(this);
+                ApkSign.sign(s, in, tmp);
+                String bad = ApkSign.verify(tmp);
+                if (bad != null) throw new Exception(bad);
+                if (!tmp.renameTo(target)) throw new IOException(L.t("No se pudo guardar el APK firmado"));
+                fp = ApkSign.fingerprint(s.chain.get(0));
+            } catch (Throwable ex) {
+                //noinspection ResultOfMethodCallIgnored
+                tmp.delete();
+                err = ex.getMessage() == null ? ex.toString() : ex.getMessage();
+            }
+            String fe = err, ffp = fp;
+            main.post(() -> {
+                wait.dismiss();
+                if (path != null) load(path, true);
+                if (fe != null) {
+                    new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                            .setTitle(L.t("No se pudo firmar"))
+                            .setMessage(fe)
+                            .setPositiveButton(L.t("Entendido"), null)
+                            .show();
+                    return;
+                }
+                new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                        .setTitle(L.t("APK firmado ✓"))
+                        .setMessage(target.getName() + "\n\n" + L.t("Huella SHA-256 de la firma:") + "\n" + ffp)
+                        .setPositiveButton(L.t("Instalar"), (d, w) -> openWith(new Entry(target.getPath(), target.getName(), false, target.length(), target.lastModified()), false))
+                        .setNegativeButton(L.t("Listo"), null)
+                        .show();
+            });
+        });
+    }
+
+    private void signKeyMenu() {
+        List<String> labels = new ArrayList<>();
+        List<Runnable> acts = new ArrayList<>();
+        if (ApkSign.usingCustom(this)) {
+            labels.add(L.t("Volver a la llave de Bóveda"));
+            acts.add(() -> {
+                ApkSign.useOwn(this);
+                Toast.makeText(this, L.t("Ahora firmas con la llave de Bóveda"), Toast.LENGTH_SHORT).show();
+            });
+        }
+        labels.add(L.t("Guardar una copia de la llave de Bóveda (.p12)"));
+        acts.add(() -> io.execute(() -> {
+            String msg;
+            try {
+                File f = ApkSign.exportOwn(this, new File(Paths.ROOT, "Download"));
+                msg = L.t("Guardada en Descargas: ") + f.getName() + "\n\n" + L.t("Contraseña: ") + ApkSign.ownPassword() + "\n\n"
+                        + L.t("Guárdala bien: si algún día reinstalas Bóveda, con ella puedes seguir firmando igual y actualizar tus APK sin desinstalarlos.");
+            } catch (Exception ex) {
+                msg = ex.getMessage() == null ? ex.toString() : ex.getMessage();
+            }
+            String fm = msg;
+            main.post(() -> new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                    .setTitle(L.t("Llave de firma"))
+                    .setMessage(fm)
+                    .setPositiveButton(L.t("Entendido"), null)
+                    .show());
+        }));
+        labels.add(L.t("Usar una llave mía"));
+        acts.add(() -> new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                .setTitle(L.t("Usar una llave mía"))
+                .setMessage(L.t("Busca tu llave (.p12, .pfx o .bks), mantenla presionada y elige «Usar como llave de firma»."))
+                .setPositiveButton(L.t("Entendido"), null)
+                .show());
+        new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                .setTitle(L.t("Llave de firma"))
+                .setItems(labels.toArray(new String[0]), (d, w) -> acts.get(w).run())
+                .show();
+    }
+
+    private void askImportKey(Entry e) {
+        clearSelection();
+        LinearLayout box = Ui.column(this);
+        box.setPadding(dp(20), dp(8), dp(20), dp(4));
+        box.addView(Ui.text(this, L.t("Escribe la contraseña de la llave. Desde ahora Bóveda firmará los APK con ella."), 13, Ui.SUB, false));
+        EditText pass = input(L.t("Contraseña"), "", android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        box.addView(pass, topMargin(dp(12)));
+        AlertDialog d = new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                .setTitle(e.name)
+                .setView(box)
+                .setPositiveButton(L.t("Usar esta llave"), null)
+                .setNegativeButton(L.t("Cancelar"), null)
+                .create();
+        d.setOnShowListener(x -> d.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+            String p = pass.getText().toString();
+            v.setEnabled(false);
+            io.execute(() -> {
+                String err = null, alias = null;
+                try {
+                    alias = ApkSign.importKey(this, new File(e.path), p);
+                } catch (Exception ex) {
+                    err = ex.getMessage() == null ? ex.toString() : ex.getMessage();
+                }
+                String fe = err, fa = alias;
+                main.post(() -> {
+                    v.setEnabled(true);
+                    if (fe != null) {
+                        pass.setError(fe);
+                        return;
+                    }
+                    d.dismiss();
+                    Toast.makeText(this, L.t("Listo: ahora firmas con tu llave «") + fa + "»", Toast.LENGTH_LONG).show();
+                });
+            });
+        }));
+        d.show();
+    }
+
     // ------------------------------------------------------------------ Radiografía del almacenamiento
 
     private static final int[] CAT_COLORS = {0xFF4C9DFF, 0xFFFF5D8F, 0xFFB58CFF, 0xFFFFC14D, 0xFF35D08A, 0xFFFF8A5C, 0xFF8B97AB, 0xFF4A5670, 0xFF9B6BFF};
@@ -2842,6 +2995,15 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                 if (!VaultFs.isVault(single.path)) {
                     labels.add(L.t("Abrir con…"));
                     acts.add(() -> openWith(single, true));
+                }
+                boolean plainFile = Thumbs.local(single.path) && new File(single.path).canRead();
+                if (plainFile && single.name.toLowerCase(java.util.Locale.ROOT).endsWith(".apk")) {
+                    labels.add(L.t("Firmar APK ✍️"));
+                    acts.add(() -> askSignApk(single));
+                }
+                if (plainFile && isKeyFile(single.name)) {
+                    labels.add(L.t("Usar como llave de firma"));
+                    acts.add(() -> askImportKey(single));
                 }
                 if (Archive.supported(single.name) && !VaultFs.isVault(single.path)) {
                     labels.add(L.t("Ver contenido"));

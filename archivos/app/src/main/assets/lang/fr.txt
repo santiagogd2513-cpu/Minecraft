@@ -782,3 +782,37 @@
 782| dossiers vides ?
 783|Ils ne contiennent rien, aucun fichier n’est donc perdu.
 784| dossiers vides supprimés
+785|Ta clé
+786|Clé de Bóveda
+787|Ce fichier ne contient aucune clé de signature
+788|Android ne peut pas lire les clés .jks de Java. Convertis-la en .p12 sur un PC avec : keytool -importkeystore -srckeystore llave.jks -destkeystore llave.p12 -deststoretype PKCS12
+789|Le mot de passe est incorrect ou le fichier est endommagé
+790|La signature n’est pas valide
+791|Impossible d’enregistrer la clé de signature
+792|Signer «
+793|Une copie signée est créée dans le même dossier, prête à installer (signatures v1, v2 et v3, et alignée).
+794|Clé : 
+795|Attention : si cette application ou ce jeu est déjà installé avec une autre signature, il faut d’abord le désinstaller, ce qui efface ses données (comme les sauvegardes). Fais une copie avant.
+796|Signer
+797|Clé…
+798|Signature…
+799|Les gros APK peuvent prendre un moment.
+800|Impossible d’enregistrer l’APK signé
+801|Impossible de signer
+802|APK signé ✓
+803|Empreinte SHA-256 de la signature :
+804|Installer
+805|Revenir à la clé de Bóveda
+806|Tu signes maintenant avec la clé de Bóveda
+807|Enregistrer une copie de la clé de Bóveda (.p12)
+808|Enregistrée dans Téléchargements : 
+809|Mot de passe : 
+810|Garde-la bien : si tu réinstalles Bóveda un jour, tu pourras continuer à signer pareil et mettre à jour tes APK sans les désinstaller.
+811|Clé de signature
+812|Utiliser ma propre clé
+813|Trouve ta clé (.p12, .pfx ou .bks), fais un appui long dessus et choisis « Utiliser comme clé de signature ».
+814|Saisis le mot de passe de la clé. Désormais, Bóveda signera les APK avec elle.
+815|Utiliser cette clé
+816|C’est fait : tu signes maintenant avec ta clé «
+817|Signer l’APK ✍️
+818|Utiliser comme clé de signature

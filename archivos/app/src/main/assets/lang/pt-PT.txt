@@ -782,3 +782,37 @@
 782| pastas vazias?
 783|Não têm nada dentro, por isso nenhum ficheiro se perde.
 784| pastas vazias eliminadas
+785|A sua chave
+786|Chave do Bóveda
+787|Esse ficheiro não tem nenhuma chave para assinar
+788|O Android não consegue ler chaves .jks do Java. Converta-a para .p12 no PC com: keytool -importkeystore -srckeystore llave.jks -destkeystore llave.p12 -deststoretype PKCS12
+789|A palavra-passe está errada ou o ficheiro está danificado
+790|A assinatura não é válida
+791|Não foi possível guardar a chave de assinatura
+792|Assinar «
+793|É criada uma cópia assinada na mesma pasta, pronta a instalar (assinaturas v1, v2 e v3, e alinhada).
+794|Chave: 
+795|Atenção: se essa app ou jogo já estiver instalado com outra assinatura, tem de o desinstalar primeiro, e isso apaga os dados (como os jogos guardados). Faça uma cópia antes.
+796|Assinar
+797|Chave…
+798|A assinar…
+799|APK grandes podem demorar um pouco.
+800|Não foi possível guardar o APK assinado
+801|Não foi possível assinar
+802|APK assinado ✓
+803|Impressão digital SHA-256 da assinatura:
+804|Instalar
+805|Voltar à chave do Bóveda
+806|Agora assina com a chave do Bóveda
+807|Guardar uma cópia da chave do Bóveda (.p12)
+808|Guardada em Transferências: 
+809|Palavra-passe: 
+810|Guarde-a bem: se um dia reinstalar o Bóveda, com ela continua a assinar da mesma forma e atualiza os seus APK sem os desinstalar.
+811|Chave de assinatura
+812|Usar uma chave minha
+813|Procure a sua chave (.p12, .pfx ou .bks), mantenha-a premida e escolha «Usar como chave de assinatura».
+814|Escreva a palavra-passe da chave. A partir de agora o Bóveda vai assinar os APK com ela.
+815|Usar esta chave
+816|Pronto: agora assina com a sua chave «
+817|Assinar APK ✍️
+818|Usar como chave de assinatura

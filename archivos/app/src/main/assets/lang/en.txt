@@ -782,3 +782,37 @@
 782| empty folders?
 783|They have nothing inside, so no file is lost.
 784| empty folders deleted
+785|Your key
+786|Bóveda key
+787|That file doesn't have any signing key
+788|Android can't read Java .jks keys. Convert it to .p12 on a PC with: keytool -importkeystore -srckeystore llave.jks -destkeystore llave.p12 -deststoretype PKCS12
+789|The password is wrong or the file is damaged
+790|The signature isn't valid
+791|Couldn't save the signing key
+792|Sign «
+793|A signed copy is created in the same folder, ready to install (v1, v2 and v3 signatures, and aligned).
+794|Key: 
+795|Heads up: if that app or game is already installed with a different signature, you have to uninstall it first, and that deletes its data (like saved games). Make a backup first.
+796|Sign
+797|Key…
+798|Signing…
+799|Big APKs can take a little while.
+800|Couldn't save the signed APK
+801|Couldn't sign
+802|APK signed ✓
+803|SHA-256 fingerprint of the signature:
+804|Install
+805|Go back to the Bóveda key
+806|Now you sign with the Bóveda key
+807|Save a copy of the Bóveda key (.p12)
+808|Saved in Downloads: 
+809|Password: 
+810|Keep it safe: if you ever reinstall Bóveda, with it you can keep signing the same way and update your APKs without uninstalling them.
+811|Signing key
+812|Use my own key
+813|Find your key (.p12, .pfx or .bks), press and hold it and choose “Use as signing key”.
+814|Type the key's password. From now on Bóveda will sign APKs with it.
+815|Use this key
+816|Done: now you sign with your key «
+817|Sign APK ✍️
+818|Use as signing key

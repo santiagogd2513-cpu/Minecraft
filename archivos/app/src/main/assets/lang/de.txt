@@ -782,3 +782,37 @@
 782| leere Ordner löschen?
 783|Sie enthalten nichts, also geht keine Datei verloren.
 784| leere Ordner gelöscht
+785|Dein Schlüssel
+786|Bóveda-Schlüssel
+787|Diese Datei enthält keinen Signaturschlüssel
+788|Android kann keine Java-.jks-Schlüssel lesen. Wandle ihn am PC in .p12 um mit: keytool -importkeystore -srckeystore llave.jks -destkeystore llave.p12 -deststoretype PKCS12
+789|Das Passwort ist falsch oder die Datei ist beschädigt
+790|Die Signatur ist ungültig
+791|Signaturschlüssel konnte nicht gespeichert werden
+792|Signieren: «
+793|Im selben Ordner wird eine signierte Kopie erstellt, bereit zur Installation (Signaturen v1, v2 und v3, ausgerichtet).
+794|Schlüssel: 
+795|Achtung: Ist diese App oder dieses Spiel schon mit einer anderen Signatur installiert, musst du es zuerst deinstallieren – dabei gehen seine Daten (z. B. Spielstände) verloren. Mach vorher eine Sicherung.
+796|Signieren
+797|Schlüssel…
+798|Wird signiert…
+799|Große APKs können etwas dauern.
+800|Signierte APK konnte nicht gespeichert werden
+801|Signieren fehlgeschlagen
+802|APK signiert ✓
+803|SHA-256-Fingerabdruck der Signatur:
+804|Installieren
+805|Zurück zum Bóveda-Schlüssel
+806|Jetzt signierst du mit dem Bóveda-Schlüssel
+807|Kopie des Bóveda-Schlüssels speichern (.p12)
+808|In Downloads gespeichert: 
+809|Passwort: 
+810|Bewahre ihn gut auf: Wenn du Bóveda neu installierst, kannst du damit genauso weitersignieren und deine APKs ohne Deinstallation aktualisieren.
+811|Signaturschlüssel
+812|Eigenen Schlüssel verwenden
+813|Suche deinen Schlüssel (.p12, .pfx oder .bks), halte ihn gedrückt und wähle „Als Signaturschlüssel verwenden“.
+814|Gib das Passwort des Schlüssels ein. Ab jetzt signiert Bóveda APKs damit.
+815|Diesen Schlüssel verwenden
+816|Fertig: Jetzt signierst du mit deinem Schlüssel «
+817|APK signieren ✍️
+818|Als Signaturschlüssel verwenden

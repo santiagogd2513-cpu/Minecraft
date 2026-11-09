@@ -782,3 +782,37 @@ Borrar todas las carpetas vacías
  carpetas vacías?
 No tienen nada adentro, así que no se pierde ningún archivo.
  carpetas vacías borradas
+Tu llave
+Llave de Bóveda
+Ese archivo no tiene ninguna llave para firmar
+Android no puede leer llaves .jks de Java. Conviértela a .p12 en el PC con: keytool -importkeystore -srckeystore llave.jks -destkeystore llave.p12 -deststoretype PKCS12
+La contraseña no es correcta o el archivo está dañado
+La firma no es válida
+No se pudo guardar la llave de firma
+Firmar «
+Se crea una copia firmada en la misma carpeta, lista para instalar (firmas v1, v2 y v3, y alineada).
+Llave: 
+Ojo: si esa app o juego ya está instalado con otra firma, primero toca desinstalarlo, y eso borra sus datos (como las partidas). Guarda una copia antes.
+Firmar
+Llave…
+Firmando…
+Los APK grandes pueden tardar un poco.
+No se pudo guardar el APK firmado
+No se pudo firmar
+APK firmado ✓
+Huella SHA-256 de la firma:
+Instalar
+Volver a la llave de Bóveda
+Ahora firmas con la llave de Bóveda
+Guardar una copia de la llave de Bóveda (.p12)
+Guardada en Descargas: 
+Contraseña: 
+Guárdala bien: si algún día reinstalas Bóveda, con ella puedes seguir firmando igual y actualizar tus APK sin desinstalarlos.
+Llave de firma
+Usar una llave mía
+Busca tu llave (.p12, .pfx o .bks), mantenla presionada y elige «Usar como llave de firma».
+Escribe la contraseña de la llave. Desde ahora Bóveda firmará los APK con ella.
+Usar esta llave
+Listo: ahora firmas con tu llave «
+Firmar APK ✍️
+Usar como llave de firma

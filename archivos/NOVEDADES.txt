@@ -1,3 +1,10 @@
+## 41
+✍️ Firmador de APK
+- Mantén presionado un APK y elige «Firmar APK». Bóveda crea una copia firmada en la misma carpeta («nombre_firmado.apk»), con las firmas que pide Android (v1, v2 y v3) y alineada, lista para instalar.
+- La primera vez Bóveda crea su propia llave de firma (válida por 30 años). Firmando siempre con la misma llave, puedes actualizar tus APK modificados sin desinstalarlos.
+- En «Llave…» puedes guardar una copia de la llave en Descargas (.p12) o usar una llave tuya: mantén presionado tu .p12, .pfx o .bks y elige «Usar como llave de firma».
+- Al terminar revisa que la firma quedó bien, te muestra su huella SHA-256 y te ofrece instalar.
+
 ## 40
 📊 Radiografía del almacenamiento
 - Nuevo en el inicio, en «Análisis y seguridad»: la Radiografía. Analiza la memoria interna, la tarjeta SD y las memorias USB conectadas, una por una.
