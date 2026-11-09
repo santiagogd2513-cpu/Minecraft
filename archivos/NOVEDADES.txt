@@ -1,3 +1,7 @@
+## 31
+MEGA arreglado
+- Ya se puede iniciar sesión en MEGA: antes salía «MEGA está ocupado» porque la verificación anti-robots que pide MEGA al entrar se mandaba mal.
+
 ## 30
 Ojito para ver la contraseña
 - Todos los campos de contraseña (MEGA, MediaFire, FTP y el secreto de Google Drive) tienen un ojito al final: tócalo para ver lo que escribiste y vuelve a tocarlo para ocultarlo.

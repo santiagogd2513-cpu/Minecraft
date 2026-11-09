@@ -160,8 +160,10 @@ final class Mega {
     /** Manda un comando y devuelve su respuesta (objeto, arreglo, texto o número ≥ 0). */
     synchronized Object api(JSONObject cmd, boolean withSession) throws IOException {
         String hashcash = null;
+        // el mismo número de petición en todos los reintentos: MEGA solo acepta así la prueba de trabajo
+        long id = seq++;
         for (int attempt = 0; attempt < 8; attempt++) {
-            String url = API + "?id=" + (seq++) + (withSession && sid != null && !sid.isEmpty() ? "&sid=" + sid : "");
+            String url = API + "?id=" + id + (withSession && sid != null && !sid.isEmpty() ? "&sid=" + sid : "");
             HttpURLConnection c = (HttpURLConnection) new URL(url).openConnection();
             c.setConnectTimeout(20000);
             c.setReadTimeout(90000);
