@@ -2,6 +2,7 @@ package com.arsenalatomico.strike;
 
 import com.arsenalatomico.ArsenalAtomico;
 import com.arsenalatomico.Config;
+import com.arsenalatomico.CondorPlan;
 import com.arsenalatomico.MissilePath;
 import com.arsenalatomico.SalvoPlan;
 import com.arsenalatomico.TwinPlan;
@@ -81,6 +82,9 @@ public final class LaunchManager {
         final long end;
         final BlockPos ticketOwner;
         final List<ChunkPos> chunks = new ArrayList<>();
+        /** El silo del Cóndor (se construye de a poco y al final se cierra). */
+        SiloBuilder silo;
+        Vec3 siloSite;
 
         Strike(@Nullable UUID owner, ServerLevel level, WeaponType type, long start, int lastImpact, BlockPos ticketOwner) {
             this.owner = owner;
@@ -153,6 +157,12 @@ public final class LaunchManager {
 
     /** Busca dónde poner las lanzadoras (cerca del jugador, para que su juego las tenga dibujadas). */
     public static Site chooseSite(ServerLevel level, WeaponType type, Vec3 player, Vec3 target, RandomSource r) {
+        if (type == WeaponType.ICBM) {
+            // el silo: suelo firme y parejo, cerca del jugador; el borde va en el suelo o más arriba (loma)
+            Vec3 land = Sites.land(level, player, target, r, 40, 70, 9, 9);
+            Vec3 rim = new Vec3(land.x, SiloBuilder.rimHeight(level, land.y), land.z);
+            return new Site(rim, Sites.yawTowards(rim, target), TwinPlan.LAND);
+        }
         if (type == WeaponType.TWIN) {
             Vec3 sea = Sites.sea(level, player, target, r);
             if (sea != null) return new Site(sea, Sites.yawTowards(sea, target), TwinPlan.SEA);
@@ -167,7 +177,15 @@ public final class LaunchManager {
     public static Strike begin(ServerLevel level, @Nullable UUID owner, WeaponType type, Vec3 target, Site site, long seed) {
         long now = level.getGameTime();
         Strike s;
-        if (type == WeaponType.TWIN) {
+        if (type == WeaponType.ICBM) {
+            CondorPlan plan = new CondorPlan(site.pos(), site.yaw(), target, seed);
+            s = new Strike(owner, level, type, now, plan.impactTick(), BlockPos.containing(target));
+            s.shots.add(new Shot(plan.launchTick, plan.path, CondorPlan.SCALE, 2, 0, 12f, true));
+            int ground = level.getHeight(net.minecraft.world.level.levelgen.Heightmap.Types.MOTION_BLOCKING_NO_LEAVES,
+                    Mth.floor(site.pos().x), Mth.floor(site.pos().z));
+            s.silo = SiloBuilder.build(level, site.pos(), ground);
+            s.siloSite = site.pos();
+        } else if (type == WeaponType.TWIN) {
             TwinPlan plan = new TwinPlan(site.mode(), site.pos(), site.yaw(), target, seed);
             s = new Strike(owner, level, type, now, plan.lastImpactTick(), BlockPos.containing(target));
             for (int i = 0; i < 2; i++) {
@@ -202,6 +220,10 @@ public final class LaunchManager {
     private static void finish(MinecraftServer server, Strike s) {
         ServerLevel level = server.getLevel(s.dimension);
         for (Shot shot : s.shots) if (shot.entity != null && !shot.entity.isRemoved()) shot.entity.discard();
+        if (level != null && s.silo != null) {
+            s.silo.step(Integer.MAX_VALUE);
+            SiloBuilder.close(level, s.siloSite);
+        }
         if (level != null) {
             for (ChunkPos c : s.chunks) ForgeChunkManager.forceChunk(level, ArsenalAtomico.MODID, s.ticketOwner, c.x, c.z, false, true);
         }
@@ -224,6 +246,7 @@ public final class LaunchManager {
                 continue;
             }
             long t = level.getGameTime() - s.start;
+            if (s.silo != null && !s.silo.done()) s.silo.step(3000);
             for (Shot shot : s.shots) {
                 if (!shot.fired && t >= shot.launch) {
                     shot.fired = true;
@@ -233,7 +256,8 @@ public final class LaunchManager {
                 if (shot.fired && !shot.hit && t >= shot.launch + shot.path.flightTicks) {
                     shot.hit = true;
                     if (shot.entity != null) shot.entity.discard();
-                    if (shot.big) Impacts.big(level, shot.path.p3, shot.power);
+                    if (shot.kind == 2) Impacts.huge(level, shot.path.p3, shot.power);
+                    else if (shot.big) Impacts.big(level, shot.path.p3, shot.power);
                     else Impacts.missile(level, shot.path.p3, shot.power);
                 }
             }

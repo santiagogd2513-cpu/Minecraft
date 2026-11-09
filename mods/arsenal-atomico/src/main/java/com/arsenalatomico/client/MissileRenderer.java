@@ -30,6 +30,12 @@ public class MissileRenderer extends EntityRenderer<MissileEntity> {
         ps.scale(s, s, s);
         Matrix4f m = ps.last().pose();
         VertexConsumer v = buf.getBuffer(RenderType.debugQuads());
+        if (e.kind() == 2) {
+            condor(e, partial, buf, m, v);
+            ps.popPose();
+            super.render(e, yaw, partial, ps, buf, light);
+            return;
+        }
         if (e.kind() == 1) {
             icbm(e, partial, ps, buf, m, v);
             ps.popPose();
@@ -60,6 +66,23 @@ public class MissileRenderer extends EntityRenderer<MissileEntity> {
         Shapes.tube(glow, m, 0.75f, 0.2f, z0 + 0.2f, z0 - 0.6f, 10, 1f, 0.6f, 0.2f, 0.35f);
         ps.popPose();
         super.render(e, yaw, partial, ps, buf, light);
+    }
+
+    /** El Cóndor por partes: completo, sin la primera etapa, o la ojiva sola entrando a la atmósfera. */
+    private static void condor(MissileEntity e, float partial, MultiBufferSource buf, Matrix4f m, VertexConsumer v) {
+        float t = e.age() + partial;
+        VertexConsumer glow = buf.getBuffer(RenderType.lightning());
+        if (e.age() < com.arsenalatomico.CondorPlan.SEP1) {
+            CondorModel.stage1(v, m);
+            CondorModel.upper(v, m);
+            CondorModel.flame(v, glow, m, -14.1f, Math.min(1f, 0.4f + t / 20f), t);
+        } else if (e.age() < com.arsenalatomico.CondorPlan.SEP2) {
+            CondorModel.upper(v, m);
+            CondorModel.flame(v, glow, m, -2.5f, 0.55f, t);
+        } else {
+            CondorModel.warhead(v, m);
+            CondorModel.plasma(glow, m, t);
+        }
     }
 
     /** Intercontinental: 19 bloques, blanco con franjas negras y punta oscura; el fuego sale al encenderse. */

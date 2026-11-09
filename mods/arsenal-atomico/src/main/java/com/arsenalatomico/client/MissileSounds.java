@@ -16,6 +16,18 @@ public final class MissileSounds {
 
     public static void start(MissileEntity m) {
         var sm = Minecraft.getInstance().getSoundManager();
+        if (m.kind() == 2) {
+            // el Cóndor: rugido enorme dentro del silo
+            if (m.age() < 10) {
+                sm.play(at(ModSounds.MISSILE_LAUNCH.get(), m.position(), 16f, 0.42f));
+                sm.play(at(ModSounds.FAR_BOOM.get(), m.position(), 8f, 0.85f));
+                sm.play(at(SoundEvents.GENERIC_EXPLODE, m.position(), 6f, 0.5f));
+            }
+            sm.play(new Engine(m, 9f, 0.42f, 0, com.arsenalatomico.CondorPlan.SEP1));
+            sm.play(new Engine(m, 6f, 0.7f, com.arsenalatomico.CondorPlan.SEP1, com.arsenalatomico.CondorPlan.SEP2));
+            sm.play(new Engine(m, 5f, 1.7f, com.arsenalatomico.CondorPlan.SEP2, Integer.MAX_VALUE));
+            return;
+        }
         if (m.kind() == 1) {
             // intercontinental: primero el golpe de la salida en frío (gas, o vapor bajo el agua)
             if (m.age() < 10) {
@@ -37,9 +49,15 @@ public final class MissileSounds {
         sm.play(new Engine(m, 6f, 0.55f));
     }
 
+    /** El Cóndor suelta la primera etapa (1) o la ojiva (2): estallido y la pieza que cae. */
+    public static void separate(MissileEntity m, int stage) {
+        Minecraft.getInstance().getSoundManager().play(at(SoundEvents.GENERIC_EXPLODE, m.position(), 8f, stage == 1 ? 1.4f : 1.8f));
+        CondorFx.separate(m, stage);
+    }
+
     public static void impact(Vec3 at, int kind) {
-        ImpactFx.spawn(at, kind == 1 ? ImpactFx.Kind.ICBM : ImpactFx.Kind.SALVO);
-        float big = kind == 1 ? 1 : 0;
+        ImpactFx.spawn(at, kind == 2 ? ImpactFx.Kind.CONDOR : kind == 1 ? ImpactFx.Kind.ICBM : ImpactFx.Kind.SALVO);
+        float big = kind >= 1 ? 1 : 0;
         Minecraft.getInstance().getSoundManager().play(at(ModSounds.FAR_BOOM.get(), at, 3f + big * 5, 0.8f - big * 0.25f + (float) Math.random() * 0.3f));
     }
 
@@ -51,12 +69,23 @@ public final class MissileSounds {
     private static final class Engine extends AbstractTickableSoundInstance {
         private final MissileEntity m;
 
+        private final int from, until;
+        private float baseVolume;
+
         Engine(MissileEntity m, float volume, float pitch) {
+            this(m, volume, pitch, 0, Integer.MAX_VALUE);
+        }
+
+        /** Motor que suena solo entre dos edades del misil (cada etapa del Cóndor suena distinto). */
+        Engine(MissileEntity m, float volume, float pitch, int from, int until) {
             super(ModSounds.MISSILE_LOOP.get(), SoundSource.HOSTILE, SoundInstance.createUnseededRandom());
             this.m = m;
+            this.from = from;
+            this.until = until;
             looping = true;
             delay = 0;
-            this.volume = volume;
+            this.volume = from > 0 ? 0f : volume;
+            this.baseVolume = volume;
             this.pitch = pitch;
             x = m.getX();
             y = m.getY();
@@ -65,10 +94,12 @@ public final class MissileSounds {
 
         @Override
         public void tick() {
-            if (m.isRemoved()) {
+            if (m.isRemoved() || m.age() >= until) {
                 stop();
                 return;
             }
+            float target = m.age() >= from ? baseVolume : 0f;
+            volume += (target - volume) * 0.25f;
             x = m.getX();
             y = m.getY();
             z = m.getZ();

@@ -56,13 +56,13 @@ final class ImpactFx {
             this.type = type;
             this.start = start;
             this.lastSim = start;
-            this.detail = type == Kind.ICBM ? 1f : 0.16f;
+            this.detail = type == Kind.SALVO ? 0.16f : 1f;
             Random r = new Random((long) (c.x * 31 + c.z * 17 + start));
-            R = type == Kind.ICBM ? 24f : 4.5f;
+            R = type == Kind.CONDOR ? 34f : type == Kind.ICBM ? 24f : 4.5f;
             fire = new float[]{1f, 0.55f, 0.18f};       // naranja, como la llama de los misiles
             smoke = new float[]{0.22f, 0.21f, 0.2f};
             dust = new float[]{0.5f, 0.45f, 0.37f};
-            int n = type == Kind.ICBM ? 190 : 14;
+            int n = type == Kind.CONDOR ? 240 : type == Kind.ICBM ? 190 : 14;
             debris = new Debris[n];
             for (int i = 0; i < n; i++) {
                 Debris d = new Debris();
@@ -78,7 +78,7 @@ final class ImpactFx {
                 d.rx = r.nextFloat() * 6.28f;
                 d.ry = r.nextFloat() * 6.28f;
                 d.spin = (r.nextFloat() - 0.5f) * 14f;
-                d.size = (0.35f + r.nextFloat() * r.nextFloat() * 2.2f) * (type == Kind.ICBM ? 1f : 0.45f);
+                d.size = (0.35f + r.nextFloat() * r.nextFloat() * 2.2f) * (type == Kind.SALVO ? 0.45f : 1f);
                 d.hot = r.nextFloat() < 0.45f ? 1f : 0f;
                 float[] col = debrisColor(r);
                 d.r = col[0]; d.g = col[1]; d.b = col[2];
@@ -106,7 +106,7 @@ final class ImpactFx {
     }
 
     /** Tamaño de la explosión: misil táctico o intercontinental. */
-    enum Kind { SALVO, ICBM }
+    enum Kind { SALVO, ICBM, CONDOR }
 
     /** Una explosión nueva (si ya hay una casi en el mismo lugar y momento, no la repite). */
     static void spawn(Vec3 center, Kind type) {
@@ -119,9 +119,9 @@ final class ImpactFx {
         Minecraft mc = Minecraft.getInstance();
         if (mc.level != null) {
             // el estallido en sí (se ve y se siente aunque el jugador esté lejos)
-            int puffs = type == Kind.ICBM ? 14 : 3;
+            int puffs = type == Kind.CONDOR ? 22 : type == Kind.ICBM ? 14 : 3;
             for (int i = 0; i < puffs; i++) {
-                double sp = type == Kind.ICBM ? 9 : 1.5;
+                double sp = type == Kind.CONDOR ? 14 : type == Kind.ICBM ? 9 : 1.5;
                 mc.level.addAlwaysVisibleParticle(ParticleTypes.EXPLOSION_EMITTER, true, center.x + (mc.level.random.nextDouble() - 0.5) * sp,
                         center.y + 1 + mc.level.random.nextDouble() * sp * 0.5, center.z + (mc.level.random.nextDouble() - 0.5) * sp, 0, 0, 0);
             }
@@ -133,7 +133,7 @@ final class ImpactFx {
         float now = Cinematic.clientTicks();
         for (Blast b : BLASTS) {
             float age = (now - b.start) / 20f;
-            float fire = Math.max(0f, 1f - age / (b.type == Kind.ICBM ? 9f : 3f));
+            float fire = Math.max(0f, 1f - age / (b.type == Kind.SALVO ? 3f : 9f));
             float heat = Math.max(0f, 1f - age / 40f) * 0.35f;
             float k = Math.max(fire, heat);
             if (k > 0.01f) out.add(new float[]{(float) b.c.x, (float) b.c.y, (float) b.c.z, b.R * (1.6f + 1.4f * fire), k});

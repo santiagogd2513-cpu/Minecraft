@@ -2,6 +2,7 @@ package com.arsenalatomico.client;
 
 import com.arsenalatomico.Launcher;
 import com.arsenalatomico.SalvoPlan;
+import com.arsenalatomico.CondorPlan;
 import com.arsenalatomico.TwinPlan;
 import com.arsenalatomico.WeaponType;
 import com.arsenalatomico.net.StartCinematicPacket;
@@ -50,6 +51,8 @@ public final class Cinematic {
     private static SalvoPlan plan;
     /** Plan del Cóndor Doble (null en las otras armas). */
     static TwinPlan twin;
+    /** Plan del Cóndor (null en las otras armas). */
+    static CondorPlan condor;
     /** Despegues e impactos que hacen temblar la cámara: {segundo, x, y, z, fuerza, duración, alcance}. */
     private static final java.util.List<double[]> quakes = new java.util.ArrayList<>();
     /** Impactos de la cinemática: {segundo, x, y, z, grande (1/0), ya dibujado (1/0)}. */
@@ -107,7 +110,16 @@ public final class Cinematic {
         yaw = p.yaw;
         quakes.clear();
         blasts.clear();
-        if (type == WeaponType.TWIN) {
+        condor = null;
+        if (type == WeaponType.ICBM) {
+            plan = null;
+            twin = null;
+            condor = new CondorPlan(site, yaw, target, p.seed);
+            Vec3 a = condor.path.p0, b = condor.path.p3;
+            quakes.add(new double[]{condor.launchTick / 20.0, a.x, a.y + 14, a.z, 1.6, 7, 90});
+            quakes.add(new double[]{condor.impactTick() / 20.0, b.x, b.y, b.z, 3.2, 5, 170});
+            blasts.add(new double[]{condor.impactTick() / 20.0, b.x, b.y, b.z, 2, 0});
+        } else if (type == WeaponType.TWIN) {
             plan = null;
             twin = new TwinPlan(p.mode, site, yaw, target, p.seed);
             for (int i = 0; i < 2; i++) {
@@ -138,7 +150,8 @@ public final class Cinematic {
         previous = mc.options.getCameraType();
         mc.options.setCameraType(CameraType.FIRST_PERSON);
         mc.setCameraEntity(camera);
-        if (twin != null) TwinRenderer.show(twin, startTick, duration);
+        if (condor != null) SiloRenderer.show(condor, startTick, duration);
+        else if (twin != null) TwinRenderer.show(twin, startTick, duration);
         else LauncherRenderer.show(site, yaw, startTick, duration);
         active = true;
         play(ModSounds.BEEP.get(), 0.75f, 0.6f);
@@ -176,10 +189,13 @@ public final class Cinematic {
         for (double[] b : blasts) {
             if (b[5] == 0 && now >= b[0]) {
                 b[5] = 1;
-                ImpactFx.spawn(new Vec3(b[1], b[2], b[3]), b[4] > 0 ? ImpactFx.Kind.ICBM : ImpactFx.Kind.SALVO);
+                ImpactFx.spawn(new Vec3(b[1], b[2], b[3]), b[4] > 1 ? ImpactFx.Kind.CONDOR : b[4] > 0 ? ImpactFx.Kind.ICBM : ImpactFx.Kind.SALVO);
             }
         }
-        if (twin != null) {
+        if (condor != null) {
+            CondorScenes.sounds(seconds(0));
+            CondorScenes.particles(seconds(0));
+        } else if (twin != null) {
             TwinScenes.sounds(seconds(0));
             TwinScenes.particles(seconds(0));
         } else {
@@ -230,7 +246,9 @@ public final class Cinematic {
 
     public static Pose pose(float partial) {
         float s = seconds(partial);
-        Pose p = ground(twin != null ? TwinScenes.pose(s) : salvo(s));
+        Pose p = raw(s);
+        // dentro del silo la cámara sí va bajo tierra
+        if (!(condor != null && s >= 59 && s < 99)) p = ground(p);
         float shake = shake(s);
         if (shake > 0.001f) {
             double t = s * 37;
@@ -238,6 +256,11 @@ public final class Cinematic {
             p = new Pose(p.pos().add(off), p.yaw() + (float) Math.sin(t * 1.7) * shake * 3, p.pitch(), p.roll(), p.fov());
         }
         return p;
+    }
+
+    private static Pose raw(float s) {
+        if (condor != null) return CondorScenes.pose(s);
+        return twin != null ? TwinScenes.pose(s) : salvo(s);
     }
 
     /** Que la cámara no se meta en una montaña. */
@@ -254,14 +277,14 @@ public final class Cinematic {
     private static float shake(float s) {
         if (quakes.isEmpty()) return 0;
         float sum = 0;
-        Vec3 cam = twin != null ? TwinScenes.pose(s).pos() : salvo(s).pos();
+        Vec3 cam = raw(s).pos();
         for (double[] q : quakes) {
             double d = s - q[0];
             if (d < 0 || d >= q[5]) continue;
             double dist = cam.distanceTo(new Vec3(q[1], q[2], q[3]));
             sum += (float) ((q[5] - d) / q[5] * q[4] * Mth.clamp(q[6] / Math.max(10, dist), 0, 1));
         }
-        return Math.min(twin != null ? 2.2f : 0.9f, sum);
+        return Math.min(condor != null ? 2.6f : twin != null ? 2.2f : 0.9f, sum);
     }
 
     private static float near(Vec3 a, Vec3 b) {
@@ -425,6 +448,10 @@ public final class Cinematic {
     static int[] counts(float s) {
         double ticks = s * 20;
         int flying = 0, hit = 0;
+        if (condor != null) {
+            double t = ticks - condor.launchTick;
+            return new int[]{t >= 0 && t < condor.path.flightTicks ? 1 : 0, t >= condor.path.flightTicks ? 1 : 0, 1};
+        }
         if (twin != null) {
             for (int i = 0; i < 2; i++) {
                 double t = ticks - twin.launchTick[i];
@@ -444,6 +471,7 @@ public final class Cinematic {
 
     /** Texto de abajo según el momento de la cinemática. */
     static String caption(float s) {
+        if (condor != null) return CondorScenes.caption(s);
         if (twin != null) return TwinScenes.caption(s);
         if (s < 8) return "locked";
         if (s < 20) return "recon";
@@ -462,6 +490,7 @@ public final class Cinematic {
 
     /** Segundo en que termina la cuenta regresiva (despega el primero). */
     static float launchSecond() {
+        if (condor != null) return CondorPlan.LAUNCH_S;
         return twin != null ? TwinPlan.LAUNCH_S[0] : SalvoPlan.FIRST_LAUNCH_S;
     }
 
@@ -472,6 +501,10 @@ public final class Cinematic {
 
     /** Destello blanco de los impactos grandes (0 = nada, 1 = todo blanco). */
     static float flash(float s) {
+        if (condor != null) {
+            float d = s - condor.impactTick() / 20f;
+            return d >= 0 && d < 1.8f ? 1 - d / 1.8f : 0;
+        }
         if (twin == null) return 0;
         float f = 0;
         for (int i = 0; i < 2; i++) {

@@ -8,7 +8,7 @@
   "weapon.arsenalatomico.salvo": "Lluvia de Acero",
   "weapon.arsenalatomico.salvo.desc": "Una batería móvil dispara 24 misiles pequeños que caen en ráfaga sobre el blanco.",
   "weapon.arsenalatomico.icbm": "Cóndor",
-  "weapon.arsenalatomico.icbm.desc": "Un misil intercontinental enorme, sin carga nuclear, lanzado desde un búnker subterráneo.",
+  "weapon.arsenalatomico.icbm.desc": "Un misil intercontinental gigante que sale de un silo de concreto con alarmas. Suelta sus etapas en el cielo y la ojiva vuelve brillando como un meteoro.",
   "weapon.arsenalatomico.twin": "Cóndor Doble",
   "weapon.arsenalatomico.twin.desc": "Dos misiles intercontinentales gigantes: desde un submarino si hay mar cerca, o desde dos lanzadoras móviles de 8 ejes si no.",
   "weapon.arsenalatomico.nuke": "Protocolo Hongo",
@@ -56,5 +56,18 @@
   "hud.arsenalatomico.twin.raise_sea": "¡ALERTA! Abriendo las compuertas",
   "hud.arsenalatomico.twin.armed": "¡ALERTA! Misiles armados",
   "hud.arsenalatomico.twin.stow_land": "Las lanzadoras bajan los tubos vacíos",
-  "hud.arsenalatomico.twin.stow_sea": "El submarino se sumerge"
+  "hud.arsenalatomico.twin.stow_sea": "El submarino se sumerge",
+  "hud.arsenalatomico.condor.transit": "Enlace con el silo de misiles",
+  "hud.arsenalatomico.condor.silo": "Silo de misiles en espera",
+  "hud.arsenalatomico.condor.alarm": "¡ALERTA! Alarma de lanzamiento",
+  "hud.arsenalatomico.condor.doors": "¡ALERTA! Abriendo las compuertas del silo",
+  "hud.arsenalatomico.condor.descent": "Revisión del misil: todos los sistemas en verde",
+  "hud.arsenalatomico.condor.umbilical": "¡ALERTA! Soltando los brazos de servicio",
+  "hud.arsenalatomico.condor.keys": "Llaves de lanzamiento giradas",
+  "hud.arsenalatomico.condor.liftoff": "¡DESPEGUE! El Cóndor sale del silo",
+  "hud.arsenalatomico.condor.stage1": "Primera etapa separada",
+  "hud.arsenalatomico.condor.space": "Rumbo al borde del espacio",
+  "hud.arsenalatomico.condor.stage2": "Ojiva separada",
+  "hud.arsenalatomico.condor.reentry": "¡Reentrada! La ojiva cae envuelta en plasma",
+  "hud.arsenalatomico.condor.close": "El silo se cierra"
 }

@@ -26,6 +26,7 @@ public final class ClientEvents {
         if (e.phase != TickEvent.Phase.END) return;
         Cinematic.clientTick();
         ImpactFx.tick();
+        CondorFx.tick();
         Minecraft mc = Minecraft.getInstance();
         while (ClientSetup.WEAPONS.consumeClick()) {
             if (mc.screen == null && !Cinematic.isActive() && mc.player != null) mc.setScreen(new WeaponSelectScreen());
@@ -38,6 +39,8 @@ public final class ClientEvents {
         if (e.getStage() == RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
             LauncherRenderer.render(e.getPoseStack(), e.getCamera(), e.getPartialTick());
             TwinRenderer.render(e.getPoseStack(), e.getCamera(), e.getPartialTick());
+            SiloRenderer.render(e.getPoseStack(), e.getCamera(), e.getPartialTick());
+            CondorFx.render(e.getPoseStack(), e.getCamera(), e.getPartialTick());
             ImpactFx.render(e.getPoseStack(), e.getCamera(), e.getPartialTick());
             GroundGlow.render(e.getPoseStack(), e.getCamera(), e.getPartialTick());
         }

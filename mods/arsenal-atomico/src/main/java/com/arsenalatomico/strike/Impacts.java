@@ -44,6 +44,26 @@ public final class Impacts {
         IMPACTS++;
     }
 
+    /** El Cóndor: dos anillos de explosiones, más fuego y una columna de humo más alta (no nuclear). */
+    public static void huge(ServerLevel level, Vec3 at, float power) {
+        float p = (float) (power * Config.POWER.get());
+        Level.ExplosionInteraction mode = Config.DESTROY_BLOCKS.get() ? Level.ExplosionInteraction.TNT : Level.ExplosionInteraction.NONE;
+        level.explode(null, at.x, at.y + 1, at.z, p, mode);
+        for (int ring = 1; ring <= 2; ring++) {
+            int n = ring == 1 ? 6 : 10;
+            for (int i = 0; i < n; i++) {
+                double a = i * Math.PI * 2 / n + ring * 0.3;
+                double rr = p * (ring == 1 ? 0.7 : 1.35);
+                level.explode(null, at.x + Math.cos(a) * rr, at.y + 0.5, at.z + Math.sin(a) * rr, p * (ring == 1 ? 0.7f : 0.5f), mode);
+            }
+        }
+        level.sendParticles(ParticleTypes.EXPLOSION_EMITTER, at.x, at.y + 2, at.z, 12, p * 0.6, p * 0.3, p * 0.6, 0);
+        level.sendParticles(ParticleTypes.LARGE_SMOKE, at.x, at.y + 4, at.z, 260, p * 0.6, p * 0.5, p * 0.6, 0.06);
+        level.playSound(null, at.x, at.y, at.z, net.minecraft.sounds.SoundEvents.GENERIC_EXPLODE,
+                net.minecraft.sounds.SoundSource.HOSTILE, 20f, 0.4f);
+        IMPACTS++;
+    }
+
     /** Cuántos misiles han caído (lo usa la prueba de GitHub). */
     public static int IMPACTS;
 }

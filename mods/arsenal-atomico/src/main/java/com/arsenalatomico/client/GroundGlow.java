@@ -45,19 +45,22 @@ public final class GroundGlow {
             if (!(e instanceof MissileEntity m) || m.path() == null) continue;
             float age = m.age() + partial;
             if (age < m.ignite()) continue;
-            boolean big = m.kind() == 1;
+            boolean big = m.kind() >= 1;
+            // la ojiva del Cóndor no tiene motor; la primera etapa es enorme
+            if (m.kind() == 2 && m.age() >= com.arsenalatomico.CondorPlan.SEP2) continue;
             Vec3 p = e.getPosition(partial);
             Vec3 d = m.path().direction(m.age());
-            Vec3 tail = p.subtract(d.scale((big ? 10.5 : 1.6) * m.scale()));
+            double back = m.kind() == 2 ? (m.age() < com.arsenalatomico.CondorPlan.SEP1 ? 14 : 2.5) : big ? 10.5 : 1.6;
+            Vec3 tail = p.subtract(d.scale(back * m.scale()));
             if (tail.distanceToSqr(c) > 260 * 260) continue;
             int gy = level.getHeight(Heightmap.Types.MOTION_BLOCKING, Mth.floor(tail.x), Mth.floor(tail.z));
             float h = (float) Math.max(0, tail.y - gy);
-            float reach = big ? 70f : 22f;
+            float reach = m.kind() == 2 ? 110f : big ? 70f : 22f;
             if (h > reach) continue;
             float near = 1f - h / reach;
             float grow = Math.min(1f, (age - m.ignite()) / 6f);
             float flick = 0.82f + 0.12f * Mth.sin(time * 1.9f + e.getId()) + 0.06f * Mth.sin(time * 5.3f + e.getId() * 3);
-            float radius = (big ? 9f : 3.5f) + h * (big ? 0.35f : 0.3f);
+            float radius = (m.kind() == 2 ? 14f : big ? 9f : 3.5f) + h * (big ? 0.35f : 0.3f);
             LIGHTS.add(new float[]{(float) tail.x, (float) tail.y, (float) tail.z, radius, near * near * grow * flick * (big ? 1f : 0.75f)});
         }
         ImpactFx.lights(LIGHTS);

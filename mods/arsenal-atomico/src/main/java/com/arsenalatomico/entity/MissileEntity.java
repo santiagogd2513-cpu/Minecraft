@@ -102,7 +102,12 @@ public class MissileEntity extends Entity implements IEntityAdditionalSpawnData 
                 boomed = true;
                 com.arsenalatomico.client.MissileSounds.impact(path.p3, kind);
             }
-            if (kind == 1) bigTrail(p, d);
+            if (kind == 2) {
+                if (age == com.arsenalatomico.CondorPlan.SEP1 || age == com.arsenalatomico.CondorPlan.SEP2) {
+                    com.arsenalatomico.client.MissileSounds.separate(this, age == com.arsenalatomico.CondorPlan.SEP1 ? 1 : 2);
+                }
+                condorTrail(p, d);
+            } else if (kind == 1) bigTrail(p, d);
             else trail(p, d);
         } else if (age > path.flightTicks + 60) {
             discard();   // por si el LaunchManager ya no está (no debería pasar)
@@ -132,6 +137,51 @@ public class MissileEntity extends Entity implements IEntityAdditionalSpawnData 
             }
             l.addAlwaysVisibleParticle(ParticleTypes.LARGE_SMOKE, true, tail.x, tail.y, tail.z,
                     (random.nextDouble() - 0.5) * 0.2, 0.05, (random.nextDouble() - 0.5) * 0.2);
+        }
+    }
+
+    /** Estela del Cóndor: primero la etapa grande (con la nube del silo), luego la segunda, y la ojiva con plasma. */
+    private void condorTrail(Vec3 p, Vec3 d) {
+        Level l = level();
+        int s1 = com.arsenalatomico.CondorPlan.SEP1, s2 = com.arsenalatomico.CondorPlan.SEP2;
+        if (age < s1) {
+            Vec3 tail = p.subtract(d.scale(13.8 * scale));
+            for (int i = 0; i < 10; i++) {
+                double k = 0.8 + random.nextDouble() * 0.8;
+                l.addAlwaysVisibleParticle(ParticleTypes.FLAME, true, tail.x, tail.y, tail.z,
+                        -d.x * k + (random.nextDouble() - 0.5) * 0.25, -d.y * k + (random.nextDouble() - 0.5) * 0.25,
+                        -d.z * k + (random.nextDouble() - 0.5) * 0.25);
+            }
+            l.addAlwaysVisibleParticle(ParticleTypes.LAVA, true, tail.x, tail.y, tail.z, 0, 0, 0);
+            for (int i = 0; i < 4; i++) {
+                Vec3 q = tail.subtract(d.scale(5 + i * 3)).add((random.nextDouble() - 0.5) * 2.4, (random.nextDouble() - 0.5) * 2.4,
+                        (random.nextDouble() - 0.5) * 2.4);
+                l.addAlwaysVisibleParticle(ParticleTypes.CAMPFIRE_COSY_SMOKE, true, q.x, q.y, q.z,
+                        (random.nextDouble() - 0.5) * 0.04, 0.01, (random.nextDouble() - 0.5) * 0.04);
+            }
+            if (age < 70) {
+                // el humo y el fuego que salen por la boca del silo
+                Vec3 rim = path.p0.add(0, 14.5, 0);
+                for (int i = 0; i < 10; i++) {
+                    l.addAlwaysVisibleParticle(i % 3 == 0 ? ParticleTypes.LARGE_SMOKE : ParticleTypes.CAMPFIRE_SIGNAL_SMOKE, true,
+                            rim.x + (random.nextDouble() - 0.5) * 6, rim.y, rim.z + (random.nextDouble() - 0.5) * 6,
+                            (random.nextDouble() - 0.5) * 0.9, 0.05 + random.nextDouble() * 0.2, (random.nextDouble() - 0.5) * 0.9);
+                }
+            }
+        } else if (age < s2) {
+            Vec3 tail = p.subtract(d.scale(2.2 * scale));
+            for (int i = 0; i < 4; i++) {
+                double k = 0.5 + random.nextDouble() * 0.5;
+                l.addAlwaysVisibleParticle(ParticleTypes.FLAME, true, tail.x, tail.y, tail.z, -d.x * k, -d.y * k, -d.z * k);
+            }
+            l.addAlwaysVisibleParticle(ParticleTypes.CAMPFIRE_COSY_SMOKE, true, tail.x, tail.y, tail.z, 0, 0.01, 0);
+        } else {
+            // la ojiva entrando a la atmósfera: chispas de plasma que quedan atrás
+            for (int i = 0; i < 4; i++) {
+                Vec3 q = p.add((random.nextDouble() - 0.5) * 1.2, (random.nextDouble() - 0.5) * 1.2, (random.nextDouble() - 0.5) * 1.2);
+                l.addAlwaysVisibleParticle(i == 0 ? ParticleTypes.END_ROD : ParticleTypes.FLAME, true, q.x, q.y, q.z,
+                        -d.x * 0.3, -d.y * 0.3, -d.z * 0.3);
+            }
         }
     }
 

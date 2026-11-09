@@ -35,7 +35,7 @@ public final class LauncherRenderer {
         Vec3 c = cam.getPosition();
         if (c.distanceToSqr(site) > 320 * 320) return;
         // después de la cinemática el camión queda recogido
-        boolean mine = Cinematic.isActive() && Cinematic.twin == null;
+        boolean mine = Cinematic.isActive() && Cinematic.type() == com.arsenalatomico.WeaponType.SALVO;
         float now = mine ? Cinematic.seconds(partial) : 0;
         float elev = mine ? Cinematic.rackElevation(now) : 0;
         float legs = mine ? Cinematic.legDeploy(now) : 0;
