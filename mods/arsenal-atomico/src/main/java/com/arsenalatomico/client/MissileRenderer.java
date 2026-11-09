@@ -30,8 +30,17 @@ public class MissileRenderer extends EntityRenderer<MissileEntity> {
         ps.scale(s, s, s);
         Matrix4f m = ps.last().pose();
         VertexConsumer v = buf.getBuffer(RenderType.debugQuads());
+        if (e.kind() == 4) {
+            // Protocolo Sol Negro: el misil grande, con su llamarada de cuatro toberas
+            BigMissileModel.body(v, m);
+            float t = e.age() + partial;
+            BigMissileModel.flame(v, buf.getBuffer(RenderType.lightning()), m, Math.min(1f, 0.35f + t / 25f), t);
+            ps.popPose();
+            super.render(e, yaw, partial, ps, buf, light);
+            return;
+        }
         if (e.kind() >= 3) {
-            // Protocolo Hongo: sale encendido del silo
+            // Protocolo Hongo (y los misiles chiquitos y medianos de la base, más pequeños)
             NukeModel.body(v, m);
             float t = e.age() + partial;
             NukeModel.flame(v, buf.getBuffer(RenderType.lightning()), m, Math.min(1f, 0.35f + t / 25f), t);

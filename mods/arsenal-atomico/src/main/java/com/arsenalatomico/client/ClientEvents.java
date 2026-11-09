@@ -42,6 +42,7 @@ public final class ClientEvents {
             TwinRenderer.render(e.getPoseStack(), e.getCamera(), e.getPartialTick());
             SiloRenderer.render(e.getPoseStack(), e.getCamera(), e.getPartialTick());
             NukeRenderer.render(e.getPoseStack(), e.getCamera(), e.getPartialTick());
+            BaseRenderer.render(e.getPoseStack(), e.getCamera(), e.getPartialTick());
             CondorFx.render(e.getPoseStack(), e.getCamera(), e.getPartialTick());
             ImpactFx.render(e.getPoseStack(), e.getCamera(), e.getPartialTick());
             NukeFx.render(e.getPoseStack(), e.getCamera(), e.getPartialTick());

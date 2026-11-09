@@ -67,7 +67,8 @@ public final class MissileSounds {
 
     public static void impact(Vec3 at, int kind) {
         if (kind >= 3) {
-            NukeFx.spawn(at);
+            NukeFx.spawn(at, kind == 4 ? (float) com.arsenalatomico.BaseLayout.size(0) : kind == 5 ? (float) com.arsenalatomico.BaseLayout.size(1)
+                    : kind == 6 ? (float) com.arsenalatomico.BaseLayout.size(4) : 1f);
             return;
         }
         ImpactFx.spawn(at, kind == 2 ? ImpactFx.Kind.CONDOR : kind == 1 ? ImpactFx.Kind.ICBM : ImpactFx.Kind.SALVO);

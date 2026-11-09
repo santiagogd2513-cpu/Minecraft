@@ -1,0 +1,22 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "minecraft:block/gray_concrete",
+    "top": "arsenalatomico:block/silo_panel_top",
+    "side": "arsenalatomico:block/silo_panel_side"
+  },
+  "elements": [
+    {
+      "from": [1, 0, 1],
+      "to": [15, 14, 15],
+      "faces": {
+        "down": {"texture": "#side", "cullface": "down"},
+        "up": {"texture": "#top"},
+        "north": {"texture": "#side", "uv": [1, 2, 15, 16]},
+        "south": {"texture": "#side", "uv": [1, 2, 15, 16]},
+        "west": {"texture": "#side", "uv": [1, 2, 15, 16]},
+        "east": {"texture": "#side", "uv": [1, 2, 15, 16]}
+      }
+    }
+  ]
+}

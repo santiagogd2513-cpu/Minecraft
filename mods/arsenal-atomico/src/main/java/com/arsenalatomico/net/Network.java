@@ -7,7 +7,7 @@ import net.minecraftforge.network.NetworkRegistry;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 public final class Network {
-    private static final String VERSION = "3";
+    private static final String VERSION = "4";
     public static final SimpleChannel CHANNEL = NetworkRegistry.newSimpleChannel(
             new ResourceLocation(ArsenalAtomico.MODID, "main"), () -> VERSION, VERSION::equals, VERSION::equals);
 
@@ -31,6 +31,12 @@ public final class Network {
         CHANNEL.messageBuilder(FirePacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
                 .encoder(FirePacket::encode).decoder(FirePacket::new)
                 .consumerMainThread(FirePacket::handle).add();
+        CHANNEL.messageBuilder(OpenTargetPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(OpenTargetPacket::encode).decoder(OpenTargetPacket::new)
+                .consumerMainThread(OpenTargetPacket::handle).add();
+        CHANNEL.messageBuilder(FireSiloPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .encoder(FireSiloPacket::encode).decoder(FireSiloPacket::new)
+                .consumerMainThread(FireSiloPacket::handle).add();
     }
 
     private Network() {}

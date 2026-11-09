@@ -74,13 +74,13 @@ final class RideScenes {
             Vec3 cam = rel(t, s, 2, Mth.lerp(u, -10, -18), Mth.lerp(u, 3, 15));
             return look(cam, center, 0, 60);
         }
-        // llegada a la base
+        // llegada a la base: primero desde el aire (toda la base), luego junto al edificio de acceso
         if (s < 7) {
             float u = smooth(s / 7);
-            Vec3 cam = lerp(base(-70, 34, 34), base(-52, 26, 20), u);
-            return look(cam, lerp(base(-20, 0, 0), center, Math.min(1, u * 1.4)), 0, 55);
+            Vec3 cam = lerp(base(-100, 50, 46), base(-80, 34, 28), u);
+            return look(cam, lerp(base(-10, 0, 0), center, Math.min(1, u * 1.4)), 0, 58);
         }
-        Vec3 cam = base(-14, 3, 1.8);
+        Vec3 cam = base(-44, 4, 2.2);
         return look(cam, center, 0, 64);
     }
 

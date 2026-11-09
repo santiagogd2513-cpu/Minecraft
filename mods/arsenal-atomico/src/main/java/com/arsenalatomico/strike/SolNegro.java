@@ -3,7 +3,6 @@ package com.arsenalatomico.strike;
 import com.arsenalatomico.ArsenalAtomico;
 import com.arsenalatomico.Config;
 import com.arsenalatomico.NukePlan;
-import com.arsenalatomico.TwinPlan;
 import com.arsenalatomico.WeaponType;
 import com.arsenalatomico.entity.TruckEntity;
 import com.arsenalatomico.net.BasePacket;
@@ -57,10 +56,10 @@ import java.util.UUID;
  */
 @Mod.EventBusSubscriber(modid = ArsenalAtomico.MODID)
 public final class SolNegro {
-    /** El Sol Negro usa el guion del Protocolo Hongo desde el segundo 90 (dentro del silo). */
-    public static final int OFFSET = 90;
-    /** Lo más cerca que puede caer la bomba de la base (el quemado llega a ~150 bloques). */
-    public static final int SAFE = (int) Math.round(NukePlan.SCORCH_R * NukeCrater.THERMO) + 60;
+    /** Lo más cerca que puede caer el Sol Negro de la base (el quemado llega a ~150 bloques). */
+    public static final int SAFE = com.arsenalatomico.BaseLayout.safe(0);
+    /** Lo más lejos que llegan los misiles de los silos. */
+    public static final int MAX_RANGE = 4000;
     /** Segundos que dura cada parte del viaje. */
     public static final int RIDE_S = 16, ARRIVE_S = 12;
 
@@ -74,7 +73,7 @@ public final class SolNegro {
         Phase phase;
         long since;
         TruckEntity truck;
-        BunkerBuilder builder;
+        BaseBuilder builder;
         final List<ChunkPos> chunks = new ArrayList<>();
         BlockPos ticket;
 
@@ -101,6 +100,9 @@ public final class SolNegro {
         public Vec3 site;
         public float yaw;
         public boolean built;
+        public int version;
+        /** Silos cargados (bit 1–5: los chiquitos y los medianos; el Sol Negro siempre está). */
+        public int loaded = FULL;
 
         static BaseData load(CompoundTag t) {
             BaseData d = new BaseData();
@@ -108,6 +110,8 @@ public final class SolNegro {
                 d.site = new Vec3(t.getDouble("x"), t.getDouble("y"), t.getDouble("z"));
                 d.yaw = t.getFloat("yaw");
                 d.built = t.getBoolean("built");
+                d.version = t.getInt("version");
+                d.loaded = t.contains("loaded") ? t.getInt("loaded") : FULL;
             }
             return d;
         }
@@ -120,9 +124,30 @@ public final class SolNegro {
                 t.putDouble("z", site.z);
                 t.putFloat("yaw", yaw);
                 t.putBoolean("built", built);
+                t.putInt("version", version);
+                t.putInt("loaded", loaded);
             }
             return t;
         }
+
+        public boolean isLoaded(int silo) {
+            return silo == 0 || (loaded & (1 << silo)) != 0;
+        }
+
+        public void setLoaded(int silo, boolean on) {
+            if (silo == 0) return;
+            loaded = on ? loaded | (1 << silo) : loaded & ~(1 << silo);
+            setDirty();
+        }
+    }
+
+    /** Todos los silos llenos (la base empieza cargada). */
+    public static final int FULL = 0b111110;
+
+    /** Les cuenta a todos los jugadores dónde está la base y qué silos tienen misil. */
+    public static void broadcast(ServerLevel level) {
+        BaseData b = base(level);
+        if (b.site != null) Network.CHANNEL.send(PacketDistributor.ALL.noArg(), new BasePacket(b.site, b.yaw, b.loaded));
     }
 
     public static BaseData base(ServerLevel level) {
@@ -131,7 +156,7 @@ public final class SolNegro {
 
     /** Del sistema de la base (a hacia el silo, b a la derecha, alto desde la plataforma) al mundo. */
     private static Vec3 at(BaseData b, double a, double side, double up) {
-        return NukePlan.local(new Vec3(Mth.floor(b.site.x) + 0.5, Mth.floor(b.site.y), Mth.floor(b.site.z) + 0.5), b.yaw, a, side, up);
+        return com.arsenalatomico.BaseLayout.local(b.site, b.yaw, a, side, up);
     }
 
     /** Sobre el suelo en esa columna (para el camión fuera de la plataforma). */
@@ -152,13 +177,16 @@ public final class SolNegro {
         Vec3 target = Vec3.atBottomCenterOf(targetBlock).add(0, 0.5, 0);
         BaseData base = base(level);
         long seed = level.getRandom().nextLong();
-        if (base.site == null) {
+        if (base.site == null || base.version < com.arsenalatomico.BaseLayout.VERSION) {
+            // la base nueva (las viejas, iguales al búnker del Hongo, se quedan como ruinas)
             LaunchManager.Site site = chooseBase(level, player.position(), target, RandomSource.create(seed));
             base.site = site.pos();
             base.yaw = site.yaw();
             base.built = false;
+            base.version = com.arsenalatomico.BaseLayout.VERSION;
+            base.loaded = FULL;
             base.setDirty();
-            Network.CHANNEL.send(PacketDistributor.ALL.noArg(), new BasePacket(base.site, base.yaw));
+            broadcast(level);
         } else {
             double d = Math.hypot(base.site.x - target.x, base.site.z - target.z);
             if (d < SAFE) {
@@ -174,9 +202,8 @@ public final class SolNegro {
         player.displayClientMessage(Component.translatable("message.arsenalatomico.locked", targetBlock.getX(), targetBlock.getY(), targetBlock.getZ())
                 .withStyle(ChatFormatting.GOLD), true);
         if (!base.built) {
-            int ground = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, Mth.floor(base.site.x), Mth.floor(base.site.z));
-            m.builder = BunkerBuilder.build(level, base.site, base.yaw, ground, true);
-            keepLoaded(level, m, base.site, 5);
+            m.builder = BaseBuilder.build(level, base.site, base.yaw);
+            keepLoaded(level, m, base.site, 6);
         }
         // ya está en la base: no hace falta el camión
         if (player.position().distanceTo(base.site) < 60) {
@@ -199,7 +226,7 @@ public final class SolNegro {
     private static LaunchManager.Site chooseBase(ServerLevel level, Vec3 player, Vec3 target, RandomSource r) {
         Vec3 land = null;
         for (int tries = 0; tries < 16 && land == null; tries++) {
-            Vec3 c = Sites.land(level, player, target, r, 90, 160, 14, 14);
+            Vec3 c = Sites.land(level, player, target, r, 130, 200, 20, 20);
             if (Math.hypot(c.x - target.x, c.z - target.z) >= SAFE + 20) land = c;
         }
         if (land == null) {
@@ -210,8 +237,8 @@ public final class SolNegro {
             Integer y = Sites.ground(level, Mth.floor(c.x), Mth.floor(c.z));
             land = new Vec3(Mth.floor(c.x) + 0.5, y != null ? y : player.y, Mth.floor(c.z) + 0.5);
         }
-        Vec3 rim = new Vec3(land.x, BunkerBuilder.rimHeight(level, land.y), land.z);
-        return new LaunchManager.Site(rim, NukePlan.snap(Sites.yawTowards(rim, target)), TwinPlan.LAND);
+        Vec3 rim = new Vec3(land.x, com.arsenalatomico.BaseLayout.rimHeight(level.getMinBuildHeight(), land.y), land.z);
+        return new LaunchManager.Site(rim, NukePlan.snap(Sites.yawTowards(rim, target)), 0);
     }
 
     private static Vec3 truckSpawn(ServerLevel level, ServerPlayer player) {
@@ -263,18 +290,72 @@ public final class SolNegro {
         if (m == null || m.phase != Phase.WALKING) return;
         ServerLevel level = player.serverLevel();
         BaseData b = base(level);
-        if (b.site == null || player.position().distanceTo(Vec3.atCenterOf(BunkerBuilder.consolePos(b.site, b.yaw))) > 8) return;
+        if (b.site == null || player.position().distanceTo(Vec3.atCenterOf(BaseBuilder.consolePos(b.site, b.yaw))) > 8) return;
         if (m.builder != null) {
             m.builder.step(Integer.MAX_VALUE);
             b.built = true;
             b.setDirty();
         }
         setPhase(m, Phase.FIRING, level);
-        LaunchManager.Site site = new LaunchManager.Site(b.site, b.yaw, TwinPlan.LAND);
-        LaunchManager.begin(level, player.getUUID(), WeaponType.THERMO, m.target, site, m.seed);
-        Network.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player),
-                new StartCinematicPacket(WeaponType.THERMO, m.targetBlock, b.site, b.yaw, TwinPlan.LAND, m.seed, WeaponType.THERMO.ticks()));
+        launch(level, player, m.target, m.targetBlock, m.seed, 0);
         release(level, m);
+    }
+
+    /** Lanza desde un silo de la base (0 = Sol Negro) y empieza la cinemática del jugador. */
+    private static void launch(ServerLevel level, ServerPlayer player, Vec3 target, BlockPos targetBlock, long seed, int silo) {
+        BaseData b = base(level);
+        LaunchManager.Site site = new LaunchManager.Site(b.site, b.yaw, silo);
+        com.arsenalatomico.BasePlan plan = new com.arsenalatomico.BasePlan(b.site, b.yaw, target, seed, silo);
+        LaunchManager.begin(level, player.getUUID(), WeaponType.THERMO, target, site, seed);
+        Network.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player),
+                new StartCinematicPacket(WeaponType.THERMO, targetBlock, b.site, b.yaw, silo, seed, plan.duration));
+    }
+
+    /** Clic derecho en el panel de un silo chiquito o mediano. */
+    public static void panel(ServerPlayer player, BlockPos pos) {
+        ServerLevel level = player.serverLevel();
+        BaseData b = base(level);
+        if (b.site == null || !b.built) return;
+        int silo = BaseBuilder.siloAt(b.site, b.yaw, pos);
+        if (silo < 1) return;
+        if (LaunchManager.anyBusy(player)) {
+            player.displayClientMessage(Component.translatable("message.arsenalatomico.busy").withStyle(ChatFormatting.RED), true);
+            return;
+        }
+        if (!b.isLoaded(silo)) {
+            player.displayClientMessage(Component.translatable("message.arsenalatomico.silo.empty", silo).withStyle(ChatFormatting.YELLOW), false);
+            return;
+        }
+        Network.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player),
+                new com.arsenalatomico.net.OpenTargetPacket(silo, com.arsenalatomico.BaseLayout.safe(silo)));
+    }
+
+    /** El jugador escribió las coordenadas en el panel y oprimió LANZAR. */
+    public static void fireSilo(ServerPlayer player, int silo, int x, int z) {
+        ServerLevel level = player.serverLevel();
+        BaseData b = base(level);
+        if (b.site == null || !b.built || silo < 1 || silo >= com.arsenalatomico.BaseLayout.COUNT || !b.isLoaded(silo)) return;
+        if (LaunchManager.anyBusy(player)) return;
+        double[] pp = com.arsenalatomico.BaseLayout.panel(silo);
+        if (player.position().distanceTo(at(b, pp[0], pp[1], com.arsenalatomico.BaseLayout.FLOOR)) > 8) return;
+        double d = Math.hypot(x + 0.5 - b.site.x, z + 0.5 - b.site.z);
+        int safe = com.arsenalatomico.BaseLayout.safe(silo);
+        if (d < safe) {
+            player.displayClientMessage(Component.translatable("message.arsenalatomico.silo.too_close", (int) d, safe).withStyle(ChatFormatting.RED), false);
+            return;
+        }
+        if (d > MAX_RANGE) {
+            player.displayClientMessage(Component.translatable("message.arsenalatomico.silo.too_far", MAX_RANGE).withStyle(ChatFormatting.RED), false);
+            return;
+        }
+        // la altura del suelo en el blanco (carga ese pedazo del mundo si hace falta)
+        level.getChunk(x >> 4, z >> 4);
+        int y = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z);
+        BlockPos tb = new BlockPos(x, y, z);
+        b.setLoaded(silo, false);
+        broadcast(level);
+        launch(level, player, Vec3.atBottomCenterOf(tb).add(0, 0.5, 0), tb, level.getRandom().nextLong(), silo);
+        player.displayClientMessage(Component.translatable("message.arsenalatomico.locked", x, y, z).withStyle(ChatFormatting.GOLD), true);
     }
 
     // ------------------------------------------------------------------ cada tick
@@ -362,8 +443,8 @@ public final class SolNegro {
                         // queda parqueado y suelto: el jugador lo puede manejar
                         m.truck.setMission(false);
                     }
-                    Vec3 door = at(b, NukePlan.STAIR_A + 6, 2, 0.1);
-                    p.teleportTo(level, door.x, door.y, door.z, b.yaw + 180, 5);
+                    Vec3 door = at(b, com.arsenalatomico.BaseLayout.DOOR_A, 0, 0.1);
+                    p.teleportTo(level, door.x, door.y, door.z, b.yaw, 5);
                     setPhase(m, Phase.WALKING, level);
                     p.displayClientMessage(Component.translatable("message.arsenalatomico.thermo.walk").withStyle(ChatFormatting.GOLD), false);
                 }
@@ -390,7 +471,7 @@ public final class SolNegro {
             b.built = true;
             b.setDirty();
         }
-        Vec3 start = onGround(level, at(b, -50, 0, 0));
+        Vec3 start = onGround(level, at(b, -68, 0, 0));
         float yaw = b.yaw;   // mirando hacia el silo
         if (m.truck == null || m.truck.isRemoved()) {
             m.truck = TruckEntity.create(level, start, yaw, true);
@@ -401,11 +482,11 @@ public final class SolNegro {
         m.truck.setYRot(yaw);
         p.teleportTo(level, start.x, start.y + 1.5, start.z, yaw, 0);
         p.startRiding(m.truck, true);
-        // por el portón (detrás de la caseta), rodea la caseta y para frente a la puerta
-        double top = Math.floor(b.site.y) + 0.05;
-        // (entre el portón y la caseta hay 6 bloques: el camión pasa por a = -32)
-        Vec3 gate = at(b, -38, 0, 0), in = at(b, -32, 0, 0.05);
-        m.truck.driveTo(List.of(onGround(level, gate), new Vec3(in.x, top, in.z), at(b, -32, 8, 0.05), at(b, -17, 8, 0.05)));
+        // entra por el portón y se parquea junto al edificio de acceso
+        Vec3 gate = at(b, com.arsenalatomico.BaseLayout.GATE_A - 2, 0, 0);
+        m.truck.driveTo(List.of(onGround(level, gate), at(b, -52, 0, 0.05),
+                at(b, com.arsenalatomico.BaseLayout.PARK_A + 2, com.arsenalatomico.BaseLayout.PARK_B, 0.05),
+                at(b, com.arsenalatomico.BaseLayout.PARK_A, com.arsenalatomico.BaseLayout.PARK_B, 0.05)));
         setPhase(m, Phase.ARRIVING, level);
         Network.CHANNEL.send(PacketDistributor.PLAYER.with(() -> p), new RidePacket(m.truck.getId(), 1, ARRIVE_S * 20, b.site, b.yaw, m.targetBlock));
     }
@@ -449,7 +530,9 @@ public final class SolNegro {
     public static void onLogin(PlayerEvent.PlayerLoggedInEvent e) {
         if (e.getEntity() instanceof ServerPlayer p) {
             BaseData b = base(p.serverLevel());
-            if (b.site != null) Network.CHANNEL.send(PacketDistributor.PLAYER.with(() -> p), new BasePacket(b.site, b.yaw));
+            if (b.site != null && b.version >= com.arsenalatomico.BaseLayout.VERSION) {
+                Network.CHANNEL.send(PacketDistributor.PLAYER.with(() -> p), new BasePacket(b.site, b.yaw, b.loaded));
+            }
         }
     }
 

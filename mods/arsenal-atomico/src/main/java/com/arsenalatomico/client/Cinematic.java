@@ -56,6 +56,8 @@ public final class Cinematic {
     static CondorPlan condor;
     /** Plan del Protocolo Hongo (null en las otras armas). */
     static NukePlan nuke;
+    /** Un lanzamiento desde la Base Sol Negro (el Sol Negro o un silo chiquito o mediano). */
+    static com.arsenalatomico.BasePlan base;
     /** Despegues e impactos que hacen temblar la cámara: {segundo, x, y, z, fuerza, duración, alcance}. */
     private static final java.util.List<double[]> quakes = new java.util.ArrayList<>();
     /** Impactos de la cinemática: {segundo, x, y, z, grande (1/0), ya dibujado (1/0)}. */
@@ -121,16 +123,27 @@ public final class Cinematic {
         condor = null;
         nuke = null;
         ride = false;
-        if (type == WeaponType.NUKE || type == WeaponType.THERMO) {
+        base = null;
+        if (type == WeaponType.THERMO) {
+            // desde la Base Sol Negro: «mode» es el silo
+            plan = null;
+            twin = null;
+            base = new com.arsenalatomico.BasePlan(site, yaw, target, p.seed, p.mode);
+            BaseScenes.reset();
+            double k = com.arsenalatomico.BaseLayout.size(base.silo);
+            Vec3 a = base.path.p0, b = base.path.p3;
+            quakes.add(new double[]{base.launchSecond(), a.x, a.y + 12, a.z, 1.2 + 0.6 * k, 8, 60 + 50 * k});
+            quakes.add(new double[]{base.impactSecond(), b.x, b.y, b.z, 2 + 1.8 * k, 6 + 4 * k, 300 + 500 * k});
+            blasts.add(new double[]{base.impactSecond(), b.x, b.y, b.z, 10 + k, 0});
+        } else if (type == WeaponType.NUKE) {
             plan = null;
             twin = null;
             nuke = new NukePlan(site, yaw, target, p.seed);
             NukeScenes.reset();
-            boolean thermo = type == WeaponType.THERMO;
             Vec3 a = nuke.path.p0, b = nuke.path.p3;
             quakes.add(new double[]{nuke.launchTick / 20.0, a.x, a.y + 12, a.z, 1.8, 8, 110});
-            quakes.add(new double[]{nuke.impactSecond(), b.x, b.y, b.z, thermo ? 4.6 : 3.6, thermo ? 12 : 9, thermo ? 1000 : 700});
-            blasts.add(new double[]{nuke.impactSecond(), b.x, b.y, b.z, thermo ? 4 : 3, 0});
+            quakes.add(new double[]{nuke.impactSecond(), b.x, b.y, b.z, 3.6, 9, 700});
+            blasts.add(new double[]{nuke.impactSecond(), b.x, b.y, b.z, 3, 0});
         } else if (type == WeaponType.ICBM) {
             plan = null;
             twin = null;
@@ -160,8 +173,6 @@ public final class Cinematic {
         }
         duration = p.ticks;
         startTick = clientTicks;
-        // el Sol Negro empieza dentro del silo: el jugador ya bajó caminando hasta el centro de mando
-        if (type == WeaponType.THERMO) startTick -= com.arsenalatomico.strike.SolNegro.OFFSET * 20L;
         eye = player.getEyePosition(1f);
         playerYaw = player.getYRot();
         nextBeep = 0;
@@ -172,7 +183,8 @@ public final class Cinematic {
         previous = mc.options.getCameraType();
         mc.options.setCameraType(CameraType.FIRST_PERSON);
         mc.setCameraEntity(camera);
-        if (nuke != null) NukeRenderer.show(nuke, startTick, duration);
+        if (base != null) BaseRenderer.show(base, startTick, duration);
+        else if (nuke != null) NukeRenderer.show(nuke, startTick, duration);
         else if (condor != null) SiloRenderer.show(condor, startTick, duration);
         else if (twin != null) TwinRenderer.show(twin, startTick, duration);
         else LauncherRenderer.show(site, yaw, startTick, duration);
@@ -199,6 +211,7 @@ public final class Cinematic {
         twin = null;
         condor = null;
         nuke = null;
+        base = null;
         quakes.clear();
         blasts.clear();
         duration = p.ticks;
@@ -248,7 +261,7 @@ public final class Cinematic {
             if (b[5] == 0 && now >= b[0]) {
                 b[5] = 1;
                 if (b[4] > 2) {
-                    NukeFx.spawn(new Vec3(b[1], b[2], b[3]), b[4] > 3 ? (float) com.arsenalatomico.strike.NukeCrater.THERMO : 1f);
+                    NukeFx.spawn(new Vec3(b[1], b[2], b[3]), b[4] >= 10 ? (float) (b[4] - 10) : 1f);
                     continue;
                 }
                 ImpactFx.spawn(new Vec3(b[1], b[2], b[3]), b[4] > 1 ? ImpactFx.Kind.CONDOR : b[4] > 0 ? ImpactFx.Kind.ICBM : ImpactFx.Kind.SALVO);
@@ -256,6 +269,9 @@ public final class Cinematic {
         }
         if (ride) {
             RideScenes.sounds(seconds(0));
+        } else if (base != null) {
+            BaseScenes.sounds(seconds(0));
+            BaseScenes.particles(seconds(0));
         } else if (nuke != null) {
             NukeScenes.sounds(seconds(0));
             NukeScenes.particles(seconds(0));
@@ -315,7 +331,8 @@ public final class Cinematic {
         float s = seconds(partial);
         Pose p = raw(s);
         // dentro del silo la cámara sí va bajo tierra
-        if (!(condor != null && s >= 59 && s < 99) && !(nuke != null && NukeScenes.underground(s))) p = ground(p);
+        if (!(condor != null && s >= 59 && s < 99) && !(nuke != null && NukeScenes.underground(s))
+                && !(base != null && BaseScenes.underground(s))) p = ground(p);
         float shake = shake(s);
         if (shake > 0.001f) {
             double t = s * 37;
@@ -327,6 +344,7 @@ public final class Cinematic {
 
     private static Pose raw(float s) {
         if (ride) return RideScenes.pose(s);
+        if (base != null) return BaseScenes.pose(s);
         if (nuke != null) return NukeScenes.pose(s);
         if (condor != null) return CondorScenes.pose(s);
         return twin != null ? TwinScenes.pose(s) : salvo(s);
@@ -521,6 +539,10 @@ public final class Cinematic {
             double t = ticks - nuke.launchTick;
             return new int[]{t >= 0 && t < nuke.path.flightTicks ? 1 : 0, t >= nuke.path.flightTicks ? 1 : 0, 1};
         }
+        if (base != null) {
+            double t = ticks - base.launchTick;
+            return new int[]{t >= 0 && t < base.path.flightTicks ? 1 : 0, t >= base.path.flightTicks ? 1 : 0, 1};
+        }
         if (condor != null) {
             double t = ticks - condor.launchTick;
             return new int[]{t >= 0 && t < condor.path.flightTicks ? 1 : 0, t >= condor.path.flightTicks ? 1 : 0, 1};
@@ -545,6 +567,7 @@ public final class Cinematic {
     /** Texto de abajo según el momento de la cinemática. */
     static String caption(float s) {
         if (ride) return RideScenes.caption(s);
+        if (base != null) return BaseScenes.caption(s);
         if (nuke != null) return NukeScenes.caption(s);
         if (condor != null) return CondorScenes.caption(s);
         if (twin != null) return TwinScenes.caption(s);
@@ -565,6 +588,7 @@ public final class Cinematic {
 
     /** Segundo en que termina la cuenta regresiva (despega el primero). */
     static float launchSecond() {
+        if (base != null) return base.launchSecond();
         if (nuke != null) return NukePlan.LAUNCH_S;
         if (condor != null) return CondorPlan.LAUNCH_S;
         return twin != null ? TwinPlan.LAUNCH_S[0] : SalvoPlan.FIRST_LAUNCH_S;
@@ -572,11 +596,13 @@ public final class Cinematic {
 
     /** Desde cuándo suena la alarma (el texto parpadea en rojo). */
     static float alarmSecond() {
+        if (base != null) return Math.max(0, base.launchSecond() - 10);
         return twin != null || nuke != null ? 46 : 44;
     }
 
     /** Destello blanco de los impactos grandes (0 = nada, 1 = todo blanco). */
     static float flash(float s) {
+        if (base != null) return BaseScenes.flash(s);
         if (nuke != null) return NukeScenes.flash(s);
         if (condor != null) {
             float d = s - condor.impactTick() / 20f;

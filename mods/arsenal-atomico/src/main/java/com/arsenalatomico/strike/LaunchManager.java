@@ -80,7 +80,7 @@ public final class LaunchManager {
         final WeaponType type;
         final List<Shot> shots = new ArrayList<>();
         final long start;
-        final long end;
+        long end;
         final BlockPos ticketOwner;
         final List<ChunkPos> chunks = new ArrayList<>();
         /** El silo del Cóndor (se construye de a poco y al final se cierra). */
@@ -89,8 +89,10 @@ public final class LaunchManager {
         /** El búnker del Protocolo Hongo y el cráter que deja la bomba. */
         BunkerBuilder bunker;
         NukeCrater crater;
-        /** El Sol Negro sale de la Base Sol Negro (que ya existe): al final solo se cierra el silo. */
+        /** Sale de la Base Sol Negro (que ya existe): al final solo se cierra la compuerta de ese silo. */
         boolean thermo;
+        int silo;
+        float baseYaw;
 
         Strike(@Nullable UUID owner, ServerLevel level, WeaponType type, long start, int lastImpact, BlockPos ticketOwner) {
             this.owner = owner;
@@ -212,16 +214,21 @@ public final class LaunchManager {
         long now = level.getGameTime();
         Strike s;
         if (type == WeaponType.THERMO) {
-            // el reloj arranca 90 s «antes»: la cinemática es la del Protocolo Hongo desde dentro del silo
-            NukePlan plan = new NukePlan(site.pos(), site.yaw(), target, seed);
-            s = new Strike(owner, level, type, now - SolNegro.OFFSET * 20L, plan.impactTick(), BlockPos.containing(target));
-            s.shots.add(new Shot(plan.launchTick, plan.path, 1f, 4, 0, 0f, true));
+            // desde la Base Sol Negro: «mode» es el silo (0 = Sol Negro, 1–3 chiquitos, 4–5 medianos)
+            int silo = site.mode();
+            com.arsenalatomico.BasePlan plan = new com.arsenalatomico.BasePlan(site.pos(), site.yaw(), target, seed, silo);
+            s = new Strike(owner, level, type, now, plan.impactTick, BlockPos.containing(target));
+            s.end = now + plan.duration;
+            int kind = silo == 0 ? 4 : com.arsenalatomico.BaseLayout.small(silo) ? 5 : 6;
+            s.shots.add(new Shot(plan.launchTick, plan.path, com.arsenalatomico.BaseLayout.missileScale(silo), kind, 0, 0f, true));
             s.siloSite = site.pos();
             s.thermo = true;
-            BunkerBuilder.open(level, site.pos());
-            // el quemado del Sol Negro llega a ~150 bloques del blanco
-            keepLoaded(level, s, target, 10);
-            keepLoaded(level, s, site.pos(), 3);
+            s.silo = silo;
+            s.baseYaw = site.yaw();
+            BaseBuilder.open(level, site.pos(), site.yaw(), silo);
+            int reach = (int) Math.ceil(NukePlan.SCORCH_R * com.arsenalatomico.BaseLayout.size(silo) / 16) + 1;
+            keepLoaded(level, s, target, reach);
+            keepLoaded(level, s, plan.siloTop(), 2);
         } else if (type == WeaponType.NUKE) {
             NukePlan plan = new NukePlan(site.pos(), site.yaw(), target, seed);
             s = new Strike(owner, level, type, now, plan.impactTick(), BlockPos.containing(target));
@@ -284,7 +291,7 @@ public final class LaunchManager {
             s.bunker.step(Integer.MAX_VALUE);
             BunkerBuilder.close(level, s.siloSite);
         }
-        if (level != null && s.thermo) BunkerBuilder.close(level, s.siloSite);
+        if (level != null && s.thermo) BaseBuilder.close(level, s.siloSite, s.baseYaw, s.silo);
         if (s.crater != null) s.crater.step(Integer.MAX_VALUE);
         if (level != null) {
             for (ChunkPos c : s.chunks) ForgeChunkManager.forceChunk(level, ArsenalAtomico.MODID, s.ticketOwner, c.x, c.z, false, true);
@@ -320,7 +327,7 @@ public final class LaunchManager {
                 if (shot.fired && !shot.hit && t >= shot.launch + shot.path.flightTicks) {
                     shot.hit = true;
                     if (shot.entity != null) shot.entity.discard();
-                    if (shot.kind == 4) s.crater = NukeCrater.detonate(level, shot.path.p3, NukeCrater.THERMO);
+                    if (shot.kind >= 4) s.crater = NukeCrater.detonate(level, shot.path.p3, com.arsenalatomico.BaseLayout.size(s.silo));
                     else if (shot.kind == 3) s.crater = NukeCrater.detonate(level, shot.path.p3);
                     else if (shot.kind == 2) Impacts.huge(level, shot.path.p3, shot.power);
                     else if (shot.big) Impacts.big(level, shot.path.p3, shot.power);

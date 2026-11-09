@@ -149,7 +149,7 @@ final class NukeFx {
         if (BLASTS.size() > 4) BLASTS.remove(0);
         Minecraft mc = Minecraft.getInstance();
         // en la cinemática el estruendo lo pone la escena (llega un segundo después del destello)
-        if (!(Cinematic.isActive() && Cinematic.nuke != null)) mc.getSoundManager().play(new SimpleSoundInstance(ModSounds.NUKE_BLAST.get(), SoundSource.HOSTILE, 4f, 1f,
+        if (!(Cinematic.isActive() && (Cinematic.nuke != null || Cinematic.base != null))) mc.getSoundManager().play(new SimpleSoundInstance(ModSounds.NUKE_BLAST.get(), SoundSource.HOSTILE, 4f, 1f,
                 SoundInstance.createUnseededRandom(), center.x, center.y + 20, center.z));
         if (mc.level != null) {
             for (int i = 0; i < 40; i++) {
