@@ -738,6 +738,8 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                         vaultMenu();
                         return true;
                     }));
+            box.addView(netRow("📊", 0xFF1E88E5, 0xFF26C6DA, L.t("Radiografía del almacenamiento"),
+                    L.t("Mira qué se está comiendo la memoria y libera espacio"), v -> showAnalyzer(), null));
             View trashRow = netRow("🗑️", 0xFF4A5670, 0xFF6E7A8E, L.t("Papelera"), L.t("Lo que borres se guarda 30 días"),
                     v -> showTrash(), null);
             box.addView(trashRow);
@@ -1040,6 +1042,451 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             });
         }));
         d.show();
+    }
+
+    // ------------------------------------------------------------------ Radiografía del almacenamiento
+
+    private static final int[] CAT_COLORS = {0xFF4C9DFF, 0xFFFF5D8F, 0xFFB58CFF, 0xFFFFC14D, 0xFF35D08A, 0xFFFF8A5C, 0xFF8B97AB, 0xFF4A5670, 0xFF9B6BFF};
+    private static final int SYSTEM_COLOR = 0xFF2A3346;
+    private android.app.Dialog analyzer;
+
+    private String catName(int c) {
+        return switch (c) {
+            case StorageScan.IMAGES -> L.t("Fotos e imágenes");
+            case StorageScan.VIDEOS -> L.t("Videos");
+            case StorageScan.AUDIO -> L.t("Música y audio");
+            case StorageScan.DOCS -> L.t("Documentos");
+            case StorageScan.APKS -> L.t("Instaladores (APK)");
+            case StorageScan.ARCHIVES -> L.t("Comprimidos e imágenes de disco");
+            case StorageScan.TRASH -> L.t("Papelera");
+            case StorageScan.VAULT -> L.t("La Bóveda");
+            default -> L.t("Otros archivos");
+        };
+    }
+
+    /** Una pantalla completa con encabezado: devuelve {diálogo, caja de contenido, subtítulo}. */
+    private Object[] fullScreen(String titleText) {
+        android.app.Dialog dlg = new android.app.Dialog(this, android.R.style.Theme_Material_NoActionBar);
+        LinearLayout root = Ui.column(this);
+        root.setBackgroundColor(Ui.BG);
+        root.setFitsSystemWindows(true);
+        LinearLayout head = Ui.row(this);
+        head.setPadding(dp(8), dp(10), dp(12), dp(6));
+        head.addView(Ui.iconButton(this, R.drawable.ic_back, 44, v -> dlg.dismiss()));
+        LinearLayout ht = Ui.column(this);
+        ht.setPadding(dp(6), 0, 0, 0);
+        TextView tt = Ui.text(this, titleText, 20, Ui.TEXT, true);
+        tt.setSingleLine(true);
+        tt.setEllipsize(TextUtils.TruncateAt.END);
+        ht.addView(tt);
+        TextView sub = Ui.text(this, "", 12.5f, Ui.SUB, false);
+        ht.addView(sub);
+        head.addView(ht, Ui.weight(1));
+        root.addView(head);
+        ScrollView sc = new ScrollView(this);
+        LinearLayout box = Ui.column(this);
+        box.setPadding(dp(14), dp(4), dp(14), dp(40));
+        sc.addView(box);
+        root.addView(sc, new LinearLayout.LayoutParams(-1, 0, 1));
+        dlg.setContentView(root, new ViewGroup.LayoutParams(-1, -1));
+        if (dlg.getWindow() != null) {
+            dlg.getWindow().setStatusBarColor(Ui.BG);
+            dlg.getWindow().setNavigationBarColor(Ui.BG);
+            dlg.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        }
+        return new Object[]{dlg, box, sub};
+    }
+
+    private void showAnalyzer() {
+        Object[] fs = fullScreen(L.t("Radiografía del almacenamiento"));
+        android.app.Dialog dlg = (android.app.Dialog) fs[0];
+        LinearLayout box = (LinearLayout) fs[1];
+        TextView sub = (TextView) fs[2];
+        analyzer = dlg;
+        java.util.concurrent.atomic.AtomicBoolean cancel = new java.util.concurrent.atomic.AtomicBoolean();
+        dlg.setOnDismissListener(x -> {
+            cancel.set(true);
+            if (analyzer == dlg) analyzer = null;
+        });
+        dlg.show();
+        runAnalysis(box, sub, cancel);
+    }
+
+    private void runAnalysis(LinearLayout box, TextView sub, java.util.concurrent.atomic.AtomicBoolean cancel) {
+        box.removeAllViews();
+        sub.setText(L.t("Analizando…"));
+        LinearLayout prog = Ui.column(this);
+        prog.setPadding(dp(16), dp(16), dp(16), dp(16));
+        prog.setBackground(Ui.gradient(dp(20), 0xFF1A2140, 0xFF121828));
+        TextView pt = Ui.text(this, L.t("Preparando…"), 15, Ui.TEXT, true);
+        TextView pw = Ui.text(this, "", 12, Ui.SUB, false);
+        pw.setSingleLine(true);
+        pw.setEllipsize(TextUtils.TruncateAt.START);
+        android.widget.ProgressBar bar = new android.widget.ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
+        bar.setMax(1000);
+        bar.setProgressTintList(android.content.res.ColorStateList.valueOf(Ui.ACCENT));
+        prog.addView(pt);
+        prog.addView(pw, topMargin(dp(4)));
+        prog.addView(bar, topMargin(dp(10)));
+        box.addView(prog, new LinearLayout.LayoutParams(-1, -2));
+        long t0 = System.currentTimeMillis();
+        List<Volume> vols = volumes();
+        new Thread(() -> {
+            for (Volume v : vols) {
+                if (cancel.get()) return;
+                File f = new File(v.path);
+                long total = f.getTotalSpace(), free = f.getUsableSpace(), used = Math.max(1, total - free);
+                StorageScan.Result r = StorageScan.scan(v.path, v.name, total, free, cancel, (files, bytes, where, dup) -> main.post(() -> {
+                    if (dup) {
+                        pt.setText(L.t("Buscando archivos repetidos en ") + v.name + "…");
+                        pw.setText(files + L.t(" de ") + where);
+                        int n = Integer.parseInt(where);
+                        bar.setProgress(n > 0 ? files * 1000 / n : 0);
+                    } else {
+                        pt.setText(L.t("Analizando ") + v.name + "…  " + String.format(java.util.Locale.ROOT, "%,d", files) + L.t(" archivos · ") + Ui.size(bytes));
+                        pw.setText(where);
+                        bar.setProgress((int) Math.min(1000, bytes * 1000 / used));
+                    }
+                }));
+                if (cancel.get()) return;
+                main.post(() -> box.addView(resultCard(r), box.getChildCount() - 1));
+            }
+            main.post(() -> {
+                box.removeView(prog);
+                long secs = Math.max(1, (System.currentTimeMillis() - t0) / 1000);
+                sub.setText(L.t("Listo · analizado en ") + Ui.eta(secs));
+                TextView again = Ui.text(this, L.t("Volver a analizar"), 14, Ui.ACCENT2, true);
+                again.setGravity(Gravity.CENTER);
+                again.setPadding(0, dp(13), 0, dp(13));
+                again.setBackground(Ui.rippleRound(Ui.SURFACE, dp(14)));
+                again.setOnClickListener(x -> runAnalysis(box, sub, cancel));
+                box.addView(again, topMargin(dp(6)));
+            });
+        }, "radiografia").start();
+    }
+
+    private View resultCard(StorageScan.Result r) {
+        LinearLayout card = Ui.column(this);
+        card.setPadding(dp(16), dp(16), dp(16), dp(14));
+        card.setBackground(Ui.gradient(dp(20), 0xFF14284F, 0xFF101A30));
+        LinearLayout hr = Ui.row(this);
+        hr.addView(Ui.text(this, r.name, 17, Ui.TEXT, true), Ui.weight(1));
+        hr.addView(Ui.text(this, Ui.size(r.used()) + " / " + Ui.size(r.total), 13, Ui.SUB, false));
+        card.addView(hr);
+        TextView fr = Ui.text(this, L.t("Libre: ") + Ui.size(r.free) + "  ·  " + String.format(java.util.Locale.ROOT, "%,d", r.files) + L.t(" archivos en ")
+                + String.format(java.util.Locale.ROOT, "%,d", r.dirs) + L.t(" carpetas"), 12, Ui.SUB, false);
+        card.addView(fr, topMargin(dp(2)));
+
+        // barra de colores: cada tipo su pedazo, y lo que falta es el espacio libre
+        LinearLayout segs = Ui.row(this);
+        segs.setBackground(Ui.round(0xFF0B1222, dp(7)));
+        segs.setClipToOutline(true);
+        float total = Math.max(1, r.total);
+        for (int c = 0; c < StorageScan.CATS; c++) {
+            if (r.cats[c] <= 0) continue;
+            View s = new View(this);
+            s.setBackgroundColor(CAT_COLORS[c]);
+            segs.addView(s, new LinearLayout.LayoutParams(0, -1, r.cats[c] / total));
+        }
+        if (r.system() > 0) {
+            View s = new View(this);
+            s.setBackgroundColor(SYSTEM_COLOR);
+            segs.addView(s, new LinearLayout.LayoutParams(0, -1, r.system() / total));
+        }
+        View rest = new View(this);
+        segs.addView(rest, new LinearLayout.LayoutParams(0, -1, Math.max(0.0001f, r.free / total)));
+        LinearLayout.LayoutParams sl = new LinearLayout.LayoutParams(-1, dp(14));
+        sl.setMargins(0, dp(12), 0, dp(8));
+        card.addView(segs, sl);
+
+        // leyenda, de lo que más ocupa a lo que menos
+        List<Integer> order = new ArrayList<>();
+        for (int c = 0; c < StorageScan.CATS; c++) if (r.cats[c] > 0) order.add(c);
+        order.add(-1);
+        order.sort((a, b) -> Long.compare(b < 0 ? r.system() : r.cats[b], a < 0 ? r.system() : r.cats[a]));
+        for (int c : order) {
+            long size = c < 0 ? r.system() : r.cats[c];
+            if (size <= 0) continue;
+            LinearLayout row = Ui.row(this);
+            row.setPadding(0, dp(5), 0, dp(5));
+            View dot = new View(this);
+            dot.setBackground(Ui.round(c < 0 ? 0xFF5B6680 : CAT_COLORS[c], dp(5)));
+            row.addView(dot, new LinearLayout.LayoutParams(dp(10), dp(10)));
+            LinearLayout tx = Ui.column(this);
+            tx.setPadding(dp(10), 0, 0, 0);
+            tx.addView(Ui.text(this, c < 0 ? L.t("Sistema y apps") : catName(c), 14, Ui.TEXT, false));
+            if (c >= 0) tx.addView(Ui.text(this, String.format(java.util.Locale.ROOT, "%,d", r.catFiles[c]) + L.t(" archivos"), 11.5f, Ui.SUB, false));
+            else tx.addView(Ui.text(this, L.t("Android, las apps instaladas y sus datos"), 11.5f, Ui.SUB, false));
+            row.addView(tx, Ui.weight(1));
+            row.addView(Ui.text(this, Ui.size(size) + "  ·  " + Math.round(size * 100.0 / total) + "%", 13, Ui.SUB, true));
+            if (c == StorageScan.TRASH) row.setOnClickListener(v -> showTrash());
+            else if (c == StorageScan.VAULT) row.setOnClickListener(v -> {
+                if (analyzer != null) analyzer.dismiss();
+                openVault();
+            });
+            card.addView(row);
+        }
+        if (r.skippedAndroidData) {
+            TextView n = Ui.text(this, L.t("Android/data y Android/obb están protegidas por Android y cuentan dentro de «Sistema y apps»."), 11.5f, 0xFF6E7A8E, false);
+            card.addView(n, topMargin(dp(6)));
+        }
+
+        // lo que se puede limpiar
+        card.addView(findingRow("🏆", L.t("Los archivos más grandes"), r.biggest.size() + L.t(" archivos"),
+                v -> fileList(L.t("Los archivos más grandes") + " · " + r.name, r.biggest, null, null)), topMargin(dp(12)));
+        List<File> topFolders = new ArrayList<>();
+        java.util.Map<File, Long> fsz = new java.util.HashMap<>();
+        for (long[] fsize : r.folderSizes) {
+            if (topFolders.size() >= 15) break;
+            File f = r.folders.get((int) fsize[0]);
+            if (f.getName().equals(Trash.NAME) || f.getPath().equals(Vault.DIR)) continue;
+            topFolders.add(f);
+            fsz.put(f, fsize[1]);
+        }
+        card.addView(findingRow("📁", L.t("Las carpetas que más pesan"), topFolders.isEmpty() ? "" : topFolders.get(0).getName() + " · " + Ui.size(fsz.get(topFolders.get(0))),
+                v -> folderList(r.name, topFolders, fsz)));
+        card.addView(findingRow("♊", L.t("Archivos repetidos"), r.duplicates.isEmpty() ? L.t("Ninguno") :
+                r.duplicates.size() + L.t(" grupos · puedes liberar ") + Ui.size(r.duplicateWaste), v -> duplicateList(r)));
+        card.addView(findingRow("📥", L.t("Descargas de hace más de 3 meses"), r.oldDownloads.isEmpty() ? L.t("Ninguna") :
+                r.oldDownloads.size() + L.t(" archivos · ") + Ui.size(r.oldDownloadsSize),
+                v -> fileList(L.t("Descargas viejas"), r.oldDownloads, L.t("Mandar todas a la papelera"), r.oldDownloads)));
+        card.addView(findingRow("📂", L.t("Carpetas vacías"), r.emptyDirs.isEmpty() ? L.t("Ninguna") : r.emptyDirs.size() + L.t(" carpetas"),
+                v -> emptyDirList(r.emptyDirs)));
+        LinearLayout.LayoutParams cl = new LinearLayout.LayoutParams(-1, -2);
+        cl.setMargins(0, 0, 0, dp(12));
+        card.setLayoutParams(cl);
+        return card;
+    }
+
+    private View findingRow(String emoji, String name, String detail, View.OnClickListener tap) {
+        LinearLayout r = Ui.row(this);
+        r.setPadding(dp(12), dp(10), dp(12), dp(10));
+        r.setBackground(Ui.rippleRound(0x33000000, dp(14)));
+        TextView e = Ui.text(this, emoji, 18, Ui.TEXT, false);
+        r.addView(e, new LinearLayout.LayoutParams(dp(32), -2));
+        LinearLayout tx = Ui.column(this);
+        tx.addView(Ui.text(this, name, 14, Ui.TEXT, true));
+        if (!detail.isEmpty()) tx.addView(Ui.text(this, detail, 12, Ui.SUB, false));
+        r.addView(tx, Ui.weight(1));
+        ImageView ch = new ImageView(this);
+        ch.setImageDrawable(Ui.icon(this, R.drawable.ic_chevron, 0xFF4A5670));
+        r.addView(ch, new LinearLayout.LayoutParams(dp(20), dp(20)));
+        r.setOnClickListener(tap);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, -2);
+        lp.setMargins(0, dp(6), 0, 0);
+        r.setLayoutParams(lp);
+        return r;
+    }
+
+    /** Cierra la Radiografía y abre la carpeta. */
+    private void goToFolder(String dir, android.app.Dialog list) {
+        if (list != null) list.dismiss();
+        if (analyzer != null) analyzer.dismiss();
+        open(dir);
+    }
+
+    private View fileRow(File f, android.app.Dialog dlg, LinearLayout box) {
+        LinearLayout r = Ui.row(this);
+        r.setPadding(dp(12), dp(10), dp(12), dp(10));
+        r.setBackground(Ui.rippleRound(Ui.SURFACE, dp(16)));
+        ImageView ic = new ImageView(this);
+        int cat = StorageScan.category(f.getName());
+        ic.setImageDrawable(Ui.icon(this, f.isDirectory() ? R.drawable.ic_folder : R.drawable.ic_file, f.isDirectory() ? Ui.WARN : CAT_COLORS[cat]));
+        r.addView(ic, new LinearLayout.LayoutParams(dp(26), dp(26)));
+        LinearLayout tx = Ui.column(this);
+        tx.setPadding(dp(12), 0, 0, 0);
+        TextView n = Ui.text(this, f.getName(), 14.5f, Ui.TEXT, true);
+        n.setSingleLine(true);
+        n.setEllipsize(TextUtils.TruncateAt.MIDDLE);
+        tx.addView(n);
+        TextView w = Ui.text(this, f.getParent().replace(Paths.ROOT, L.t("Interno")), 12, Ui.SUB, false);
+        w.setSingleLine(true);
+        w.setEllipsize(TextUtils.TruncateAt.MIDDLE);
+        tx.addView(w);
+        r.addView(tx, Ui.weight(1));
+        if (!f.isDirectory()) r.addView(Ui.text(this, Ui.size(f.length()), 13, Ui.SUB, true));
+        r.setOnClickListener(v -> {
+            List<String> labels = new ArrayList<>();
+            List<Runnable> acts = new ArrayList<>();
+            labels.add(L.t("Ir a su carpeta"));
+            acts.add(() -> goToFolder(f.getParent(), dlg));
+            if (!f.isDirectory()) {
+                labels.add(L.t("Abrir"));
+                acts.add(() -> openFile(new Entry(f.getPath(), f.getName(), false, f.length(), f.lastModified())));
+            }
+            if (Trash.supported(f.getPath())) {
+                labels.add(L.t("A la papelera"));
+                acts.add(() -> io.execute(() -> {
+                    String err = null;
+                    try {
+                        Trash.put(f.getPath());
+                    } catch (IOException e) {
+                        err = e.getMessage();
+                    }
+                    String fe = err;
+                    main.post(() -> {
+                        if (fe != null) Toast.makeText(this, fe, Toast.LENGTH_LONG).show();
+                        else {
+                            box.removeView(r);
+                            Toast.makeText(this, L.t("Se movió a la papelera"), Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                }));
+            }
+            new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                    .setTitle(f.getName())
+                    .setItems(labels.toArray(new String[0]), (d, which) -> acts.get(which).run())
+                    .show();
+        });
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, -2);
+        lp.setMargins(0, 0, 0, dp(6));
+        r.setLayoutParams(lp);
+        return r;
+    }
+
+    /** Pone un botón grande arriba de una lista (por ejemplo, «Mandar todo a la papelera»). */
+    private TextView bigButton(String text, int color) {
+        TextView b = Ui.text(this, text, 14, color, true);
+        b.setGravity(Gravity.CENTER);
+        b.setPadding(0, dp(12), 0, dp(12));
+        b.setBackground(Ui.rippleRound(Ui.SURFACE2, dp(14)));
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, -2);
+        lp.setMargins(0, 0, 0, dp(10));
+        b.setLayoutParams(lp);
+        return b;
+    }
+
+    private void trashAll(List<File> files, Runnable done) {
+        new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                .setTitle(files.size() + L.t(" archivos a la papelera"))
+                .setMessage(L.t("Se pueden restaurar durante 30 días desde la papelera."))
+                .setPositiveButton(L.t("A la papelera"), (d, w) -> io.execute(() -> {
+                    int ok = 0;
+                    for (File f : files) {
+                        try {
+                            Trash.put(f.getPath());
+                            ok++;
+                        } catch (IOException ignored) {
+                        }
+                    }
+                    int fok = ok;
+                    main.post(() -> {
+                        Toast.makeText(this, fok + L.t(" elementos se movieron a la papelera"), Toast.LENGTH_SHORT).show();
+                        done.run();
+                    });
+                }))
+                .setNegativeButton(L.t("Cancelar"), null)
+                .show();
+    }
+
+    private void fileList(String titleText, List<File> files, String allLabel, List<File> all) {
+        Object[] fs = fullScreen(titleText);
+        android.app.Dialog dlg = (android.app.Dialog) fs[0];
+        LinearLayout box = (LinearLayout) fs[1];
+        long total = 0;
+        for (File f : files) total += f.length();
+        ((TextView) fs[2]).setText(files.size() + L.t(" archivos · ") + Ui.size(total));
+        if (allLabel != null && !all.isEmpty()) {
+            TextView b = bigButton(allLabel, Ui.WARN);
+            b.setOnClickListener(v -> trashAll(all, dlg::dismiss));
+            box.addView(b);
+        }
+        if (files.isEmpty()) box.addView(Ui.text(this, L.t("No hay nada aquí 🎉"), 14, Ui.SUB, false));
+        for (File f : files) box.addView(fileRow(f, dlg, box));
+        dlg.show();
+    }
+
+    private void folderList(String volName, List<File> folders, java.util.Map<File, Long> sizes) {
+        Object[] fs = fullScreen(L.t("Las carpetas que más pesan") + " · " + volName);
+        android.app.Dialog dlg = (android.app.Dialog) fs[0];
+        LinearLayout box = (LinearLayout) fs[1];
+        ((TextView) fs[2]).setText(L.t("Toca una para entrar"));
+        long max = folders.isEmpty() ? 1 : Math.max(1, sizes.get(folders.get(0)));
+        for (File f : folders) {
+            LinearLayout r = Ui.column(this);
+            r.setPadding(dp(14), dp(12), dp(14), dp(12));
+            r.setBackground(Ui.rippleRound(Ui.SURFACE, dp(16)));
+            LinearLayout top = Ui.row(this);
+            ImageView ic = new ImageView(this);
+            ic.setImageDrawable(Ui.icon(this, R.drawable.ic_folder, Ui.WARN));
+            top.addView(ic, new LinearLayout.LayoutParams(dp(22), dp(22)));
+            TextView n = Ui.text(this, f.getName(), 15, Ui.TEXT, true);
+            n.setPadding(dp(10), 0, 0, 0);
+            n.setSingleLine(true);
+            n.setEllipsize(TextUtils.TruncateAt.MIDDLE);
+            top.addView(n, Ui.weight(1));
+            top.addView(Ui.text(this, Ui.size(sizes.get(f)), 13, Ui.SUB, true));
+            r.addView(top);
+            FrameLayout bb = new FrameLayout(this);
+            bb.addView(new UsageBar(this, sizes.get(f) / (float) max));
+            LinearLayout.LayoutParams bl = new LinearLayout.LayoutParams(-1, dp(6));
+            bl.setMargins(0, dp(8), 0, 0);
+            r.addView(bb, bl);
+            r.setOnClickListener(v -> goToFolder(f.getPath(), dlg));
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, -2);
+            lp.setMargins(0, 0, 0, dp(6));
+            box.addView(r, lp);
+        }
+        dlg.show();
+    }
+
+    private void duplicateList(StorageScan.Result r) {
+        Object[] fs = fullScreen(L.t("Archivos repetidos") + " · " + r.name);
+        android.app.Dialog dlg = (android.app.Dialog) fs[0];
+        LinearLayout box = (LinearLayout) fs[1];
+        ((TextView) fs[2]).setText(r.duplicates.size() + L.t(" grupos · puedes liberar ") + Ui.size(r.duplicateWaste));
+        if (r.duplicates.isEmpty()) {
+            box.addView(Ui.text(this, L.t("No hay nada aquí 🎉"), 14, Ui.SUB, false));
+        } else {
+            TextView note = Ui.text(this, L.t("Son archivos con exactamente el mismo contenido. En cada grupo el primero es el más viejo (normalmente el original)."), 12.5f, Ui.SUB, false);
+            note.setPadding(dp(4), 0, dp(4), dp(10));
+            box.addView(note);
+            List<File> copies = new ArrayList<>();
+            for (List<File> g : r.duplicates) for (int i = 1; i < g.size(); i++) if (Trash.supported(g.get(i).getPath())) copies.add(g.get(i));
+            if (!copies.isEmpty()) {
+                TextView b = bigButton(L.t("Dejar el original y mandar las copias a la papelera"), Ui.WARN);
+                b.setOnClickListener(v -> trashAll(copies, dlg::dismiss));
+                box.addView(b);
+            }
+        }
+        for (List<File> g : r.duplicates) {
+            TextView h = Ui.text(this, g.size() + L.t(" iguales · ") + Ui.size(g.get(0).length()) + L.t(" cada uno"), 12, 0xFF6F86AE, true);
+            h.setPadding(dp(6), dp(10), 0, dp(6));
+            box.addView(h);
+            for (File f : g) box.addView(fileRow(f, dlg, box));
+        }
+        dlg.show();
+    }
+
+    private void emptyDirList(List<File> dirs) {
+        Object[] fs = fullScreen(L.t("Carpetas vacías"));
+        android.app.Dialog dlg = (android.app.Dialog) fs[0];
+        LinearLayout box = (LinearLayout) fs[1];
+        ((TextView) fs[2]).setText(dirs.size() + L.t(" carpetas"));
+        if (dirs.isEmpty()) box.addView(Ui.text(this, L.t("No hay nada aquí 🎉"), 14, Ui.SUB, false));
+        else {
+            TextView b = bigButton(L.t("Borrar todas las carpetas vacías"), Ui.WARN);
+            b.setOnClickListener(v -> new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                    .setTitle(L.t("¿Borrar ") + dirs.size() + L.t(" carpetas vacías?"))
+                    .setMessage(L.t("No tienen nada adentro, así que no se pierde ningún archivo."))
+                    .setPositiveButton(L.t("Borrar"), (d, w) -> io.execute(() -> {
+                        int ok = 0;
+                        for (File f : dirs) {
+                            String[] kids = f.list();
+                            if (kids != null && kids.length == 0 && f.delete()) ok++;
+                        }
+                        int fok = ok;
+                        main.post(() -> {
+                            Toast.makeText(this, fok + L.t(" carpetas vacías borradas"), Toast.LENGTH_SHORT).show();
+                            dlg.dismiss();
+                        });
+                    }))
+                    .setNegativeButton(L.t("Cancelar"), null)
+                    .show());
+            box.addView(b);
+        }
+        for (File f : dirs) box.addView(fileRow(f, dlg, box));
+        dlg.show();
     }
 
     // ------------------------------------------------------------------ papelera

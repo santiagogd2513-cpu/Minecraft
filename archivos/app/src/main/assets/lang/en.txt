@@ -740,3 +740,45 @@
 740|Couldn't create the recycle bin
 741|Couldn't move to the recycle bin: 
 742|Couldn't restore: 
+743|Storage X-ray
+744|See what's eating up your storage and free up space
+745|Photos and images
+746|Videos
+747|Music and audio
+748|Installers (APK)
+749|Archives and disk images
+750|Other files
+751|Analyzing…
+752|Looking for duplicate files on 
+753|Analyzing 
+754| files · 
+755|Done · analyzed in 
+756|Analyze again
+757|Free: 
+758| files in 
+759|System and apps
+760|Android, installed apps and their data
+761|Android/data and Android/obb are protected by Android and count under “System and apps”.
+762|The biggest files
+763|The heaviest folders
+764|Duplicate files
+765|None
+766| groups · you can free 
+767|Downloads older than 3 months
+768|None
+769|Old downloads
+770|Send all to the recycle bin
+771|Empty folders
+772|Go to its folder
+773| files to the recycle bin
+774|They can be restored from the recycle bin for 30 days.
+775|Nothing here 🎉
+776|Tap one to open it
+777|These files have exactly the same content. In each group the first one is the oldest (usually the original).
+778|Keep the original and send the copies to the recycle bin
+779| identical · 
+780| each
+781|Delete all empty folders
+782| empty folders?
+783|They have nothing inside, so no file is lost.
+784| empty folders deleted

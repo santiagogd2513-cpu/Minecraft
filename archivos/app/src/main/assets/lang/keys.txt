@@ -740,3 +740,45 @@ Esto no puede ir a la papelera
 No se pudo crear la papelera
 No se pudo mover a la papelera: 
 No se pudo restaurar: 
+Radiografía del almacenamiento
+Mira qué se está comiendo la memoria y libera espacio
+Fotos e imágenes
+Videos
+Música y audio
+Instaladores (APK)
+Comprimidos e imágenes de disco
+Otros archivos
+Analizando…
+Buscando archivos repetidos en 
+Analizando 
+ archivos · 
+Listo · analizado en 
+Volver a analizar
+Libre: 
+ archivos en 
+Sistema y apps
+Android, las apps instaladas y sus datos
+Android/data y Android/obb están protegidas por Android y cuentan dentro de «Sistema y apps».
+Los archivos más grandes
+Las carpetas que más pesan
+Archivos repetidos
+Ninguno
+ grupos · puedes liberar 
+Descargas de hace más de 3 meses
+Ninguna
+Descargas viejas
+Mandar todas a la papelera
+Carpetas vacías
+Ir a su carpeta
+ archivos a la papelera
+Se pueden restaurar durante 30 días desde la papelera.
+No hay nada aquí 🎉
+Toca una para entrar
+Son archivos con exactamente el mismo contenido. En cada grupo el primero es el más viejo (normalmente el original).
+Dejar el original y mandar las copias a la papelera
+ iguales · 
+ cada uno
+Borrar todas las carpetas vacías
+ carpetas vacías?
+No tienen nada adentro, así que no se pierde ningún archivo.
+ carpetas vacías borradas

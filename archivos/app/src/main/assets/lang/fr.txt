@@ -740,3 +740,45 @@
 740|Impossible de créer la corbeille
 741|Impossible de déplacer vers la corbeille : 
 742|Impossible de restaurer : 
+743|Radiographie du stockage
+744|Vois ce qui remplit ta mémoire et libère de l’espace
+745|Photos et images
+746|Vidéos
+747|Musique et audio
+748|Installateurs (APK)
+749|Archives et images disque
+750|Autres fichiers
+751|Analyse…
+752|Recherche de fichiers en double sur 
+753|Analyse de 
+754| fichiers · 
+755|Terminé · analysé en 
+756|Analyser à nouveau
+757|Libre : 
+758| fichiers dans 
+759|Système et applications
+760|Android, les applications installées et leurs données
+761|Android/data et Android/obb sont protégés par Android et comptent dans « Système et applications ».
+762|Les plus gros fichiers
+763|Les dossiers les plus lourds
+764|Fichiers en double
+765|Aucun
+766| groupes · tu peux libérer 
+767|Téléchargements de plus de 3 mois
+768|Aucun
+769|Anciens téléchargements
+770|Tout mettre à la corbeille
+771|Dossiers vides
+772|Aller à son dossier
+773| fichiers à la corbeille
+774|Ils peuvent être restaurés depuis la corbeille pendant 30 jours.
+775|Rien ici 🎉
+776|Touche un dossier pour y entrer
+777|Ces fichiers ont exactement le même contenu. Dans chaque groupe, le premier est le plus ancien (souvent l’original).
+778|Garder l’original et mettre les copies à la corbeille
+779| identiques · 
+780| chacun
+781|Supprimer tous les dossiers vides
+782| dossiers vides ?
+783|Ils ne contiennent rien, aucun fichier n’est donc perdu.
+784| dossiers vides supprimés

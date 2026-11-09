@@ -740,3 +740,45 @@
 740|Não foi possível criar a reciclagem
 741|Não foi possível mover para a reciclagem: 
 742|Não foi possível restaurar: 
+743|Raio-X do armazenamento
+744|Veja o que está a ocupar a memória e liberte espaço
+745|Fotos e imagens
+746|Vídeos
+747|Música e áudio
+748|Instaladores (APK)
+749|Comprimidos e imagens de disco
+750|Outros ficheiros
+751|A analisar…
+752|A procurar ficheiros repetidos em 
+753|A analisar 
+754| ficheiros · 
+755|Pronto · analisado em 
+756|Analisar novamente
+757|Livre: 
+758| ficheiros em 
+759|Sistema e apps
+760|Android, as apps instaladas e os seus dados
+761|Android/data e Android/obb são protegidas pelo Android e contam em «Sistema e apps».
+762|Os ficheiros maiores
+763|As pastas mais pesadas
+764|Ficheiros repetidos
+765|Nenhum
+766| grupos · pode libertar 
+767|Transferências com mais de 3 meses
+768|Nenhuma
+769|Transferências antigas
+770|Enviar todas para a reciclagem
+771|Pastas vazias
+772|Ir para a pasta
+773| ficheiros para a reciclagem
+774|Podem ser restaurados a partir da reciclagem durante 30 dias.
+775|Não há nada aqui 🎉
+776|Toque numa para entrar
+777|São ficheiros com exatamente o mesmo conteúdo. Em cada grupo, o primeiro é o mais antigo (normalmente o original).
+778|Manter o original e enviar as cópias para a reciclagem
+779| iguais · 
+780| cada
+781|Eliminar todas as pastas vazias
+782| pastas vazias?
+783|Não têm nada dentro, por isso nenhum ficheiro se perde.
+784| pastas vazias eliminadas

@@ -740,3 +740,45 @@
 740|Não foi possível criar a lixeira
 741|Não foi possível mover para a lixeira: 
 742|Não foi possível restaurar: 
+743|Raio-X do armazenamento
+744|Veja o que está ocupando a memória e libere espaço
+745|Fotos e imagens
+746|Vídeos
+747|Música e áudio
+748|Instaladores (APK)
+749|Compactados e imagens de disco
+750|Outros arquivos
+751|Analisando…
+752|Procurando arquivos repetidos em 
+753|Analisando 
+754| arquivos · 
+755|Pronto · analisado em 
+756|Analisar de novo
+757|Livre: 
+758| arquivos em 
+759|Sistema e apps
+760|Android, os apps instalados e seus dados
+761|Android/data e Android/obb são protegidas pelo Android e entram em «Sistema e apps».
+762|Os maiores arquivos
+763|As pastas mais pesadas
+764|Arquivos repetidos
+765|Nenhum
+766| grupos · você pode liberar 
+767|Downloads com mais de 3 meses
+768|Nenhum
+769|Downloads antigos
+770|Mandar todos para a lixeira
+771|Pastas vazias
+772|Ir para a pasta
+773| arquivos para a lixeira
+774|Podem ser restaurados da lixeira durante 30 dias.
+775|Não há nada aqui 🎉
+776|Toque em uma para entrar
+777|São arquivos com exatamente o mesmo conteúdo. Em cada grupo, o primeiro é o mais antigo (normalmente o original).
+778|Manter o original e mandar as cópias para a lixeira
+779| iguais · 
+780| cada
+781|Apagar todas as pastas vazias
+782| pastas vazias?
+783|Não têm nada dentro, então nenhum arquivo é perdido.
+784| pastas vazias apagadas

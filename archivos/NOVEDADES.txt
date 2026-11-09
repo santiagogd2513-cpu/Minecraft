@@ -1,3 +1,10 @@
+## 40
+📊 Radiografía del almacenamiento
+- Nuevo en el inicio, en «Análisis y seguridad»: la Radiografía. Analiza la memoria interna, la tarjeta SD y las memorias USB conectadas, una por una.
+- Te muestra una barra de colores con lo que ocupa cada cosa: fotos, videos, música, documentos, instaladores APK, comprimidos, la papelera, La Bóveda y el sistema con las apps.
+- Además encuentra: los archivos más grandes, las carpetas que más pesan, los archivos repetidos (idénticos de verdad, revisando todo su contenido), las descargas de hace más de 3 meses y las carpetas vacías.
+- Desde ahí mismo puedes ir a la carpeta, abrir el archivo o mandarlo a la papelera. Con un solo botón dejas el original de cada repetido y mandas las copias a la papelera.
+
 ## 39
 🗑️ Papelera de reciclaje
 - Ahora al borrar, Bóveda te pregunta: «A la papelera» o «Borrar para siempre». Lo que va a la papelera se puede restaurar durante 30 días; después se borra solo.

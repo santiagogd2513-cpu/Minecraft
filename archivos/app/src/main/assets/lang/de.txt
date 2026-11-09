@@ -740,3 +740,45 @@
 740|Papierkorb konnte nicht erstellt werden
 741|Konnte nicht in den Papierkorb verschoben werden: 
 742|Konnte nicht wiederhergestellt werden: 
+743|Speicher-Röntgen
+744|Sieh, was den Speicher füllt, und schaffe Platz
+745|Fotos und Bilder
+746|Videos
+747|Musik und Audio
+748|Installationsdateien (APK)
+749|Archive und Disk-Images
+750|Andere Dateien
+751|Wird analysiert…
+752|Suche nach doppelten Dateien auf 
+753|Analysiere 
+754| Dateien · 
+755|Fertig · analysiert in 
+756|Erneut analysieren
+757|Frei: 
+758| Dateien in 
+759|System und Apps
+760|Android, installierte Apps und ihre Daten
+761|Android/data und Android/obb sind von Android geschützt und zählen zu „System und Apps“.
+762|Die größten Dateien
+763|Die schwersten Ordner
+764|Doppelte Dateien
+765|Keine
+766| Gruppen · du kannst freigeben: 
+767|Downloads älter als 3 Monate
+768|Keine
+769|Alte Downloads
+770|Alle in den Papierkorb
+771|Leere Ordner
+772|Zum Ordner gehen
+773| Dateien in den Papierkorb
+774|Sie lassen sich 30 Tage lang aus dem Papierkorb wiederherstellen.
+775|Hier ist nichts 🎉
+776|Tippe auf einen, um ihn zu öffnen
+777|Diese Dateien haben genau den gleichen Inhalt. In jeder Gruppe ist die erste die älteste (meist das Original).
+778|Original behalten und Kopien in den Papierkorb
+779| gleiche · 
+780| je
+781|Alle leeren Ordner löschen
+782| leere Ordner löschen?
+783|Sie enthalten nichts, also geht keine Datei verloren.
+784| leere Ordner gelöscht
