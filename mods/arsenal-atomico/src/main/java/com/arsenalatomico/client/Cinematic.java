@@ -65,6 +65,11 @@ public final class Cinematic {
     private static Marker camera;
     private static CameraType previous;
     private static int nextBeep;
+    /** El viaje en el camión del Sol Negro (0 = salida, 1 = llegada a la base). */
+    static boolean ride;
+    static int rideTruck, ridePhase;
+    static Vec3 rideBase;
+    static float rideYaw;
 
     private Cinematic() {}
 
@@ -115,15 +120,17 @@ public final class Cinematic {
         blasts.clear();
         condor = null;
         nuke = null;
-        if (type == WeaponType.NUKE) {
+        ride = false;
+        if (type == WeaponType.NUKE || type == WeaponType.THERMO) {
             plan = null;
             twin = null;
             nuke = new NukePlan(site, yaw, target, p.seed);
             NukeScenes.reset();
+            boolean thermo = type == WeaponType.THERMO;
             Vec3 a = nuke.path.p0, b = nuke.path.p3;
             quakes.add(new double[]{nuke.launchTick / 20.0, a.x, a.y + 12, a.z, 1.8, 8, 110});
-            quakes.add(new double[]{nuke.impactSecond(), b.x, b.y, b.z, 3.6, 9, 700});
-            blasts.add(new double[]{nuke.impactSecond(), b.x, b.y, b.z, 3, 0});
+            quakes.add(new double[]{nuke.impactSecond(), b.x, b.y, b.z, thermo ? 4.6 : 3.6, thermo ? 12 : 9, thermo ? 1000 : 700});
+            blasts.add(new double[]{nuke.impactSecond(), b.x, b.y, b.z, thermo ? 4 : 3, 0});
         } else if (type == WeaponType.ICBM) {
             plan = null;
             twin = null;
@@ -153,6 +160,8 @@ public final class Cinematic {
         }
         duration = p.ticks;
         startTick = clientTicks;
+        // el Sol Negro empieza dentro del silo: el jugador ya bajó caminando hasta el centro de mando
+        if (type == WeaponType.THERMO) startTick -= com.arsenalatomico.strike.SolNegro.OFFSET * 20L;
         eye = player.getEyePosition(1f);
         playerYaw = player.getYRot();
         nextBeep = 0;
@@ -171,9 +180,44 @@ public final class Cinematic {
         play(ModSounds.BEEP.get(), 0.75f, 0.6f);
     }
 
+    /** El viaje en el camión: la cámara sigue al camión con varias tomas y se funde a negro. */
+    public static void startRide(com.arsenalatomico.net.RidePacket p) {
+        Minecraft mc = Minecraft.getInstance();
+        LocalPlayer player = mc.player;
+        if (player == null || mc.level == null) return;
+        if (active) stop();
+        type = WeaponType.THERMO;
+        ride = true;
+        rideTruck = p.truck;
+        ridePhase = p.phase;
+        rideBase = p.base;
+        rideYaw = p.yaw;
+        target = Vec3.atBottomCenterOf(p.target);
+        site = p.base;
+        yaw = p.yaw;
+        plan = null;
+        twin = null;
+        condor = null;
+        nuke = null;
+        quakes.clear();
+        blasts.clear();
+        duration = p.ticks;
+        startTick = clientTicks;
+        nextBeep = 0;
+        camera = new Marker(EntityType.MARKER, mc.level);
+        Pose s = pose(0);
+        camera.setPos(s.pos());
+        camera.setOldPosAndRot();
+        previous = mc.options.getCameraType();
+        mc.options.setCameraType(CameraType.FIRST_PERSON);
+        mc.setCameraEntity(camera);
+        active = true;
+    }
+
     public static void stop() {
         if (!active) return;
         active = false;
+        ride = false;
         Minecraft mc = Minecraft.getInstance();
         if (mc.player != null) mc.setCameraEntity(mc.player);
         if (previous != null) mc.options.setCameraType(previous);
@@ -204,13 +248,15 @@ public final class Cinematic {
             if (b[5] == 0 && now >= b[0]) {
                 b[5] = 1;
                 if (b[4] > 2) {
-                    NukeFx.spawn(new Vec3(b[1], b[2], b[3]));
+                    NukeFx.spawn(new Vec3(b[1], b[2], b[3]), b[4] > 3 ? (float) com.arsenalatomico.strike.NukeCrater.THERMO : 1f);
                     continue;
                 }
                 ImpactFx.spawn(new Vec3(b[1], b[2], b[3]), b[4] > 1 ? ImpactFx.Kind.CONDOR : b[4] > 0 ? ImpactFx.Kind.ICBM : ImpactFx.Kind.SALVO);
             }
         }
-        if (nuke != null) {
+        if (ride) {
+            RideScenes.sounds(seconds(0));
+        } else if (nuke != null) {
             NukeScenes.sounds(seconds(0));
             NukeScenes.particles(seconds(0));
         } else if (condor != null) {
@@ -280,6 +326,7 @@ public final class Cinematic {
     }
 
     private static Pose raw(float s) {
+        if (ride) return RideScenes.pose(s);
         if (nuke != null) return NukeScenes.pose(s);
         if (condor != null) return CondorScenes.pose(s);
         return twin != null ? TwinScenes.pose(s) : salvo(s);
@@ -497,6 +544,7 @@ public final class Cinematic {
 
     /** Texto de abajo según el momento de la cinemática. */
     static String caption(float s) {
+        if (ride) return RideScenes.caption(s);
         if (nuke != null) return NukeScenes.caption(s);
         if (condor != null) return CondorScenes.caption(s);
         if (twin != null) return TwinScenes.caption(s);

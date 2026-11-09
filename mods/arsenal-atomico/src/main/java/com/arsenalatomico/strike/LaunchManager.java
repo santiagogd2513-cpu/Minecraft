@@ -89,6 +89,8 @@ public final class LaunchManager {
         /** El búnker del Protocolo Hongo y el cráter que deja la bomba. */
         BunkerBuilder bunker;
         NukeCrater crater;
+        /** El Sol Negro sale de la Base Sol Negro (que ya existe): al final solo se cierra el silo. */
+        boolean thermo;
 
         Strike(@Nullable UUID owner, ServerLevel level, WeaponType type, long start, int lastImpact, BlockPos ticketOwner) {
             this.owner = owner;
@@ -135,8 +137,13 @@ public final class LaunchManager {
         return BY_PLAYER.containsKey(p.getUUID());
     }
 
+    /** Ocupado con un ataque o con la misión del Sol Negro. */
+    public static boolean anyBusy(Player p) {
+        return busy(p) || SolNegro.busy(p);
+    }
+
     public static void tryStart(ServerPlayer player) {
-        if (busy(player)) {
+        if (anyBusy(player)) {
             player.displayClientMessage(Component.translatable("message.arsenalatomico.busy").withStyle(ChatFormatting.RED), true);
             return;
         }
@@ -147,6 +154,11 @@ public final class LaunchManager {
         }
         WeaponType type = getSelected(player);
         if (!type.ready) type = WeaponType.SALVO;
+        if (type == WeaponType.THERMO) {
+            // el Sol Negro es una misión: camión, base y botón (lo maneja SolNegro)
+            SolNegro.request(player, target);
+            return;
+        }
         ServerLevel level = player.serverLevel();
         long seed = level.getRandom().nextLong();
         Vec3 t = Vec3.atBottomCenterOf(target).add(0, 0.5, 0);
@@ -199,7 +211,18 @@ public final class LaunchManager {
     public static Strike begin(ServerLevel level, @Nullable UUID owner, WeaponType type, Vec3 target, Site site, long seed) {
         long now = level.getGameTime();
         Strike s;
-        if (type == WeaponType.NUKE) {
+        if (type == WeaponType.THERMO) {
+            // el reloj arranca 90 s «antes»: la cinemática es la del Protocolo Hongo desde dentro del silo
+            NukePlan plan = new NukePlan(site.pos(), site.yaw(), target, seed);
+            s = new Strike(owner, level, type, now - SolNegro.OFFSET * 20L, plan.impactTick(), BlockPos.containing(target));
+            s.shots.add(new Shot(plan.launchTick, plan.path, 1f, 4, 0, 0f, true));
+            s.siloSite = site.pos();
+            s.thermo = true;
+            BunkerBuilder.open(level, site.pos());
+            // el quemado del Sol Negro llega a ~150 bloques del blanco
+            keepLoaded(level, s, target, 10);
+            keepLoaded(level, s, site.pos(), 3);
+        } else if (type == WeaponType.NUKE) {
             NukePlan plan = new NukePlan(site.pos(), site.yaw(), target, seed);
             s = new Strike(owner, level, type, now, plan.impactTick(), BlockPos.containing(target));
             s.shots.add(new Shot(plan.launchTick, plan.path, 1f, 3, 0, 0f, true));
@@ -261,6 +284,7 @@ public final class LaunchManager {
             s.bunker.step(Integer.MAX_VALUE);
             BunkerBuilder.close(level, s.siloSite);
         }
+        if (level != null && s.thermo) BunkerBuilder.close(level, s.siloSite);
         if (s.crater != null) s.crater.step(Integer.MAX_VALUE);
         if (level != null) {
             for (ChunkPos c : s.chunks) ForgeChunkManager.forceChunk(level, ArsenalAtomico.MODID, s.ticketOwner, c.x, c.z, false, true);
@@ -296,7 +320,8 @@ public final class LaunchManager {
                 if (shot.fired && !shot.hit && t >= shot.launch + shot.path.flightTicks) {
                     shot.hit = true;
                     if (shot.entity != null) shot.entity.discard();
-                    if (shot.kind == 3) s.crater = NukeCrater.detonate(level, shot.path.p3);
+                    if (shot.kind == 4) s.crater = NukeCrater.detonate(level, shot.path.p3, NukeCrater.THERMO);
+                    else if (shot.kind == 3) s.crater = NukeCrater.detonate(level, shot.path.p3);
                     else if (shot.kind == 2) Impacts.huge(level, shot.path.p3, shot.power);
                     else if (shot.big) Impacts.big(level, shot.path.p3, shot.power);
                     else Impacts.missile(level, shot.path.p3, shot.power);

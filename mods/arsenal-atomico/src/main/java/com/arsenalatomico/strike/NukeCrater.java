@@ -32,21 +32,29 @@ import java.util.List;
  * </ul>
  */
 public final class NukeCrater {
+    /** El Protocolo Sol Negro: cráter de 67 bloques de radio, 32 de hondo y quemado hasta 150. */
+    public static final double THERMO = 1.45;
+
     private final ServerLevel level;
     private final Vec3 at;
     private final int x0, y0, z0;
     private final List<int[]> columns = new ArrayList<>();
     private final RandomSource r;
     private int next;
+    /** Tamaño: 1 = Protocolo Hongo; el Sol Negro es más grande. */
+    private final double craterR, craterDepth, scorchR;
 
-    private NukeCrater(ServerLevel level, Vec3 at) {
+    private NukeCrater(ServerLevel level, Vec3 at, double k) {
+        craterR = NukePlan.CRATER_R * k;
+        craterDepth = NukePlan.CRATER_DEPTH * k;
+        scorchR = NukePlan.SCORCH_R * k;
         this.level = level;
         this.at = at;
         x0 = Mth.floor(at.x);
         y0 = Mth.floor(at.y);
         z0 = Mth.floor(at.z);
         r = RandomSource.create((long) x0 * 341873128712L + z0);
-        int R = NukePlan.SCORCH_R;
+        int R = (int) Math.round(scorchR);
         for (int dx = -R; dx <= R; dx++) {
             for (int dz = -R; dz <= R; dz++) {
                 if (dx * dx + dz * dz <= R * R) columns.add(new int[]{dx, dz});
@@ -58,7 +66,12 @@ public final class NukeCrater {
 
     /** La detonación: daño a lo que esté vivo cerca y, si la configuración deja, el cráter. */
     public static NukeCrater detonate(ServerLevel level, Vec3 at) {
-        double reach = NukePlan.CRATER_R * 2.3;
+        return detonate(level, at, 1);
+    }
+
+    /** {@code k}: tamaño (1 = Protocolo Hongo, {@link #THERMO} = Protocolo Sol Negro). */
+    public static NukeCrater detonate(ServerLevel level, Vec3 at, double k) {
+        double reach = NukePlan.CRATER_R * k * 2.3;
         AABB box = new AABB(at, at).inflate(reach, reach * 0.8, reach);
         for (Entity e : level.getEntities((Entity) null, box, x -> x instanceof LivingEntity)) {
             double d = e.position().distanceTo(at);
@@ -75,7 +88,7 @@ public final class NukeCrater {
         level.sendParticles(ParticleTypes.LARGE_SMOKE, at.x, at.y + 10, at.z, 400, 40, 20, 40, 0.1);
         level.playSound(null, at.x, at.y, at.z, com.arsenalatomico.registry.ModSounds.NUKE_BLAST.get(), SoundSource.HOSTILE, 64f, 1f);
         Impacts.IMPACTS++;
-        return Config.DESTROY_BLOCKS.get() ? new NukeCrater(level, at) : null;
+        return Config.DESTROY_BLOCKS.get() ? new NukeCrater(level, at, k) : null;
     }
 
     /** Hace otras columnas; true cuando terminó. */
@@ -92,7 +105,7 @@ public final class NukeCrater {
     private void column(int dx, int dz) {
         int x = x0 + dx, z = z0 + dz;
         double d = Math.sqrt(dx * dx + dz * dz);
-        double R = NukePlan.CRATER_R;
+        double R = craterR;
         // el suelo de verdad, debajo de los árboles
         int top = level.getHeight(Heightmap.Types.MOTION_BLOCKING, x, z);
         int g = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z) - 1;
@@ -102,7 +115,7 @@ public final class NukeCrater {
         if (d <= R) {
             // el tazón: más hondo en el centro; las orillas suben hacia el borde
             double u = d / R;
-            double floorY = y0 - NukePlan.CRATER_DEPTH * (1 - u * u) + noise;
+            double floorY = y0 - craterDepth * (1 - u * u) + noise;
             if (u > 0.85) floorY += 5 * Math.pow((u - 0.85) / 0.15, 2);
             int fy = (int) Math.round(floorY);
             int clearTo = Math.min(level.getMaxBuildHeight() - 1, Math.max(top, y0) + 40);
@@ -134,9 +147,9 @@ public final class NukeCrater {
         }
         BlockPos gp = new BlockPos(x, g, z);
         BlockState ground = level.getBlockState(gp);
-        BlockState burnt = scorch(ground, d / NukePlan.SCORCH_R);
+        BlockState burnt = scorch(ground, d / scorchR);
         if (burnt != null) put(x, g, z, burnt);
-        float fire = (float) (0.16 * (1 - d / NukePlan.SCORCH_R));
+        float fire = (float) (0.16 * (1 - d / scorchR));
         if (r.nextFloat() < fire && level.getBlockState(gp).isFaceSturdy(level, gp, net.minecraft.core.Direction.UP)) {
             put(x, g + 1, z, Blocks.FIRE.defaultBlockState());
         }

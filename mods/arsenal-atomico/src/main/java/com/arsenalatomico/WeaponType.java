@@ -10,8 +10,11 @@ public enum WeaponType {
     ICBM("icbm", true, 210),
     /** Protocolo Hongo: bomba nuclear pequeña desde el búnker más detallado (silo, cuarto de control, pasillo, caseta). */
     NUKE("nuke", true, 210),
-    /** Protocolo Sol Negro: termonuclear desde el búnker más profundo. */
-    THERMO("thermo", false, 210);
+    /**
+     * Protocolo Sol Negro: termonuclear. Es una misión: un camión lleva al jugador a la Base Sol
+     * Negro y él mismo oprime el botón (la cinemática dura desde el segundo 90 hasta el 210).
+     */
+    THERMO("thermo", true, 210);
 
     public final String id;
     /** Ya está hecha (las demás llegan en las siguientes fases). */

@@ -1,0 +1,23 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "minecraft:block/polished_blackstone",
+    "top": "arsenalatomico:block/launch_console_top",
+    "side": "arsenalatomico:block/launch_console_side",
+    "bottom": "minecraft:block/polished_blackstone"
+  },
+  "elements": [
+    {
+      "from": [0, 0, 0],
+      "to": [16, 10, 16],
+      "faces": {
+        "down": {"texture": "#bottom", "cullface": "down"},
+        "up": {"texture": "#top"},
+        "north": {"texture": "#side", "uv": [0, 6, 16, 16]},
+        "south": {"texture": "#side", "uv": [0, 6, 16, 16]},
+        "west": {"texture": "#side", "uv": [0, 6, 16, 16]},
+        "east": {"texture": "#side", "uv": [0, 6, 16, 16]}
+      }
+    }
+  ]
+}

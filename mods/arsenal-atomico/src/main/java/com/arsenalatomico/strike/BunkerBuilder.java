@@ -52,6 +52,8 @@ public final class BunkerBuilder {
     private final List<Column> columns = new ArrayList<>();
     private final List<Object[]> todo = new ArrayList<>();
     private int nextColumn, next;
+    /** Base Sol Negro: lleva la consola de lanzamiento en el centro de mando. */
+    private boolean console;
 
     /** Una columna del terreno: se mide la altura del suelo cuando le toca (no todas al empezar). */
     private record Column(int a, int b, double d, int outer) {}
@@ -77,7 +79,13 @@ public final class BunkerBuilder {
     }
 
     public static BunkerBuilder build(ServerLevel level, Vec3 site, float yaw, int groundY) {
+        return build(level, site, yaw, groundY, false);
+    }
+
+    /** {@code console}: la Base Sol Negro, con la consola de lanzamiento frente a la ventana del silo. */
+    public static BunkerBuilder build(ServerLevel level, Vec3 site, float yaw, int groundY, boolean console) {
         BunkerBuilder b = new BunkerBuilder(level, site, yaw, groundY);
+        b.console = console;
         b.terrain();
         b.vents();
         b.shaft();
@@ -250,6 +258,8 @@ public final class BunkerBuilder {
         for (int b : new int[]{-5, -2, 2, 5}) put(-9, b, f, stair(Blocks.SPRUCE_STAIRS.defaultBlockState(), -1, 0));
         // la mesa de mapas en el centro
         for (int b = -1; b <= 1; b++) put(-11, b, f, Blocks.CARTOGRAPHY_TABLE.defaultBlockState());
+        // Base Sol Negro: la consola de lanzamiento, entre las sillas del medio, mirando a la ventana
+        if (console) put(-9, 0, f, com.arsenalatomico.registry.ModBlocks.LAUNCH_CONSOLE.get().defaultBlockState());
         // las dos estaciones de llaves, separadas (nadie puede girar las dos solo)
         for (int side = -1; side <= 1; side += 2) {
             put(-13, side * 4, f, Blocks.POLISHED_DEEPSLATE_WALL.defaultBlockState());
@@ -421,6 +431,26 @@ public final class BunkerBuilder {
             put(a, b, g + 7, Blocks.IRON_BLOCK.defaultBlockState());
             put(a, b, g + 8, Blocks.SEA_LANTERN.defaultBlockState());
         }
+    }
+
+    /** Quita las compuertas de hierro de la boca del pozo (antes de otro lanzamiento desde la misma base). */
+    public static void open(ServerLevel level, Vec3 site) {
+        int x0 = Mth.floor(site.x), z0 = Mth.floor(site.z), top = Mth.floor(site.y);
+        int r = Mth.ceil(NukePlan.SHAFT_R);
+        for (int dx = -r; dx <= r; dx++) {
+            for (int dz = -r; dz <= r; dz++) {
+                if (dx * dx + dz * dz > NukePlan.SHAFT_R * NukePlan.SHAFT_R) continue;
+                BlockPos p = new BlockPos(x0 + dx, top - 1, z0 + dz);
+                if (level.getBlockState(p).is(Blocks.IRON_TRAPDOOR)) level.setBlock(p, Blocks.AIR.defaultBlockState(), 2);
+            }
+        }
+    }
+
+    /** Dónde queda la consola de lanzamiento de la Base Sol Negro. */
+    public static BlockPos consolePos(Vec3 site, float yaw) {
+        Vec3 p = NukePlan.local(new Vec3(Mth.floor(site.x), Mth.floor(site.y), Mth.floor(site.z)), yaw, -9, 0,
+                -NukePlan.DEPTH + NukePlan.ROOM_UP);
+        return BlockPos.containing(p.x, p.y, p.z);
     }
 
     /** Compuertas de hierro sobre la boca del pozo (al final del ataque). */

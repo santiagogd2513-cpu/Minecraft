@@ -2,6 +2,7 @@ package com.arsenalatomico;
 
 import com.arsenalatomico.net.Network;
 import com.arsenalatomico.registry.ModEntities;
+import com.arsenalatomico.registry.ModBlocks;
 import com.arsenalatomico.registry.ModItems;
 import com.arsenalatomico.registry.ModSounds;
 import com.arsenalatomico.registry.ModTabs;
@@ -21,6 +22,7 @@ public class ArsenalAtomico {
 
     public ArsenalAtomico() {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
+        ModBlocks.BLOCKS.register(bus);
         ModItems.ITEMS.register(bus);
         ModEntities.ENTITIES.register(bus);
         ModTabs.TABS.register(bus);

@@ -102,7 +102,7 @@ public class MissileEntity extends Entity implements IEntityAdditionalSpawnData 
                 boomed = true;
                 com.arsenalatomico.client.MissileSounds.impact(path.p3, kind);
             }
-            if (kind == 3) {
+            if (kind >= 3) {
                 nukeTrail(p, d);
             } else if (kind == 2) {
                 if (age == com.arsenalatomico.CondorPlan.SEP1 || age == com.arsenalatomico.CondorPlan.SEP2) {

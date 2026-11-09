@@ -16,7 +16,7 @@ public final class MissileSounds {
 
     public static void start(MissileEntity m) {
         var sm = Minecraft.getInstance().getSoundManager();
-        if (m.kind() == 3) {
+        if (m.kind() >= 3) {
             // Protocolo Hongo: el rugido del encendido dentro del silo y el motor que lo sigue
             if (m.age() < 10) {
                 sm.play(at(ModSounds.MISSILE_LAUNCH.get(), m.position(), 16f, 0.48f));
@@ -66,7 +66,7 @@ public final class MissileSounds {
     }
 
     public static void impact(Vec3 at, int kind) {
-        if (kind == 3) {
+        if (kind >= 3) {
             NukeFx.spawn(at);
             return;
         }

@@ -30,7 +30,7 @@ public class MissileRenderer extends EntityRenderer<MissileEntity> {
         ps.scale(s, s, s);
         Matrix4f m = ps.last().pose();
         VertexConsumer v = buf.getBuffer(RenderType.debugQuads());
-        if (e.kind() == 3) {
+        if (e.kind() >= 3) {
             // Protocolo Hongo: sale encendido del silo
             NukeModel.body(v, m);
             float t = e.age() + partial;

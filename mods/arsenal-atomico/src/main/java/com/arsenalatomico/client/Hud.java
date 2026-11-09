@@ -19,6 +19,9 @@ public final class Hud {
         // destello de los impactos grandes
         float fl = Cinematic.flash(s);
         if (fl > 0.01f) g.fill(0, 0, w, h, ((int) (fl * 235) << 24) | 0xFFF4E0);
+        // el viaje en camión: fundido a negro («horas después…»)
+        float dark = Cinematic.ride ? RideScenes.dark(s) : 0;
+        if (dark > 0.01f) g.fill(0, 0, w, h, ((int) (Math.min(1f, dark) * 255) << 24));
         // franjas negras de cine
         int bar = Math.round(h * 0.09f);
         float in = Mth.clamp(s / 1.2f, 0, 1) * Mth.clamp((Cinematic.totalSeconds() - s) / 1.2f, 0, 1);
@@ -38,11 +41,11 @@ public final class Hud {
         int[] c = Cinematic.counts(s);
         Component line = Component.translatable(key, c[0], c[1], c[2]);
         float launch = Cinematic.launchSecond();
-        boolean blink = (s >= Cinematic.alarmSecond() && s < launch) && ((int) (s * 2)) % 2 == 0;
+        boolean blink = !Cinematic.ride && (s >= Cinematic.alarmSecond() && s < launch) && ((int) (s * 2)) % 2 == 0;
         g.drawCenteredString(font, line, w / 2, h - b - 18, blink ? 0xFFFF5D5D : 0xFFFFFFFF);
 
         // cuenta regresiva grande
-        if (s >= launch - 10 && s < launch) {
+        if (!Cinematic.ride && s >= launch - 10 && s < launch) {
             int n = 10 - (int) Math.floor(s - (launch - 10));
             g.pose().pushPose();
             g.pose().translate(w / 2f, h / 2f - 20, 0);

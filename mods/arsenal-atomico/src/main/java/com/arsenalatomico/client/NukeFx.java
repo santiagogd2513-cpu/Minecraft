@@ -55,13 +55,16 @@ final class NukeFx {
     private static final class Blast {
         final Vec3 c;
         final float start;
+        /** Tamaño: 1 = Protocolo Hongo; el Sol Negro es más grande. */
+        final float k;
         final float[] seeds = new float[4096];
         final Debris[] debris = new Debris[320];
         float lastSim;
 
-        Blast(Vec3 c, float start) {
+        Blast(Vec3 c, float start, float k) {
             this.c = c;
             this.start = start;
+            this.k = k;
             lastSim = start;
             Random r = new Random((long) (c.x * 31 + c.z * 17 + start));
             for (int i = 0; i < seeds.length; i++) seeds[i] = r.nextFloat();
@@ -135,9 +138,14 @@ final class NukeFx {
     // ------------------------------------------------------------------ vida
 
     static void spawn(Vec3 center) {
+        spawn(center, 1f);
+    }
+
+    /** {@code k}: tamaño del hongo (1 = Protocolo Hongo). */
+    static void spawn(Vec3 center, float k) {
         float now = Cinematic.clientTicks();
         for (Blast b : BLASTS) if (now - b.start < 200 && b.c.distanceToSqr(center) < 400) return;
-        BLASTS.add(new Blast(center, now));
+        BLASTS.add(new Blast(center, now, k));
         if (BLASTS.size() > 4) BLASTS.remove(0);
         Minecraft mc = Minecraft.getInstance();
         // en la cinemática el estruendo lo pone la escena (llega un segundo después del destello)
@@ -171,9 +179,9 @@ final class NukeFx {
         for (Blast b : BLASTS) {
             float a = (now - b.start) / 20f;
             float fire = (float) Math.exp(-a / 5f);
-            if (fire > 0.01f) out.add(new float[]{(float) b.c.x, (float) b.c.y, (float) b.c.z, 90 + 160 * fire, Math.min(1f, 1.4f * fire)});
+            if (fire > 0.01f) out.add(new float[]{(float) b.c.x, (float) b.c.y, (float) b.c.z, (90 + 160 * fire) * b.k, Math.min(1f, 1.4f * fire)});
             float crater = Math.max(0, 1 - a / 120f);
-            if (crater > 0.01f) out.add(new float[]{(float) b.c.x, (float) b.c.y, (float) b.c.z, NukePlan.CRATER_R * 1.3f, 0.6f * crater});
+            if (crater > 0.01f) out.add(new float[]{(float) b.c.x, (float) b.c.y, (float) b.c.z, NukePlan.CRATER_R * 1.3f * b.k, 0.6f * crater});
         }
     }
 
@@ -195,16 +203,16 @@ final class NukeFx {
             }
             if (a < LIFE - 30 && (int) now % 2 == 0) {
                 for (int i = 0; i < 5; i++) {
-                    double ang = rnd.nextDouble() * Math.PI * 2, rr = NukePlan.CRATER_R * (1.2 + rnd.nextDouble() * 1.8);
+                    double ang = rnd.nextDouble() * Math.PI * 2, rr = NukePlan.CRATER_R * b.k * (1.2 + rnd.nextDouble() * 1.8);
                     mc.level.addParticle(ParticleTypes.CAMPFIRE_SIGNAL_SMOKE, true, b.c.x + Math.cos(ang) * rr, b.c.y + 1,
                             b.c.z + Math.sin(ang) * rr, 0, 0.06 + rnd.nextDouble() * 0.05, 0);
                 }
             }
             if (a < 90) {
                 for (int i = 0; i < 6; i++) {
-                    double ang = rnd.nextDouble() * Math.PI * 2, rr = rnd.nextDouble() * NukePlan.CRATER_R * 0.5;
+                    double cr = NukePlan.CRATER_R * b.k, ang = rnd.nextDouble() * Math.PI * 2, rr = rnd.nextDouble() * cr * 0.5;
                     double x = b.c.x + Math.cos(ang) * rr, z = b.c.z + Math.sin(ang) * rr;
-                    double y = b.c.y - NukePlan.CRATER_DEPTH * (1 - (rr / NukePlan.CRATER_R) * (rr / NukePlan.CRATER_R)) + 1;
+                    double y = b.c.y - NukePlan.CRATER_DEPTH * b.k * (1 - (rr / cr) * (rr / cr)) + 1;
                     mc.level.addParticle(ParticleTypes.FLAME, true, x, y, z, 0, 0.05, 0);
                     if (i == 0) mc.level.addParticle(ParticleTypes.LAVA, true, x, y, z, 0, 0, 0);
                 }
@@ -231,19 +239,19 @@ final class NukeFx {
         RenderSystem.disableBlend();
         RenderSystem.depthMask(true);
         bb.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        for (Blast b : BLASTS) drawDebris(bb, m, b, now);
+        for (Blast b : BLASTS) drawDebris(bb, scaled(m, b), b, now);
         BufferUploader.drawWithShader(bb.end());
 
         RenderSystem.enableBlend();
         RenderSystem.defaultBlendFunc();
         RenderSystem.depthMask(false);
         bb.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        for (Blast b : BLASTS) drawSmoke(bb, m, right, up, b, now);
+        for (Blast b : BLASTS) drawSmoke(bb, scaled(m, b), right, up, b, now);
         BufferUploader.drawWithShader(bb.end());
 
         RenderSystem.blendFunc(GlStateManager.SourceFactor.SRC_ALPHA, GlStateManager.DestFactor.ONE);
         bb.begin(VertexFormat.Mode.QUADS, DefaultVertexFormat.POSITION_COLOR);
-        for (Blast b : BLASTS) drawGlow(bb, m, right, up, b, now);
+        for (Blast b : BLASTS) drawGlow(bb, scaled(m, b), right, up, b, now);
         BufferUploader.drawWithShader(bb.end());
 
         RenderSystem.depthMask(true);
@@ -251,6 +259,13 @@ final class NukeFx {
         RenderSystem.disableBlend();
         RenderSystem.enableCull();
         ps.popPose();
+    }
+
+    /** Agranda todo el hongo alrededor de su centro (el Sol Negro es el mismo hongo, más grande). */
+    private static Matrix4f scaled(Matrix4f m, Blast b) {
+        if (b.k == 1f) return m;
+        return new Matrix4f(m).translate((float) b.c.x, (float) b.c.y, (float) b.c.z).scale(b.k)
+                .translate((float) -b.c.x, (float) -b.c.y, (float) -b.c.z);
     }
 
     private static void simulate(Blast b, float now) {

@@ -29,8 +29,19 @@ import org.joml.Vector3f;
 public final class NukeRenderer {
     private static NukePlan plan;
     private static long until;
+    /** La Base Sol Negro: se dibuja siempre, con su misil esperando en el silo. */
+    private static NukePlan standby;
 
     private NukeRenderer() {}
+
+    /** Dónde está la Base Sol Negro de este mundo (lo manda el servidor). */
+    public static void standby(Vec3 site, float yaw) {
+        standby = new NukePlan(site, yaw, site.add(1000, 0, 0), 0);
+        if (plan == null) {
+            plan = standby;
+            until = Long.MAX_VALUE;
+        }
+    }
 
     static void show(NukePlan p, long start, int duration) {
         plan = p;
@@ -66,6 +77,11 @@ public final class NukeRenderer {
     private static final float FLOOR = -(NukePlan.DEPTH - NukePlan.ROOM_UP);   // piso del cuarto, desde la plataforma
 
     public static void render(PoseStack ps, Camera cam, float partial) {
+        // terminado el ataque, vuelve a dibujarse la Base Sol Negro (si la hay)
+        if ((plan == null || Cinematic.clientTicks() > until) && standby != null) {
+            plan = standby;
+            until = Long.MAX_VALUE;
+        }
         if (plan == null || Cinematic.clientTicks() > until) return;
         Vec3 c = cam.getPosition();
         Vec3 site = plan.site;
@@ -99,7 +115,7 @@ public final class NukeRenderer {
         // el misil esperando en el pozo, con sus brazos de servicio
         Vec3 st = NukePlan.start(site);
         float my = (float) (st.y - Math.floor(site.y));
-        if (active && s * 20 < plan.launchTick) {
+        if (active ? s * 20 < plan.launchTick : plan == standby) {
             Matrix4f mm = new Matrix4f(m).translate(0, my, 0).rotateX((float) Math.toRadians(-90));
             NukeModel.body(bb, mm);
             float in = NukeModel.R + (float) (NukePlan.SHAFT_R - 0.15 - NukeModel.R) * arms(s);
