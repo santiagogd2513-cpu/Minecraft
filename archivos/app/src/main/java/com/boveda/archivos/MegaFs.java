@@ -40,6 +40,9 @@ final class MegaFs implements Fs {
     private final Map<String, Node> nodes = new HashMap<>();
     private String rootHandle, trashHandle;
     private long loadedAt;
+    /** Para el diagnóstico: cuántos llegaron, sin llave, sin nombre, y cómo empiezan las llaves. */
+    private int seen, noKey, noName;
+    private String sampleOwners = "";
 
     /** Un archivo o carpeta de MEGA, ya descifrado. */
     private static final class Node {
@@ -94,6 +97,8 @@ final class MegaFs implements Fs {
             JSONArray f = r.optJSONArray("f");
             Map<String, Node> fresh = new HashMap<>();
             String root = null, trash = null;
+            seen = noKey = noName = 0;
+            java.util.Set<String> owners = new java.util.LinkedHashSet<>();
             if (f != null) {
                 for (int i = 0; i < f.length(); i++) {
                     JSONObject o = f.getJSONObject(i);
@@ -111,8 +116,16 @@ final class MegaFs implements Fs {
                         fresh.put(n.h, n);
                         continue;
                     }
-                    n.key = nodeKey(o.optString("k"));
+                    seen++;
+                    String kf = o.optString("k");
+                    for (String part : kf.split("/")) {
+                        int c = part.indexOf(':');
+                        if (c > 0 && owners.size() < 3) owners.add(part.substring(0, Math.min(c, 4)) + "(" + part.substring(c + 1).length() + ")");
+                    }
+                    n.key = nodeKey(kf);
+                    if (n.key == null) noKey++;
                     n.name = n.key == null ? null : attrName(o.optString("a"), n.aesKey());
+                    if (n.key != null && n.name == null) noName++;
                     if (n.name == null) continue;   // compartido por otra persona o sin llave: se omite
                     fresh.put(n.h, n);
                 }
@@ -121,6 +134,7 @@ final class MegaFs implements Fs {
                 Node p = fresh.get(n.parent);
                 if (p != null && n.name != null && !n.name.isEmpty()) p.kids.add(n);
             }
+            sampleOwners = String.join(", ", owners);
             nodes.clear();
             nodes.putAll(fresh);
             rootHandle = root;
@@ -197,6 +211,13 @@ final class MegaFs implements Fs {
     public List<Entry> list(String dir) throws IOException {
         if (dir.equals(ROOT)) load(true);
         Node d = need(dir);
+        if (dir.equals(ROOT) && d.kids.isEmpty() && seen > 0) {
+            // llegó la lista pero no se pudo leer nada: se muestra un diagnóstico (sin datos secretos)
+            String u = mega.user();
+            throw new IOException("MEGA mandó " + seen + " archivos y carpetas, pero no se pudieron leer: " + noKey + " sin llave y "
+                    + noName + " sin nombre. Usuario: " + (u.length() > 4 ? u.substring(0, 4) : u) + "(" + u.length() + "). Llaves de: "
+                    + sampleOwners + ". Mándale una captura de esto a Claude.");
+        }
         List<Entry> out = new ArrayList<>();
         for (Node k : d.kids) out.add(new Entry(Paths.join(dir, k.name), k.name, k.dir, k.dir ? 0 : k.size, k.ts));
         return out;
