@@ -1,3 +1,8 @@
+## 37
+Aviso de actualización cada vez que abres la app
+- Ahora la app busca una versión nueva cada vez que la abres, y si hay una te muestra el aviso.
+- Si tocas «Más tarde», el aviso vuelve a salir la próxima vez que entres a la app.
+
 ## 36
 Bóveda habla 11 idiomas
 - Nuevo en Ajustes → Idioma e interfaz → «Idioma»: español, English (US), português (Brasil), português (Portugal), Deutsch, français, русский, 中文（繁體）, 中文（简体）, 日本語 y 한국어.

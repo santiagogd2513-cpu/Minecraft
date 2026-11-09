@@ -1,6 +1,7 @@
 package com.boveda.archivos;
 
 import android.app.Activity;
+import android.app.Application;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.PendingIntent;
@@ -14,6 +15,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.provider.Settings;
@@ -40,7 +42,7 @@ import java.util.Locale;
 
 /**
  * Busca versiones nuevas de la app en GitHub y, si hay una, muestra un aviso a pantalla completa
- * con las novedades, «Actualizar ahora», «Más tarde» y «Ahora no». Al actualizar descarga el APK y
+ * con las novedades, «Actualizar ahora» y «Más tarde». Al actualizar descarga el APK y
  * se lo pasa al instalador de Android (que pide confirmar).
  * <p>
  * La versión de la app es el número de compilación, igual al de la versión publicada (archivos-N).
@@ -58,13 +60,12 @@ final class Updater {
     private static final String APP = "Bóveda";
     private static final int THEME = R.style.Theme_Boveda_Dialog;
     private static final String ACTION_STATUS = "com.boveda.archivos.UPDATE_STATUS";
-    private static final long CHECK_EVERY = 15 * 60 * 1000L;       // como mucho cada 15 minutos
-    private static final long LATER = 24 * 60 * 60 * 1000L;        // «Más tarde»: mañana
-    private static final long BACK = 3 * 60 * 60 * 1000L;          // si se cierra con «atrás»: en 3 horas
     private static final int LOOK_AHEAD = 30;                      // versiones que se prueban hacia adelante
 
     private static boolean checking, installing, pendingPermission;
-    private static int shownFor;
+    // el aviso sale cada vez que se abre la app; si lo cierras, no vuelve hasta que salgas y vuelvas a entrar
+    private static boolean showing, closedThisVisit, watching;
+    private static int started;
     private static Release pending;
 
     private record Release(int number, String url, long size, String notes) {}
@@ -85,18 +86,15 @@ final class Updater {
 
     /** Llamar al abrir o volver a la app. Revisa en segundo plano y, si hay versión nueva, avisa. */
     static void check(Activity a) {
-        SharedPreferences p = prefs(a);
-        long now = System.currentTimeMillis();
-        if (checking || installing || now < p.getLong("later_until", 0) || now - p.getLong("last_check", 0) < CHECK_EVERY) return;
+        watch(a);
+        if (checking || installing || showing || closedThisVisit) return;
         int current = currentVersion(a);
         if (current <= 1) return;      // compilación local, no de GitHub
         checking = true;
         new Thread(() -> {
             try {
                 Release r = latest(current);
-                // solo cuenta como revisado si de verdad se pudo preguntar
-                p.edit().putLong("last_check", System.currentTimeMillis()).apply();
-                if (r != null && r.number > current && r.number != p.getInt("skip", 0) && r.number != shownFor) {
+                if (r != null && r.number > current) {
                     new Handler(Looper.getMainLooper()).post(() -> offer(a, r, current));
                 }
             } catch (Exception ignored) {
@@ -105,6 +103,27 @@ final class Updater {
                 checking = false;
             }
         }, "buscar-actualizacion").start();
+    }
+
+    /** Sabe cuándo la app pasa a segundo plano (todas sus pantallas ocultas) para volver a avisar al abrirla. */
+    private static void watch(Activity a) {
+        if (watching) return;
+        watching = true;
+        started = 1;   // la pantalla que llama ya está visible
+        a.getApplication().registerActivityLifecycleCallbacks(new Application.ActivityLifecycleCallbacks() {
+            @Override public void onActivityStarted(Activity x) { started++; }
+            @Override public void onActivityStopped(Activity x) {
+                if (--started <= 0) {
+                    started = 0;
+                    closedThisVisit = false;
+                }
+            }
+            @Override public void onActivityCreated(Activity x, Bundle b) {}
+            @Override public void onActivityResumed(Activity x) {}
+            @Override public void onActivityPaused(Activity x) {}
+            @Override public void onActivitySaveInstanceState(Activity x, Bundle b) {}
+            @Override public void onActivityDestroyed(Activity x) {}
+        });
     }
 
     /** Llamar en onResume: si se fue a dar permiso de instalar, sigue con la actualización. */
@@ -237,8 +256,8 @@ final class Updater {
     }
 
     private static void offer(Activity a, Release r, int current) {
-        if (a.isFinishing() || a.isDestroyed()) return;
-        shownFor = r.number;
+        if (a.isFinishing() || a.isDestroyed() || showing || closedThisVisit || installing) return;
+        showing = true;
         float dp = a.getResources().getDisplayMetrics().density;
         Dialog d = new Dialog(a, android.R.style.Theme_Material_NoActionBar);
         LinearLayout root = new LinearLayout(a);
@@ -336,37 +355,23 @@ final class Updater {
         go.setPadding(0, px(dp, 16), 0, px(dp, 16));
         go.setBackground(Ui.gradient(px(dp, 28), Ui.ACCENT, Ui.ACCENT2));
         go.setOnClickListener(v -> {
+            closedThisVisit = true;
             d.dismiss();
             start(a, r);
         });
         LinearLayout.LayoutParams gl = new LinearLayout.LayoutParams(-1, -2);
         gl.setMargins(0, px(dp, 10), 0, 0);
         root.addView(go, gl);
-        LinearLayout row = new LinearLayout(a);
-        row.setPadding(0, px(dp, 6), 0, 0);
         TextView later = flat(a, dp, L.t("Más tarde"));
-        later.setOnClickListener(v -> {
-            prefs(a).edit().putLong("later_until", System.currentTimeMillis() + LATER).apply();
-            d.dismiss();
-        });
-        TextView skip = flat(a, dp, L.t("Ahora no"));
-        skip.setOnClickListener(v -> {
-            prefs(a).edit().putInt("skip", r.number).apply();
-            d.dismiss();
-        });
-        row.addView(later, new LinearLayout.LayoutParams(0, -2, 1));
-        row.addView(skip, new LinearLayout.LayoutParams(0, -2, 1));
-        root.addView(row);
-        TextView hint = new TextView(a);
-        hint.setText(L.t("«Más tarde» te recuerda mañana. «Ahora no» no vuelve a avisar de esta versión."));
-        hint.setTextColor(0xFF6E7A8E);
-        hint.setTextSize(11.5f);
-        hint.setGravity(Gravity.CENTER);
-        hint.setPadding(0, px(dp, 4), 0, 0);
-        root.addView(hint);
+        later.setPadding(0, px(dp, 14), 0, px(dp, 6));
+        later.setOnClickListener(v -> d.dismiss());
+        root.addView(later, new LinearLayout.LayoutParams(-1, -2));
 
         d.setContentView(root, new ViewGroup.LayoutParams(-1, -1));
-        d.setOnCancelListener(x -> prefs(a).edit().putLong("later_until", System.currentTimeMillis() + BACK).apply());
+        d.setOnDismissListener(x -> {
+            showing = false;
+            closedThisVisit = true;
+        });
         if (d.getWindow() != null) {
             d.getWindow().setStatusBarColor(Ui.BG);
             d.getWindow().setNavigationBarColor(Ui.BG);

@@ -1,3 +1,8 @@
+## 11
+Aviso de actualización cada vez que abres la app
+- Ahora la app busca una versión nueva cada vez que la abres, y si hay una te muestra el aviso.
+- Si tocas «Más tarde», el aviso vuelve a salir la próxima vez que entres a la app.
+
 ## 10
 Forja ahora se llama Yunque
 - La app cambió de nombre: ahora es Yunque, la herramienta de Forja Estudios. Funciona igual y no se borra nada.

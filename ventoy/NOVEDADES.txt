@@ -1,3 +1,8 @@
+## 10
+Aviso de actualización cada vez que abres la app
+- Ahora la app busca una versión nueva cada vez que la abres, y si hay una te muestra el aviso.
+- Si tocas «Más tarde», el aviso vuelve a salir la próxima vez que entres a la app.
+
 ## 9
 Ahora somos Forja Estudios
 - Ventoy no oficial es parte de Forja Estudios, nuestro estudio. En «Acerca de» está su ficha: qué hacemos y quiénes somos.
