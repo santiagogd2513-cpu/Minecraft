@@ -51,9 +51,18 @@ final class Season {
      * Si el tema de cada temporada ya trae decoraciones. Mientras sea false, el tema se puede
      * elegir pero todavía no cambia nada en pantalla.
      */
-    static final boolean[] THEME_READY = {false, false, false, false, false};
+    static final boolean[] THEME_READY = {true, true, false, false, false};
     /** Si ya está dibujado el ícono de cada temporada. */
-    static final boolean[] ICON_READY = {false, false, false, false, false};
+    static final boolean[] ICON_READY = {true, true, false, false, false};
+
+    /** Lo avisa la app para volver a dibujar su pantalla cuando cambia el tema. */
+    static Runnable listener;
+
+    private static void changed(Activity a) {
+        SeasonFx.attach(a);
+        if (listener != null) listener.run();
+        checkIcon(a);
+    }
 
     // ------------------------------------------------------------------ preferencias
 
@@ -174,6 +183,7 @@ final class Season {
         Kit.toggleWithMenu(a, col, tr("Temas de temporada"), themesOn(a) ? themeLabel(a) : tr("Apagados: siempre el diseño de siempre"),
                 themesOn(a), on -> {
                     setThemesOn(a, on);
+                    changed(a);
                     refresh.run();
                 }, () -> chooseTheme(a, refresh));
         Kit.section(a, col, tr("Íconos"));
@@ -185,10 +195,10 @@ final class Season {
         TextView tip = Ui.text(a, tr("Toca el nombre para elegir; el interruptor enciende o apaga."), 12, Ui.SUB, false);
         tip.setPadding(Kit.dp(a, 6), Kit.dp(a, 4), Kit.dp(a, 6), 0);
         col.addView(tip);
-        boolean ready = false;
-        for (boolean b : THEME_READY) ready |= b;
+        boolean ready = true;
+        for (boolean b : THEME_READY) ready &= b;
         if (!ready) {
-            TextView soon = Ui.text(a, tr("🎨 Las decoraciones de cada temporada (nieve, luces, íconos y más) llegan en las próximas actualizaciones. Lo que elijas aquí ya queda guardado."),
+            TextView soon = Ui.text(a, tr("🎨 Navidad y el Día de las Velitas ya tienen sus decoraciones. Las de San Valentín, Amor y Amistad y Halloween llegan en las próximas actualizaciones."),
                     12.5f, Ui.WARN, false);
             soon.setPadding(Kit.dp(a, 14), Kit.dp(a, 12), Kit.dp(a, 14), Kit.dp(a, 12));
             soon.setBackground(Ui.round(0x1AFFB547, Kit.dp(a, 14)));
@@ -257,7 +267,7 @@ final class Season {
         for (int i = 0; i < COUNT; i++) {
             final int s = i;
             Kit.option(a, list, EMOJI[i], COLORS[i][0], COLORS[i][1], tr(NAME[i]), tr(DATES[i]) + " · " + tr("o todo el año"),
-                    sel == i, null, () -> pickTheme(a, d, s, refresh));
+                    sel == i, THEME_READY[i] ? null : tr("Próximamente"), () -> pickTheme(a, d, s, refresh));
         }
         d.show();
     }
@@ -266,6 +276,7 @@ final class Season {
         d.dismiss();
         setTheme(a, t);
         setThemesOn(a, true); // elegir un tema lo enciende
+        changed(a);
         refresh.run();
     }
 
@@ -298,10 +309,23 @@ final class Season {
      * pantalla de inicio puede desaparecer (Android lo quita al cambiar de ícono).
      */
     static void iconChanged(Activity a, Runnable refresh) {
+        iconChanged(a, refresh, false);
+    }
+
+    /**
+     * Para llamar en onResume: si la fecha cambió de temporada y el ícono en «Automático» tiene
+     * que cambiar, lo deja listo (con el aviso de la primera vez).
+     */
+    static void checkIcon(Activity a) {
+        iconChanged(a, () -> { }, true);
+    }
+
+    private static void iconChanged(Activity a, Runnable refresh, boolean quiet) {
         refresh.run();
         if (!Icons.wouldChange(a)) return;
         if (p(a).getBoolean("aviso_icono", false)) {
             Icons.apply(a);
+            if (!quiet) android.widget.Toast.makeText(a, tr("El ícono cambia cuando salgas de la app"), android.widget.Toast.LENGTH_SHORT).show();
             return;
         }
         new AlertDialog.Builder(a, DIALOG_THEME)
@@ -310,6 +334,7 @@ final class Season {
                 .setPositiveButton(tr("Entendido"), (dd, w) -> {
                     p(a).edit().putBoolean("aviso_icono", true).apply();
                     Icons.apply(a);
+                    android.widget.Toast.makeText(a, tr("El ícono cambia cuando salgas de la app"), android.widget.Toast.LENGTH_LONG).show();
                 })
                 .setCancelable(false)
                 .show();

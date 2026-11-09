@@ -102,11 +102,16 @@ public class MainActivity extends Activity {
         Updater.resume(this);
         Updater.check(this);
         Integrity.check(this);
+        // temas de temporada: el ícono si cambió la temporada (la nieve va en la página de inicio,
+        // no encima de las páginas web)
+        Season.checkIcon(this);
     }
 
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
+        Season.listener = () -> onSeasonChanged();
+        SeasonFx.overlay = false;
         store = new Store(this);
         pwUi = new PasswordUi(this);
         DarkMode.init(this);
@@ -175,6 +180,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onStop() {
         super.onStop();
+        Icons.flush(this);
         pwUi.lock();     // al volver, las contraseñas piden la huella otra vez
     }
 
@@ -358,7 +364,7 @@ public class MainActivity extends Activity {
         if (url == null || url.equals(HomePage.URL)) {
             t.url = HomePage.URL;
             t.title = "Inicio";
-            t.web.loadDataWithBaseURL("https://nocturna.inicio/", HomePage.html(store), "text/html", "utf-8", HomePage.URL);
+            t.web.loadDataWithBaseURL("https://nocturna.inicio/", HomePage.html(store, SeasonFx.active(this)), "text/html", "utf-8", HomePage.URL);
         } else {
             t.web.loadUrl(url);
         }
@@ -1023,6 +1029,11 @@ public class MainActivity extends Activity {
         s.setUseWideViewPort(true);
         s.setLoadWithOverviewMode(true);
         current.web.reload();
+    }
+
+    /** Cambió el tema de temporada: las pestañas que muestran el inicio se vuelven a dibujar. */
+    private void onSeasonChanged() {
+        for (Tab t : tabs) if (HomePage.URL.equals(t.url)) load(t, HomePage.URL);
     }
 
     /** Ajustes de Nocturna a pantalla completa, divididos en categorías. */

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <!-- luna creciente azul con degradado -->
+    <path android:pathData="M58,30 A24,24 0 1,0 78,66 A19,19 0 1,1 58,30 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient android:type="linear"
+                android:startX="34" android:startY="30" android:endX="78" android:endY="78">
+                <item android:offset="0" android:color="#FF8FD3FF" />
+                <item android:offset="0.5" android:color="#FF3D8BFF" />
+                <item android:offset="1" android:color="#FF2A4FD6" />
+            </gradient>
+        </aapt:attr>
+    </path>
+    <!-- órbita del "mundo" (navegador) -->
+    <path android:strokeColor="#CC8FD3FF" android:strokeWidth="1.6" android:fillColor="#00000000"
+        android:pathData="M26,60 C30,72 66,70 82,50" />
+    <!-- estrella de cuatro puntas -->
+    <path android:fillColor="#FFFFFFFF"
+        android:pathData="M70,32 L71.6,37.4 L77,39 L71.6,40.6 L70,46 L68.4,40.6 L63,39 L68.4,37.4 Z" />
+    <path android:fillColor="#FFCFE9FF"
+        android:pathData="M80,48 L80.8,50.2 L83,51 L80.8,51.8 L80,54 L79.2,51.8 L77,51 L79.2,50.2 Z" />
+    <!-- temporada: navidad -->
+    <group android:translateX="34" android:translateY="42" android:rotation="-36" android:scaleX="0.72" android:scaleY="0.72">
+        <path android:fillColor="#FFE8323F" android:pathData="M1,-2 C3,-14 11,-24 21,-23 C28,-22 32,-15 35,-7 L30,-5 C28,-10 26,-13 22,-13 C25,-9 27,-5 28,-2 Z" />
+        <path android:fillColor="#FFB71C2A" android:pathData="M21,-23 C28,-22 32,-15 35,-7 L32.5,-6 C30,-12 27,-17 21,-23 Z" />
+        <path android:fillColor="#FFF4F7FF" android:pathData="M-1,-4 Q-3,-4 -3,-0.5 Q-3,3 0,3 L30,3 Q33,3 33,-0.5 Q33,-4 30,-4 Z" />
+        <path android:fillColor="#FFFFFFFF" android:pathData="M30.6,-6 a4.4,4.4 0 1,0 8.8,0 a4.4,4.4 0 1,0 -8.8,0" />
+    </group>
+</vector>

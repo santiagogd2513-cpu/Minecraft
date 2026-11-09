@@ -19,6 +19,7 @@ Bóveda is for managing your files: viewing, copying, moving, deleting, compress
 - Copying, moving, deleting, renaming and compressing really change your files. Check before confirming.
 - "Delete forever" can't be undone. The recycle bin keeps deleted items for only 30 days.
 - If you forget the Vault's PIN, nobody can recover what's inside, not even us. Don't delete the ".Boveda-segura" folder either.
+- If you turn on auto-wipe in the Vault settings and someone enters a wrong PIN 7 times in a row, everything in the Vault is deleted forever. Nobody can recover it, not even us.
 - An APK signed with a different key won't install over the original: you have to uninstall the original, which deletes its data. Signing an APK doesn't make it safe: only install what you trust.
 - Back up what matters to you. We don't keep copies of your files.
 
@@ -30,6 +31,9 @@ The app is provided "as is", without any kind of warranty. We test every version
 
 ## Limitation of liability
 To the extent permitted by law, Forja Estudios and its authors are not responsible for data loss, damage to devices or memory cards, or any other harm resulting from the use or inability to use the app.
+
+## Modified copies
+The only original version is the one Forja Estudios publishes at santiagogd2513-cpu.github.io and on our GitHub. If someone copies the app, modifies it and signs it again, that copy is not ours: it may contain ads, viruses or steal your data, and Forja Estudios is not responsible for it. The original app shows a full-screen warning when it detects a modified copy.
 
 ## Updates
 The app may tell you when there's a new version. Installing it is your decision. We may change, add or remove features in any version.

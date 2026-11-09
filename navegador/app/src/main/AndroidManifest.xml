@@ -32,10 +32,6 @@
             android:launchMode="singleTask"
             android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|keyboardHidden|uiMode|density"
             android:windowSoftInputMode="adjustResize">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
             <!-- para poder ser el navegador predeterminado -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
@@ -55,6 +51,45 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
+        <!-- el ícono de la app en el inicio: uno por temporada, solo uno prendido (Icons.java) -->
+        <activity-alias
+            android:name=".Inicio"
+            android:enabled="true"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher"
+            android:roundIcon="@mipmap/ic_launcher"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name=".InicioNavidad"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher_navidad"
+            android:roundIcon="@mipmap/ic_launcher_navidad"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name=".InicioVelitas"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher_velitas"
+            android:roundIcon="@mipmap/ic_launcher_velitas"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
 
         <activity
             android:name=".DownloadsActivity"

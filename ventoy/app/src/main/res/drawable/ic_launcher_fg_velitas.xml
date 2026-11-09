@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108">
+    <!-- conector de la USB -->
+    <path android:fillColor="#FFB9C6E8" android:pathData="M44,26 L64,26 Q66,26 66,28 L66,38 L42,38 L42,28 Q42,26 44,26 Z" />
+    <path android:fillColor="#FF2A3358" android:pathData="M48,30 L52,30 L52,34 L48,34 Z M56,30 L60,30 L60,34 L56,34 Z" />
+    <!-- cuerpo de la USB -->
+    <path android:pathData="M38,38 L70,38 Q74,38 74,42 L74,78 Q74,84 68,84 L40,84 Q34,84 34,78 L34,42 Q34,38 38,38 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient android:type="linear" android:startX="34" android:startY="38" android:endX="74" android:endY="84">
+                <item android:offset="0" android:color="#FF46E0D0" />
+                <item android:offset="0.5" android:color="#FF6C8CFF" />
+                <item android:offset="1" android:color="#FF8E5BFF" />
+            </gradient>
+        </aapt:attr>
+    </path>
+    <!-- varias ISOs en una: tres discos -->
+    <path android:fillColor="#E6FFFFFF" android:pathData="M54,52 m-9,0 a9,9 0 1,1 18,0 a9,9 0 1,1 -18,0" />
+    <path android:fillColor="#FF4F63C9" android:pathData="M54,52 m-2.6,0 a2.6,2.6 0 1,1 5.2,0 a2.6,2.6 0 1,1 -5.2,0" />
+    <path android:fillColor="#99FFFFFF" android:pathData="M41,70 L67,70 Q68.5,70 68.5,71.5 L68.5,72.5 Q68.5,74 67,74 L41,74 Q39.5,74 39.5,72.5 L39.5,71.5 Q39.5,70 41,70 Z" />
+    <!-- temporada: velitas -->
+    <group android:translateX="26" android:translateY="80" android:rotation="0" android:scaleX="1" android:scaleY="1">
+        <path android:fillColor="#FFFFF3D6" android:pathData="M0,0 L0,-12 L6,-12 L6,0 Z" />
+        <path android:fillColor="#FFE63946" android:pathData="M0,-5.4 L6,-5.4 L6,-3.5999999999999996 L0,-3.5999999999999996 Z" />
+        <path android:fillColor="#FFFFFFFF" android:pathData="M0,-12 L0,-7 Q1,-6 2,-8 L2,-12 Z" />
+        <path android:fillColor="#FF3A2614" android:pathData="M2.7,-12 L3.3,-12 L3.3,-13.6 L2.7,-13.6 Z" />
+        <path android:fillColor="#FFFF8A1A" android:pathData="M3,-21 Q6,-16.5 5,-14.5 Q4.2,-13.2 3,-13.2 Q1.8,-13.2 1,-14.5 Q0,-16.5 3,-21 Z" />
+        <path android:fillColor="#FFFFE27A" android:pathData="M3,-18 Q4.5,-15.6 3.9,-14.4 Q3,-13.8 2.1,-14.4 Q1.5,-15.6 3,-18 Z" />
+    </group>
+    <group android:translateX="76" android:translateY="80" android:rotation="0" android:scaleX="1" android:scaleY="1">
+        <path android:fillColor="#FFFFF3D6" android:pathData="M0,0 L0,-16 L6,-16 L6,0 Z" />
+        <path android:fillColor="#FF2DC653" android:pathData="M0,-7.2 L6,-7.2 L6,-4.8 L0,-4.8 Z" />
+        <path android:fillColor="#FFFFFFFF" android:pathData="M0,-16 L0,-11 Q1,-10 2,-12 L2,-16 Z" />
+        <path android:fillColor="#FF3A2614" android:pathData="M2.7,-16 L3.3,-16 L3.3,-17.6 L2.7,-17.6 Z" />
+        <path android:fillColor="#FFFF8A1A" android:pathData="M3,-25 Q6,-20.5 5,-18.5 Q4.2,-17.2 3,-17.2 Q1.8,-17.2 1,-18.5 Q0,-20.5 3,-25 Z" />
+        <path android:fillColor="#FFFFE27A" android:pathData="M3,-22 Q4.5,-19.6 3.9,-18.4 Q3,-17.8 2.1,-18.4 Q1.5,-19.6 3,-22 Z" />
+    </group>
+</vector>

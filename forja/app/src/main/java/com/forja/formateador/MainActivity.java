@@ -72,11 +72,22 @@ public class MainActivity extends Activity {
         Updater.resume(this);
         Updater.check(this);
         Integrity.check(this);
+        // temas de temporada: la nieve o las chispitas, y el ícono si cambió la temporada
+        SeasonFx.attach(this);
+        Season.checkIcon(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        // el ícono de temporada se cambia al salir (cambiarlo con la app abierta puede cerrarla)
+        Icons.flush(this);
     }
 
     @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
+        Season.listener = () -> render();
         installCrashLog();
         um = getSystemService(UsbManager.class);
         getWindow().setStatusBarColor(Ui.BG);
@@ -559,6 +570,12 @@ public class MainActivity extends Activity {
             pb.setIndeterminate(true);
             pb.setIndeterminateTintList(android.content.res.ColorStateList.valueOf(Ui.ACCENT));
             c.addView(pb, margins(0, 12, 0, 0));
+        }
+        // temas de temporada: colores de la temporada y nieve con lucecitas o faroles arriba
+        if (SeasonFx.active(this) != Season.NONE) {
+            int[] cc = SeasonFx.cardColors(this, 0, 0);
+            c.setBackground(Ui.gradient(dp(24), cc[0], cc[1]));
+            SeasonFx.decorate(c, dp(24));
         }
         deviceBox.addView(c);
     }

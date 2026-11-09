@@ -32,7 +32,6 @@
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
                 <!-- gestor de archivos del sistema -->
                 <category android:name="android.intent.category.APP_FILES" />
             </intent-filter>
@@ -53,6 +52,45 @@
                 <data android:mimeType="inode/directory" />
             </intent-filter>
         </activity>
+
+        <!-- el ícono de la app en el inicio: uno por temporada, solo uno prendido (Icons.java) -->
+        <activity-alias
+            android:name=".Inicio"
+            android:enabled="true"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher"
+            android:roundIcon="@mipmap/ic_launcher"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name=".InicioNavidad"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher_navidad"
+            android:roundIcon="@mipmap/ic_launcher_navidad"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name=".InicioVelitas"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher_velitas"
+            android:roundIcon="@mipmap/ic_launcher_velitas"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
 
         <!-- elegir archivos para otras apps (adjuntar, subir, cargar una ROM...) -->
         <activity

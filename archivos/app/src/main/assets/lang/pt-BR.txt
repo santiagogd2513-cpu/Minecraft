@@ -887,3 +887,5 @@
 887|Setembro inteiro
 888|Outubro inteiro
 889|Natal, Velinhas, Halloween e mais
+890|🎨 Natal e o Dia das Velinhas já têm suas decorações. Dia dos Namorados, Amor e Amizade e Halloween chegam nas próximas atualizações.
+891|O ícone muda quando você sair do app

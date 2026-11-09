@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Shizuku («gota») en Navidad: carámbanos colgando de un borde de nieve -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="24dp" android:height="24dp" android:viewportWidth="24" android:viewportHeight="24">
+    <path android:pathData="M6,5 L9,5 L8,13.5 Q7.5,15 7,13.5 Z M10,5 L15,5 L13.4,21 Q12.5,23 11.6,21 Z M16,5 L19,5 L17.8,11.5 Q17.4,13 17,11.5 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient android:type="linear" android:startX="0" android:startY="5" android:endX="0" android:endY="22">
+                <item android:offset="0" android:color="#FFE8F6FF" />
+                <item android:offset="0.5" android:color="#FF9FD8FF" />
+                <item android:offset="1" android:color="#FF4FA8F0" />
+            </gradient>
+        </aapt:attr>
+    </path>
+    <path android:fillColor="#B3FFFFFF" android:pathData="M11.2,6 L12.2,6 L12,17 Q11.6,17 11.6,16 Z" />
+    <path android:fillColor="#FFFFFFFF" android:pathData="M3,3.5 Q3,2 4.5,2 L19.5,2 Q21,2 21,3.5 L21,4.5 Q19,6.5 16.5,5.2 Q14,7 12,5.4 Q9.5,7 7.5,5.2 Q5,6.5 3,4.5 Z" />
+</vector>

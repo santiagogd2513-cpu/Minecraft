@@ -130,8 +130,18 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
     // ------------------------------------------------------------------ inicio
 
     @Override
+    protected void onStop() {
+        super.onStop();
+        // el ícono de temporada se cambia al salir (cambiarlo con la app abierta puede cerrarla)
+        Icons.flush(this);
+    }
+
+    @Override
     protected void onCreate(Bundle b) {
         super.onCreate(b);
+        Season.listener = () -> {
+            if (path == null && !picker()) showHome();
+        };
         prefs = new Prefs(this);
         engine = TransferEngine.get(this);
         getWindow().setStatusBarColor(Ui.BG);
@@ -247,6 +257,9 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             Updater.resume(this);
             Updater.check(this);
         Integrity.check(this);
+        // temas de temporada: la nieve o las chispitas, y el ícono si cambió la temporada
+        SeasonFx.attach(this);
+        if (!picker()) Season.checkIcon(this);
         }
         // la Bóveda se cerró sola mientras estabas en otra app: no se queda mostrando sus archivos
         if (path != null && VaultFs.isVault(path) && !Vault.unlocked()) showHome();
@@ -639,7 +652,9 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             File f = new File(v.path);
             LinearLayout card = Ui.column(this);
             card.setPadding(dp(16), dp(16), dp(16), dp(16));
-            card.setBackground(Ui.ripple(Ui.gradient(dp(20), 0xFF14284F, 0xFF101A30), Ui.round(Color.WHITE, dp(20))));
+            int[] cc = SeasonFx.cardColors(this, 0xFF14284F, 0xFF101A30);
+            card.setBackground(Ui.ripple(Ui.gradient(dp(20), cc[0], cc[1]), Ui.round(Color.WHITE, dp(20))));
+            SeasonFx.decorate(card, dp(20));
             LinearLayout r = Ui.row(this);
             ImageView ic = new ImageView(this);
             ic.setImageDrawable(Ui.icon(this, v.removable ? R.drawable.ic_sd : R.drawable.ic_phone, Ui.ACCENT2));
@@ -2434,8 +2449,13 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         card.setBackground(Ui.roundStroke(Ui.SURFACE, dp(18), dp(1), Ui.STROKE));
         LinearLayout r = Ui.row(this);
         ImageView i = new ImageView(this);
-        i.setImageDrawable(Ui.icon(this, R.drawable.ic_shield, ShizukuHelper.ready() ? Ui.GOOD : Ui.SUB));
-        r.addView(i, new LinearLayout.LayoutParams(dp(22), dp(22)));
+        // Shizuku es «gota» en japonés: en Navidad es un carámbano y en Velitas una gota de cera
+        int season = SeasonFx.active(this);
+        if (season == Season.NAVIDAD) i.setImageResource(R.drawable.ic_shizuku_icicle);
+        else if (season == Season.VELITAS) i.setImageResource(R.drawable.ic_shizuku_wax);
+        else i.setImageDrawable(Ui.icon(this, R.drawable.ic_shield, ShizukuHelper.ready() ? Ui.GOOD : Ui.SUB));
+        int isz = season == Season.NONE ? 22 : 28;
+        r.addView(i, new LinearLayout.LayoutParams(dp(isz), dp(isz)));
         TextView t = Ui.text(this, ShizukuHelper.status(), 14, ShizukuHelper.ready() ? Ui.GOOD : Ui.TEXT, true);
         t.setPadding(dp(10), 0, 0, 0);
         r.addView(t, Ui.weight(1));

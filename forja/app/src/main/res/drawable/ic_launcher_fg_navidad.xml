@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp" android:height="108dp" android:viewportWidth="108" android:viewportHeight="108">
+    <!-- yunque -->
+    <path android:pathData="M30,44 L74,44 Q80,44 82,40 L84,40 Q84,50 74,52 L68,52 L68,58 L74,64 L74,70 L34,70 L34,64 L40,58 L40,52 L34,52 Q26,52 26,47 Q26,44 30,44 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient android:type="linear" android:startX="26" android:startY="40" android:endX="84" android:endY="70">
+                <item android:offset="0" android:color="#FFC9CED8" />
+                <item android:offset="1" android:color="#FF6E7486" />
+            </gradient>
+        </aapt:attr>
+    </path>
+    <!-- chispas -->
+    <path android:pathData="M54,22 L57,32 L66,30 L59,37 L64,42 L55,39 L50,44 L51,36 L43,33 L51,31 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient android:type="linear" android:startX="43" android:startY="22" android:endX="66" android:endY="44">
+                <item android:offset="0" android:color="#FFFFE08A" />
+                <item android:offset="0.5" android:color="#FFFF8A3D" />
+                <item android:offset="1" android:color="#FFFF3D6E" />
+            </gradient>
+        </aapt:attr>
+    </path>
+    <path android:fillColor="#FFFFB347" android:pathData="M72,26 m-2,0 a2,2 0 1,1 4,0 a2,2 0 1,1 -4,0" />
+    <path android:fillColor="#FFFF8A3D" android:pathData="M37,28 m-1.6,0 a1.6,1.6 0 1,1 3.2,0 a1.6,1.6 0 1,1 -3.2,0" />
+    <!-- temporada: navidad -->
+    <group android:translateX="29" android:translateY="46" android:rotation="-6" android:scaleX="0.7" android:scaleY="0.7">
+        <path android:fillColor="#FFE8323F" android:pathData="M1,-2 C3,-14 11,-24 21,-23 C28,-22 32,-15 35,-7 L30,-5 C28,-10 26,-13 22,-13 C25,-9 27,-5 28,-2 Z" />
+        <path android:fillColor="#FFB71C2A" android:pathData="M21,-23 C28,-22 32,-15 35,-7 L32.5,-6 C30,-12 27,-17 21,-23 Z" />
+        <path android:fillColor="#FFF4F7FF" android:pathData="M-1,-4 Q-3,-4 -3,-0.5 Q-3,3 0,3 L30,3 Q33,3 33,-0.5 Q33,-4 30,-4 Z" />
+        <path android:fillColor="#FFFFFFFF" android:pathData="M30.6,-6 a4.4,4.4 0 1,0 8.8,0 a4.4,4.4 0 1,0 -8.8,0" />
+    </group>
+</vector>

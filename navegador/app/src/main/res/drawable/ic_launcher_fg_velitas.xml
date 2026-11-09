@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <!-- luna creciente azul con degradado -->
+    <path android:pathData="M58,30 A24,24 0 1,0 78,66 A19,19 0 1,1 58,30 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient android:type="linear"
+                android:startX="34" android:startY="30" android:endX="78" android:endY="78">
+                <item android:offset="0" android:color="#FF8FD3FF" />
+                <item android:offset="0.5" android:color="#FF3D8BFF" />
+                <item android:offset="1" android:color="#FF2A4FD6" />
+            </gradient>
+        </aapt:attr>
+    </path>
+    <!-- órbita del "mundo" (navegador) -->
+    <path android:strokeColor="#CC8FD3FF" android:strokeWidth="1.6" android:fillColor="#00000000"
+        android:pathData="M26,60 C30,72 66,70 82,50" />
+    <!-- estrella de cuatro puntas -->
+    <path android:fillColor="#FFFFFFFF"
+        android:pathData="M70,32 L71.6,37.4 L77,39 L71.6,40.6 L70,46 L68.4,40.6 L63,39 L68.4,37.4 Z" />
+    <path android:fillColor="#FFCFE9FF"
+        android:pathData="M80,48 L80.8,50.2 L83,51 L80.8,51.8 L80,54 L79.2,51.8 L77,51 L79.2,50.2 Z" />
+    <!-- temporada: velitas -->
+    <group android:translateX="70" android:translateY="68" android:rotation="0" android:scaleX="0.9" android:scaleY="0.9">
+        <path android:fillColor="#FFFFF3D6" android:pathData="M0,0 L0,-12 L6,-12 L6,0 Z" />
+        <path android:fillColor="#FFE63946" android:pathData="M0,-5.4 L6,-5.4 L6,-3.5999999999999996 L0,-3.5999999999999996 Z" />
+        <path android:fillColor="#FFFFFFFF" android:pathData="M0,-12 L0,-7 Q1,-6 2,-8 L2,-12 Z" />
+        <path android:fillColor="#FF3A2614" android:pathData="M2.7,-12 L3.3,-12 L3.3,-13.6 L2.7,-13.6 Z" />
+        <path android:fillColor="#FFFF8A1A" android:pathData="M3,-21 Q6,-16.5 5,-14.5 Q4.2,-13.2 3,-13.2 Q1.8,-13.2 1,-14.5 Q0,-16.5 3,-21 Z" />
+        <path android:fillColor="#FFFFE27A" android:pathData="M3,-18 Q4.5,-15.6 3.9,-14.4 Q3,-13.8 2.1,-14.4 Q1.5,-15.6 3,-18 Z" />
+    </group>
+    <group android:translateX="77" android:translateY="70" android:rotation="0" android:scaleX="0.9" android:scaleY="0.9">
+        <path android:fillColor="#FFFFF3D6" android:pathData="M0,0 L0,-8 L6,-8 L6,0 Z" />
+        <path android:fillColor="#FF3FB8FF" android:pathData="M0,-3.6 L6,-3.6 L6,-2.4 L0,-2.4 Z" />
+        <path android:fillColor="#FFFFFFFF" android:pathData="M0,-8 L0,-3 Q1,-2 2,-4 L2,-8 Z" />
+        <path android:fillColor="#FF3A2614" android:pathData="M2.7,-8 L3.3,-8 L3.3,-9.6 L2.7,-9.6 Z" />
+        <path android:fillColor="#FFFF8A1A" android:pathData="M3,-17 Q6,-12.5 5,-10.5 Q4.2,-9.2 3,-9.2 Q1.8,-9.2 1,-10.5 Q0,-12.5 3,-17 Z" />
+        <path android:fillColor="#FFFFE27A" android:pathData="M3,-14 Q4.5,-11.6 3.9,-10.4 Q3,-9.8 2.1,-10.4 Q1.5,-11.6 3,-14 Z" />
+    </group>
+</vector>

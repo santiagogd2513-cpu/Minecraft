@@ -1,3 +1,16 @@
+## 47
+🎄 Temas de temporada (etapa 2): Navidad y Día de las Velitas
+- Navidad (1 de diciembre al 6 de enero): nieve que cae por toda la pantalla, y las tarjetas de almacenamiento con borde de nieve y una tira de lucecitas de colores que titilan.
+- Día de las Velitas (7 de diciembre): chispitas que suben con un resplandor cálido, y una guirnalda de faroles de colores que se mecen y brillan.
+- Íconos de temporada: gorro de Papá Noel con nieve para Navidad y velitas encendidas para el 7 de diciembre. En «Automático» cambian solos con la fecha. El ícono cambia cuando sales de la app.
+- ¿Quieres verlos ya? Ajustes → Temas de temporada → toca el nombre y elige Navidad o Velitas.
+- Ojo: con esta actualización, Android puede quitar el acceso directo de la app de tu pantalla de inicio una vez. La app no se borra: búscala en el cajón de apps y vuelve a ponerla.
+
+🛡️ El aviso de «Copia modificada» ahora tiene el escudo centrado y latiendo, y una franja de colores animada arriba.
+📄 Términos y condiciones: ahora explican las copias modificadas.
+- En Navidad, la tarjeta de Shizuku («gota» en japonés) es un carámbano, y en Velitas una gota de cera.
+📄 Los términos también explican el autoborrado de La Bóveda.
+
 ## 46
 🎄 Temas de temporada (etapa 1)
 - Nuevo en Ajustes: «Temas de temporada». Navidad (1 de diciembre al 6 de enero), Día de las Velitas (7 de diciembre), San Valentín (1 al 14 de febrero), Amor y Amistad (todo septiembre) y Halloween (todo octubre).

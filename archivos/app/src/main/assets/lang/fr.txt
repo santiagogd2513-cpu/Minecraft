@@ -887,3 +887,5 @@
 887|Tout septembre
 888|Tout octobre
 889|Noël, Petites Bougies, Halloween et plus
+890|🎨 Noël et la Fête des Petites Bougies ont déjà leurs décorations. Saint-Valentin, Amour et Amitié et Halloween arrivent dans les prochaines mises à jour.
+891|L'icône change quand vous quittez l'app

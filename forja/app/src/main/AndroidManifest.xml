@@ -17,10 +17,6 @@
             android:exported="true"
             android:launchMode="singleTask"
             android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
             <!-- al conectar una memoria USB, Android ofrece abrir la app -->
             <intent-filter>
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
@@ -29,5 +25,44 @@
                 android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
                 android:resource="@xml/usb_storage" />
         </activity>
+
+        <!-- el ícono de la app en el inicio: uno por temporada, solo uno prendido (Icons.java) -->
+        <activity-alias
+            android:name=".Inicio"
+            android:enabled="true"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher"
+            android:roundIcon="@mipmap/ic_launcher"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name=".InicioNavidad"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher_navidad"
+            android:roundIcon="@mipmap/ic_launcher_navidad"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+        <activity-alias
+            android:name=".InicioVelitas"
+            android:enabled="false"
+            android:exported="true"
+            android:icon="@mipmap/ic_launcher_velitas"
+            android:roundIcon="@mipmap/ic_launcher_velitas"
+            android:targetActivity=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity-alias>
+
     </application>
 </manifest>

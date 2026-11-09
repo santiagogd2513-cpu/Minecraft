@@ -52,8 +52,16 @@ final class Integrity {
         root.setGravity(android.view.Gravity.CENTER_HORIZONTAL);
         int pad = Math.round(24 * dp);
         root.setPadding(pad, Math.round(40 * dp), pad, pad);
+        // el escudo, centrado y latiendo
         android.widget.TextView icon = text(a, "🛡️", 64, 0xFFFFFFFF, false);
-        root.addView(icon);
+        icon.setGravity(android.view.Gravity.CENTER);
+        root.addView(icon, new android.widget.LinearLayout.LayoutParams(-1, -2));
+        android.animation.ObjectAnimator beat = android.animation.ObjectAnimator.ofPropertyValuesHolder(icon,
+                android.animation.PropertyValuesHolder.ofFloat("scaleX", 1f, 1.12f, 1f),
+                android.animation.PropertyValuesHolder.ofFloat("scaleY", 1f, 1.12f, 1f));
+        beat.setDuration(1300);
+        beat.setRepeatCount(android.animation.ValueAnimator.INFINITE);
+        beat.start();
         android.widget.TextView badge = text(a, L.t("COPIA MODIFICADA"), 14, 0xFF1A0505, true);
         badge.setLetterSpacing(0.14f);
         badge.setPadding(Math.round(14 * dp), Math.round(6 * dp), Math.round(14 * dp), Math.round(6 * dp));
@@ -93,7 +101,16 @@ final class Integrity {
         later.setPadding(0, Math.round(16 * dp), 0, Math.round(8 * dp));
         later.setOnClickListener(v -> d.dismiss());
         root.addView(later, new android.widget.LinearLayout.LayoutParams(-1, -2));
-        d.setContentView(root, new android.view.ViewGroup.LayoutParams(-1, -1));
+        // franja de arriba con los colores de la app, moviéndose sin parar
+        android.widget.LinearLayout outer = new android.widget.LinearLayout(a);
+        outer.setOrientation(android.widget.LinearLayout.VERTICAL);
+        outer.setBackgroundColor(0xFF0B0D14);
+        outer.setFitsSystemWindows(true);
+        root.setFitsSystemWindows(false);
+        outer.addView(new Band(a, new int[]{0xFF7FD4FF, 0xFF4A6A8A, 0xFF6FD6FF, 0xFF2A4A6A, 0xFF7FD4FF}), new android.widget.LinearLayout.LayoutParams(-1, Math.round(8 * dp)));
+        outer.addView(root, new android.widget.LinearLayout.LayoutParams(-1, 0, 1));
+        d.setContentView(outer, new android.view.ViewGroup.LayoutParams(-1, -1));
+        d.setOnDismissListener(x -> beat.cancel());
         d.setCancelable(false);
         if (d.getWindow() != null) {
             d.getWindow().setStatusBarColor(0xFF0B0D14);
@@ -110,5 +127,34 @@ final class Integrity {
         t.setTextColor(color);
         if (bold) t.setTypeface(android.graphics.Typeface.DEFAULT_BOLD);
         return t;
+    }
+
+    /** Franja con un degradado que se desliza de lado a lado, con un brillo debajo. */
+    private static final class Band extends android.view.View {
+        private final int[] colors;
+        private final android.graphics.Paint p = new android.graphics.Paint();
+        private final android.graphics.Matrix m = new android.graphics.Matrix();
+        private android.graphics.LinearGradient g;
+
+        Band(android.content.Context c, int[] colors) {
+            super(c);
+            this.colors = colors;
+        }
+
+        @Override
+        protected void onSizeChanged(int w, int h, int ow, int oh) {
+            g = new android.graphics.LinearGradient(0, 0, Math.max(1, w), 0, colors, null, android.graphics.Shader.TileMode.REPEAT);
+            p.setShader(g);
+        }
+
+        @Override
+        protected void onDraw(android.graphics.Canvas c) {
+            if (g == null) return;
+            float shift = (android.os.SystemClock.uptimeMillis() % 2600) / 2600f * getWidth();
+            m.setTranslate(shift, 0);
+            g.setLocalMatrix(m);
+            c.drawRect(0, 0, getWidth(), getHeight(), p);
+            postInvalidateOnAnimation();
+        }
     }
 }

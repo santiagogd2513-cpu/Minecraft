@@ -19,6 +19,7 @@ Bóveda sirve para manejar tus archivos: verlos, copiarlos, moverlos, borrarlos,
 - Copiar, mover, borrar, renombrar y comprimir cambia tus archivos de verdad. Revisa antes de confirmar.
 - «Borrar para siempre» no se puede deshacer. La papelera guarda lo borrado solo 30 días.
 - Si olvidas el PIN de La Bóveda, nadie puede recuperar lo que hay adentro, ni siquiera nosotros. Tampoco borres la carpeta «.Boveda-segura».
+- Si enciendes el autoborrado en los ajustes de La Bóveda y alguien se equivoca de PIN 7 veces seguidas, todo lo que hay en La Bóveda se borra para siempre. Nadie lo puede recuperar, ni siquiera nosotros.
 - Un APK firmado con otra llave no se instala encima del original: hay que desinstalar el original, lo que borra sus datos. Firmar un APK no lo hace seguro: instala solo lo que confíes.
 - Haz copias de seguridad de lo que te importa. Nosotros no guardamos copias de tus archivos.
 
@@ -30,6 +31,9 @@ La app se entrega «tal cual», sin garantía de ningún tipo. Probamos cada ver
 
 ## Límite de responsabilidad
 Hasta donde lo permita la ley, Forja Estudios y sus autores no son responsables por pérdida de datos, daños a dispositivos o memorias, ni por ningún otro perjuicio que resulte del uso o de la imposibilidad de usar la app.
+
+## Copias modificadas
+La única versión original es la que publica Forja Estudios en santiagogd2513-cpu.github.io y en nuestro GitHub. Si alguien copia la app, la modifica y la vuelve a firmar, esa copia no es nuestra: puede traer anuncios, virus o robar tus datos, y Forja Estudios no responde por ella. La app original avisa a pantalla completa cuando detecta una copia modificada.
 
 ## Actualizaciones
 La app puede avisarte cuando haya una versión nueva. Instalarla es tu decisión. Podemos cambiar, agregar o quitar funciones en cualquier versión.
