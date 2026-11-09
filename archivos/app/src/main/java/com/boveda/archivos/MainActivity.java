@@ -517,6 +517,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             return null;
         }
         if (DriveFs.isDrive(p)) return new Volume(DriveFs.ROOT, "Google Drive", "Drive", false);
+        if (MegaFs.isMega(p)) return new Volume(MegaFs.ROOT, "MEGA", "MEGA", false);
         Volume best = null;
         for (Volume v : volumes()) if (Paths.under(p, v.path) && (best == null || v.path.length() > best.path.length())) best = v;
         return best;
@@ -698,6 +699,13 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                     gd.connected() ? (gd.email().isEmpty() ? "Conectado" : gd.email()) : "Toca para conectar",
                     v -> openDrive(), v -> {
                         driveMenu();
+                        return true;
+                    }));
+            Mega mg = Mega.get(this);
+            box.addView(netRow("M", 0xFFD9272E, 0xFFF0545A, "MEGA",
+                    mg.loggedIn() ? mg.email() : "Toca para iniciar sesión",
+                    v -> openMega(), v -> {
+                        megaMenu();
                         return true;
                     }));
             for (FtpServers.Server sv : FtpServers.get(this).all()) {
@@ -930,6 +938,99 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         d.show();
     }
 
+    // ------------------------------------------------------------------ MEGA
+
+    private void openMega() {
+        if (Mega.get(this).loggedIn()) open(MegaFs.ROOT);
+        else showMegaLogin(null, null);
+    }
+
+    private void megaMenu() {
+        Mega mg = Mega.get(this);
+        if (!mg.loggedIn()) {
+            showMegaLogin(null, null);
+            return;
+        }
+        new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                .setTitle("MEGA · " + mg.email())
+                .setItems(new String[]{"Cerrar sesión"}, (d, w) -> new Thread(() -> {
+                    mg.logout();
+                    main.post(this::showHome);
+                }).start())
+                .show();
+    }
+
+    /** Correo y contraseña de MEGA; si la cuenta tiene verificación en dos pasos, pide el código después. */
+    private void showMegaLogin(String email, String password) {
+        boolean askCode = password != null;
+        LinearLayout box = Ui.column(this);
+        box.setPadding(dp(20), dp(8), dp(20), dp(4));
+        EditText mail = input("Correo de MEGA", email == null ? Mega.get(this).email() : email,
+                android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
+        EditText pass = input("Contraseña", "", android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        EditText code = input("Código de 6 números", "", android.text.InputType.TYPE_CLASS_NUMBER);
+        if (askCode) {
+            box.addView(Ui.text(this, "Tu cuenta tiene verificación en dos pasos. Escribe el código de tu app de autenticación.", 14, Ui.SUB, false));
+            box.addView(code, topMargin(dp(12)));
+        } else {
+            box.addView(Ui.text(this, "Entra con tu cuenta de MEGA. La contraseña no se guarda: solo se queda la sesión, cifrada en el celular. "
+                    + "Todo se descifra aquí mismo, como en la app de MEGA.", 13, Ui.SUB, false));
+            box.addView(mail, topMargin(dp(12)));
+            box.addView(pass, topMargin(dp(8)));
+        }
+        AlertDialog d = new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                .setTitle(askCode ? "Verificación de MEGA" : "Iniciar sesión en MEGA")
+                .setView(box)
+                .setPositiveButton("Entrar", null)
+                .setNegativeButton("Cancelar", null)
+                .create();
+        d.setOnShowListener(x -> d.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+            String m = askCode ? email : mail.getText().toString().trim();
+            String p = askCode ? password : pass.getText().toString();
+            String c = askCode ? code.getText().toString().trim() : null;
+            if (!askCode && (!m.contains("@") || p.isEmpty())) {
+                (m.contains("@") ? pass : mail).setError(m.contains("@") ? "Falta la contraseña" : "Escribe tu correo");
+                return;
+            }
+            if (askCode && c.length() < 6) {
+                code.setError("El código tiene 6 números");
+                return;
+            }
+            d.dismiss();
+            AlertDialog wait = new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                    .setTitle("Entrando a MEGA…")
+                    .setMessage("Preparando las llaves de cifrado. Puede tardar unos segundos.")
+                    .setCancelable(false).show();
+            new Thread(() -> {
+                String err = null;
+                boolean needCode = false;
+                try {
+                    Mega.get(this).login(m, p, c);
+                } catch (Mega.ApiError e) {
+                    if (e.code == -26 && !askCode) needCode = true;
+                    else err = e.getMessage();
+                } catch (Exception e) {
+                    err = e.getMessage() == null ? e.toString() : e.getMessage();
+                }
+                String fe = err;
+                boolean fc = needCode;
+                main.post(() -> {
+                    wait.dismiss();
+                    if (fc) {
+                        showMegaLogin(m, p);
+                    } else if (fe != null) {
+                        new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog).setTitle("No se pudo entrar a MEGA")
+                                .setMessage(fe).setPositiveButton("Entendido", null).show();
+                    } else {
+                        Toast.makeText(this, "MEGA conectado", Toast.LENGTH_SHORT).show();
+                        open(MegaFs.ROOT);
+                    }
+                });
+            }).start();
+        }));
+        d.show();
+    }
+
     // ------------------------------------------------------------------ Google Drive
 
     private void openDrive() {
@@ -1128,7 +1229,10 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                 if (gen != loadGen || !p.equals(path)) return;
                 loading.setVisibility(View.INVISIBLE);
                 if (error instanceof Fs.NeedAccess) {
-                    if (DriveFs.isDrive(p)) {
+                    if (MegaFs.isMega(p)) {
+                        showHome();
+                        showMegaLogin(null, null);
+                    } else if (DriveFs.isDrive(p)) {
                         showHome();
                         showDriveSetup();
                     } else if (FtpServers.isFtp(p)) {
@@ -2160,6 +2264,11 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             d.dismiss();
             openMediaFire();
         });
+        settingsRow(col, "MEGA", Mega.get(this).loggedIn() ? Mega.get(this).email() : "Iniciar sesión", () -> {
+            d.dismiss();
+            if (Mega.get(this).loggedIn()) megaMenu();
+            else showMegaLogin(null, null);
+        });
         settingsRow(col, "Google Drive", Drive.get(this).connected() ? "Conectado" : "Conectar", () -> {
             d.dismiss();
             if (Drive.get(this).connected()) driveMenu();
@@ -2646,7 +2755,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
     private String countOf(String dir) {
         if (!prefs.showCounts()) return null;
         String c = counts.get(dir);
-        if (c != null || FtpServers.isFtp(dir) || DriveFs.isDrive(dir)) return c;
+        if (c != null || FtpServers.isFtp(dir) || DriveFs.isDrive(dir) || MegaFs.isMega(dir)) return c;
         if (!counting.add(dir)) return null;
         final boolean hidden = prefs.showHidden();
         counter.execute(() -> {

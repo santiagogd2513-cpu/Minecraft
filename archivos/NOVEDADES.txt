@@ -1,3 +1,10 @@
+## 29
+MEGA en Bóveda
+- Nuevo en «Nube y red»: MEGA. Entras con tu correo y contraseña (y el código de verificación en dos pasos si lo tienes activado).
+- Tu MEGA aparece como una carpeta más: puedes entrar a las carpetas, abrir, copiar hacia el celular y desde el celular, crear carpetas, cambiar nombres y mover.
+- Todo se cifra y descifra en el celular, como en la app de MEGA. La contraseña no se guarda.
+- Borrar manda a la papelera de MEGA, así que se puede recuperar.
+
 ## 28
 Música y videos dentro de comprimidos
 - Si tocas una canción, un video, una foto, un texto o un PDF dentro de un ZIP, RAR, 7z u otro comprimido, se abre con el reproductor y los visores de Bóveda, sin tener que extraer todo.

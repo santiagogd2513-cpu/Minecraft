@@ -42,6 +42,7 @@ final class Tabs {
         if (MEDIAFIRE.equals(p)) return "MediaFire";
         if (p.equals(Paths.ROOT)) return "Memoria interna";
         if (DriveFs.isDrive(p) && p.equals(DriveFs.ROOT)) return "Google Drive";
+        if (p.equals(MegaFs.ROOT)) return "MEGA";
         return Paths.name(p);
     }
 

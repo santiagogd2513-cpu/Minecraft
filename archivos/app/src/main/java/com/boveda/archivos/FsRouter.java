@@ -17,6 +17,10 @@ final class FsRouter {
                 throw new Fs.NeedAccess(path);
             }
         }
+        if (MegaFs.isMega(path)) {
+            if (!Mega.get(c).loggedIn()) throw new Fs.NeedAccess(path);
+            return MegaFs.get(c);
+        }
         if (DriveFs.isDrive(path)) {
             if (!Drive.get(c).connected()) throw new Fs.NeedAccess(path);
             return DriveFs.get(c);
