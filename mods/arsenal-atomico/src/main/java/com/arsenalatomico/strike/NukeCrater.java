@@ -70,8 +70,8 @@ public final class NukeCrater {
     }
 
     /** {@code k}: tamaño (1 = Protocolo Hongo, {@link #THERMO} = Protocolo Sol Negro). */
-    public static NukeCrater detonate(ServerLevel level, Vec3 at, double k) {
-        double reach = NukePlan.CRATER_R * k * 2.3;
+    public static NukeCrater detonate(ServerLevel level, Vec3 at, double size) {
+        double reach = NukePlan.CRATER_R * size * 2.3;
         AABB box = new AABB(at, at).inflate(reach, reach * 0.8, reach);
         for (Entity e : level.getEntities((Entity) null, box, x -> x instanceof LivingEntity)) {
             double d = e.position().distanceTo(at);
@@ -88,7 +88,7 @@ public final class NukeCrater {
         level.sendParticles(ParticleTypes.LARGE_SMOKE, at.x, at.y + 10, at.z, 400, 40, 20, 40, 0.1);
         level.playSound(null, at.x, at.y, at.z, com.arsenalatomico.registry.ModSounds.NUKE_BLAST.get(), SoundSource.HOSTILE, 64f, 1f);
         Impacts.IMPACTS++;
-        return Config.DESTROY_BLOCKS.get() ? new NukeCrater(level, at, k) : null;
+        return Config.DESTROY_BLOCKS.get() ? new NukeCrater(level, at, size) : null;
     }
 
     /** Hace otras columnas; true cuando terminó. */

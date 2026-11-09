@@ -61,10 +61,10 @@ final class NukeFx {
         final Debris[] debris = new Debris[320];
         float lastSim;
 
-        Blast(Vec3 c, float start, float k) {
+        Blast(Vec3 c, float start, float size) {
             this.c = c;
             this.start = start;
-            this.k = k;
+            this.k = size;
             lastSim = start;
             Random r = new Random((long) (c.x * 31 + c.z * 17 + start));
             for (int i = 0; i < seeds.length; i++) seeds[i] = r.nextFloat();
