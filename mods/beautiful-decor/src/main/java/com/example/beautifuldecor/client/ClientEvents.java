@@ -61,6 +61,7 @@ public class ClientEvents {
     @SubscribeEvent
     public static void registerBlockEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(ModBlockEntities.TELEVISION.get(), TelevisionRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.AD_SCREEN.get(), AdScreenRenderer::new);
     }
 
     @SubscribeEvent

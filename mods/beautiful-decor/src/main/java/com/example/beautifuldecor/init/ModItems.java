@@ -407,6 +407,7 @@ public class ModItems {
         registerGroup(ModBlocks.PEDESTAL_FANS);
         registerGroup(ModBlocks.HS_DESKTOPS);
         registerGroup(ModBlocks.TVS);
+        registerGroup(ModBlocks.AD_SCREENS);
         registerGroup(ModBlocks.CEILING_FANS);
         registerGroup(ModBlocks.DOUBLE_BEDS);
         registerGroup(ModBlocks.SHELVES);

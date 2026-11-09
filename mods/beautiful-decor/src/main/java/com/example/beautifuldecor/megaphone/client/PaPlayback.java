@@ -48,8 +48,24 @@ public final class PaPlayback {
 
     private static final Map<Long, Stream> STREAMS = new HashMap<>();
     private static ShortBuffer scratch = BufferUtils.createShortBuffer(PaDsp.FRAME * 2);
+    /** V4.0.3: para el menú: cuántos bloques de voz se mandaron a sonar y, si algo falló, qué (null = todo bien). */
+    private static int played;
+    private static String problem;
 
     private PaPlayback() {}
+
+    public static int played() {
+        return played;
+    }
+
+    public static String problem() {
+        return problem;
+    }
+
+    public static void resetStats() {
+        played = 0;
+        problem = null;
+    }
 
     /** Reproduce un bloque de voz. {@code listenerPos}: dónde estás (tu cabeza). */
     public static void play(SpeakerAudioPacket packet, Vec3 listenerPos, float volume) {
@@ -58,7 +74,8 @@ public final class PaPlayback {
         }
         long context = ALC10.alcGetCurrentContext();
         if (context == 0L) {
-            return;                                           // el sonido del juego no está activo
+            problem = "el juego no tiene audio activo (¿sonido apagado?)";
+            return;
         }
         BlockPos nearest = null;
         double best = Double.MAX_VALUE;
@@ -83,7 +100,7 @@ public final class PaPlayback {
         }
         Stream stream = streamFor(packet.mic.asLong(), context);
         if (stream == null) {
-            return;
+            return;                                           // el motivo ya quedó en «problem»
         }
         recycle(stream);
         stream.lastAudioMs = System.currentTimeMillis();
@@ -97,9 +114,17 @@ public final class PaPlayback {
         scratch.put(pcm);
         scratch.flip();
         int buffer = stream.free.pollFirst();
+        AL10.alGetError();                                    // limpia errores viejos de otros (para no culparnos de ellos)
         AL10.alBufferData(buffer, AL10.AL_FORMAT_MONO16, scratch, PaDsp.RATE);
         AL10.alSourceQueueBuffers(stream.source, buffer);
         stream.queued++;
+        int error = AL10.alGetError();
+        if (error != AL10.AL_NO_ERROR) {
+            problem = "OpenAL no aceptó el audio (error " + error + ")";
+        } else {
+            problem = null;
+            played++;
+        }
 
         Vec3 at = Vec3.atCenterOf(nearest);
         AL10.alSource3f(stream.source, AL10.AL_POSITION, (float) at.x, (float) at.y, (float) at.z);
@@ -125,7 +150,9 @@ public final class PaPlayback {
         }
         AL10.alGetError();
         int source = AL10.alGenSources();
-        if (source == 0 || AL10.alGetError() != AL10.AL_NO_ERROR) {
+        int genError = AL10.alGetError();
+        if (source == 0 || genError != AL10.AL_NO_ERROR) {
+            problem = "no se pudo crear la fuente de audio (OpenAL error " + genError + ")";
             return null;
         }
         int[] buffers = new int[BUFFERS];
@@ -136,6 +163,7 @@ public final class PaPlayback {
                     AL10.alDeleteBuffers(buffers[j]);
                 }
                 AL10.alDeleteSources(source);
+                problem = "no se pudieron crear los buffers de audio";
                 return null;
             }
         }

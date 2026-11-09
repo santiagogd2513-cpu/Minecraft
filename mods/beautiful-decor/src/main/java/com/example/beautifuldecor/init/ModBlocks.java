@@ -1,6 +1,7 @@
 package com.example.beautifuldecor.init;
 
 import com.example.beautifuldecor.BeautifulDecor;
+import com.example.beautifuldecor.block.AdScreenBlock;
 import com.example.beautifuldecor.block.ApplianceDoorBlock;
 import com.example.beautifuldecor.block.BigTelevisionBlock;
 import com.example.beautifuldecor.block.BugeratiLampBlock;
@@ -1137,6 +1138,20 @@ public class ModBlocks {
             () -> new ShapedFacingBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_RED)
                     .strength(1.0f, 2.0f).sound(SoundType.METAL).noOcclusion(),
                     Shapes.or(ModBlock.box(1, 0, 3, 15, 6.5, 12), ModBlock.box(1, 6.5, 11, 15, 15, 16))));
+
+    // ===== V4.1.0: pantallas de anuncios (cuadradas: 4x4, 8x8 y 12x12 bloques) =====
+    public static final Map<String, RegistryObject<Block>> AD_SCREENS = new LinkedHashMap<>();
+
+    static {
+        int[] sizes = {4, 8, 12};
+        String[] names = {"ad_screen_small", "ad_screen_medium", "ad_screen_large"};
+        for (int i = 0; i < sizes.length; i++) {
+            final int size = sizes[i];
+            AD_SCREENS.put(names[i], BLOCKS.register(names[i],
+                    () -> new AdScreenBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK)
+                            .strength(2.0f).sound(SoundType.METAL).noOcclusion().lightLevel(state -> 7), size)));
+        }
+    }
 
     // ===== V4.0.0: megafonía =====
     /** Micrófono de mesa (base negra): se pone encima de un bloque; su menú permite hablar por las bocinas vinculadas. */

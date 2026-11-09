@@ -1018,5 +1018,13 @@
   "screen.beautifuldecor.microphone.status_silent": "No llega sonido: revisa el permiso de micrófono de tu launcher o dispositivo",
   "screen.beautifuldecor.microphone.status_live": "Hablando (%s): te oyen por las bocinas",
   "screen.beautifuldecor.microphone.hint_self": "Para oírte tú también, activa «Escucharme» (mejor con audífonos)",
-  "screen.beautifuldecor.microphone.sensitivity": "Sensibilidad: %s%%"
+  "screen.beautifuldecor.microphone.sensitivity": "Sensibilidad: %s%%",
+  "screen.beautifuldecor.microphone.playback_problem": "Problema de audio: %s",
+  "screen.beautifuldecor.microphone.playback_none": "Aún no llega voz a tus bocinas (¿vinculadas y a menos de 48 bloques?)",
+  "screen.beautifuldecor.microphone.playback_ok": "Voz recibida: %s bloques, sonando: %s",
+  "block.beautifuldecor.ad_screen_small": "Pantalla de anuncios pequeña (4x4)",
+  "block.beautifuldecor.ad_screen_medium": "Pantalla de anuncios mediana (8x8)",
+  "block.beautifuldecor.ad_screen_large": "Pantalla de anuncios grande (12x12)",
+  "message.beautifuldecor.ad_screen.on": "Pantalla de anuncios: encendida",
+  "message.beautifuldecor.ad_screen.off": "Pantalla de anuncios: apagada"
 }

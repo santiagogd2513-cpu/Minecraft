@@ -44,8 +44,13 @@ public final class PaClient {
     private static long lastStateMs;
     private static final Map<Long, Activity> ACTIVITY = new HashMap<>();
     private static int tickCounter;
-    /** Oírte a ti mismo por las bocinas (sin audífonos puede dar eco). */
-    private static boolean listenSelf;
+    /** V4.0.3: cuántos bloques de voz han llegado del servidor desde que abriste el micrófono (para el aviso del menú). */
+    private static int received;
+    /**
+     * Oírte a ti mismo por las bocinas. Encendido por defecto: lo normal es probarlo solo y querer oírlo; si hace eco (bocina cerca del
+     * micrófono y sin audífonos) se apaga desde el menú.
+     */
+    private static boolean listenSelf = true;
 
     private PaClient() {}
 
@@ -71,6 +76,7 @@ public final class PaClient {
         if (minecraft.level == null || minecraft.player == null || packet.speakers.length == 0) {
             return;
         }
+        received++;
         ACTIVITY.put(packet.mic.asLong(), new Activity(System.currentTimeMillis(), packet.speakers));
         if (!listenSelf && MicCapture.isActiveOn(packet.mic)) {
             return;
@@ -95,6 +101,16 @@ public final class PaClient {
             return null;
         }
         return Component.translatable(state.message, state.arg);
+    }
+
+    public static int received() {
+        return received;
+    }
+
+    /** Pone en cero los contadores del aviso de audio (al empezar a hablar). */
+    public static void resetStats() {
+        received = 0;
+        PaPlayback.resetStats();
     }
 
     public static boolean listenSelf() {
@@ -127,6 +143,7 @@ public final class PaClient {
         PaPlayback.shutdown();
         ACTIVITY.clear();
         lastState = null;
+        resetStats();
     }
 
     /** Notas musicales sobre las bocinas por las que está sonando la voz. */

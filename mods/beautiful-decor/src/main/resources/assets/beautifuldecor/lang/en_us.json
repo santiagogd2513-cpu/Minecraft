@@ -1018,5 +1018,13 @@
   "screen.beautifuldecor.microphone.status_silent": "No sound is arriving: check the microphone permission of your launcher or device",
   "screen.beautifuldecor.microphone.status_live": "Talking (%s): you are heard on the speakers",
   "screen.beautifuldecor.microphone.hint_self": "To hear yourself too, turn on \"Hear myself\" (headphones recommended)",
-  "screen.beautifuldecor.microphone.sensitivity": "Sensitivity: %s%%"
+  "screen.beautifuldecor.microphone.sensitivity": "Sensitivity: %s%%",
+  "screen.beautifuldecor.microphone.playback_problem": "Audio problem: %s",
+  "screen.beautifuldecor.microphone.playback_none": "No voice reaching your speakers yet (linked and within 48 blocks?)",
+  "screen.beautifuldecor.microphone.playback_ok": "Voice received: %s blocks, playing: %s",
+  "block.beautifuldecor.ad_screen_small": "Ad Screen, Small (4x4)",
+  "block.beautifuldecor.ad_screen_medium": "Ad Screen, Medium (8x8)",
+  "block.beautifuldecor.ad_screen_large": "Ad Screen, Large (12x12)",
+  "message.beautifuldecor.ad_screen.on": "Ad screen: on",
+  "message.beautifuldecor.ad_screen.off": "Ad screen: off"
 }

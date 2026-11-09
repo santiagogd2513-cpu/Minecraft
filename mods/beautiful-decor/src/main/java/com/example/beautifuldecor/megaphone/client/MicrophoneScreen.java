@@ -66,6 +66,7 @@ public class MicrophoneScreen extends Screen {
             MicCapture.stop();
             PaClient.sendControl(this.pos, MicControlPacket.STOP_TALK);
         } else {
+            PaClient.resetStats();
             MicCapture.start(this.pos);
             PaClient.sendControl(this.pos, MicControlPacket.START_TALK);
         }
@@ -105,8 +106,22 @@ public class MicrophoneScreen extends Screen {
         Component notice = PaClient.recentMessage(this.pos);
         if (notice != null) {
             graphics.drawCenteredString(this.font, notice, cx, top + 39, 0xFFFFD060);
-        } else if (MicCapture.isActiveOn(this.pos) && MicCapture.status() == MicCapture.Status.OK && !PaClient.listenSelf()) {
-            graphics.drawCenteredString(this.font, Component.translatable("screen.beautifuldecor.microphone.hint_self"), cx, top + 39, 0xFF9AA0A8);
+        } else if (MicCapture.isActiveOn(this.pos) && MicCapture.status() == MicCapture.Status.OK) {
+            // qué pasa con el audio de vuelta: así se ve si el fallo es que no llega del servidor o que no suena aquí
+            Component line;
+            int lineColor = 0xFF9AA0A8;
+            if (PaPlayback.problem() != null) {
+                line = Component.translatable("screen.beautifuldecor.microphone.playback_problem", PaPlayback.problem());
+                lineColor = 0xFFFFA040;
+            } else if (!PaClient.listenSelf()) {
+                line = Component.translatable("screen.beautifuldecor.microphone.hint_self");
+            } else if (PaClient.received() == 0) {
+                line = Component.translatable("screen.beautifuldecor.microphone.playback_none");
+            } else {
+                line = Component.translatable("screen.beautifuldecor.microphone.playback_ok", PaClient.received(), PaPlayback.played());
+                lineColor = 0xFF60E070;
+            }
+            graphics.drawCenteredString(this.font, line, cx, top + 39, lineColor);
         }
 
         // barra de nivel con la marca de la sensibilidad

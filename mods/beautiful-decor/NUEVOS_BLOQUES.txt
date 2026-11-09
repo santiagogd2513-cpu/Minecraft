@@ -1,3 +1,44 @@
+PARCHE V4.1.1
+=============
+Anuncios: se agregó la marca insignia, HS
+   * Nuevo anuncio de HS (12 s, video + sonido): logo, portátil azul HS que se abre y carga el navegador, impresora HS sacando una hoja; música tipo tecno-pop, sonido de arranque y el de la impresora del
+     mod; eslogan «HS — Inventamos el clic.» y letra chica de broma. Ahora son 7 anuncios (HS va primero en la lista) y las pantallas 4x4, 8x8 y 12x12 pasan los siete; las pantallas ya colocadas
+     lo reciben solas (no hay que volver a poner nada).
+   * Por dentro: assets ads/hs.mp4 y textures/ads/poster_hs.png; ad/AdBrands.java (lista de marcas); generador en tools/v410 (frame_hs/audio_hs). Sin cambios de red (protocolo 19).
+   Pruebas (tools/verify_v411.py, solo de esta versión): los 7 MP4 cumplen el formato, el video de los 7 se decodifica IDÉNTICO a ffmpeg con el decodificador del mod y el AAC con correlación 1.0; lógica de
+   AdBrands con 7 marcas. No se puede probar aquí: verlo y oírlo en el juego.
+
+PARCHE V4.1.0
+=============
+Sistema de anuncios: pantallas 4x4, 8x8 y 12x12 con un anuncio (video + sonido) por cada marca del mod
+   * 3 BLOQUES NUEVOS (Electrónica, después de la bocina de megafonía): Pantalla de anuncios pequeña (4x4), mediana (8x8) y grande (12x12). Delgadas (3/16), pegadas a la pared. Se colocan como el televisor
+     grande: el bloque donde haces clic es la esquina inferior IZQUIERDA vista de frente; el resto se extiende a tu derecha y hacia arriba, y todo ese espacio debe estar libre. Se rompen todas juntas y sueltan
+     un solo ítem aunque rompas cualquier parte. Clic derecho = encender/apagar (queda guardado y se ve igual para todos).
+   * ANUNCIOS: 6 videos de 12 s, uno por marca, con música y efectos propios y el sonido de los vehículos del mod: Furd (pickup Ranchera, country-rock), AMAZOOM (camión de reparto, marimba), Lamborgonzo
+     (Huracanito RC, electrónica), BOING (helicóptero HX-6 y jet 7G7, épica), Bugerati (arañas, neones y lámparas, lounge) y Bugotti (Chillón, cinematográfico). Cada uno: logo, el producto en acción,
+     eslóganes y letra chica de broma. Las pantallas los pasan en orden y en bucle; cada una arranca por una marca distinta según su posición (las vecinas no repiten a la vez).
+   * CERCA / LEJOS: una pantalla encendida a menos de ~30 (4x4), ~34 (8x8) o ~38 (12x12) bloques del centro reproduce el video con sonido (el volumen baja con la distancia; se calla pasados 40 bloques). Máximo
+     2 pantallas reproduciendo a la vez (las más cercanas) para no cargar el teléfono. Más lejos se ve el póster de la marca, que va cambiando cada 7 s. Si un anuncio falla, se anota en el registro y se
+     pasa al siguiente a los pocos segundos; nada de esto puede cerrar el juego.
+   * Por dentro: block/AdScreenBlock.java (multibloque, PX/PY 0..11, como BigTelevisionBlock), block/entity/AdScreenBlockEntity.java, ad/AdBrands.java (lógica pura), client/AdPlayback.java (usa HsVideoPlayer;
+     copia los MP4 a "beautifuldecor-ads" del juego), client/AdScreenRenderer.java, HsComputers (el audio no se corta por el estado del bloque). Assets: ads/*.mp4, textures/ads/poster_*.png, modelo
+     block/ad_panel.json, textura ad_screen_off, íconos, loot tables, textos es/en. Generador de los anuncios: tools/v410/ (adkit.py, vehicles.py, ads.py). Sin cambios de red (protocolo 19).
+   Pruebas (tools/verify_v410.py, solo de esta versión): registros, assets y textos es/en completos; los 6 MP4 cumplen el formato que lee el mod; el H.264 de los 6 se decodifica con el decodificador del
+   propio mod IDÉNTICO a ffmpeg (240 cuadros cada uno) y el AAC con correlación 1.0; lógica de AdBrands; sintaxis del Java nuevo. Lo que NO se puede probar aquí: verlo y oírlo dentro del juego
+   (dibujo de la pantalla en el mundo, volumen real en el teléfono, rendimiento con una pantalla 12x12 y 2 videos).
+
+PARCHE V4.0.3
+=============
+Megafonía: las bocinas "no sonaban" probando solo
+   * Causa más probable (por cómo está hecho, el video no llegó): el menú traía «Escucharme» APAGADO. Con ese botón apagado, la voz que vuelve del servidor por TU propio micrófono se descarta en tu juego (para
+     que no haga eco), así que probando tú solo, con una bocina al lado, el micrófono detectaba la voz (la barra se movía) pero las bocinas no sonaban; solo salían las notas musicales. Ahora «Escucharme» viene
+     ENCENDIDO. Si hace eco (bocina cerca del micrófono, sin audífonos), se apaga en el menú. Los demás jugadores siempre te han oído.
+   * AVISO DE AUDIO EN EL MENÚ (debajo del estado, mientras hablas): "Aún no llega voz a tus bocinas (¿vinculadas y a menos de 48 bloques?)" = el servidor no te devuelve nada; "Voz recibida: N bloques,
+     sonando: M" = llega y se manda a OpenAL; "Problema de audio: ..." = OpenAL falló, con el motivo (sin audio activo, no se pudo crear la fuente, error de OpenAL). Con eso, si sigue sin sonar, se sabe si el fallo
+     está en el servidor o en la reproducción de tu dispositivo. Los contadores se ponen en cero al pulsar «Hablar».
+   * Por dentro: megaphone/client/PaClient.java (listenSelf por defecto true, contador), PaPlayback.java (played, problem, alGetError tras cada bloque), MicrophoneScreen.java. Sin cambios de red.
+   Pruebas (tools/verify_v403.py, solo de esta versión): valor por defecto, textos es/en completos y usados, sintaxis del Java cambiado. Lo que NO se puede probar aquí: oír la voz por las bocinas en el juego.
+
 PARCHE V4.0.2
 =============
 Arreglo del aviso de las pestañas creativas al iniciar el juego

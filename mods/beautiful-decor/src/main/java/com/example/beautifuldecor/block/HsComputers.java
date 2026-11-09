@@ -18,6 +18,9 @@ public final class HsComputers {
         if (state.getBlock() instanceof LaptopBlock) {
             return state.getValue(LaptopBlock.OPEN);
         }
+        if (state.getBlock() instanceof AdScreenBlock) {
+            return true;                                    // V4.1.0: la pantalla de anuncios se detiene sola al apagarse
+        }
         if (state.getBlock() instanceof TelevisionBlock) {
             return state.getValue(TelevisionBlock.ON);
         }
