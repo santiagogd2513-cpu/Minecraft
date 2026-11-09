@@ -91,7 +91,7 @@ public final class LaunchManager {
         NukeCrater crater;
         /** Sale de la Base Sol Negro (que ya existe): al final solo se cierra la compuerta de ese silo. */
         boolean thermo;
-        int silo;
+        int baseSilo;
         float baseYaw;
 
         Strike(@Nullable UUID owner, ServerLevel level, WeaponType type, long start, int lastImpact, BlockPos ticketOwner) {
@@ -223,7 +223,7 @@ public final class LaunchManager {
             s.shots.add(new Shot(plan.launchTick, plan.path, com.arsenalatomico.BaseLayout.missileScale(silo), kind, 0, 0f, true));
             s.siloSite = site.pos();
             s.thermo = true;
-            s.silo = silo;
+            s.baseSilo = silo;
             s.baseYaw = site.yaw();
             BaseBuilder.open(level, site.pos(), site.yaw(), silo);
             int reach = (int) Math.ceil(NukePlan.SCORCH_R * com.arsenalatomico.BaseLayout.size(silo) / 16) + 1;
@@ -291,7 +291,7 @@ public final class LaunchManager {
             s.bunker.step(Integer.MAX_VALUE);
             BunkerBuilder.close(level, s.siloSite);
         }
-        if (level != null && s.thermo) BaseBuilder.close(level, s.siloSite, s.baseYaw, s.silo);
+        if (level != null && s.thermo) BaseBuilder.close(level, s.siloSite, s.baseYaw, s.baseSilo);
         if (s.crater != null) s.crater.step(Integer.MAX_VALUE);
         if (level != null) {
             for (ChunkPos c : s.chunks) ForgeChunkManager.forceChunk(level, ArsenalAtomico.MODID, s.ticketOwner, c.x, c.z, false, true);
@@ -327,7 +327,7 @@ public final class LaunchManager {
                 if (shot.fired && !shot.hit && t >= shot.launch + shot.path.flightTicks) {
                     shot.hit = true;
                     if (shot.entity != null) shot.entity.discard();
-                    if (shot.kind >= 4) s.crater = NukeCrater.detonate(level, shot.path.p3, com.arsenalatomico.BaseLayout.size(s.silo));
+                    if (shot.kind >= 4) s.crater = NukeCrater.detonate(level, shot.path.p3, com.arsenalatomico.BaseLayout.size(s.baseSilo));
                     else if (shot.kind == 3) s.crater = NukeCrater.detonate(level, shot.path.p3);
                     else if (shot.kind == 2) Impacts.huge(level, shot.path.p3, shot.power);
                     else if (shot.big) Impacts.big(level, shot.path.p3, shot.power);
