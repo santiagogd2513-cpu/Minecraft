@@ -323,6 +323,7 @@ public class MainActivity extends Activity {
         titles.addView(Ui.text(this, "Ventoy no oficial", 23, Ui.TEXT, true));
         titles.addView(Ui.text(this, "Ventoy " + files.version() + " incluido · sin anuncios · sin internet", 12.5f, Ui.SUB, false));
         head.addView(titles, Ui.weight(1));
+        head.addView(Ui.iconButton(this, R.drawable.ic_settings, 42, v -> showSettings()));
         head.addView(Ui.iconButton(this, R.drawable.ic_info, 42, v -> showAbout()));
         col.addView(head);
 
@@ -557,6 +558,28 @@ public class MainActivity extends Activity {
         b.addView(s);
         b.setOnClickListener(v -> r.run());
         return b;
+    }
+
+    /** Ajustes: los temas de temporada y «Acerca de». */
+    private void showSettings() {
+        java.util.List<Kit.Page> pages = new java.util.ArrayList<>();
+        pages.add(new Kit.Page("Temas de temporada", "Navidad, Velitas, Halloween y más", R.drawable.ic_season,
+                0xFFE63946, 0xFF2DC653, (col, refresh) -> Season.settings(this, col, refresh)));
+        pages.add(new Kit.Page("Acerca de", "Versión, privacidad y Forja Estudios", R.drawable.ic_info,
+                0xFF8B97AB, 0xFF5D6B83, (col, refresh) -> {
+            String ver = "";
+            try {
+                ver = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+            } catch (Exception ignored) {
+            }
+            Kit.section(this, col, "Ventoy");
+            Kit.row(this, col, "Versión " + ver, "Toca para ver qué hace Ventoy y cómo se prueba", this::showAbout);
+            Kit.row(this, col, "🔒  Política de privacidad y seguridad", null, () -> Legal.show(this, Legal.PRIVACY));
+            Kit.row(this, col, "📄  Términos y condiciones", null, () -> Legal.show(this, Legal.TERMS));
+            Kit.section(this, col, "Hecho por");
+            Kit.add(this, col, Studio.row(this, null));
+        }));
+        Kit.settings(this, "Ajustes", pages);
     }
 
     private void showAbout() {

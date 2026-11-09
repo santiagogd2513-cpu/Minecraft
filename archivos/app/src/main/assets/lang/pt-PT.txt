@@ -846,3 +846,44 @@
 846|Sim, ativar
 847|Autoeliminação ativada
 848|PIN, impressão digital e autoeliminação · pede o seu PIN ou impressão digital
+849|Automático (pela data)
+850|todo o ano
+851|Automático · combina com a época
+852|O original
+853|Temas
+854|Temas de época
+855|Desligados: sempre o design habitual
+856|Ícones
+857|Ícones de época
+858|Desligados: sempre o ícone original
+859|Toque no nome para escolher; o interruptor liga ou desliga.
+860|🎨 As decorações de cada época (neve, luzes, ícones e mais) chegam nas próximas atualizações. O que escolher aqui já fica guardado.
+861|Tema ativo
+862|Escolhido para todo o ano
+863|Começa amanhã
+864|dias até começar
+865|Agora não há época
+866|Temas desligados
+867|Próxima:
+868|Escolher tema
+869|Em «Automático» muda sozinho conforme a data
+870|Agora:
+871|ou todo o ano
+872|Escolher ícone
+873|O ícone da app no ecrã principal
+874|Combina com a época
+875|O de sempre
+876|Em breve
+877|Antes de mudar o ícone
+878|Ao mudar o ícone, o Android pode remover o atalho da app do seu ecrã principal. A app não é apagada: encontra-a na gaveta de apps e pode voltar a colocá-la onde quiser.\n\nEste aviso só aparece desta vez.
+879|Natal
+880|Dia das Velinhas
+881|Dia de São Valentim
+882|Amor e Amizade
+883|Halloween
+884|De 1 de dezembro a 6 de janeiro
+885|7 de dezembro
+886|De 1 a 14 de fevereiro
+887|Setembro inteiro
+888|Outubro inteiro
+889|Natal, Velinhas, Halloween e mais

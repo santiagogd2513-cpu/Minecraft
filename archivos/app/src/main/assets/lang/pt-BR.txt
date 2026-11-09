@@ -846,3 +846,44 @@
 846|Sim, ligar
 847|Autoapagamento ligado
 848|PIN, digital e autoapagamento · pede seu PIN ou digital
+849|Automático (pela data)
+850|o ano todo
+851|Automático · combina com a estação
+852|O original
+853|Temas
+854|Temas de temporada
+855|Desligados: sempre o design de sempre
+856|Ícones
+857|Ícones de temporada
+858|Desligados: sempre o ícone original
+859|Toque no nome para escolher; o interruptor liga ou desliga.
+860|🎨 As decorações de cada temporada (neve, luzes, ícones e mais) chegam nas próximas atualizações. O que você escolher aqui já fica salvo.
+861|Tema ativo
+862|Escolhido para o ano todo
+863|Começa amanhã
+864|dias para começar
+865|Agora não há temporada
+866|Temas desligados
+867|Próxima:
+868|Escolher tema
+869|Em «Automático» muda sozinho conforme a data
+870|Agora:
+871|ou o ano todo
+872|Escolher ícone
+873|O ícone do app na tela inicial
+874|Combina com a temporada
+875|O de sempre
+876|Em breve
+877|Antes de mudar o ícone
+878|Ao mudar o ícone, o Android pode remover o atalho do app da sua tela inicial. O app não é apagado: você o encontra na gaveta de apps e pode colocá-lo de volta onde quiser.\n\nEste aviso só aparece desta vez.
+879|Natal
+880|Dia das Velinhas
+881|Dia dos Namorados (Valentim)
+882|Amor e Amizade
+883|Halloween
+884|De 1º de dezembro a 6 de janeiro
+885|7 de dezembro
+886|De 1º a 14 de fevereiro
+887|Setembro inteiro
+888|Outubro inteiro
+889|Natal, Velinhas, Halloween e mais

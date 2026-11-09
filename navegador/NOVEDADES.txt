@@ -1,3 +1,14 @@
+## 23
+⚙️ Ajustes nuevos
+- Los ajustes de Nocturna se rediseñaron: ahora ocupan toda la pantalla y están ordenados por categorías (Navegación, Bloqueo y privacidad, Descargas, Contraseñas, Temas de temporada y Acerca de), con interruptores en vez de «sí/no».
+- Borrar el historial o los datos de las páginas ahora pide confirmación.
+
+🎄 Temas de temporada (etapa 1)
+- Nuevo en Ajustes: «Temas de temporada». Navidad (1 de diciembre al 6 de enero), Día de las Velitas (7 de diciembre), San Valentín (1 al 14 de febrero), Amor y Amistad (todo septiembre) y Halloween (todo octubre).
+- Dos interruptores, encendidos de fábrica: «Temas de temporada» e «Íconos de temporada». Toca el nombre para abrir su menú: «Automático» sigue la fecha, o deja fijo el tema que quieras todo el año.
+- Arriba se ve qué temporada está activa o cuántos días faltan para la próxima.
+- Las decoraciones (nieve, luces, íconos y más) llegan en las próximas actualizaciones; lo que elijas ya queda guardado.
+
 ## 22
 - El aviso de «Copia modificada» ahora ocupa toda la pantalla, y una copia modificada ya no ofrece actualizaciones (no se pueden instalar encima de la original).
 

@@ -1025,74 +1025,92 @@ public class MainActivity extends Activity {
         current.web.reload();
     }
 
+    /** Ajustes de Nocturna a pantalla completa, divididos en categorías. */
     private void showSettings() {
-        String[] items = {
-                "Modo oscuro: " + DarkMode.NAMES[store.darkMode()],
-                "Buscador: " + Store.ENGINES[store.engine()][0],
-                "Conexiones por descarga: " + store.connections(),
-                "Bloquear anuncios: " + (store.adBlock() ? "sí" : "no"),
-                "Si Google pide CAPTCHA, buscar en " + Captcha.NAME + ": " + (store.captchaDodge() ? "sí" : "no"),
-                "Ofrecer guardar contraseñas: " + (store.pwOffer() ? "sí" : "no"),
-                "Contraseñas guardadas",
-                "Borrar historial",
-                "Borrar cookies, caché y datos de páginas",
-                "Acerca de Nocturna",
-        };
+        List<Kit.Page> pages = new ArrayList<>();
+        pages.add(new Kit.Page("Navegación", "Buscador y modo oscuro de las páginas", R.drawable.ic_search,
+                0xFF3D8BFF, 0xFF36D1FF, (col, refresh) -> {
+            Kit.section(this, col, "Buscador");
+            Kit.row(this, col, "Buscador", Store.ENGINES[store.engine()][0], () -> {
+                String[] names = new String[Store.ENGINES.length];
+                for (int i = 0; i < names.length; i++) names[i] = Store.ENGINES[i][0];
+                Kit.choose(this, "Buscador", "Lo que escribes en la barra se busca aquí", names, null, store.engine(), w -> {
+                    store.setEngine(w);
+                    refresh.run();
+                });
+            });
+            Kit.section(this, col, "Páginas");
+            Kit.row(this, col, "Modo oscuro de las páginas", DarkMode.NAMES[store.darkMode()], () ->
+                    Kit.choose(this, "Modo oscuro de las páginas", null, DarkMode.NAMES, null, store.darkMode(), w -> {
+                        setDarkMode(w);
+                        refresh.run();
+                    }));
+        }));
+        pages.add(new Kit.Page("Bloqueo y privacidad", "Anuncios, CAPTCHA, historial y datos", R.drawable.ic_shield,
+                0xFF35D08A, 0xFF1EA97C, (col, refresh) -> {
+            Kit.section(this, col, "Bloqueo");
+            Kit.toggle(this, col, "Bloquear anuncios", "Quita anuncios y rastreadores de las páginas", store.adBlock(), on -> {
+                store.setAdBlock(on);
+                if (current != null) current.web.reload();
+            });
+            Kit.toggle(this, col, "Esquivar el CAPTCHA de Google", "Si Google pide CAPTCHA, la búsqueda se hace en " + Captcha.NAME,
+                    store.captchaDodge(), store::setCaptchaDodge);
+            Kit.section(this, col, "Borrar");
+            Kit.row(this, col, "Borrar historial", "Las páginas que visitaste", () -> confirmClear("¿Borrar todo el historial?", () -> {
+                store.clearHistory();
+                Toast.makeText(this, "Historial borrado", Toast.LENGTH_SHORT).show();
+            }));
+            Kit.row(this, col, "Borrar cookies, caché y datos de páginas", "Se cerrará la sesión en las páginas donde entraste",
+                    () -> confirmClear("¿Borrar cookies, caché y datos?", () -> {
+                        CookieManager.getInstance().removeAllCookies(null);
+                        WebStorage.getInstance().deleteAllData();
+                        for (Tab t : tabs) t.web.clearCache(true);
+                        Toast.makeText(this, "Datos borrados", Toast.LENGTH_SHORT).show();
+                    }));
+        }));
+        pages.add(new Kit.Page("Descargas", "Velocidad de las descargas", R.drawable.ic_download,
+                0xFFB47CFF, 0xFF7C4DFF, (col, refresh) -> {
+            Kit.section(this, col, "Velocidad");
+            String[] opts = {"4", "8", "12", "16"};
+            String[] subs = {"Suave con el servidor", "Equilibrado", "Rápido", "Lo más rápido (si el servidor lo permite)"};
+            Kit.row(this, col, "Conexiones por descarga", store.connections() + " conexiones · más = más rápido si el servidor lo permite", () ->
+                    Kit.choose(this, "Conexiones por descarga", "Más conexiones = más rápido, si el servidor lo permite", opts, subs,
+                            java.util.Arrays.asList(opts).indexOf(String.valueOf(store.connections())), w -> {
+                                store.setConnections(Integer.parseInt(opts[w]));
+                                refresh.run();
+                            }));
+            Kit.row(this, col, "Ver descargas", null, () -> startActivity(new Intent(this, DownloadsActivity.class)));
+        }));
+        pages.add(new Kit.Page("Contraseñas", "Guardar y rellenar con tu huella", R.drawable.ic_key,
+                0xFFFFB547, 0xFFF07C2C, (col, refresh) -> {
+            Kit.toggle(this, col, "Ofrecer guardar contraseñas", "Al entrar a una página, Nocturna pregunta si la guarda",
+                    store.pwOffer(), store::setPwOffer);
+            Kit.row(this, col, "Contraseñas guardadas", "Ver, copiar, borrar o importar", pwUi::showManager);
+        }));
+        pages.add(new Kit.Page("Temas de temporada", "Navidad, Velitas, Halloween y más", R.drawable.ic_season,
+                0xFFE63946, 0xFF2DC653, (col, refresh) -> Season.settings(this, col, refresh)));
+        pages.add(new Kit.Page("Acerca de", "Versión, privacidad y Forja Estudios", R.drawable.ic_info,
+                0xFF8B97AB, 0xFF5D6B83, (col, refresh) -> {
+            String ver = "";
+            try {
+                ver = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+            } catch (Exception ignored) {
+            }
+            Kit.section(this, col, "Nocturna");
+            Kit.row(this, col, "Versión " + ver, "Navegador oscuro, liviano y sin anuncios, con descargas rápidas y gestor de contraseñas.", null);
+            Kit.row(this, col, "🔒  Política de privacidad y seguridad", null, () -> Legal.show(this, Legal.PRIVACY));
+            Kit.row(this, col, "📄  Términos y condiciones", null, () -> Legal.show(this, Legal.TERMS));
+            Kit.section(this, col, "Hecho por");
+            Kit.add(this, col, Studio.row(this, null));
+        }));
+        Kit.settings(this, "Ajustes", pages);
+    }
+
+    private void confirmClear(String q, Runnable r) {
         new AlertDialog.Builder(this, R.style.Theme_Nocturna_Dialog)
-                .setTitle("Ajustes de Nocturna")
-                .setItems(items, (d, which) -> {
-                    switch (which) {
-                        case 0 -> chooseDark();
-                        case 1 -> {
-                            String[] names = new String[Store.ENGINES.length];
-                            for (int i = 0; i < names.length; i++) names[i] = Store.ENGINES[i][0];
-                            new AlertDialog.Builder(this, R.style.Theme_Nocturna_Dialog).setTitle("Buscador")
-                                    .setSingleChoiceItems(names, store.engine(), (dd, w) -> {
-                                        store.setEngine(w);
-                                        dd.dismiss();
-                                    }).show();
-                        }
-                        case 2 -> {
-                            String[] opts = {"4", "8", "12", "16"};
-                            int sel = java.util.Arrays.asList(opts).indexOf(String.valueOf(store.connections()));
-                            new AlertDialog.Builder(this, R.style.Theme_Nocturna_Dialog)
-                                    .setTitle("Conexiones por descarga (más = más rápido si el servidor lo permite)")
-                                    .setSingleChoiceItems(opts, sel, (dd, w) -> {
-                                        store.setConnections(Integer.parseInt(opts[w]));
-                                        dd.dismiss();
-                                    }).show();
-                        }
-                        case 3 -> store.setAdBlock(!store.adBlock());
-                        case 4 -> store.setCaptchaDodge(!store.captchaDodge());
-                        case 5 -> store.setPwOffer(!store.pwOffer());
-                        case 6 -> pwUi.showManager();
-                        case 7 -> {
-                            store.clearHistory();
-                            Toast.makeText(this, "Historial borrado", Toast.LENGTH_SHORT).show();
-                        }
-                        case 8 -> {
-                            CookieManager.getInstance().removeAllCookies(null);
-                            WebStorage.getInstance().deleteAllData();
-                            for (Tab t : tabs) t.web.clearCache(true);
-                            Toast.makeText(this, "Datos borrados", Toast.LENGTH_SHORT).show();
-                        }
-                        case 9 -> {
-                            String ver = "";
-                            try {
-                                ver = " " + getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
-                            } catch (Exception ignored) {
-                            }
-                            new AlertDialog.Builder(this, R.style.Theme_Nocturna_Dialog)
-                                    .setTitle("Nocturna" + ver)
-                                    .setMessage("Navegador oscuro, liviano y sin anuncios, con descargas rápidas y gestor de contraseñas.\n\n"
-                                            + "Hecho por " + Studio.NAME + "\n" + Studio.AUTHORS)
-                                    .setView(Legal.buttons(this))
-                                    .setNeutralButton(Studio.NAME, (dd, w) -> Studio.show(this))
-                                    .setPositiveButton("Cerrar", null).show();
-                        }
-                        default -> { }
-                    }
-                })
+                .setTitle(q)
+                .setPositiveButton("Borrar", (d, w) -> r.run())
+                .setNegativeButton("Cancelar", null)
                 .show();
     }
 

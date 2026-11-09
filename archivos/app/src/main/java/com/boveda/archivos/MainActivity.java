@@ -3590,12 +3590,13 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             {L.t("Acceso a carpetas"), L.t("Shizuku y permisos para otras apps")},
             {L.t("Almacenamiento"), L.t("Archivos temporales")},
             {L.t("La Bóveda"), L.t("PIN, huella y autoborrado · pide tu PIN o tu huella")},
+            {L.t("Temas de temporada"), L.t("Navidad, Velitas, Halloween y más")},
             {L.t("Acerca de"), L.t("Versión y Forja Estudios")},
     };
     private static final int[] SETTINGS_ICONS = {R.drawable.ic_menu, R.drawable.ic_folder, R.drawable.ic_play, R.drawable.ic_swap,
-            R.drawable.ic_download, R.drawable.ic_shield, R.drawable.ic_sd, R.drawable.ic_key, R.drawable.ic_info};
+            R.drawable.ic_download, R.drawable.ic_shield, R.drawable.ic_sd, R.drawable.ic_key, R.drawable.ic_season, R.drawable.ic_info};
     private static final int[][] SETTINGS_COLORS = {{0xFF4C9DFF, 0xFF6FD6FF}, {0xFFFFB547, 0xFFF07C2C}, {0xFF35D08A, 0xFF1EA97C},
-            {0xFFB47CFF, 0xFF7C4DFF}, {0xFF28A8EA, 0xFF0A64D6}, {0xFFFF6B8A, 0xFFE0405F}, {0xFF8B97AB, 0xFF5D6B83}, {0xFF7B4DFF, 0xFFB86BFF}, {0xFFFF8A3D, 0xFFFFC857}};
+            {0xFFB47CFF, 0xFF7C4DFF}, {0xFF28A8EA, 0xFF0A64D6}, {0xFFFF6B8A, 0xFFE0405F}, {0xFF8B97AB, 0xFF5D6B83}, {0xFF7B4DFF, 0xFFB86BFF}, {0xFFE63946, 0xFF2DC653}, {0xFFFF8A3D, 0xFFFFC857}};
 
     private void settingsCategories(LinearLayout col, android.app.Dialog d, java.util.function.IntConsumer open) {
         col.removeAllViews();
@@ -3633,12 +3634,17 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
     }
 
     private static final int VAULT_SETTINGS = 7;
+    private static final int SEASON_SETTINGS = 8;
 
     private void fillSettings(LinearLayout col, android.app.Dialog d, int category) {
         col.removeAllViews();
         Runnable refresh = () -> fillSettings(col, d, category);
         if (category == VAULT_SETTINGS) {
             vaultSettings(col, refresh);
+            return;
+        }
+        if (category == SEASON_SETTINGS) {
+            Season.settings(this, col, refresh);
             return;
         }
         switch (category) {

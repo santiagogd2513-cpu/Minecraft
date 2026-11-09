@@ -846,3 +846,44 @@
 846|Ja, einschalten
 847|Selbstlöschung an
 848|PIN, Fingerabdruck und Selbstlöschung · fragt nach PIN oder Fingerabdruck
+849|Automatisch (nach Datum)
+850|das ganze Jahr
+851|Automatisch · passt zur Saison
+852|Das Original
+853|Themen
+854|Saisonale Themen
+855|Aus: immer das gewohnte Design
+856|Symbole
+857|Saisonale Symbole
+858|Aus: immer das Original-Symbol
+859|Tippe auf den Namen zum Auswählen; der Schalter schaltet ein oder aus.
+860|🎨 Die Dekorationen jeder Saison (Schnee, Lichter, Symbole und mehr) kommen mit den nächsten Updates. Was du hier wählst, ist schon gespeichert.
+861|Aktives Thema
+862|Für das ganze Jahr gewählt
+863|Beginnt morgen
+864|Tage bis zum Beginn
+865|Gerade keine Saison
+866|Themen aus
+867|Nächste:
+868|Thema wählen
+869|Bei «Automatisch» wechselt es von selbst nach Datum
+870|Jetzt:
+871|oder das ganze Jahr
+872|Symbol wählen
+873|Das App-Symbol auf dem Startbildschirm
+874|Passt zur Saison
+875|Das gewohnte
+876|Demnächst
+877|Bevor das Symbol geändert wird
+878|Wenn sich das Symbol ändert, entfernt Android eventuell die Verknüpfung der App vom Startbildschirm. Die App wird nicht gelöscht: Du findest sie in der App-Übersicht und kannst sie wieder hinlegen, wo du willst.\n\nDieser Hinweis erscheint nur dieses eine Mal.
+879|Weihnachten
+880|Tag der Kerzen (Velitas)
+881|Valentinstag
+882|Tag der Liebe und Freundschaft
+883|Halloween
+884|Vom 1. Dezember bis 6. Januar
+885|7. Dezember
+886|Vom 1. bis 14. Februar
+887|Den ganzen September
+888|Den ganzen Oktober
+889|Weihnachten, Velitas, Halloween und mehr

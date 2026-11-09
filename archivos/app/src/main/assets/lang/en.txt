@@ -846,3 +846,44 @@
 846|Yes, turn it on
 847|Auto-wipe on
 848|PIN, fingerprint and auto-wipe · asks for your PIN or fingerprint
+849|Automatic (by date)
+850|all year
+851|Automatic · matches the season
+852|The original
+853|Themes
+854|Seasonal themes
+855|Off: always the usual design
+856|Icons
+857|Seasonal icons
+858|Off: always the original icon
+859|Tap the name to choose; the switch turns it on or off.
+860|🎨 Each season's decorations (snow, lights, icons and more) arrive in the next updates. What you choose here is already saved.
+861|Active theme
+862|Chosen for the whole year
+863|Starts tomorrow
+864|days until it starts
+865|No season right now
+866|Themes off
+867|Next:
+868|Choose theme
+869|In «Automatic» it changes by itself with the date
+870|Now:
+871|or all year
+872|Choose icon
+873|The app icon on the home screen
+874|Matches the season
+875|The usual one
+876|Coming soon
+877|Before changing the icon
+878|When the icon changes, Android may remove the app's shortcut from your home screen. The app isn't deleted: you'll find it in the app drawer and can put it back wherever you like.\n\nThis notice only appears this once.
+879|Christmas
+880|Day of the Little Candles
+881|Valentine's Day
+882|Love and Friendship
+883|Halloween
+884|From December 1 to January 6
+885|December 7
+886|From February 1 to 14
+887|All of September
+888|All of October
+889|Christmas, Little Candles, Halloween and more

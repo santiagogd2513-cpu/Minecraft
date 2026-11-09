@@ -61,7 +61,7 @@ jobs:
           mkdir -p /tmp/t/out
           F=../forja/app/src/main/java/com/forja/formateador
           javac -d /tmp/t/out app/src/main/java/com/ventoy/nooficial/{BlockDevice,Progress,Disk,ExFatFormatter,Fat16,VentoyInstaller}.java \
-            $(ls $F/*.java | grep -v -e MainActivity -e UsbDisk -e Ui.java -e Updater.java -e Studio.java -e Legal.java -e Integrity.java) test/*.java
+            $(ls $F/*.java | grep -v -e MainActivity -e UsbDisk -e Ui.java -e Updater.java -e Studio.java -e Legal.java -e Integrity.java -e Kit.java -e Season.java -e Icons.java) test/*.java
           bash ../forja/test/motor_ntfs_pc.sh /tmp/t/nb
           for CASO in "1024 EXFAT" "40960 EXFAT" "2048 NTFS" "2048 FAT32" "2048 EXT4" "40960 NTFS"; do
             set -- $CASO

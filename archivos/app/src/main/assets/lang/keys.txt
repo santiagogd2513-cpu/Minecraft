@@ -846,3 +846,44 @@ Nadie podrá recuperar los archivos borrados, ni tú ni nosotros. Si alguien má
 Sí, encenderlo
 Autoborrado encendido
 PIN, huella y autoborrado · pide tu PIN o tu huella
+Automático (según la fecha)
+todo el año
+Automático · combina con la temporada
+El original
+Temas
+Temas de temporada
+Apagados: siempre el diseño de siempre
+Íconos
+Íconos de temporada
+Apagados: siempre el ícono original
+Toca el nombre para elegir; el interruptor enciende o apaga.
+🎨 Las decoraciones de cada temporada (nieve, luces, íconos y más) llegan en las próximas actualizaciones. Lo que elijas aquí ya queda guardado.
+Tema activo
+Elegido para todo el año
+Empieza mañana
+días para que empiece
+Ahora no hay temporada
+Temas apagados
+Próxima: 
+Elegir tema
+En «Automático» cambia solo según la fecha
+Ahora: 
+o todo el año
+Elegir ícono
+El ícono de la app en la pantalla de inicio
+Combina con la temporada
+El de siempre
+Próximamente
+Antes de cambiar el ícono
+Al cambiar el ícono, Android puede quitar el acceso directo de la app de tu pantalla de inicio. La app no se borra: la encuentras en el cajón de apps y la vuelves a poner donde quieras.\n\nEste aviso solo sale esta vez.
+Navidad
+Día de las Velitas
+San Valentín
+Amor y Amistad
+Halloween
+Del 1 de diciembre al 6 de enero
+7 de diciembre
+Del 1 al 14 de febrero
+Todo septiembre
+Todo octubre
+Navidad, Velitas, Halloween y más

@@ -846,3 +846,44 @@
 846|Oui, l’activer
 847|Autodestruction activée
 848|PIN, empreinte et autodestruction · demande ton PIN ou ton empreinte
+849|Automatique (selon la date)
+850|toute l'année
+851|Automatique · assorti à la saison
+852|L'original
+853|Thèmes
+854|Thèmes de saison
+855|Désactivés : toujours le design habituel
+856|Icônes
+857|Icônes de saison
+858|Désactivées : toujours l'icône d'origine
+859|Touchez le nom pour choisir ; l'interrupteur active ou désactive.
+860|🎨 Les décorations de chaque saison (neige, lumières, icônes et plus) arrivent dans les prochaines mises à jour. Ce que vous choisissez ici est déjà enregistré.
+861|Thème actif
+862|Choisi pour toute l'année
+863|Commence demain
+864|jours avant le début
+865|Pas de saison en ce moment
+866|Thèmes désactivés
+867|Prochaine :
+868|Choisir le thème
+869|En «Automatique», il change tout seul selon la date
+870|Maintenant :
+871|ou toute l'année
+872|Choisir l'icône
+873|L'icône de l'app sur l'écran d'accueil
+874|Assortie à la saison
+875|Celle de toujours
+876|Bientôt
+877|Avant de changer l'icône
+878|Quand l'icône change, Android peut retirer le raccourci de l'app de votre écran d'accueil. L'app n'est pas supprimée : vous la trouverez dans le tiroir d'applications et pourrez la remettre où vous voulez.\n\nCet avis n'apparaît qu'une seule fois.
+879|Noël
+880|Fête des Petites Bougies
+881|Saint-Valentin
+882|Amour et Amitié
+883|Halloween
+884|Du 1er décembre au 6 janvier
+885|7 décembre
+886|Du 1er au 14 février
+887|Tout septembre
+888|Tout octobre
+889|Noël, Petites Bougies, Halloween et plus
