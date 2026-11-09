@@ -60,6 +60,11 @@ public final class HsAudioPlayer {
     private volatile String message = "";
     private volatile float volume = 0.8f;
     private volatile float distanceGain = 1.0f;
+    // V4.1.2: alcance propio de cada reproductor. El del navegador sigue con la bajada lineal de siempre (12 -> 40 bloques); los de
+    // televisores, anuncios y radios de vehículo usan la curva de AudioFalloff con el alcance que se les ponga con setRange.
+    private volatile boolean curved;
+    private volatile double fullBlocks = FULL_VOLUME_BLOCKS;
+    private volatile double maxBlocks = STOP_BLOCKS;
     private volatile boolean paused;
     private volatile boolean live;
     private volatile long elapsedMs;
@@ -241,12 +246,11 @@ public final class HsAudioPlayer {
                 return;
             }
             double d = minecraft.player.position().distanceTo(at);
-            if (d > STOP_BLOCKS) {
+            if (d > this.maxBlocks) {
                 stop();
                 return;
             }
-            this.distanceGain = d <= FULL_VOLUME_BLOCKS ? 1.0f
-                    : (float) Math.max(0.0, 1.0 - (d - FULL_VOLUME_BLOCKS) / (STOP_BLOCKS - FULL_VOLUME_BLOCKS));
+            this.distanceGain = distanceGainAt(d);
             return;
         }
         BlockPos pos = this.anchor;
@@ -255,7 +259,7 @@ public final class HsAudioPlayer {
             return;
         }
         double d = minecraft.player.position().distanceTo(Vec3.atCenterOf(pos));
-        if (d > STOP_BLOCKS) {
+        if (d > this.maxBlocks) {
             stop();
             return;
         }
@@ -263,7 +267,25 @@ public final class HsAudioPlayer {
             stop();
             return;
         }
-        this.distanceGain = d <= FULL_VOLUME_BLOCKS ? 1.0f
+        this.distanceGain = distanceGainAt(d);
+    }
+
+    /**
+     * V4.1.2: este reproductor se oye al máximo hasta {@code full} bloques y nada a partir de {@code max}, con la curva de
+     * {@link com.example.beautifuldecor.ad.AudioFalloff}. Más allá de {@code max} el sonido se detiene solo, sin importar la distancia
+     * de renderizado del juego.
+     */
+    public void setRange(double full, double max) {
+        this.fullBlocks = full;
+        this.maxBlocks = Math.max(max, full + 1.0);
+        this.curved = true;
+    }
+
+    private float distanceGainAt(double d) {
+        if (this.curved) {
+            return com.example.beautifuldecor.ad.AudioFalloff.gain(d, this.fullBlocks, this.maxBlocks);
+        }
+        return d <= FULL_VOLUME_BLOCKS ? 1.0f
                 : (float) Math.max(0.0, 1.0 - (d - FULL_VOLUME_BLOCKS) / (STOP_BLOCKS - FULL_VOLUME_BLOCKS));
     }
 

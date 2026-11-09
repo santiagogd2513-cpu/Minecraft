@@ -33,7 +33,7 @@ public class VehicleRadioScreen extends Screen {
     private record Row(boolean header, String label, RadioStations.Station station, boolean custom) {
     }
 
-    private final VehicleEntity vehicle;
+    private final RadioSource vehicle;
     private final List<Row> rows = new ArrayList<>();
     private EditBox nameBox;
     private EditBox urlBox;
@@ -51,9 +51,73 @@ public class VehicleRadioScreen extends Screen {
     /** Volumen pedido que todavía no llegó de vuelta del servidor (-1 = ninguno): así varios toques seguidos suman bien. */
     private int pendingVolume = -1;
 
-    public VehicleRadioScreen(VehicleEntity vehicle) {
+    public VehicleRadioScreen(RadioSource source) {
         super(Component.translatable("gui.beautifuldecor.radio.title"));
-        this.vehicle = vehicle;
+        this.vehicle = source;
+    }
+
+    /** V4.2.0: la radio del vehículo, vista por el menú. */
+    private static final class VehicleSource implements RadioSource {
+        private final VehicleEntity v;
+
+        VehicleSource(VehicleEntity v) {
+            this.v = v;
+        }
+
+        @Override
+        public Component label() {
+            return this.v.getName();
+        }
+
+        @Override
+        public boolean valid(LocalPlayer player) {
+            return !this.v.isRemoved() && player.getVehicle() == this.v;
+        }
+
+        @Override
+        public boolean isOn() {
+            return this.v.isRadioOn();
+        }
+
+        @Override
+        public String url() {
+            return this.v.getRadioUrl();
+        }
+
+        @Override
+        public String stationName() {
+            return this.v.getRadioName();
+        }
+
+        @Override
+        public int volume() {
+            return this.v.getRadioVolume();
+        }
+
+        @Override
+        public boolean shouldPlay() {
+            return this.v.radioShouldPlay();
+        }
+
+        @Override
+        public HsAudioPlayer player() {
+            return VehicleRadioClient.playerFor(this.v);
+        }
+
+        @Override
+        public void select(String url, String name) {
+            ModMessages.sendToServer(VehicleRadioPacket.select(this.v.getId(), url, name));
+        }
+
+        @Override
+        public void power(boolean on) {
+            ModMessages.sendToServer(VehicleRadioPacket.power(this.v.getId(), on));
+        }
+
+        @Override
+        public void setVolume(int volume) {
+            ModMessages.sendToServer(VehicleRadioPacket.volume(this.v.getId(), volume));
+        }
     }
 
     /** Tecla X: abre la radio si vas montado en un vehículo terrestre. En el helicóptero avisa que ahí no hay radio. */
@@ -63,7 +127,7 @@ public class VehicleRadioScreen extends Screen {
             return;
         }
         if (player.getVehicle() instanceof VehicleEntity vehicle) {
-            minecraft.setScreen(new VehicleRadioScreen(vehicle));
+            minecraft.setScreen(new VehicleRadioScreen(new VehicleSource(vehicle)));
         } else if (player.getVehicle() instanceof HelicopterEntity || player.getVehicle() instanceof AirlinerEntity) {
             player.displayClientMessage(Component.translatable("message.beautifuldecor.radio.land_only"), true);
         }
@@ -119,11 +183,11 @@ public class VehicleRadioScreen extends Screen {
     public void tick() {
         super.tick();
         LocalPlayer player = this.minecraft == null ? null : this.minecraft.player;
-        if (this.vehicle.isRemoved() || player == null || player.getVehicle() != this.vehicle) {
+        if (player == null || !this.vehicle.valid(player)) {
             this.onClose();     // te bajaste: la radio sigue (si alguien va a bordo), el menú se cierra
             return;
         }
-        if (this.pendingVolume == this.vehicle.getRadioVolume()) {
+        if (this.pendingVolume == this.vehicle.volume()) {
             this.pendingVolume = -1;
         }
         this.nameBox.tick();
@@ -219,22 +283,18 @@ public class VehicleRadioScreen extends Screen {
 
     // ------------------------------------------------------------------ acciones
 
-    private void send(VehicleRadioPacket packet) {
-        ModMessages.sendToServer(packet);
-    }
-
     private void tell(String key, int color, Object... args) {
         this.feedback = DarkUi.tr(key, args);
         this.feedbackColor = color;
     }
 
     private int shownVolume() {
-        return this.pendingVolume >= 0 ? this.pendingVolume : this.vehicle.getRadioVolume();
+        return this.pendingVolume >= 0 ? this.pendingVolume : this.vehicle.volume();
     }
 
     private void changeVolume(int delta) {
         this.pendingVolume = RadioStations.clampVolume(shownVolume() + delta);
-        send(VehicleRadioPacket.volume(this.vehicle.getId(), this.pendingVolume));
+        this.vehicle.setVolume(this.pendingVolume);
     }
 
     private void addStation() {
@@ -252,7 +312,7 @@ public class VehicleRadioScreen extends Screen {
             return;
         }
         String name = RadioStations.cleanName(this.nameBox.getValue());
-        send(VehicleRadioPacket.select(this.vehicle.getId(), url, name.isEmpty() ? RadioStations.nameFromUrl(url) : name));
+        this.vehicle.select(url, name.isEmpty() ? RadioStations.nameFromUrl(url) : name);
         this.nameBox.setValue("");
         this.urlBox.setValue("");
         tell("gui.beautifuldecor.radio.added", DarkUi.OK);
@@ -297,10 +357,10 @@ public class VehicleRadioScreen extends Screen {
         if (button == 0) {
             int cy = controlsY();
             if (DarkUi.inside(mx, my, powerX(), cy, 84, 18)) {
-                if (this.vehicle.getRadioUrl().isEmpty()) {
+                if (this.vehicle.url().isEmpty()) {
                     tell("gui.beautifuldecor.radio.no_station", DarkUi.WARN);
                 } else {
-                    send(VehicleRadioPacket.power(this.vehicle.getId(), !this.vehicle.isRadioOn()));
+                    this.vehicle.power(!this.vehicle.isOn());
                 }
                 return true;
             }
@@ -326,7 +386,7 @@ public class VehicleRadioScreen extends Screen {
                             tell("gui.beautifuldecor.radio.removed", DarkUi.MUTED);
                             rebuildRows();
                         } else {
-                            send(VehicleRadioPacket.select(this.vehicle.getId(), row.station().url(), row.station().name()));
+                            this.vehicle.select(row.station().url(), row.station().name());
                             this.feedback = "";
                         }
                         return true;
@@ -361,16 +421,16 @@ public class VehicleRadioScreen extends Screen {
 
     /** Las dos líneas de arriba: qué emisora y qué suena (o en qué estado está). */
     private String[] status() {
-        boolean on = this.vehicle.isRadioOn();
-        String url = this.vehicle.getRadioUrl();
+        boolean on = this.vehicle.isOn();
+        String url = this.vehicle.url();
         if (url.isEmpty()) {
             return new String[]{DarkUi.tr("gui.beautifuldecor.radio.no_station"), ""};
         }
-        String name = this.vehicle.getRadioName().isEmpty() ? RadioStations.nameFromUrl(url) : this.vehicle.getRadioName();
+        String name = this.vehicle.stationName().isEmpty() ? RadioStations.nameFromUrl(url) : this.vehicle.stationName();
         if (!on) {
             return new String[]{name, DarkUi.tr("gui.beautifuldecor.radio.off")};
         }
-        HsAudioPlayer p = VehicleRadioClient.playerFor(this.vehicle);
+        HsAudioPlayer p = this.vehicle.player();
         if (p == null || p.state() == HsAudioPlayer.LOADING || p.state() == HsAudioPlayer.IDLE) {
             return new String[]{name, DarkUi.tr("gui.beautifuldecor.radio.connecting")};
         }
@@ -393,21 +453,21 @@ public class VehicleRadioScreen extends Screen {
         gui.fill(0, 0, this.width, this.height, DarkUi.DIM);
         DarkUi.panel(gui, this.left, this.top, W, this.height2, 30);
         gui.drawString(this.font, this.title, this.left + 14, this.top + 8, DarkUi.ACCENT);
-        gui.drawString(this.font, fit(this.vehicle.getName().getString(), W - 28), this.left + 14, this.top + 19, DarkUi.MUTED);
+        gui.drawString(this.font, fit(this.vehicle.label().getString(), W - 28), this.left + 14, this.top + 19, DarkUi.MUTED);
 
         // lo que suena
         String[] st = status();
         int sy = this.top + 36;
         gui.fill(this.left + 10, sy, this.left + W - 10, sy + 30, DarkUi.BUTTON);
-        gui.fill(this.left + 10, sy, this.left + 13, sy + 30, this.vehicle.radioShouldPlay() ? DarkUi.OK : DarkUi.BORDER);
+        gui.fill(this.left + 10, sy, this.left + 13, sy + 30, this.vehicle.shouldPlay() ? DarkUi.OK : DarkUi.BORDER);
         gui.drawString(this.font, fit(st[0], W - 34), this.left + 18, sy + 5, DarkUi.TEXT);
-        boolean error = VehicleRadioClient.playerFor(this.vehicle) != null
-                && VehicleRadioClient.playerFor(this.vehicle).state() == HsAudioPlayer.ERROR && this.vehicle.isRadioOn();
+        boolean error = this.vehicle.player() != null
+                && this.vehicle.player().state() == HsAudioPlayer.ERROR && this.vehicle.isOn();
         gui.drawString(this.font, fit(st[1], W - 34), this.left + 18, sy + 17, error ? DarkUi.WARN : DarkUi.ACCENT);
 
         // encender / apagar y volumen
         int cy = controlsY();
-        boolean on = this.vehicle.isRadioOn();
+        boolean on = this.vehicle.isOn();
         DarkUi.button(gui, this.font, powerX(), cy, 84, 18, DarkUi.tr(on ? "gui.beautifuldecor.radio.turn_off" : "gui.beautifuldecor.radio.turn_on"),
                 DarkUi.inside(mouseX, mouseY, powerX(), cy, 84, 18), on);
         gui.drawString(this.font, DarkUi.tr("gui.beautifuldecor.radio.volume"), this.left + 104, cy + 5, DarkUi.MUTED);
@@ -422,7 +482,7 @@ public class VehicleRadioScreen extends Screen {
         int lh = listHeight();
         gui.enableScissor(this.left + 1, lt, this.left + W - 1, lt + lh);
         int y = lt - this.scroll;
-        String current = this.vehicle.getRadioUrl();
+        String current = this.vehicle.url();
         for (Row row : this.rows) {
             int h = rowHeight(row);
             if (y + h >= lt && y <= lt + lh) {

@@ -3,6 +3,7 @@ package com.example.beautifuldecor.init;
 import com.example.beautifuldecor.BeautifulDecor;
 import com.example.beautifuldecor.block.entity.ElevatorControllerBlockEntity;
 import com.example.beautifuldecor.block.entity.AdScreenBlockEntity;
+import com.example.beautifuldecor.block.entity.RadioSpeakerBlockEntity;
 import com.example.beautifuldecor.block.entity.MicrophoneBlockEntity;
 import com.example.beautifuldecor.block.entity.PaSpeakerBlockEntity;
 import com.example.beautifuldecor.block.entity.ElevatorDisplayBlockEntity;
@@ -37,6 +38,11 @@ public class ModBlockEntities {
     public static final RegistryObject<BlockEntityType<PaSpeakerBlockEntity>> PA_SPEAKER =
             BLOCK_ENTITIES.register("pa_speaker",
                     () -> BlockEntityType.Builder.of(PaSpeakerBlockEntity::new, ModBlocks.PA_SPEAKER.get()).build(null));
+
+    /** V4.2.0: bafle de la radio de mesa. */
+    public static final RegistryObject<BlockEntityType<RadioSpeakerBlockEntity>> RADIO_SPEAKER =
+            BLOCK_ENTITIES.register("radio_speaker",
+                    () -> BlockEntityType.Builder.of(RadioSpeakerBlockEntity::new, ModBlocks.RADIO_SPEAKER.get()).build(null));
 
     /** V4.1.0: pantallas de anuncios (las tres comparten el block entity). */
     public static final RegistryObject<BlockEntityType<AdScreenBlockEntity>> AD_SCREEN =

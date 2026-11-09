@@ -14,7 +14,7 @@ public enum ModCategory {
     BEDS("beds", p -> p.startsWith("bed_") || p.startsWith("dog_bed_")),
     ELECTRONICS("electronics", p -> Set.of("television", "wii_console", "nintendo_switch",
             "xbox_360", "kinect_sensor",
-            "hs_laptop", "hs_desktop", "printer", "microphone", "pa_speaker", "ad_screen_small", "ad_screen_medium", "ad_screen_large", "drone", "drone_remote", "rc_car", "rc_car_remote").contains(p) || p.startsWith("xbox_")
+            "hs_laptop", "hs_desktop", "printer", "microphone", "pa_speaker", "radio_table", "radio_speaker", "ad_screen_small", "ad_screen_medium", "ad_screen_large", "drone", "drone_remote", "rc_car", "rc_car_remote").contains(p) || p.startsWith("xbox_")
             || p.startsWith("tv_") || p.startsWith("fan_") || p.startsWith("ceiling_fan_")),
     KITCHEN_BATH("kitchen_bath", p -> Set.of("sink", "shower", "bathtub", "toilet",
             "ceiling_shower", "toilet_paper", "dishwasher", "washing_machine", "microwave", "stove", "glass_red",

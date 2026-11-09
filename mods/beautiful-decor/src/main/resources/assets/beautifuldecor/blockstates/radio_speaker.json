@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "beautifuldecor:block/radio_speaker"
+    },
+    "facing=east": {
+      "model": "beautifuldecor:block/radio_speaker",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "beautifuldecor:block/radio_speaker",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "beautifuldecor:block/radio_speaker",
+      "y": 270
+    }
+  }
+}

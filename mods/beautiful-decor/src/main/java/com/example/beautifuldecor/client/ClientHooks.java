@@ -12,6 +12,11 @@ public class ClientHooks {
         Minecraft.getInstance().setScreen(new com.example.beautifuldecor.megaphone.client.MicrophoneScreen(pos));
     }
 
+    /** V4.2.0: abre el menú de la radio de mesa. */
+    public static void openRadioScreen(BlockPos pos) {
+        Minecraft.getInstance().setScreen(new VehicleRadioScreen(new RadioBlockClient.TableSource(pos)));
+    }
+
     public static void openTelevisionScreen(BlockPos pos) {
         Minecraft.getInstance().setScreen(new TelevisionScreen(pos));
     }

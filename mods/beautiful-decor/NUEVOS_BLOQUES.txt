@@ -1,3 +1,33 @@
+PARCHE V4.2.0
+=============
+Radio de mesa y bafles vinculables
+   * RADIO DE MESA (pestaña Tecnología): clic derecho abre el mismo menú que la radio de los vehículos (emisoras del mod, tus emisoras, encender/apagar, volumen).
+     Tus emisoras son las mismas que las de los autos (archivo config/beautifuldecor-radio.txt, compartido por todos tus mundos): agregar una en la radio la deja
+     en los autos y al revés. Lo que suena (emisora, encendido, volumen) lo guarda el servidor con el mundo; todos los jugadores oyen lo mismo. Si no hay emisora, no se enciende.
+   * BAFLE DE RADIO (Tecnología): con el bafle en la mano, clic derecho sobre una radio lo vincula (todo el montón del ítem; brilla). Al ponerlo (agachado para poner,
+     como cualquier bloque) queda listo y suena lo que tenga puesto esa radio aunque esté lejos de ella (misma dimensión, chunk cargado). Si cambias la emisora, apagas o subes
+     el volumen en la radio, los bafles lo siguen. Clic derecho en un bafle con la mano vacía: dice a qué radio está vinculado y qué suena. Si se rompe la radio, sus bafles se callan.
+   * SONIDO: cada radio abre UNA conexión por jugador, y el sonido sale del emisor más cercano a ti (la radio o uno de sus bafles): así no hay eco por tener la misma emisora
+     en vivo desfasada, y gastas lo mismo de datos con 1 que con 10 bafles. Alcance 6 -> 30 bloques (curva cuadrática); como mucho 3 radios suenan a la vez (las más cercanas).
+   * Por dentro: radio/RadioHub (SavedData por dimensión), RadioEntry (puro), RadioStatePacket (servidor a cliente: completo al entrar/cambiar de dimensión, y cambios),
+     RadioBlockPacket (cliente a servidor, validado por distancia y tipo de bloque), RadioBlockClient, RadioSource (el menú VehicleRadioScreen ahora sirve a vehículos y a la radio de mesa).
+     PROTOCOLO DE RED 20 (el servidor y los clientes deben tener la misma versión).
+
+PARCHE V4.1.2
+=============
+Sonido con distancia para todo lo que tiene audio y video, e inventario creativo ordenado
+   * SONIDO: televisores, pantallas de anuncios y radios de vehículo ya no se oyen igual de lejos: el volumen baja con la distancia (en BLOQUES al jugador; la distancia de renderizado del juego no influye,
+     así que a 45 chunks no se oye nada) y se corta del todo pasado su alcance. Alcances (a tope hasta -> silencio): televisores 6 -> 32, radios de vehículo 8 -> 36, anuncios 4x4: 8 -> 28,
+     8x8: 12 -> 36, 12x12: 16 -> 44 (las pantallas grandes se oyen desde más lejos). Curva cuadrática (cae rápido al principio, como el sonido real). El navegador de los computadores NO cambia (sigue
+     bajando de 12 a 40 bloques) y la megafonía ya tenía su propia bajada (3 -> 48). El video de un anuncio solo se reproduce si está dentro de su alcance (+2 bloques).
+   * INVENTARIO: Tecnología ahora tiene TODO lo de tecnología: se agregaron micrófono, bocina de megafonía y las 3 pantallas de anuncios (estaban en Decoración por un olvido de la V4.0.0/V4.1.0).
+     Decoración recibió lo decorativo que estaba en Tecnología: carros en miniatura (mini_*), toboganes (slide_*), platos de comida (plate_*) y el carrito de empanadas. Los vehículos conducibles siguen en
+     su pestaña. Quedaron en Decoración (a propósito, son muebles/instalación de la casa): electrodomésticos de cocina y baño, interruptor de pared, timbre y semáforo.
+   * Por dentro: ad/AudioFalloff.java (curva pura), HsAudioPlayer.setRange (alcance por reproductor), TvPlayback, VehicleRadioClient y AdPlayback fijan el suyo; ModCreativeTabs.isTechTabItem y
+     ModCreativeOrder. Sin cambios de red (protocolo 19).
+   Pruebas (tools/verify_v412.py, solo de esta versión): curva de volumen (incluye 45 chunks y NaN), cableado del alcance en cada reproductor, y la pestaña de cada uno de los ítems registrados. No se puede
+   probar aquí: oírlo en el juego.
+
 PARCHE V4.1.1
 =============
 Anuncios: se agregó la marca insignia, HS

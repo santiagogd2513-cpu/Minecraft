@@ -19,7 +19,7 @@ import java.util.List;
  * <ul>
  *   <li>{@link #BEAUTIFUL_DECOR} — muebles, camas, cocina/baño, luces, puertas, exterior, decoración
  *       (con barra lateral de categorías vía {@link com.example.beautifuldecor.client.CreativeSidebar})</li>
- *   <li>{@link #BEAUTIFUL_DECOR_TECH} — electrónicos, autos en miniatura, toboganes, comida y gadgets</li>
+ *   <li>{@link #BEAUTIFUL_DECOR_TECH} — computadores y consolas HS, pantallas, megafonía y anuncios, ventiladores, ascensores, dron y carro RC (V4.1.2: los autos en miniatura, toboganes y platos pasaron a decoración)</li>
  *   <li>{@link #BEAUTIFUL_DECOR_VEHICLES} — (V2.0.1) vehículos en los que uno se monta y conduce (el dron no cuenta)</li>
  * </ul>
  * Construido desde cero con barra de búsqueda y orden de registro estable (sin shuffle).
@@ -54,7 +54,7 @@ public final class ModCreativeTabs {
                     })
                     .build());
 
-    /** Segunda pestaña: tecnología, vehículos y extras. */
+    /** Segunda pestaña: solo tecnología. */
     public static final RegistryObject<CreativeModeTab> BEAUTIFUL_DECOR_TECH = CREATIVE_MODE_TABS.register(
             "beautifuldecor_tech",
             () -> CreativeModeTab.builder()
@@ -138,6 +138,11 @@ public final class ModCreativeTabs {
                 || path.equals("hs_desktop")
                 || path.startsWith("hs_desktop_")
                 || path.equals("printer")
+                || path.equals("microphone")                // V4.1.2: megafonía y pantallas de anuncios son tecnología
+                || path.equals("pa_speaker")
+                || path.equals("radio_table")               // V4.2.0
+                || path.equals("radio_speaker")
+                || path.startsWith("ad_screen_")
                 || path.equals("drone")
                 || path.equals("drone_remote")
                 || path.equals("rc_car")
@@ -147,11 +152,9 @@ public final class ModCreativeTabs {
                 || path.startsWith("fan_")
                 || path.startsWith("pedestal_fan_")
                 || path.startsWith("ceiling_fan_")
-                || path.startsWith("mini_")
-                || path.startsWith("slide_")
-                || path.startsWith("plate_")
-                || path.equals("empanada_cart")
                 || path.startsWith("elevator_");
+        // V4.1.2: los carros en miniatura (mini_*), toboganes (slide_*), platos (plate_*) y el carrito de empanadas son decoración
+        // y pasaron a la pestaña de decoración.
     }
 
     private static ItemStack iconOrFallback(RegistryObject<Item> preferred, RegistryObject<Item> fallback) {

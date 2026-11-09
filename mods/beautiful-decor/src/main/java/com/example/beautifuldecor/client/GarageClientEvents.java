@@ -36,6 +36,7 @@ public final class GarageClientEvents {
         TvPlayback.tick(minecraft);
         AdPlayback.tick(minecraft);                         // V4.1.0: pantallas de anuncios
         VehicleRadioClient.tick(minecraft);                 // V3.5.0: las radios de los vehículos cercanos
+        RadioBlockClient.tick(minecraft);                   // V4.2.0: radios de mesa y bafles
         while (VehicleKeys.RADIO.consumeClick()) {
             VehicleRadioScreen.tryOpen(minecraft);          // V3.5.0: X yendo montado en un vehículo terrestre
         }
@@ -80,5 +81,6 @@ public final class GarageClientEvents {
         AdPlayback.reset();
         VehiclePaintTextures.reset();
         VehicleRadioClient.reset();
+        RadioBlockClient.reset();
     }
 }

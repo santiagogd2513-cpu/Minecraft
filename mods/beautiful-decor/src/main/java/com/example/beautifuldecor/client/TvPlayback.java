@@ -235,6 +235,7 @@ public final class TvPlayback {
         BlockPos pos = tv.getBlockPos();
         ResourceKey<Level> dim = mc.level.dimension();
         HsVideoPlayer video = HsVideoPlayer.create();
+        video.audio().setRange(6.0, 32.0);                  // V4.1.2: el sonido baja con la distancia y se corta a 32 bloques
         if (isWeb(path)) {
             video.play(path, null, nameOf(path), pos, dim);
             return new Session(video, null, token, path);

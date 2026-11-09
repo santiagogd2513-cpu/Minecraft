@@ -2,6 +2,8 @@ package com.example.beautifuldecor.init;
 
 import com.example.beautifuldecor.BeautifulDecor;
 import com.example.beautifuldecor.block.AdScreenBlock;
+import com.example.beautifuldecor.block.RadioSpeakerBlock;
+import com.example.beautifuldecor.block.RadioTableBlock;
 import com.example.beautifuldecor.block.ApplianceDoorBlock;
 import com.example.beautifuldecor.block.BigTelevisionBlock;
 import com.example.beautifuldecor.block.BugeratiLampBlock;
@@ -1164,6 +1166,15 @@ public class ModBlocks {
     public static final RegistryObject<Block> PA_SPEAKER = BLOCKS.register("pa_speaker",
             () -> new PaSpeakerBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK)
                     .strength(1.5f).sound(SoundType.METAL).noOcclusion()));
+
+    /** V4.2.0: radio de mesa y su bafle. */
+    public static final RegistryObject<Block> RADIO_TABLE = BLOCKS.register("radio_table",
+            () -> new RadioTableBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BROWN)
+                    .strength(1.0f).sound(SoundType.WOOD).noOcclusion()
+                    .lightLevel(state -> state.getValue(RadioTableBlock.ON) ? 3 : 0)));
+    public static final RegistryObject<Block> RADIO_SPEAKER = BLOCKS.register("radio_speaker",
+            () -> new RadioSpeakerBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BROWN)
+                    .strength(1.2f).sound(SoundType.WOOD).noOcclusion()));
 
     // ===== V2.2.0: sistema de ascensores =====
     /** Controlador: define la zona, el tamaño y la velocidad de la cabina. Un controlador por piso. */

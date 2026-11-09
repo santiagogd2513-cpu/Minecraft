@@ -1026,5 +1026,14 @@
   "block.beautifuldecor.ad_screen_medium": "Ad Screen, Medium (8x8)",
   "block.beautifuldecor.ad_screen_large": "Ad Screen, Large (12x12)",
   "message.beautifuldecor.ad_screen.on": "Ad screen: on",
-  "message.beautifuldecor.ad_screen.off": "Ad screen: off"
+  "message.beautifuldecor.ad_screen.off": "Ad screen: off",
+  "block.beautifuldecor.radio_table": "Table Radio",
+  "block.beautifuldecor.radio_speaker": "Radio Speaker",
+  "tooltip.beautifuldecor.radio.speaker_linked": "Linked to the radio at %s, %s, %s",
+  "tooltip.beautifuldecor.radio.speaker_hint": "Right-click a table radio to link it (sneak to place it); it plays whatever the radio is playing",
+  "message.beautifuldecor.radio.linked_item": "Speaker linked to this radio (%s, %s, %s). Place it anywhere",
+  "message.beautifuldecor.radio.speaker_unlinked": "Speaker not linked: right-click a table radio with it",
+  "message.beautifuldecor.radio.other_dimension": "That radio is in another dimension: the speaker stays unlinked",
+  "message.beautifuldecor.radio.speaker_ready": "Speaker ready: plays the radio at %s, %s, %s",
+  "message.beautifuldecor.radio.speaker_status": "Speaker of the radio at %s, %s, %s · %s"
 }

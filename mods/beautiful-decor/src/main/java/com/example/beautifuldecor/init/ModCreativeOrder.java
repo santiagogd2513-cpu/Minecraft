@@ -31,12 +31,14 @@ public final class ModCreativeOrder {
             "window_*", "curtain_*", "doorbell_*",
             // ---- 7. Decoración
             "plant_pot", "flower_vase", "decorative_vase", "picnic_basket", "toolbox_open", "painting_*",
+            "mini_*",                                       // V4.1.2: carros en miniatura (antes en tecnología)
             // ---- 8. Baño
             "bathtub", "shower", "ceiling_shower", "toilet", "toilet_paper", "sink",
             "washbasin_pedestal_*", "washbasin_vanity_*", "washbasin_wall_*",
             // ---- 9. Construcción y exterior
             "oak_parquet", "refined_oak_planks", "stairs_*", "concrete_ramp_*", "metal_mesh", "fence_*",
             "pipe_*", "conveyor_belt", "barrel_*", "sign_*", "traffic_light", "diving_board",
+            "slide_*", "empanada_cart",                     // V4.1.2: toboganes y carrito de empanadas (antes en tecnología)
             // ---- 10. Luces: primero las normales (techo, bombillos, lámparas) y luego la marca Bugerati y los neones
             "ceiling_light", "ceiling_light_round", "ceiling_light_square", "ceiling_bulb", "round_bulb",
             "circular_bulb", "office_led_panel", "wall_light", "floor_lamp", "night_lamp", "desk_lamp",
@@ -52,24 +54,22 @@ public final class ModCreativeOrder {
             "freezer_chest", "cold_room", "crate_empty", "crate_fries", "crate_ribs", "crate_balls",
             "dish_rack_*", "frying_pan_*", "pan_lid_*",
             "cutlery_set", "cutlery_pack", "cutlery_fork", "cutlery_knife", "cutlery_spoon",
-            "glass_red", "glass_blue", "glass_green", "glass_yellow",
+            "glass_red", "glass_blue", "glass_green", "glass_yellow", "plate_*",
     };
 
     /**
-     * Pestaña "Beautiful Tech": primero todo lo de la marca HS, luego los carros en miniatura, los ventiladores,
-     * los extras de diversión y al final las pantallas y consolas.
+     * Pestaña "Beautiful Tech": primero todo lo de la marca HS (con megafonía y anuncios), luego los ventiladores,
+     * los extras (dron, carro RC, ascensores) y al final las pantallas y consolas.
      */
     private static final String[] TECH_ORDER = {
             // ---- 1. Marca HS (computadores e impresora)
-            "hs_laptop", "hs_desktop", "hs_desktop_*", "printer", "microphone", "pa_speaker", "ad_screen_small", "ad_screen_medium", "ad_screen_large",
-            // ---- 2. Carros en miniatura
-            "mini_*",
-            // ---- 3. Ventiladores
+            "hs_laptop", "hs_desktop", "hs_desktop_*", "printer", "microphone", "pa_speaker", "radio_table", "radio_speaker", "ad_screen_small", "ad_screen_medium", "ad_screen_large",
+            // ---- 2. Ventiladores
             "fan_small", "fan_medium", "fan_large", "pedestal_fan_*", "ceiling_fan_*",
-            // ---- 4. Extras
-            "drone", "drone_remote", "rc_car", "rc_car_remote", "slide_*", "plate_*", "empanada_cart",
+            // ---- 3. Extras
+            "drone", "drone_remote", "rc_car", "rc_car_remote",
             "elevator_controller", "elevator_display", "elevator_door",
-            // ---- 5. Pantallas y consolas
+            // ---- 4. Pantallas y consolas
             "television", "tv_*", "wii_console", "nintendo_switch", "xbox_360", "xbox_one", "xbox_series_s",
             "kinect_sensor",
     };

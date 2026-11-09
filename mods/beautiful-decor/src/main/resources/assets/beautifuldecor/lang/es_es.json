@@ -1026,5 +1026,14 @@
   "block.beautifuldecor.ad_screen_medium": "Pantalla de anuncios mediana (8x8)",
   "block.beautifuldecor.ad_screen_large": "Pantalla de anuncios grande (12x12)",
   "message.beautifuldecor.ad_screen.on": "Pantalla de anuncios: encendida",
-  "message.beautifuldecor.ad_screen.off": "Pantalla de anuncios: apagada"
+  "message.beautifuldecor.ad_screen.off": "Pantalla de anuncios: apagada",
+  "block.beautifuldecor.radio_table": "Radio de mesa",
+  "block.beautifuldecor.radio_speaker": "Bafle de radio",
+  "tooltip.beautifuldecor.radio.speaker_linked": "Vinculado a la radio de %s, %s, %s",
+  "tooltip.beautifuldecor.radio.speaker_hint": "Clic derecho en una radio de mesa para vincularlo (agachado para ponerlo); suena lo que tenga puesto la radio",
+  "message.beautifuldecor.radio.linked_item": "Bafle vinculado a esta radio (%s, %s, %s). Ponlo donde quieras",
+  "message.beautifuldecor.radio.speaker_unlinked": "Bafle sin vincular: clic derecho con él en una radio de mesa",
+  "message.beautifuldecor.radio.other_dimension": "Esa radio está en otra dimensión: el bafle queda sin vincular",
+  "message.beautifuldecor.radio.speaker_ready": "Bafle listo: suena lo de la radio de %s, %s, %s",
+  "message.beautifuldecor.radio.speaker_status": "Bafle de la radio de %s, %s, %s · %s"
 }

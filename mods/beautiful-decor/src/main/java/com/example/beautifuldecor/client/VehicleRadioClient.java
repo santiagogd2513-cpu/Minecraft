@@ -23,6 +23,9 @@ public final class VehicleRadioClient {
 
     private static final class Playing {
         final HsAudioPlayer player = HsAudioPlayer.create();
+        {
+            player.setRange(8.0, 36.0);                     // V4.1.2: más lejos de 36 bloques no se oye
+        }
         String url = "";
         long retryAt;
     }

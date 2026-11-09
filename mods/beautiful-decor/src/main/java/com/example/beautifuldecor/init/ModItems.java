@@ -3,6 +3,7 @@ package com.example.beautifuldecor.init;
 import com.example.beautifuldecor.BeautifulDecor;
 import com.example.beautifuldecor.item.DroneRemoteItem;
 import com.example.beautifuldecor.item.RcCarRemoteItem;
+import com.example.beautifuldecor.item.RadioSpeakerItem;
 import com.example.beautifuldecor.item.ElevatorLinkBlockItem;
 import com.example.beautifuldecor.item.AirlinerItem;
 import com.example.beautifuldecor.item.PaSpeakerItem;
@@ -438,6 +439,12 @@ public class ModItems {
             () -> new BlockItem(ModBlocks.MICROPHONE.get(), new Item.Properties()));
     public static final RegistryObject<Item> PA_SPEAKER = ITEMS.register("pa_speaker",
             () -> new PaSpeakerItem(ModBlocks.PA_SPEAKER.get(), new Item.Properties()));
+
+    /** V4.2.0: radio de mesa y su bafle. */
+    public static final RegistryObject<Item> RADIO_TABLE = ITEMS.register("radio_table",
+            () -> new BlockItem(ModBlocks.RADIO_TABLE.get(), new Item.Properties()));
+    public static final RegistryObject<Item> RADIO_SPEAKER = ITEMS.register("radio_speaker",
+            () -> new RadioSpeakerItem(ModBlocks.RADIO_SPEAKER.get(), new Item.Properties()));
 
     public static final RegistryObject<Item> ELEVATOR_CONTROLLER = ITEMS.register("elevator_controller",
             () -> new BlockItem(ModBlocks.ELEVATOR_CONTROLLER.get(), new Item.Properties()));

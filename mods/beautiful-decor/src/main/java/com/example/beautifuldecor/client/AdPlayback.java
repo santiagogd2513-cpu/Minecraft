@@ -2,6 +2,7 @@ package com.example.beautifuldecor.client;
 
 import com.example.beautifuldecor.BeautifulDecor;
 import com.example.beautifuldecor.ad.AdBrands;
+import com.example.beautifuldecor.ad.AudioFalloff;
 import com.example.beautifuldecor.block.entity.AdScreenBlockEntity;
 import com.mojang.logging.LogUtils;
 import java.io.IOException;
@@ -31,7 +32,7 @@ import org.slf4j.Logger;
  * ({@link HsVideoPlayer}: decodifica el H.264, manda el AAC por {@link HsAudioPlayer}) con los videos que trae el mod
  * ("ads/&lt;marca&gt;.mp4", que se copian una vez a la carpeta "beautifuldecor-ads" del juego porque el reproductor lee archivos).
  * <p>
- * Cada pantalla encendida y cercana (hasta 26 + su tamaño en bloques; se suelta pasados 40) tiene su propio reproductor, con un
+ * Cada pantalla encendida y cercana (empieza 2 bloques antes de donde deja de oírse y se suelta 6 después; el alcance depende del tamaño, ver {@link AudioFalloff}) tiene su propio reproductor, con un
  * máximo de dos a la vez (las más cercanas). Al terminar un anuncio pasa al de la siguiente marca, en bucle; cada pantalla empieza
  * por una marca distinta según su posición. Las pantallas lejanas muestran el póster de cada marca (lo dibuja el renderizador).
  * <p>
@@ -39,7 +40,6 @@ import org.slf4j.Logger;
  * el registro, la pantalla muestra el póster y se reintenta con el siguiente anuncio unos segundos después.
  */
 public final class AdPlayback {
-    private static final double STOP_BLOCKS = 40.0;
     private static final int MAX_ACTIVE = 2;
     private static final int COOLDOWN_TICKS = 100;
     private static final int RETRY_TICKS = 160;
@@ -142,7 +142,8 @@ public final class AdPlayback {
                 continue;
             }
             double d = me.distanceTo(screen.center());
-            double limit = SESSIONS.containsKey(screen) ? STOP_BLOCKS : 26.0 + screen.sizeBlocks();
+            double max = AudioFalloff.adMax(screen.sizeBlocks());
+            double limit = SESSIONS.containsKey(screen) ? max + 6.0 : max + 2.0;
             if (d <= limit) {
                 want.add(new Candidate(screen, d));
             }
@@ -163,7 +164,9 @@ public final class AdPlayback {
         for (AdScreenBlockEntity screen : keep) {
             Session s = SESSIONS.get(screen);
             if (s == null) {
-                s = new Session(HsVideoPlayer.create(), startIndexOf(screen));
+                HsVideoPlayer vp = HsVideoPlayer.create();
+                vp.audio().setRange(AudioFalloff.adFull(screen.sizeBlocks()), AudioFalloff.adMax(screen.sizeBlocks()));
+                s = new Session(vp, startIndexOf(screen));
                 SESSIONS.put(screen, s);
                 playCurrent(mc, screen, s);
             }

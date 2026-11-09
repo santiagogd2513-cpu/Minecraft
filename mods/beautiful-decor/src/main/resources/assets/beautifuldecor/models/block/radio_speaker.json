@@ -1,0 +1,144 @@
+{
+  "parent": "minecraft:block/block",
+  "textures": {
+    "particle": "beautifuldecor:block/radio_table_wood",
+    "wood": "beautifuldecor:block/radio_table_wood",
+    "front": "beautifuldecor:block/radio_speaker_front",
+    "back": "beautifuldecor:block/radio_speaker_back",
+    "trim": "beautifuldecor:block/radio_table_trim"
+  },
+  "elements": [
+    {
+      "from": [
+        3,
+        0,
+        4
+      ],
+      "to": [
+        13,
+        13,
+        12
+      ],
+      "faces": {
+        "north": {
+          "texture": "#front",
+          "uv": [
+            3,
+            3,
+            13,
+            16
+          ]
+        },
+        "south": {
+          "texture": "#back",
+          "uv": [
+            3,
+            3,
+            13,
+            16
+          ]
+        },
+        "east": {
+          "texture": "#wood",
+          "uv": [
+            4,
+            3,
+            12,
+            16
+          ]
+        },
+        "west": {
+          "texture": "#wood",
+          "uv": [
+            4,
+            3,
+            12,
+            16
+          ]
+        },
+        "up": {
+          "texture": "#wood",
+          "uv": [
+            3,
+            4,
+            13,
+            12
+          ]
+        },
+        "down": {
+          "texture": "#trim",
+          "uv": [
+            3,
+            4,
+            13,
+            12
+          ]
+        }
+      }
+    },
+    {
+      "from": [
+        3.4,
+        0,
+        4.4
+      ],
+      "to": [
+        5,
+        0.6,
+        6
+      ],
+      "faces": {
+        "north": {
+          "texture": "#trim"
+        },
+        "south": {
+          "texture": "#trim"
+        },
+        "east": {
+          "texture": "#trim"
+        },
+        "west": {
+          "texture": "#trim"
+        },
+        "up": {
+          "texture": "#trim"
+        },
+        "down": {
+          "texture": "#trim"
+        }
+      }
+    },
+    {
+      "from": [
+        11,
+        0,
+        4.4
+      ],
+      "to": [
+        12.6,
+        0.6,
+        6
+      ],
+      "faces": {
+        "north": {
+          "texture": "#trim"
+        },
+        "south": {
+          "texture": "#trim"
+        },
+        "east": {
+          "texture": "#trim"
+        },
+        "west": {
+          "texture": "#trim"
+        },
+        "up": {
+          "texture": "#trim"
+        },
+        "down": {
+          "texture": "#trim"
+        }
+      }
+    }
+  ]
+}

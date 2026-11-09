@@ -9,7 +9,7 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 public class ModMessages {
-    private static final String PROTOCOL = "19";
+    private static final String PROTOCOL = "20";
     public static final SimpleChannel CHANNEL = NetworkRegistry.ChannelBuilder
             .named(ResourceLocation.fromNamespaceAndPath(BeautifulDecor.MOD_ID, "main"))
             .networkProtocolVersion(() -> PROTOCOL)
@@ -123,6 +123,17 @@ public class ModMessages {
                 .decoder(VehicleRadioPacket::decode)
                 .encoder(VehicleRadioPacket::encode)
                 .consumerMainThread(VehicleRadioPacket::handle)
+                .add();
+        // ---- V4.2.0: radio de mesa y sus bafles
+        CHANNEL.messageBuilder(RadioBlockPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .decoder(RadioBlockPacket::decode)
+                .encoder(RadioBlockPacket::encode)
+                .consumerMainThread(RadioBlockPacket::handle)
+                .add();
+        CHANNEL.messageBuilder(RadioStatePacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(RadioStatePacket::decode)
+                .encoder(RadioStatePacket::encode)
+                .consumerMainThread(RadioStatePacket::handle)
                 .add();
     }
 
