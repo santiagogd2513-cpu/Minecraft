@@ -2,6 +2,7 @@ package com.arsenalatomico.client;
 
 import com.arsenalatomico.Launcher;
 import com.arsenalatomico.SalvoPlan;
+import com.arsenalatomico.TwinPlan;
 import com.arsenalatomico.WeaponType;
 import com.arsenalatomico.net.StartCinematicPacket;
 import net.minecraft.client.CameraType;
@@ -21,7 +22,8 @@ import net.minecraft.world.entity.Marker;
 import net.minecraft.world.phys.Vec3;
 
 /**
- * La cinemática: una cámara que vuela por el mundo. Todas duran 3 min 30 s. La Lluvia de Acero:
+ * La cinemática: una cámara que vuela por el mundo. Todas duran 3 min 30 s. Los planos del
+ * Cóndor Doble están en {@link TwinScenes}. La Lluvia de Acero:
  * <pre>
  *    0-8 s    blanco fijado (desde el jugador)
  *    8-20 s   reconocimiento: el blanco visto desde muy arriba
@@ -43,9 +45,13 @@ public final class Cinematic {
 
     private static boolean active;
     private static WeaponType type = WeaponType.SALVO;
-    private static Vec3 target, site, eye;
-    private static float yaw, playerYaw;
+    static Vec3 target, site, eye;
+    static float yaw, playerYaw;
     private static SalvoPlan plan;
+    /** Plan del Cóndor Doble (null en las otras armas). */
+    static TwinPlan twin;
+    /** Despegues e impactos que hacen temblar la cámara: {segundo, x, y, z, fuerza, duración, alcance}. */
+    private static final java.util.List<double[]> quakes = new java.util.ArrayList<>();
     private static int duration;
     private static long startTick, clientTicks;
     private static Marker camera;
@@ -97,7 +103,24 @@ public final class Cinematic {
         target = Vec3.atBottomCenterOf(p.target).add(0, 0.5, 0);
         site = p.site;
         yaw = p.yaw;
-        plan = new SalvoPlan(site, yaw, target, p.seed);
+        quakes.clear();
+        if (type == WeaponType.TWIN) {
+            plan = null;
+            twin = new TwinPlan(p.mode, site, yaw, target, p.seed);
+            for (int i = 0; i < 2; i++) {
+                Vec3 a = twin.paths[i].p0, b = twin.paths[i].p3;
+                quakes.add(new double[]{twin.launchTick[i] / 20.0, a.x, a.y, a.z, 1.2, 3, 60});
+                quakes.add(new double[]{(twin.launchTick[i] + twin.paths[i].flightTicks) / 20.0, b.x, b.y, b.z, 2.5, 4, 120});
+            }
+        } else {
+            twin = null;
+            plan = new SalvoPlan(site, yaw, target, p.seed);
+            for (int i = 0; i < SalvoPlan.COUNT; i++) {
+                Vec3 a = plan.paths[i].p0, b = plan.paths[i].p3;
+                quakes.add(new double[]{plan.launchTick[i] / 20.0, a.x, a.y, a.z, 0.25, 0.6, 30});
+                quakes.add(new double[]{(plan.launchTick[i] + plan.paths[i].flightTicks) / 20.0, b.x, b.y, b.z, 0.6, 1.2, 30});
+            }
+        }
         duration = p.ticks;
         startTick = clientTicks;
         eye = player.getEyePosition(1f);
@@ -110,7 +133,8 @@ public final class Cinematic {
         previous = mc.options.getCameraType();
         mc.options.setCameraType(CameraType.FIRST_PERSON);
         mc.setCameraEntity(camera);
-        LauncherRenderer.show(site, yaw, startTick, duration);
+        if (twin != null) TwinRenderer.show(twin, startTick, duration);
+        else LauncherRenderer.show(site, yaw, startTick, duration);
         active = true;
         play(ModSounds.BEEP.get(), 0.75f, 0.6f);
     }
@@ -142,7 +166,12 @@ public final class Cinematic {
         camera.setPos(p.pos());
         camera.setYRot(p.yaw());
         camera.setXRot(p.pitch());
-        sounds(seconds(0));
+        if (twin != null) {
+            TwinScenes.sounds(seconds(0));
+            TwinScenes.particles(seconds(0));
+        } else {
+            sounds(seconds(0));
+        }
     }
 
     // ------------------------------------------------------------------ sonido
@@ -157,10 +186,17 @@ public final class Cinematic {
                 SoundInstance.createUnseededRandom(), at.x, at.y, at.z));
     }
 
-    private static void sounds(float s) {
-        int half = (int) Math.floor(s * 2);   // cada medio segundo
-        if (half < nextBeep) return;
+    /** Pasa una vez por cada medio segundo nuevo de la cinemática; devuelve el medio segundo o -1. */
+    static int nextHalf(float s) {
+        int half = (int) Math.floor(s * 2);
+        if (half < nextBeep) return -1;
         nextBeep = half + 1;
+        return half;
+    }
+
+    private static void sounds(float s) {
+        int half = nextHalf(s);
+        if (half < 0) return;
         float t = half / 2f;
         Vec3 truck = site.add(0, 2, 0);
         Vec3 pivot = site.add(Launcher.forward(yaw).scale(-Launcher.PIVOT_BACK)).add(0, Launcher.PIVOT_UP, 0);
@@ -181,7 +217,7 @@ public final class Cinematic {
 
     public static Pose pose(float partial) {
         float s = seconds(partial);
-        Pose p = ground(salvo(s));
+        Pose p = ground(twin != null ? TwinScenes.pose(s) : salvo(s));
         float shake = shake(s);
         if (shake > 0.001f) {
             double t = s * 37;
@@ -201,18 +237,18 @@ public final class Cinematic {
         return new Pose(new Vec3(c.x, h + 1.2, c.z), p.yaw(), p.pitch(), p.roll(), p.fov());
     }
 
-    /** Temblor por los impactos cercanos y por los despegues. */
+    /** Temblor por los despegues y los impactos (más fuerte cuanto más cerca está la cámara). */
     private static float shake(float s) {
-        if (plan == null) return 0;
+        if (quakes.isEmpty()) return 0;
         float sum = 0;
-        Vec3 cam = salvo(s).pos();
-        for (int i = 0; i < SalvoPlan.COUNT; i++) {
-            float launch = plan.launchTick[i] / 20f, hit = (plan.launchTick[i] + plan.paths[i].flightTicks) / 20f;
-            float d1 = s - launch, d2 = s - hit;
-            if (d1 >= 0 && d1 < 0.6f) sum += (0.6f - d1) * 0.25f * near(cam, plan.paths[i].p0);
-            if (d2 >= 0 && d2 < 1.2f) sum += (1.2f - d2) * 0.6f * near(cam, plan.paths[i].p3);
+        Vec3 cam = twin != null ? TwinScenes.pose(s).pos() : salvo(s).pos();
+        for (double[] q : quakes) {
+            double d = s - q[0];
+            if (d < 0 || d >= q[5]) continue;
+            double dist = cam.distanceTo(new Vec3(q[1], q[2], q[3]));
+            sum += (float) ((q[5] - d) / q[5] * q[4] * Mth.clamp(q[6] / Math.max(10, dist), 0, 1));
         }
-        return Math.min(0.9f, sum);
+        return Math.min(twin != null ? 2.2f : 0.9f, sum);
     }
 
     private static float near(Vec3 a, Vec3 b) {
@@ -374,15 +410,62 @@ public final class Cinematic {
 
     /** Misiles en el aire y caídos en el segundo s (para el texto en pantalla). */
     static int[] counts(float s) {
-        if (plan == null) return new int[]{0, 0};
-        int flying = 0, hit = 0;
         double ticks = s * 20;
+        int flying = 0, hit = 0;
+        if (twin != null) {
+            for (int i = 0; i < 2; i++) {
+                double t = ticks - twin.launchTick[i];
+                if (t >= twin.paths[i].flightTicks) hit++;
+                else if (t >= 0) flying++;
+            }
+            return new int[]{flying, hit, 2};
+        }
+        if (plan == null) return new int[]{0, 0, SalvoPlan.COUNT};
         for (int i = 0; i < SalvoPlan.COUNT; i++) {
             double t = ticks - plan.launchTick[i];
             if (t >= plan.paths[i].flightTicks) hit++;
             else if (t >= 0) flying++;
         }
-        return new int[]{flying, hit};
+        return new int[]{flying, hit, SalvoPlan.COUNT};
+    }
+
+    /** Texto de abajo según el momento de la cinemática. */
+    static String caption(float s) {
+        if (twin != null) return TwinScenes.caption(s);
+        if (s < 8) return "locked";
+        if (s < 20) return "recon";
+        if (s < 32) return "transit";
+        if (s < 44) return "battery";
+        if (s < 52) return "alarm";
+        if (s < 72) return "raise";
+        if (s < 86) return "aim";
+        if (s < 100) return "countdown";
+        if (s < 107) return "launch";
+        if (s < 130) return "flight";
+        if (s < 176) return "done";
+        if (s < 190) return "stow";
+        return "complete";
+    }
+
+    /** Segundo en que termina la cuenta regresiva (despega el primero). */
+    static float launchSecond() {
+        return twin != null ? TwinPlan.LAUNCH_S[0] : SalvoPlan.FIRST_LAUNCH_S;
+    }
+
+    /** Desde cuándo suena la alarma (el texto parpadea en rojo). */
+    static float alarmSecond() {
+        return twin != null ? 46 : 44;
+    }
+
+    /** Destello blanco de los impactos grandes (0 = nada, 1 = todo blanco). */
+    static float flash(float s) {
+        if (twin == null) return 0;
+        float f = 0;
+        for (int i = 0; i < 2; i++) {
+            float d = s - (twin.launchTick[i] + twin.paths[i].flightTicks) / 20f;
+            if (d >= 0 && d < 1.2f) f = Math.max(f, 1 - d / 1.2f);
+        }
+        return f;
     }
 
     static Pose look(Vec3 from, Vec3 to, float roll, float fov) {

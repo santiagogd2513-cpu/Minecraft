@@ -27,5 +27,9 @@ public class ArsenalAtomico {
         ModSounds.SOUNDS.register(bus);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, Config.SPEC);
         Network.register();
+        bus.addListener((net.minecraftforge.fml.event.lifecycle.FMLCommonSetupEvent e) -> e.enqueueWork(() ->
+                // al abrir el mundo se sueltan las zonas que quedaron cargadas de un ataque sin terminar
+                net.minecraftforge.common.world.ForgeChunkManager.setForcedChunkLoadingCallback(MODID, (level, helper) ->
+                        new java.util.ArrayList<>(helper.getBlockTickets().keySet()).forEach(helper::removeAllTickets))));
     }
 }

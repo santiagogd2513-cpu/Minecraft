@@ -16,21 +16,24 @@ public class StartCinematicPacket {
     public final BlockPos target;
     public final Vec3 site;
     public final float yaw;
+    /** 0 = en tierra, 1 = en el mar (submarino). */
+    public final int mode;
     public final long seed;
     public final int ticks;
 
-    public StartCinematicPacket(WeaponType type, BlockPos target, Vec3 site, float yaw, long seed, int ticks) {
+    public StartCinematicPacket(WeaponType type, BlockPos target, Vec3 site, float yaw, int mode, long seed, int ticks) {
         this.type = type;
         this.target = target;
         this.site = site;
         this.yaw = yaw;
+        this.mode = mode;
         this.seed = seed;
         this.ticks = ticks;
     }
 
     public StartCinematicPacket(FriendlyByteBuf b) {
         this(WeaponType.byOrdinal(b.readVarInt()), b.readBlockPos(), new Vec3(b.readDouble(), b.readDouble(), b.readDouble()),
-                b.readFloat(), b.readLong(), b.readVarInt());
+                b.readFloat(), b.readVarInt(), b.readLong(), b.readVarInt());
     }
 
     public void encode(FriendlyByteBuf b) {
@@ -40,6 +43,7 @@ public class StartCinematicPacket {
         b.writeDouble(site.y);
         b.writeDouble(site.z);
         b.writeFloat(yaw);
+        b.writeVarInt(mode);
         b.writeLong(seed);
         b.writeVarInt(ticks);
     }

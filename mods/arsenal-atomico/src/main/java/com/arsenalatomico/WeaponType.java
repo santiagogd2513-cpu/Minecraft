@@ -4,10 +4,10 @@ package com.arsenalatomico;
 public enum WeaponType {
     /** Lluvia de Acero: 24 misiles tácticos desde un camión lanzacohetes. */
     SALVO("salvo", true, 210),
-    /** Cóndor: un misil intercontinental (no nuclear). */
+    /** Cóndor Doble: dos intercontinentales desde un submarino, o desde dos lanzadoras móviles si no hay mar. */
+    TWIN("twin", true, 210),
+    /** Cóndor: un misil intercontinental (no nuclear) desde un búnker subterráneo. */
     ICBM("icbm", false, 210),
-    /** Cóndor Doble: dos intercontinentales. */
-    TWIN("twin", false, 210),
     /** Protocolo Hongo: misil nuclear desde un silo subterráneo. */
     NUKE("nuke", false, 210),
     /** Protocolo Sol Negro: termonuclear desde el búnker más profundo. */

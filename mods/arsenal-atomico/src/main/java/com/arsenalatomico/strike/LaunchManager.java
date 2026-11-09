@@ -2,7 +2,9 @@ package com.arsenalatomico.strike;
 
 import com.arsenalatomico.ArsenalAtomico;
 import com.arsenalatomico.Config;
+import com.arsenalatomico.MissilePath;
 import com.arsenalatomico.SalvoPlan;
+import com.arsenalatomico.TwinPlan;
 import com.arsenalatomico.WeaponType;
 import com.arsenalatomico.entity.MissileEntity;
 import com.arsenalatomico.net.Network;
@@ -19,7 +21,9 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.levelgen.Heightmap;
+import net.minecraft.util.Mth;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraftforge.common.world.ForgeChunkManager;
 import net.minecraft.world.phys.Vec3;
 import net.minecraftforge.event.TickEvent;
 import net.minecraftforge.event.entity.living.LivingAttackEvent;
@@ -38,8 +42,8 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Lado servidor: elige dónde está la batería, lanza los misiles al compás de la cinemática y
- * hace invulnerable al jugador mientras la mira.
+ * Lado servidor: elige dónde están las lanzadoras, lanza los misiles al compás de la cinemática,
+ * los hace estallar a su hora (aunque estén lejos del jugador) y lo hace invulnerable mientras mira.
  */
 @Mod.EventBusSubscriber(modid = ArsenalAtomico.MODID)
 public final class LaunchManager {
@@ -47,24 +51,61 @@ public final class LaunchManager {
     private static final Map<UUID, Strike> BY_PLAYER = new HashMap<>();
     private static final List<Strike> ALL = new ArrayList<>();
 
-    private static final class Strike {
+    /** Un misil del ataque: cuándo sale, por dónde va y qué hace al llegar. */
+    private static final class Shot {
+        final int launch;
+        final MissilePath path;
+        final float scale, power;
+        final int kind, ignite;
+        final boolean big;
+        MissileEntity entity;
+        boolean fired, hit;
+
+        Shot(int launch, MissilePath path, float scale, int kind, int ignite, float power, boolean big) {
+            this.launch = launch;
+            this.path = path;
+            this.scale = scale;
+            this.kind = kind;
+            this.ignite = ignite;
+            this.power = power;
+            this.big = big;
+        }
+    }
+
+    public static final class Strike {
         @Nullable final UUID owner;
         final ResourceKey<Level> dimension;
         final WeaponType type;
-        final SalvoPlan plan;
+        final List<Shot> shots = new ArrayList<>();
         final long start;
-        int launched;
         final long end;
+        final BlockPos ticketOwner;
+        final List<ChunkPos> chunks = new ArrayList<>();
 
-        Strike(@Nullable UUID owner, ResourceKey<Level> dimension, WeaponType type, SalvoPlan plan, long start) {
+        Strike(@Nullable UUID owner, ServerLevel level, WeaponType type, long start, int lastImpact, BlockPos ticketOwner) {
             this.owner = owner;
-            this.dimension = dimension;
+            this.dimension = level.dimension();
             this.type = type;
-            this.plan = plan;
             this.start = start;
-            this.end = start + Math.max(type.ticks(), plan.lastImpactTick() + 40);
+            this.end = start + Math.max(type.ticks(), lastImpact + 40);
+            this.ticketOwner = ticketOwner;
+        }
+
+        /** ¿Ya cayeron todos? (lo usa la prueba de GitHub) */
+        public boolean allHit() {
+            for (Shot s : shots) if (!s.hit) return false;
+            return true;
+        }
+
+        public long lastImpactGameTime() {
+            long m = start;
+            for (Shot s : shots) m = Math.max(m, start + s.launch + s.path.flightTicks);
+            return m;
         }
     }
+
+    /** Dónde se dispara: el lugar, hacia dónde mira y si es en tierra o en el mar. */
+    public record Site(Vec3 pos, float yaw, int mode) {}
 
     private LaunchManager() {}
 
@@ -100,46 +141,72 @@ public final class LaunchManager {
         if (!type.ready) type = WeaponType.SALVO;
         ServerLevel level = player.serverLevel();
         long seed = level.getRandom().nextLong();
-        Vec3 site = launcherSite(level, player.position(), Vec3.atBottomCenterOf(target), RandomSource.create(seed));
-        float yaw = yawTowards(site, Vec3.atCenterOf(target));
-        Strike s = begin(level, player.getUUID(), type, Vec3.atBottomCenterOf(target).add(0, 0.5, 0), site, yaw, seed);
+        Vec3 t = Vec3.atBottomCenterOf(target).add(0, 0.5, 0);
+        Site site = chooseSite(level, type, player.position(), t, RandomSource.create(seed));
+        Strike s = begin(level, player.getUUID(), type, t, site, seed);
         Network.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player),
-                new StartCinematicPacket(type, target, site, yaw, seed, s.type.ticks()));
+                new StartCinematicPacket(type, target, site.pos(), site.yaw(), site.mode(), seed, s.type.ticks()));
         player.getCooldowns().addCooldown(ModItems.TARGET_MARKER.get(), Config.COOLDOWN_SECONDS.get() * 20);
         player.displayClientMessage(Component.translatable("message.arsenalatomico.locked", target.getX(), target.getY(), target.getZ())
                 .withStyle(ChatFormatting.GOLD), true);
     }
 
+    /** Busca dónde poner las lanzadoras (cerca del jugador, para que su juego las tenga dibujadas). */
+    public static Site chooseSite(ServerLevel level, WeaponType type, Vec3 player, Vec3 target, RandomSource r) {
+        if (type == WeaponType.TWIN) {
+            Vec3 sea = Sites.sea(level, player, target, r);
+            if (sea != null) return new Site(sea, Sites.yawTowards(sea, target), TwinPlan.SEA);
+            Vec3 land = Sites.land(level, player, target, r, 45, 80, 12.5, 9.5);
+            return new Site(land, Sites.yawTowards(land, target), TwinPlan.LAND);
+        }
+        Vec3 land = Sites.land(level, player, target, r, 45, 75, 4, 2);
+        return new Site(land, Sites.yawTowards(land, target), TwinPlan.LAND);
+    }
+
     /** Empieza un ataque (también sin jugador: lo usa la prueba de GitHub). */
-    public static Strike begin(ServerLevel level, @Nullable UUID owner, WeaponType type, Vec3 target, Vec3 site, float yaw, long seed) {
-        SalvoPlan plan = new SalvoPlan(site, yaw, target, seed);
-        Strike s = new Strike(owner, level.dimension(), type, plan, level.getGameTime());
+    public static Strike begin(ServerLevel level, @Nullable UUID owner, WeaponType type, Vec3 target, Site site, long seed) {
+        long now = level.getGameTime();
+        Strike s;
+        if (type == WeaponType.TWIN) {
+            TwinPlan plan = new TwinPlan(site.mode(), site.pos(), site.yaw(), target, seed);
+            s = new Strike(owner, level, type, now, plan.lastImpactTick(), BlockPos.containing(target));
+            for (int i = 0; i < 2; i++) {
+                s.shots.add(new Shot(plan.launchTick[i], plan.paths[i], plan.scale(), 1, plan.ignite(), 9f, true));
+            }
+        } else {
+            SalvoPlan plan = new SalvoPlan(site.pos(), site.yaw(), target, seed);
+            s = new Strike(owner, level, type, now, plan.lastImpactTick(), BlockPos.containing(target));
+            for (int i = 0; i < SalvoPlan.COUNT; i++) {
+                s.shots.add(new Shot(plan.launchTick[i], plan.paths[i], 1.3f, 0, 0, 3.2f, false));
+            }
+        }
+        // el blanco y las lanzadoras quedan cargados y funcionando aunque el jugador esté lejos
+        keepLoaded(level, s, target, 2);
+        keepLoaded(level, s, site.pos(), 2);
         ALL.add(s);
         if (owner != null) BY_PLAYER.put(owner, s);
         return s;
     }
 
-    /** Un lugar abierto a 70-110 bloques del jugador para la batería, lejos del blanco. */
-    public static Vec3 launcherSite(ServerLevel level, Vec3 player, Vec3 target, RandomSource r) {
-        Vec3 best = null;
-        for (int tries = 0; tries < 24; tries++) {
-            double a = r.nextDouble() * Math.PI * 2, d = 70 + r.nextDouble() * 40;
-            int x = (int) Math.floor(player.x + Math.cos(a) * d), z = (int) Math.floor(player.z + Math.sin(a) * d);
-            if (!level.hasChunkAt(new BlockPos(x, 0, z))) continue;
-            int y = level.getHeight(Heightmap.Types.MOTION_BLOCKING_NO_LEAVES, x, z);
-            Vec3 c = new Vec3(x + 0.5, y, z + 0.5);
-            if (c.distanceTo(target) < 50) continue;
-            boolean water = !level.getFluidState(new BlockPos(x, y - 1, z)).isEmpty();
-            if (best == null || !water) best = c;
-            if (!water) break;
+    private static void keepLoaded(ServerLevel level, Strike s, Vec3 at, int radius) {
+        int cx = Mth.floor(at.x) >> 4, cz = Mth.floor(at.z) >> 4;
+        for (int x = cx - radius; x <= cx + radius; x++) {
+            for (int z = cz - radius; z <= cz + radius; z++) {
+                ChunkPos c = new ChunkPos(x, z);
+                if (s.chunks.contains(c)) continue;
+                if (ForgeChunkManager.forceChunk(level, ArsenalAtomico.MODID, s.ticketOwner, x, z, true, true)) s.chunks.add(c);
+            }
         }
-        if (best == null) best = player.add(80, 0, 0);
-        return best;
     }
 
-    public static float yawTowards(Vec3 from, Vec3 to) {
-        double dx = to.x - from.x, dz = to.z - from.z;
-        return (float) Math.toDegrees(Math.atan2(-dx, dz));
+    private static void finish(MinecraftServer server, Strike s) {
+        ServerLevel level = server.getLevel(s.dimension);
+        for (Shot shot : s.shots) if (shot.entity != null && !shot.entity.isRemoved()) shot.entity.discard();
+        if (level != null) {
+            for (ChunkPos c : s.chunks) ForgeChunkManager.forceChunk(level, ArsenalAtomico.MODID, s.ticketOwner, c.x, c.z, false, true);
+        }
+        s.chunks.clear();
+        if (s.owner != null) BY_PLAYER.remove(s.owner);
     }
 
     @SubscribeEvent
@@ -153,18 +220,26 @@ public final class LaunchManager {
             ServerLevel level = server.getLevel(s.dimension);
             if (level == null) {
                 it.remove();
+                finish(server, s);
                 continue;
             }
             long t = level.getGameTime() - s.start;
-            SalvoPlan p = s.plan;
-            while (s.launched < SalvoPlan.COUNT && t >= p.launchTick[s.launched]) {
-                // el rugido del despegue y del motor lo pone el propio misil en cada jugador
-                MissileEntity.launch(level, p.paths[s.launched], 1.3f, 3.2f);
-                s.launched++;
+            for (Shot shot : s.shots) {
+                if (!shot.fired && t >= shot.launch) {
+                    shot.fired = true;
+                    shot.entity = MissileEntity.launch(level, shot.path, shot.scale, shot.kind, shot.ignite);
+                }
+                // el impacto va por reloj: no depende de que el servidor esté moviendo el misil
+                if (shot.fired && !shot.hit && t >= shot.launch + shot.path.flightTicks) {
+                    shot.hit = true;
+                    if (shot.entity != null) shot.entity.discard();
+                    if (shot.big) Impacts.big(level, shot.path.p3, shot.power);
+                    else Impacts.missile(level, shot.path.p3, shot.power);
+                }
             }
             if (level.getGameTime() >= s.end) {
                 it.remove();
-                if (s.owner != null) BY_PLAYER.remove(s.owner);
+                finish(server, s);
             }
         }
     }
@@ -189,7 +264,12 @@ public final class LaunchManager {
 
     @SubscribeEvent
     public static void onLogout(PlayerEvent.PlayerLoggedOutEvent e) {
-        Strike s = BY_PLAYER.remove(e.getEntity().getUUID());
-        if (s != null) ALL.remove(s);
+        Strike s = BY_PLAYER.get(e.getEntity().getUUID());
+        if (s != null) {
+            ALL.remove(s);
+            MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
+            if (server != null) finish(server, s);
+            BY_PLAYER.remove(e.getEntity().getUUID());
+        }
     }
 }

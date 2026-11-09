@@ -2,7 +2,7 @@ package com.arsenalatomico.entity;
 
 import com.arsenalatomico.MissilePath;
 import com.arsenalatomico.registry.ModEntities;
-import com.arsenalatomico.strike.Impacts;
+import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.FriendlyByteBuf;
@@ -18,28 +18,33 @@ import net.minecraftforge.entity.IEntityAdditionalSpawnData;
 import net.minecraftforge.network.NetworkHooks;
 
 /**
- * Un misil en vuelo. Sigue su trayectoria exacta (sin física), deja una estela de humo y fuego,
- * y al llegar estalla. El cliente recibe la trayectoria al aparecer y la recorre igual.
+ * Un misil en vuelo. Sigue su trayectoria exacta (sin física) y deja una estela de humo y fuego.
+ * La explosión la pone el LaunchManager a la hora exacta. El cliente recibe la trayectoria al
+ * aparecer y la recorre igual.
  */
 public class MissileEntity extends Entity implements IEntityAdditionalSpawnData {
     private MissilePath path;
     private int age;
     /** Tamaño del misil (1 = táctico; los intercontinentales son mucho más grandes). */
     private float scale = 1f;
-    /** Fuerza de la explosión al llegar. */
-    private float power = 4f;
-    private boolean soundStarted, boomed;
+    /** 0 = misil táctico, 1 = intercontinental. */
+    private int kind;
+    /** Ticks hasta que se enciende el motor (los grandes salen empujados por gas o vapor). */
+    private int ignite;
+    private boolean soundStarted, ignited, boomed;
 
     public MissileEntity(EntityType<? extends MissileEntity> type, Level level) {
         super(type, level);
         noPhysics = true;
     }
 
-    public static MissileEntity launch(ServerLevel level, MissilePath path, float scale, float power) {
+    /** Lanza un misil. Estalla cuando lo diga el LaunchManager (por reloj), no él solo. */
+    public static MissileEntity launch(ServerLevel level, MissilePath path, float scale, int kind, int ignite) {
         MissileEntity m = new MissileEntity(ModEntities.MISSILE.get(), level);
         m.path = path;
         m.scale = scale;
-        m.power = power;
+        m.kind = kind;
+        m.ignite = ignite;
         Vec3 p = path.atTick(0);
         m.setPos(p.x, p.y, p.z);
         m.aim(path.direction(0));
@@ -57,6 +62,14 @@ public class MissileEntity extends Entity implements IEntityAdditionalSpawnData 
 
     public float scale() {
         return scale;
+    }
+
+    public int kind() {
+        return kind;
+    }
+
+    public int ignite() {
+        return ignite;
     }
 
     private void aim(Vec3 d) {
@@ -81,14 +94,18 @@ public class MissileEntity extends Entity implements IEntityAdditionalSpawnData 
                 soundStarted = true;
                 com.arsenalatomico.client.MissileSounds.start(this);
             }
+            if (!ignited && age >= ignite) {
+                ignited = true;
+                if (ignite > 0) com.arsenalatomico.client.MissileSounds.ignite(this);
+            }
             if (!boomed && age >= path.flightTicks - 1) {
                 boomed = true;
-                com.arsenalatomico.client.MissileSounds.impact(path.p3);
+                com.arsenalatomico.client.MissileSounds.impact(path.p3, kind);
             }
-            trail(p, d);
-        } else if (age >= path.flightTicks) {
-            Impacts.missile((ServerLevel) level(), path.p3, power);
-            discard();
+            if (kind == 1) bigTrail(p, d);
+            else trail(p, d);
+        } else if (age > path.flightTicks + 60) {
+            discard();   // por si el LaunchManager ya no está (no debería pasar)
         }
     }
 
@@ -115,6 +132,50 @@ public class MissileEntity extends Entity implements IEntityAdditionalSpawnData 
             }
             l.addAlwaysVisibleParticle(ParticleTypes.LARGE_SMOKE, true, tail.x, tail.y, tail.z,
                     (random.nextDouble() - 0.5) * 0.2, 0.05, (random.nextDouble() - 0.5) * 0.2);
+        }
+    }
+
+    /** Estela del intercontinental: antes de encenderse, solo gas o vapor; después, fuego y una columna de humo. */
+    private void bigTrail(Vec3 p, Vec3 d) {
+        Level l = level();
+        double len = 9.6 * scale;
+        Vec3 tail = p.subtract(d.scale(len));
+        boolean water = !l.getFluidState(BlockPos.containing(tail)).isEmpty();
+        if (age < ignite) {
+            // salida en frío: el gas lo saca del contenedor (o el vapor del agua)
+            for (int i = 0; i < 6; i++) {
+                l.addAlwaysVisibleParticle(water ? ParticleTypes.BUBBLE_COLUMN_UP : ParticleTypes.CLOUD, true,
+                        tail.x + (random.nextDouble() - 0.5) * 2, tail.y, tail.z + (random.nextDouble() - 0.5) * 2,
+                        (random.nextDouble() - 0.5) * 0.3, 0.2, (random.nextDouble() - 0.5) * 0.3);
+            }
+            if (age < 3 || water) {
+                for (int i = 0; i < 8; i++) {
+                    l.addAlwaysVisibleParticle(water ? ParticleTypes.SPLASH : ParticleTypes.LARGE_SMOKE, true,
+                            tail.x + (random.nextDouble() - 0.5) * 3, tail.y + 1, tail.z + (random.nextDouble() - 0.5) * 3,
+                            (random.nextDouble() - 0.5) * 0.4, 0.3, (random.nextDouble() - 0.5) * 0.4);
+                }
+            }
+            return;
+        }
+        for (int i = 0; i < 6; i++) {
+            double k = 0.6 + random.nextDouble() * 0.6;
+            l.addAlwaysVisibleParticle(ParticleTypes.FLAME, true, tail.x, tail.y, tail.z,
+                    -d.x * k + (random.nextDouble() - 0.5) * 0.15, -d.y * k + (random.nextDouble() - 0.5) * 0.15,
+                    -d.z * k + (random.nextDouble() - 0.5) * 0.15);
+        }
+        l.addAlwaysVisibleParticle(ParticleTypes.LAVA, true, tail.x, tail.y, tail.z, 0, 0, 0);
+        for (int i = 0; i < 3; i++) {
+            Vec3 q = tail.subtract(d.scale(4 + i * 2.5)).add((random.nextDouble() - 0.5) * 1.6, (random.nextDouble() - 0.5) * 1.6,
+                    (random.nextDouble() - 0.5) * 1.6);
+            l.addAlwaysVisibleParticle(ParticleTypes.CAMPFIRE_COSY_SMOKE, true, q.x, q.y, q.z,
+                    (random.nextDouble() - 0.5) * 0.03, 0.01, (random.nextDouble() - 0.5) * 0.03);
+        }
+        if (age < ignite + 40) {
+            // el humo del despegue, que llena todo alrededor de la lanzadora
+            for (int i = 0; i < 6; i++) {
+                l.addAlwaysVisibleParticle(ParticleTypes.CAMPFIRE_SIGNAL_SMOKE, true, tail.x, tail.y, tail.z,
+                        (random.nextDouble() - 0.5) * 0.6, random.nextDouble() * 0.05, (random.nextDouble() - 0.5) * 0.6);
+            }
         }
     }
 
@@ -155,6 +216,8 @@ public class MissileEntity extends Entity implements IEntityAdditionalSpawnData 
         buf.writeVarInt(path.flightTicks);
         buf.writeVarInt(age);
         buf.writeFloat(scale);
+        buf.writeVarInt(kind);
+        buf.writeVarInt(ignite);
     }
 
     @Override
@@ -164,6 +227,8 @@ public class MissileEntity extends Entity implements IEntityAdditionalSpawnData 
         path = new MissilePath(v[0], v[1], v[2], v[3], buf.readVarInt());
         age = buf.readVarInt();
         scale = buf.readFloat();
+        kind = buf.readVarInt();
+        ignite = buf.readVarInt();
         Vec3 p = path.atTick(age);
         setPos(p.x, p.y, p.z);
         xo = p.x;

@@ -36,6 +36,7 @@ public final class ClientEvents {
     public static void onRenderStage(RenderLevelStageEvent e) {
         if (e.getStage() == RenderLevelStageEvent.Stage.AFTER_PARTICLES) {
             LauncherRenderer.render(e.getPoseStack(), e.getCamera(), e.getPartialTick());
+            TwinRenderer.render(e.getPoseStack(), e.getCamera(), e.getPartialTick());
         }
     }
 
