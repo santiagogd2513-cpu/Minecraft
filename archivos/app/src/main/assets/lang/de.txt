@@ -908,3 +908,23 @@
 908|Der helle Modus konnte nicht starten: Bóveda hat zu viel Weiß erkannt und sich geschützt, indem es im dunklen Modus bleibt.\n\nDiese Funktion bleibt im Test.
 909|Schon gut 🌙
 910|🎃 Halloween kommt mit dem nächsten Update. Die anderen Saisons haben schon ihre Dekorationen und Symbole.
+911|Bóveda hat dieser App den Zugriff auf diesen Ordner entzogen
+912|Ordnerberechtigungen von Apps / Emulatoren verwalten
+913|Ordner jeder App ändern oder Zugriff entziehen
+914|Fertig: jetzt nutzt 
+915| 
+916|Ordner konnte nicht geändert werden
+917|Apps mit Ordnern
+918|Emulatoren und Apps, denen Bóveda einen Ordner gegeben hat
+919|Noch keine App hat einen Bóveda-Ordner.
+920|Wenn ein Emulator nach einem Ordner fragt und du ihn mit Bóveda wählst, erscheint er hier.
+921| · deinstalliert
+922|Geändert (vorher: 
+923|Seit 
+924|Ordner ändern
+925|Wähle den neuen Ordner und tippe auf «Diesen Ordner verwenden»
+926|Zugriff entziehen
+927|Zugriff entziehen?
+928| kann nicht mehr lesen oder schreiben in 
+929|. Wählst du ihn in dieser App wieder mit Bóveda, bekommt sie den Zugriff zurück.
+930|Zugriff entzogen

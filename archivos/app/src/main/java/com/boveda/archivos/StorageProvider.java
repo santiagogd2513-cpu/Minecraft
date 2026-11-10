@@ -64,6 +64,35 @@ public class StorageProvider extends DocumentsProvider {
         }
     }
 
+    // ------------------------------------------------------------------ permisos por app (Grants)
+
+    private String caller() {
+        try {
+            return getCallingPackage();
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /** El permiso de la app que está llamando para esta ruta; si se lo quitaron, no pasa. */
+    private Grants.Grant grant(String id) {
+        Grants.Grant g = Grants.find(getContext(), caller(), id);
+        if (g != null && g.blocked) throw new SecurityException(L.t("Bóveda le quitó a esta app el permiso de esta carpeta"));
+        return g;
+    }
+
+    /** De la ruta que conoce la app a la ruta de verdad (si se le cambió la carpeta). */
+    private static String real(Grants.Grant g, String id) {
+        if (g == null || g.target == null || !Grants.under(id, g.root)) return id;
+        return g.target + id.substring(g.root.length());
+    }
+
+    /** Y de vuelta: de la ruta de verdad a la que conoce la app. */
+    private static String back(Grants.Grant g, String path) {
+        if (g == null || g.target == null || !Grants.under(path, g.target)) return path;
+        return g.root + path.substring(g.target.length());
+    }
+
     private static boolean allowed() {
         return android.os.Build.VERSION.SDK_INT < 30 || Environment.isExternalStorageManager();
     }
@@ -92,9 +121,9 @@ public class StorageProvider extends DocumentsProvider {
         return c;
     }
 
-    private void addRow(MatrixCursor c, Entry e) {
+    private void addRow(MatrixCursor c, Entry e, Grants.Grant g) {
         MatrixCursor.RowBuilder r = c.newRow();
-        r.add(Document.COLUMN_DOCUMENT_ID, e.path);
+        r.add(Document.COLUMN_DOCUMENT_ID, back(g, e.path));
         r.add(Document.COLUMN_DISPLAY_NAME, e.name);
         r.add(Document.COLUMN_MIME_TYPE, e.dir ? Document.MIME_TYPE_DIR : FileTypes.mime(e.name));
         r.add(Document.COLUMN_SIZE, e.dir ? null : e.size);
@@ -109,9 +138,12 @@ public class StorageProvider extends DocumentsProvider {
     public Cursor queryDocument(String documentId, String[] projection) throws FileNotFoundException {
         MatrixCursor c = new MatrixCursor(projection != null ? projection : DOC_COLS);
         try {
-            Entry e = fs(documentId).stat(documentId);
+            Grants.Grant g = grant(documentId);
+            String path = real(g, documentId);
+            Entry e = fs(path).stat(path);
             if (e == null) throw new FileNotFoundException(documentId);
-            addRow(c, e);
+            if (g == null && e.dir) Grants.seen(getContext(), caller(), documentId);
+            addRow(c, e, g);
         } catch (IOException ex) {
             throw new FileNotFoundException(ex.getMessage());
         }
@@ -122,9 +154,15 @@ public class StorageProvider extends DocumentsProvider {
     public Cursor queryChildDocuments(String parentId, String[] projection, String sortOrder) throws FileNotFoundException {
         MatrixCursor c = new MatrixCursor(projection != null ? projection : DOC_COLS);
         try {
-            for (Entry e : fs(parentId).list(parentId)) {
+            Grants.Grant g = grant(parentId);
+            if (g == null) {
+                Grants.seen(getContext(), caller(), parentId);
+                g = grant(parentId);
+            }
+            String path = real(g, parentId);
+            for (Entry e : fs(path).list(path)) {
                 if (e.name.endsWith(".boveda-parte") || e.path.equals(Vault.DIR) || e.name.equals(Trash.NAME)) continue;
-                addRow(c, e);
+                addRow(c, e, g);
             }
         } catch (IOException ex) {
             throw new FileNotFoundException(ex.getMessage());
@@ -136,7 +174,8 @@ public class StorageProvider extends DocumentsProvider {
     @Override
     public ParcelFileDescriptor openDocument(String documentId, String mode, CancellationSignal signal) throws FileNotFoundException {
         try {
-            return fs(documentId).pfd(documentId, mode);
+            String path = real(grant(documentId), documentId);
+            return fs(path).pfd(path, mode);
         } catch (IOException e) {
             throw new FileNotFoundException(e.getMessage());
         }
@@ -150,7 +189,8 @@ public class StorageProvider extends DocumentsProvider {
     @Override
     public String getDocumentType(String documentId) throws FileNotFoundException {
         try {
-            Entry e = fs(documentId).stat(documentId);
+            String path = real(grant(documentId), documentId);
+            Entry e = fs(path).stat(path);
             if (e == null) throw new FileNotFoundException(documentId);
             return e.dir ? Document.MIME_TYPE_DIR : FileTypes.mime(e.name);
         } catch (IOException ex) {
@@ -161,12 +201,14 @@ public class StorageProvider extends DocumentsProvider {
     @Override
     public String createDocument(String parentId, String mimeType, String displayName) throws FileNotFoundException {
         try {
-            Fs f = fs(parentId);
-            String path = Paths.join(parentId, displayName);
+            Grants.Grant g = grant(parentId);
+            String parent = real(g, parentId);
+            Fs f = fs(parent);
+            String path = Paths.join(parent, displayName);
             for (int n = 1; f.stat(path) != null; n++) {
                 int dot = displayName.lastIndexOf('.');
                 String base = dot > 0 ? displayName.substring(0, dot) : displayName, ext = dot > 0 ? displayName.substring(dot) : "";
-                path = Paths.join(parentId, base + " (" + n + ")" + ext);
+                path = Paths.join(parent, base + " (" + n + ")" + ext);
             }
             if (Document.MIME_TYPE_DIR.equals(mimeType)) {
                 f.mkdir(path);
@@ -174,7 +216,7 @@ public class StorageProvider extends DocumentsProvider {
                 f.out(path).close();
             }
             notifyChange(parentId);
-            return path;
+            return back(g, path);
         } catch (IOException e) {
             throw new FileNotFoundException(e.getMessage());
         }
@@ -183,7 +225,8 @@ public class StorageProvider extends DocumentsProvider {
     @Override
     public void deleteDocument(String documentId) throws FileNotFoundException {
         try {
-            fs(documentId).delete(documentId);
+            String path = real(grant(documentId), documentId);
+            fs(path).delete(path);
             notifyChange(Paths.parent(documentId));
         } catch (IOException e) {
             throw new FileNotFoundException(e.getMessage());
@@ -198,10 +241,12 @@ public class StorageProvider extends DocumentsProvider {
     @Override
     public String renameDocument(String documentId, String displayName) throws FileNotFoundException {
         try {
-            String to = Paths.join(Paths.parent(documentId), displayName);
-            fs(documentId).rename(documentId, to);
+            Grants.Grant g = grant(documentId);
+            String path = real(g, documentId);
+            String to = Paths.join(Paths.parent(path), displayName);
+            fs(path).rename(path, to);
             notifyChange(Paths.parent(documentId));
-            return to;
+            return back(g, to);
         } catch (IOException e) {
             throw new FileNotFoundException(e.getMessage());
         }
@@ -209,18 +254,20 @@ public class StorageProvider extends DocumentsProvider {
 
     @Override
     public String moveDocument(String sourceId, String sourceParentId, String targetParentId) throws FileNotFoundException {
-        String to = Paths.join(targetParentId, Paths.name(sourceId));
+        Grants.Grant gs = grant(sourceId), gt = grant(targetParentId);
+        String src = real(gs, sourceId);
+        String to = Paths.join(real(gt, targetParentId), Paths.name(sourceId));
         try {
-            Fs sf = fs(sourceId), df = fs(to);
-            if (sf.key(sourceId).equals(df.key(to))) {
-                sf.rename(sourceId, to);
+            Fs sf = fs(src), df = fs(to);
+            if (sf.key(src).equals(df.key(to))) {
+                sf.rename(src, to);
             } else {
-                copyRec(sf, sourceId, df, to);
-                sf.delete(sourceId);
+                copyRec(sf, src, df, to);
+                sf.delete(src);
             }
             notifyChange(sourceParentId);
             notifyChange(targetParentId);
-            return to;
+            return back(gt, to);
         } catch (IOException e) {
             throw new FileNotFoundException(e.getMessage());
         }
@@ -228,11 +275,13 @@ public class StorageProvider extends DocumentsProvider {
 
     @Override
     public String copyDocument(String sourceId, String targetParentId) throws FileNotFoundException {
-        String to = Paths.join(targetParentId, Paths.name(sourceId));
+        Grants.Grant gt = grant(targetParentId);
+        String src = real(grant(sourceId), sourceId);
+        String to = Paths.join(real(gt, targetParentId), Paths.name(sourceId));
         try {
-            copyRec(fs(sourceId), sourceId, fs(to), to);
+            copyRec(fs(src), src, fs(to), to);
             notifyChange(targetParentId);
-            return to;
+            return back(gt, to);
         } catch (IOException e) {
             throw new FileNotFoundException(e.getMessage());
         }

@@ -908,3 +908,23 @@
 908|Light mode could not start: Bóveda detected too much white and protected itself by staying in dark mode.\n\nThis feature will remain in testing.
 909|Fine 🌙
 910|🎃 Halloween arrives in the next update. The other seasons already have their decorations and icons.
+911|Bóveda took away this app's access to this folder
+912|Manage folder permissions of apps / emulators
+913|Change each app's folder or take away its access
+914|Done: now 
+915| uses 
+916|Couldn't change the folder
+917|Apps with folders
+918|Emulators and apps that Bóveda gave a folder to
+919|No app has a Bóveda folder yet.
+920|When an emulator asks you for a folder and you pick it with Bóveda, it will show up here.
+921| · uninstalled
+922|Changed (before: 
+923|Since 
+924|Change folder
+925|Pick the new folder and tap «Use this folder»
+926|Remove access
+927|Remove access?
+928| will no longer be able to read or write in 
+929|. If you pick it again with Bóveda from that app, it gets the access back.
+930|Access removed

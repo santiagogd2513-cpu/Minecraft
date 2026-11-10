@@ -908,3 +908,23 @@
 908|O modo claro não conseguiu iniciar: o Bóveda detectou branco demais e se protegeu ficando no modo escuro.\n\nEsta função continuará em teste.
 909|Tudo bem 🌙
 910|🎃 O Halloween chega na próxima atualização. As outras temporadas já têm suas decorações e ícones.
+911|O Bóveda tirou o acesso deste app a esta pasta
+912|Gerenciar permissões de apps com pastas / emuladores
+913|Trocar a pasta de cada app ou tirar o acesso
+914|Pronto: agora 
+915| usa 
+916|Não foi possível trocar a pasta
+917|Apps com pastas
+918|Emuladores e apps aos quais o Bóveda deu uma pasta
+919|Nenhum app tem uma pasta do Bóveda ainda.
+920|Quando um emulador pedir uma pasta e você escolher com o Bóveda, ela aparece aqui.
+921| · desinstalado
+922|Trocada (antes: 
+923|Desde 
+924|Trocar pasta
+925|Escolha a nova pasta e toque em «Usar esta pasta»
+926|Tirar acesso
+927|Tirar o acesso?
+928| não poderá mais ler nem gravar em 
+929|. Se você escolher de novo com o Bóveda nesse app, o acesso volta.
+930|Acesso removido

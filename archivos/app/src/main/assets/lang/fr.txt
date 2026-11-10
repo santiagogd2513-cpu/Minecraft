@@ -908,3 +908,23 @@
 908|Le mode clair n'a pas pu démarrer : Bóveda a détecté trop de blanc et s'est protégée en restant en mode sombre.\n\nCette fonction restera en test.
 909|D'accord 🌙
 910|🎃 Halloween arrive dans la prochaine mise à jour. Les autres saisons ont déjà leurs décorations et icônes.
+911|Bóveda a retiré à cette app l'accès à ce dossier
+912|Gérer les autorisations des apps avec dossiers / émulateurs
+913|Changer le dossier de chaque app ou lui retirer l'accès
+914|C'est fait : maintenant 
+915| utilise 
+916|Impossible de changer le dossier
+917|Apps avec dossiers
+918|Émulateurs et apps auxquels Bóveda a donné un dossier
+919|Aucune app n'a encore de dossier Bóveda.
+920|Quand un émulateur te demande un dossier et que tu le choisis avec Bóveda, il apparaîtra ici.
+921| · désinstallée
+922|Changé (avant : 
+923|Depuis 
+924|Changer de dossier
+925|Choisis le nouveau dossier et touche « Utiliser ce dossier »
+926|Retirer l'accès
+927|Retirer l'accès ?
+928| ne pourra plus lire ni écrire dans 
+929|. Si tu le choisis à nouveau avec Bóveda depuis cette app, elle récupère l'accès.
+930|Accès retiré

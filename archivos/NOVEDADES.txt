@@ -1,3 +1,10 @@
+## 51
+🗂 Nuevo: gestionar los permisos de las apps con carpetas (emuladores)
+- En los tres puntitos, debajo de «Dar carpetas a otras apps», está «Gestionar permisos de apps con carpetas / emuladores». También está en Ajustes → Acceso a carpetas.
+- Ahí aparecen todas las apps a las que Bóveda les dio una carpeta, con su ícono, la carpeta y desde cuándo la tienen.
+- «Cambiar carpeta»: eliges otra carpeta y la app pasa a usar esa sin tener que configurarla de nuevo.
+- «Quitar permiso»: la app ya no puede leer ni escribir en esa carpeta. Si la vuelves a elegir con Bóveda desde esa app, recupera el permiso.
+
 ## 50
 💘 Temas de temporada (etapa 3): San Valentín y Amor y Amistad
 - San Valentín (1 al 14 de febrero): corazones que suben flotando y meciéndose, y las tarjetas de almacenamiento con una guirnalda de corazones que laten como un corazón de verdad.

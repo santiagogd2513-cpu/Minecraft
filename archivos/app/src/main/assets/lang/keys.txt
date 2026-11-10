@@ -908,3 +908,23 @@ Activando el modo claro…
 El modo claro no pudo iniciarse: Bóveda detectó demasiado blanco y se protegió quedándose en modo oscuro.\n\nEsta función seguirá en pruebas.
 Está bien 🌙
 🎃 Halloween llega en la próxima actualización. Las demás temporadas ya tienen sus decoraciones e íconos.
+Bóveda le quitó a esta app el permiso de esta carpeta
+Gestionar permisos de apps con carpetas / emuladores
+Cambiar la carpeta de cada app o quitarle el permiso
+Listo: ahora 
+ usa 
+No se pudo cambiar la carpeta
+Apps con carpetas
+Emuladores y apps a las que Bóveda les dio una carpeta
+Todavía ninguna app tiene una carpeta de Bóveda.
+Cuando un emulador te pida una carpeta y la elijas con Bóveda, aparecerá aquí.
+ · desinstalada
+Cambiada (antes: 
+Desde 
+Cambiar carpeta
+Elige la nueva carpeta y toca «Usar esta carpeta»
+Quitar permiso
+¿Quitar el permiso?
+ ya no podrá leer ni escribir en 
+. Si la vuelves a elegir con Bóveda desde esa app, recupera el permiso.
+Permiso quitado

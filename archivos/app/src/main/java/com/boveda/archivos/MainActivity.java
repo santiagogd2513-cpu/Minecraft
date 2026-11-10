@@ -2781,6 +2781,21 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
     @Override
     protected void onActivityResult(int req, int res, Intent data) {
         super.onActivityResult(req, res, data);
+        if (req == REQ_GRANT_FOLDER) {
+            Grants.Grant g = changing;
+            changing = null;
+            if (res == RESULT_OK && data != null && data.getData() != null && g != null) {
+                try {
+                    String dir = DocumentsContract.getTreeDocumentId(data.getData());
+                    Grants.change(this, g, dir);
+                    Toast.makeText(this, L.t("Listo: ahora ") + appName(g.pkg) + L.t(" usa ") + dir, Toast.LENGTH_LONG).show();
+                } catch (Exception e) {
+                    Toast.makeText(this, L.t("No se pudo cambiar la carpeta"), Toast.LENGTH_LONG).show();
+                }
+            }
+            refreshGrants();
+            return;
+        }
         if (req == REQ_TREE && res == RESULT_OK && data != null && data.getData() != null) {
             Uri u = data.getData();
             try {
@@ -3458,6 +3473,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
 
     /** Selector de carpetas: la otra app recibe permiso permanente sobre la carpeta y todo lo de adentro. */
     private void returnTree(String dir) {
+        Grants.granted(this, getCallingPackage(), dir);
         Uri tree = DocumentsContract.buildTreeDocumentUri(StorageProvider.authority(this), dir);
         Intent r = new Intent().setData(tree);
         r.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION
@@ -3783,6 +3799,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                 });
                 settingsRow(col, L.t("Gestor de archivos predeterminado"), L.t("Que Bóveda abra las carpetas y elija archivos para otras apps"), this::showDefaultSetup);
                 settingsRow(col, L.t("Dar carpetas a otras apps"), L.t("Emuladores y apps que piden una carpeta (Dolphin, Limbo…)"), this::explainProvider);
+                settingsRow(col, L.t("Gestionar permisos de apps con carpetas / emuladores"), L.t("Cambiar la carpeta de cada app o quitarle el permiso"), this::showGrants);
             }
             case 6 -> {
                 settingsSection(col, L.t("Almacenamiento"));
@@ -4039,6 +4056,8 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             acts.add(this::showDefaultSetup);
             labels.add(L.t("Dar carpetas a otras apps (emuladores…)"));
             acts.add(this::explainProvider);
+            labels.add(L.t("Gestionar permisos de apps con carpetas / emuladores"));
+            acts.add(this::showGrants);
         }
         labels.add(L.t("Inicio"));
         acts.add(this::showHome);
@@ -4075,6 +4094,174 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                         + L.t("y elige «Siempre»."))
                 .setPositiveButton(L.t("Entendido"), null)
                 .show();
+    }
+
+    // ------------------------------------------------------------------ permisos de apps con carpetas
+
+    private static final int REQ_GRANT_FOLDER = 43;
+    private Grants.Grant changing;
+    private LinearLayout grantsList;
+
+    /** Todas las apps a las que Bóveda les dio una carpeta, con «Cambiar carpeta» y «Quitar permiso». */
+    private void showGrants() {
+        Dialog d = new Dialog(this);
+        d.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        LinearLayout box = Ui.column(this);
+        box.setPadding(dp(18), dp(16), dp(18), dp(22));
+        android.graphics.drawable.GradientDrawable bg = Ui.round(Ui.SURFACE, 0);
+        float r = dp(26);
+        bg.setCornerRadii(new float[]{r, r, r, r, 0, 0, 0, 0});
+        box.setBackground(bg);
+        View grip = new View(this);
+        grip.setBackground(Ui.round(Ui.STROKE, dp(3)));
+        LinearLayout.LayoutParams gp = new LinearLayout.LayoutParams(dp(42), dp(5));
+        gp.gravity = Gravity.CENTER_HORIZONTAL;
+        gp.bottomMargin = dp(14);
+        box.addView(grip, gp);
+        box.addView(Ui.text(this, L.t("Apps con carpetas"), 20, Ui.TEXT, true));
+        TextView sub = Ui.text(this, L.t("Emuladores y apps a las que Bóveda les dio una carpeta"), 13, Ui.SUB, false);
+        sub.setPadding(0, dp(4), 0, dp(12));
+        box.addView(sub);
+        ScrollView sv = new ScrollView(this);
+        grantsList = Ui.column(this);
+        sv.addView(grantsList);
+        box.addView(sv, new LinearLayout.LayoutParams(-1, Math.min(dp(460), (int) (getResources().getDisplayMetrics().heightPixels * 0.65f))));
+        d.setContentView(box);
+        Window w = d.getWindow();
+        if (w != null) {
+            w.setBackgroundDrawableResource(android.R.color.transparent);
+            w.setGravity(Gravity.BOTTOM);
+            w.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        }
+        d.setOnDismissListener(x -> grantsList = null);
+        refreshGrants();
+        d.show();
+    }
+
+    private void refreshGrants() {
+        if (grantsList == null) return;
+        grantsList.removeAllViews();
+        java.util.List<Grants.Grant> list = Grants.active(this);
+        if (list.isEmpty()) {
+            LinearLayout empty = Ui.column(this);
+            empty.setGravity(Gravity.CENTER_HORIZONTAL);
+            empty.setPadding(dp(10), dp(26), dp(10), dp(26));
+            empty.addView(Ui.text(this, "🗂", 40, Ui.TEXT, false));
+            TextView t = Ui.text(this, L.t("Todavía ninguna app tiene una carpeta de Bóveda."), 14.5f, Ui.TEXT, true);
+            t.setGravity(Gravity.CENTER);
+            t.setPadding(0, dp(10), 0, dp(4));
+            empty.addView(t);
+            TextView h = Ui.text(this, L.t("Cuando un emulador te pida una carpeta y la elijas con Bóveda, aparecerá aquí."), 13, Ui.SUB, false);
+            h.setGravity(Gravity.CENTER);
+            empty.addView(h);
+            grantsList.addView(empty);
+            return;
+        }
+        for (Grants.Grant g : list) {
+            LinearLayout card = Ui.column(this);
+            card.setPadding(dp(14), dp(14), dp(14), dp(12));
+            card.setBackground(Ui.roundStroke(Ui.SURFACE2, dp(18), dp(1), Ui.STROKE));
+            LinearLayout top = Ui.row(this);
+            top.setGravity(Gravity.CENTER_VERTICAL);
+            ImageView icon = new ImageView(this);
+            boolean installed = true;
+            try {
+                icon.setImageDrawable(getPackageManager().getApplicationIcon(g.pkg));
+            } catch (Exception e) {
+                installed = false;
+                icon.setImageDrawable(Ui.icon(this, R.drawable.ic_folder, Ui.SUB));
+            }
+            top.addView(icon, new LinearLayout.LayoutParams(dp(44), dp(44)));
+            LinearLayout names = Ui.column(this);
+            names.setPadding(dp(12), 0, 0, 0);
+            TextView name = Ui.text(this, appName(g.pkg), 15.5f, Ui.TEXT, true);
+            name.setSingleLine(true);
+            name.setEllipsize(TextUtils.TruncateAt.END);
+            names.addView(name);
+            TextView pkg = Ui.text(this, installed ? g.pkg : g.pkg + L.t(" · desinstalada"), 11.5f, Ui.SUB, false);
+            pkg.setSingleLine(true);
+            pkg.setEllipsize(TextUtils.TruncateAt.MIDDLE);
+            names.addView(pkg);
+            top.addView(names, Ui.weight(1));
+            card.addView(top);
+            // la carpeta (y, si se cambió, la de antes)
+            LinearLayout folder = Ui.row(this);
+            folder.setGravity(Gravity.CENTER_VERTICAL);
+            folder.setPadding(dp(10), dp(8), dp(10), dp(8));
+            folder.setBackground(Ui.round(Ui.BG, dp(12)));
+            folder.addView(Ui.text(this, "📁", 15, Ui.TEXT, false));
+            TextView where = Ui.text(this, pretty(g.real()), 13, Ui.ACCENT, true);
+            where.setPadding(dp(8), 0, 0, 0);
+            where.setEllipsize(TextUtils.TruncateAt.MIDDLE);
+            where.setSingleLine(true);
+            folder.addView(where, Ui.weight(1));
+            LinearLayout.LayoutParams fp = new LinearLayout.LayoutParams(-1, -2);
+            fp.topMargin = dp(12);
+            card.addView(folder, fp);
+            if (g.target != null) {
+                TextView was = Ui.text(this, L.t("Cambiada (antes: ") + pretty(g.root) + ")", 11.5f, Ui.WARN, false);
+                was.setPadding(dp(4), dp(6), 0, 0);
+                card.addView(was);
+            }
+            TextView since = Ui.text(this, L.t("Desde ") + Ui.date(g.since), 11.5f, Ui.SUB, false);
+            since.setPadding(dp(4), dp(6), 0, 0);
+            card.addView(since);
+            // los dos botones
+            LinearLayout btns = Ui.row(this);
+            LinearLayout.LayoutParams bp = new LinearLayout.LayoutParams(-1, -2);
+            bp.topMargin = dp(12);
+            TextView change = grantButton(L.t("Cambiar carpeta"), Ui.ACCENT, v -> {
+                changing = g;
+                Toast.makeText(this, L.t("Elige la nueva carpeta y toca «Usar esta carpeta»"), Toast.LENGTH_LONG).show();
+                Intent i = new Intent(this, PickerActivity.class).setAction(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                startActivityForResult(i, REQ_GRANT_FOLDER);
+            });
+            TextView revoke = grantButton(L.t("Quitar permiso"), Ui.BAD, v -> new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                    .setTitle(L.t("¿Quitar el permiso?"))
+                    .setMessage(appName(g.pkg) + L.t(" ya no podrá leer ni escribir en ") + pretty(g.real())
+                            + L.t(". Si la vuelves a elegir con Bóveda desde esa app, recupera el permiso."))
+                    .setPositiveButton(L.t("Quitar"), (dd, ww) -> {
+                        Grants.revoke(this, g);
+                        try {
+                            Uri tree = DocumentsContract.buildTreeDocumentUri(StorageProvider.authority(this), g.root);
+                            if (android.os.Build.VERSION.SDK_INT >= 26) {
+                                revokeUriPermission(g.pkg, tree, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                            }
+                        } catch (Exception ignored) {
+                        }
+                        Toast.makeText(this, L.t("Permiso quitado"), Toast.LENGTH_SHORT).show();
+                        refreshGrants();
+                    })
+                    .setNegativeButton(L.t("Cancelar"), null)
+                    .show());
+            LinearLayout.LayoutParams l1 = new LinearLayout.LayoutParams(0, dp(42), 1);
+            l1.rightMargin = dp(5);
+            LinearLayout.LayoutParams l2 = new LinearLayout.LayoutParams(0, dp(42), 1);
+            l2.leftMargin = dp(5);
+            btns.addView(change, l1);
+            btns.addView(revoke, l2);
+            card.addView(btns, bp);
+            LinearLayout.LayoutParams cp = new LinearLayout.LayoutParams(-1, -2);
+            cp.bottomMargin = dp(10);
+            grantsList.addView(card, cp);
+        }
+    }
+
+    private TextView grantButton(String label, int color, View.OnClickListener l) {
+        TextView b = Ui.text(this, label, 13.5f, color, true);
+        b.setGravity(Gravity.CENTER);
+        b.setBackground(Ui.ripple(Ui.roundStroke((color & 0x00FFFFFF) | 0x1A000000, dp(14), dp(1), (color & 0x00FFFFFF) | 0x66000000),
+                Ui.round(0xFFFFFFFF, dp(14))));
+        b.setOnClickListener(l);
+        return b;
+    }
+
+    /** La ruta como la ve la gente: «Almacenamiento interno/…» en vez de /storage/emulated/0/… */
+    private static String pretty(String p) {
+        String root = Environment.getExternalStorageDirectory().getAbsolutePath();
+        if (p.equals(root)) return L.t("Almacenamiento interno");
+        if (p.startsWith(root + "/")) return L.t("Almacenamiento interno") + p.substring(root.length());
+        return p;
     }
 
     // ------------------------------------------------------------------ transferencias
