@@ -446,6 +446,16 @@ public class ModItems {
     public static final RegistryObject<Item> RADIO_SPEAKER = ITEMS.register("radio_speaker",
             () -> new RadioSpeakerItem(ModBlocks.RADIO_SPEAKER.get(), new Item.Properties()));
 
+    /** V4.3.0: cámaras de seguridad, monitor y pantalla de pared. */
+    public static final RegistryObject<Item> SECURITY_CAMERA_BLACK = ITEMS.register("security_camera_black",
+            () -> new BlockItem(ModBlocks.SECURITY_CAMERA_BLACK.get(), new Item.Properties()));
+    public static final RegistryObject<Item> SECURITY_CAMERA_WHITE = ITEMS.register("security_camera_white",
+            () -> new BlockItem(ModBlocks.SECURITY_CAMERA_WHITE.get(), new Item.Properties()));
+    public static final RegistryObject<Item> SECURITY_MONITOR = ITEMS.register("security_monitor",
+            () -> new BlockItem(ModBlocks.SECURITY_MONITOR.get(), new Item.Properties()));
+    public static final RegistryObject<Item> SECURITY_SCREEN = ITEMS.register("security_screen",
+            () -> new BlockItem(ModBlocks.SECURITY_SCREEN.get(), new Item.Properties()));
+
     public static final RegistryObject<Item> ELEVATOR_CONTROLLER = ITEMS.register("elevator_controller",
             () -> new BlockItem(ModBlocks.ELEVATOR_CONTROLLER.get(), new Item.Properties()));
     public static final RegistryObject<Item> ELEVATOR_DISPLAY = ITEMS.register("elevator_display",

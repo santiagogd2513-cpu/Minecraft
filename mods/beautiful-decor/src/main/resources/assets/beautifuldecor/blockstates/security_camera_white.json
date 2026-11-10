@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "facing=north,mount=wall": {
+      "model": "beautifuldecor:block/security_camera_white_wall"
+    },
+    "facing=north,mount=ceiling": {
+      "model": "beautifuldecor:block/security_camera_white_ceiling"
+    },
+    "facing=east,mount=wall": {
+      "model": "beautifuldecor:block/security_camera_white_wall",
+      "y": 90
+    },
+    "facing=east,mount=ceiling": {
+      "model": "beautifuldecor:block/security_camera_white_ceiling",
+      "y": 90
+    },
+    "facing=south,mount=wall": {
+      "model": "beautifuldecor:block/security_camera_white_wall",
+      "y": 180
+    },
+    "facing=south,mount=ceiling": {
+      "model": "beautifuldecor:block/security_camera_white_ceiling",
+      "y": 180
+    },
+    "facing=west,mount=wall": {
+      "model": "beautifuldecor:block/security_camera_white_wall",
+      "y": 270
+    },
+    "facing=west,mount=ceiling": {
+      "model": "beautifuldecor:block/security_camera_white_ceiling",
+      "y": 270
+    }
+  }
+}

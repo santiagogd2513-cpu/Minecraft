@@ -142,6 +142,7 @@ public final class ModCreativeTabs {
                 || path.equals("pa_speaker")
                 || path.equals("radio_table")               // V4.2.0
                 || path.equals("radio_speaker")
+                || path.startsWith("security_")             // V4.3.0: cámaras, monitor y pantalla de seguridad
                 || path.startsWith("ad_screen_")
                 || path.equals("drone")
                 || path.equals("drone_remote")

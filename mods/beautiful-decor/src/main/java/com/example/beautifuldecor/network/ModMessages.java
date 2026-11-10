@@ -9,7 +9,7 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 public class ModMessages {
-    private static final String PROTOCOL = "20";
+    private static final String PROTOCOL = "21";
     public static final SimpleChannel CHANNEL = NetworkRegistry.ChannelBuilder
             .named(ResourceLocation.fromNamespaceAndPath(BeautifulDecor.MOD_ID, "main"))
             .networkProtocolVersion(() -> PROTOCOL)
@@ -134,6 +134,27 @@ public class ModMessages {
                 .decoder(RadioStatePacket::decode)
                 .encoder(RadioStatePacket::encode)
                 .consumerMainThread(RadioStatePacket::handle)
+                .add();
+        // ---- V4.3.0: cámaras de seguridad
+        CHANNEL.messageBuilder(CameraEditPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .decoder(CameraEditPacket::decode)
+                .encoder(CameraEditPacket::encode)
+                .consumerMainThread(CameraEditPacket::handle)
+                .add();
+        CHANNEL.messageBuilder(MonitorSelectPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .decoder(MonitorSelectPacket::decode)
+                .encoder(MonitorSelectPacket::encode)
+                .consumerMainThread(MonitorSelectPacket::handle)
+                .add();
+        CHANNEL.messageBuilder(CameraListPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(CameraListPacket::decode)
+                .encoder(CameraListPacket::encode)
+                .consumerMainThread(CameraListPacket::handle)
+                .add();
+        CHANNEL.messageBuilder(OpenCameraEditPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(OpenCameraEditPacket::decode)
+                .encoder(OpenCameraEditPacket::encode)
+                .consumerMainThread(OpenCameraEditPacket::handle)
                 .add();
     }
 

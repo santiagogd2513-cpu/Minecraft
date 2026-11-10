@@ -1,3 +1,14 @@
+PARCHE V4.3.0
+=============
+Sistema de cámaras de seguridad (pestaña Tecnología)
+   * CÁMARA DE SEGURIDAD (negra y blanca): se pone en paredes y techos. Al colocarla se abre un menú con nombre, descripción y rotación sí/no; clic derecho lo vuelve a abrir.
+   * MONITOR (1x2, de mesa) y PANTALLA (1x2, de pared): clic derecho abre la lista de todas las cámaras (nombre y coordenadas pequeñas); tocar una muestra su imagen en ese monitor.
+     Encima de la imagen: nombre, hora de Minecraft y, abajo a la izquierda, las coordenadas.
+   * ROTACIÓN: barrido lento y con pausas en los extremos, sin vuelta completa. Solo las cámaras de techo con los 4 lados libres dan 360 grados; en una esquina no.
+   * VISIÓN NOCTURNA: verde, con un clic casi inaudible, de 18:00 a 5:30 o cuando la cámara se queda sin luz (histéresis para que no parpadee).
+   * LÍMITES: imagen en vivo en 2 monitores a la vez (~8 fps), la cámara debe estar en un chunk cargado (si no, SIN SEÑAL), pesado en celulares,
+     no compatible con gráficos Fabulosos ni Embeddium/Rubidium/Oculus. Protocolo de red 21.
+
 PARCHE V4.2.0
 =============
 Radio de mesa y bafles vinculables

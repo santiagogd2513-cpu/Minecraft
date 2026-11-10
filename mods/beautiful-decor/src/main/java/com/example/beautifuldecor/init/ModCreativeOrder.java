@@ -63,7 +63,7 @@ public final class ModCreativeOrder {
      */
     private static final String[] TECH_ORDER = {
             // ---- 1. Marca HS (computadores e impresora)
-            "hs_laptop", "hs_desktop", "hs_desktop_*", "printer", "microphone", "pa_speaker", "radio_table", "radio_speaker", "ad_screen_small", "ad_screen_medium", "ad_screen_large",
+            "hs_laptop", "hs_desktop", "hs_desktop_*", "printer", "microphone", "pa_speaker", "radio_table", "radio_speaker", "security_camera_black", "security_camera_white", "security_monitor", "security_screen", "ad_screen_small", "ad_screen_medium", "ad_screen_large",
             // ---- 2. Ventiladores
             "fan_small", "fan_medium", "fan_large", "pedestal_fan_*", "ceiling_fan_*",
             // ---- 3. Extras

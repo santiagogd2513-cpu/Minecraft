@@ -17,6 +17,15 @@ public class ClientHooks {
         Minecraft.getInstance().setScreen(new VehicleRadioScreen(new RadioBlockClient.TableSource(pos)));
     }
 
+    /** V4.3.0: menú del monitor de cámaras (la lista) y menú de una cámara (nombre, descripción y rotación). */
+    public static void openCameraListScreen(BlockPos monitor) {
+        Minecraft.getInstance().setScreen(new CameraListScreen(monitor));
+    }
+
+    public static void openCameraEditScreen(BlockPos camera) {
+        Minecraft.getInstance().setScreen(new CameraEditScreen(camera));
+    }
+
     public static void openTelevisionScreen(BlockPos pos) {
         Minecraft.getInstance().setScreen(new TelevisionScreen(pos));
     }

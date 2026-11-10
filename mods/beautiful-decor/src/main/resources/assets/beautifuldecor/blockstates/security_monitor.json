@@ -1,0 +1,34 @@
+{
+  "variants": {
+    "facing=north,px=0": {
+      "model": "beautifuldecor:block/security_monitor_l"
+    },
+    "facing=north,px=1": {
+      "model": "beautifuldecor:block/security_monitor_r"
+    },
+    "facing=east,px=0": {
+      "model": "beautifuldecor:block/security_monitor_l",
+      "y": 90
+    },
+    "facing=east,px=1": {
+      "model": "beautifuldecor:block/security_monitor_r",
+      "y": 90
+    },
+    "facing=south,px=0": {
+      "model": "beautifuldecor:block/security_monitor_l",
+      "y": 180
+    },
+    "facing=south,px=1": {
+      "model": "beautifuldecor:block/security_monitor_r",
+      "y": 180
+    },
+    "facing=west,px=0": {
+      "model": "beautifuldecor:block/security_monitor_l",
+      "y": 270
+    },
+    "facing=west,px=1": {
+      "model": "beautifuldecor:block/security_monitor_r",
+      "y": 270
+    }
+  }
+}

@@ -3,6 +3,8 @@ package com.example.beautifuldecor.init;
 import com.example.beautifuldecor.BeautifulDecor;
 import com.example.beautifuldecor.block.AdScreenBlock;
 import com.example.beautifuldecor.block.RadioSpeakerBlock;
+import com.example.beautifuldecor.block.SecurityCameraBlock;
+import com.example.beautifuldecor.block.SecurityMonitorBlock;
 import com.example.beautifuldecor.block.RadioTableBlock;
 import com.example.beautifuldecor.block.ApplianceDoorBlock;
 import com.example.beautifuldecor.block.BigTelevisionBlock;
@@ -1175,6 +1177,20 @@ public class ModBlocks {
     public static final RegistryObject<Block> RADIO_SPEAKER = BLOCKS.register("radio_speaker",
             () -> new RadioSpeakerBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BROWN)
                     .strength(1.2f).sound(SoundType.WOOD).noOcclusion()));
+
+    /** V4.3.0: cámaras de seguridad (negra y blanca), monitor de mesa y pantalla de pared. */
+    public static final RegistryObject<Block> SECURITY_CAMERA_BLACK = BLOCKS.register("security_camera_black",
+            () -> new SecurityCameraBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK)
+                    .strength(1.5f).sound(SoundType.METAL).noOcclusion(), false));
+    public static final RegistryObject<Block> SECURITY_CAMERA_WHITE = BLOCKS.register("security_camera_white",
+            () -> new SecurityCameraBlock(BlockBehaviour.Properties.of().mapColor(MapColor.SNOW)
+                    .strength(1.5f).sound(SoundType.METAL).noOcclusion(), true));
+    public static final RegistryObject<Block> SECURITY_MONITOR = BLOCKS.register("security_monitor",
+            () -> new SecurityMonitorBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK)
+                    .strength(1.5f).sound(SoundType.METAL).noOcclusion(), false));
+    public static final RegistryObject<Block> SECURITY_SCREEN = BLOCKS.register("security_screen",
+            () -> new SecurityMonitorBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK)
+                    .strength(1.5f).sound(SoundType.METAL).noOcclusion(), true));
 
     // ===== V2.2.0: sistema de ascensores =====
     /** Controlador: define la zona, el tamaño y la velocidad de la cabina. Un controlador por piso. */

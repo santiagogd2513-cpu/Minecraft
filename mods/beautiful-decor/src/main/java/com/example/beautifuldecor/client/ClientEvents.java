@@ -55,6 +55,7 @@ public class ClientEvents {
         event.registerLayerDefinition(SupercarModel.LAYER, SupercarModel::createBodyLayer);
         event.registerLayerDefinition(HelicopterModel.LAYER, HelicopterModel::createBodyLayer);
         event.registerLayerDefinition(AirlinerModel.LAYER, AirlinerModel::createBodyLayer);
+        event.registerLayerDefinition(SecurityCameraModel.LAYER, SecurityCameraModel::createLayer);       // V4.3.0
     }
 
     /** V2.11.0: el video de los televisores se dibuja sobre su pantalla. */
@@ -62,6 +63,8 @@ public class ClientEvents {
     public static void registerBlockEntityRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(ModBlockEntities.TELEVISION.get(), TelevisionRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.AD_SCREEN.get(), AdScreenRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.SECURITY_CAMERA.get(), SecurityCameraRenderer::new);     // V4.3.0
+        event.registerBlockEntityRenderer(ModBlockEntities.SECURITY_MONITOR.get(), SecurityMonitorRenderer::new);
     }
 
     @SubscribeEvent

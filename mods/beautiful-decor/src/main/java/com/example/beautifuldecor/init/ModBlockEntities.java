@@ -4,6 +4,8 @@ import com.example.beautifuldecor.BeautifulDecor;
 import com.example.beautifuldecor.block.entity.ElevatorControllerBlockEntity;
 import com.example.beautifuldecor.block.entity.AdScreenBlockEntity;
 import com.example.beautifuldecor.block.entity.RadioSpeakerBlockEntity;
+import com.example.beautifuldecor.block.entity.SecurityCameraBlockEntity;
+import com.example.beautifuldecor.block.entity.SecurityMonitorBlockEntity;
 import com.example.beautifuldecor.block.entity.MicrophoneBlockEntity;
 import com.example.beautifuldecor.block.entity.PaSpeakerBlockEntity;
 import com.example.beautifuldecor.block.entity.ElevatorDisplayBlockEntity;
@@ -43,6 +45,16 @@ public class ModBlockEntities {
     public static final RegistryObject<BlockEntityType<RadioSpeakerBlockEntity>> RADIO_SPEAKER =
             BLOCK_ENTITIES.register("radio_speaker",
                     () -> BlockEntityType.Builder.of(RadioSpeakerBlockEntity::new, ModBlocks.RADIO_SPEAKER.get()).build(null));
+
+    /** V4.3.0: cámaras de seguridad (las dos de color), monitor y pantalla de pared (comparten el block entity). */
+    public static final RegistryObject<BlockEntityType<SecurityCameraBlockEntity>> SECURITY_CAMERA =
+            BLOCK_ENTITIES.register("security_camera",
+                    () -> BlockEntityType.Builder.of(SecurityCameraBlockEntity::new,
+                            ModBlocks.SECURITY_CAMERA_BLACK.get(), ModBlocks.SECURITY_CAMERA_WHITE.get()).build(null));
+    public static final RegistryObject<BlockEntityType<SecurityMonitorBlockEntity>> SECURITY_MONITOR =
+            BLOCK_ENTITIES.register("security_monitor",
+                    () -> BlockEntityType.Builder.of(SecurityMonitorBlockEntity::new,
+                            ModBlocks.SECURITY_MONITOR.get(), ModBlocks.SECURITY_SCREEN.get()).build(null));
 
     /** V4.1.0: pantallas de anuncios (las tres comparten el block entity). */
     public static final RegistryObject<BlockEntityType<AdScreenBlockEntity>> AD_SCREEN =
