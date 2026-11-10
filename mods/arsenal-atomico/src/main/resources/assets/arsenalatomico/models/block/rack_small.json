@@ -1,0 +1,8 @@
+{
+  "parent": "block/cube_bottom_top",
+  "textures": {
+    "top": "arsenalatomico:block/rack_small_top",
+    "bottom": "arsenalatomico:block/silo_panel_side",
+    "side": "arsenalatomico:block/silo_panel_side"
+  }
+}

@@ -1,6 +1,7 @@
 package com.arsenalatomico.registry;
 
 import com.arsenalatomico.ArsenalAtomico;
+import com.arsenalatomico.item.MissileItem;
 import com.arsenalatomico.item.TargetMarkerItem;
 import com.arsenalatomico.item.TruckItem;
 import net.minecraft.world.item.Item;
@@ -17,6 +18,12 @@ public final class ModItems {
 
     public static final RegistryObject<Item> MILITARY_TRUCK = ITEMS.register("military_truck",
             () -> new TruckItem(new Item.Properties().stacksTo(1).rarity(Rarity.RARE)));
+
+    public static final RegistryObject<Item> MISSILE_SMALL = ITEMS.register("missile_small",
+            () -> new MissileItem(new Item.Properties().stacksTo(1).rarity(Rarity.RARE).fireResistant(), false));
+
+    public static final RegistryObject<Item> MISSILE_MEDIUM = ITEMS.register("missile_medium",
+            () -> new MissileItem(new Item.Properties().stacksTo(1).rarity(Rarity.EPIC).fireResistant(), true));
 
     private ModItems() {}
 }

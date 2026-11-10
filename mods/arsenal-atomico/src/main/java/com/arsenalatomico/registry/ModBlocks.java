@@ -2,6 +2,7 @@ package com.arsenalatomico.registry;
 
 import com.arsenalatomico.ArsenalAtomico;
 import com.arsenalatomico.block.LaunchConsoleBlock;
+import com.arsenalatomico.block.MissileRackBlock;
 import com.arsenalatomico.block.SiloPanelBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
@@ -21,6 +22,14 @@ public final class ModBlocks {
     public static final RegistryObject<Block> SILO_PANEL = BLOCKS.register("silo_panel",
             () -> new SiloPanelBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GRAY)
                     .strength(-1.0f, 3600000.0f).noLootTable().noOcclusion().sound(SoundType.METAL).lightLevel(s -> 9)));
+
+    public static final RegistryObject<Block> RACK_SMALL = BLOCKS.register("rack_small",
+            () -> new MissileRackBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_YELLOW)
+                    .strength(-1.0f, 3600000.0f).noLootTable().sound(SoundType.METAL).lightLevel(s -> 6), false));
+
+    public static final RegistryObject<Block> RACK_MEDIUM = BLOCKS.register("rack_medium",
+            () -> new MissileRackBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_ORANGE)
+                    .strength(-1.0f, 3600000.0f).noLootTable().sound(SoundType.METAL).lightLevel(s -> 6), true));
 
     private ModBlocks() {}
 }

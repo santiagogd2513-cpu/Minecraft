@@ -17,6 +17,8 @@ public final class ModTabs {
             .displayItems((params, out) -> {
                 out.accept(ModItems.TARGET_MARKER.get());
                 out.accept(ModItems.MILITARY_TRUCK.get());
+                out.accept(ModItems.MISSILE_SMALL.get());
+                out.accept(ModItems.MISSILE_MEDIUM.get());
             })
             .build());
 

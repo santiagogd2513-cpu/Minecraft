@@ -62,6 +62,7 @@ public class TruckRenderer extends EntityRenderer<TruckEntity> {
         }
         cab(v, m, e.mission(), t);
         bed(v, m);
+        cargo(v, m, e.cargoSmall(), e.cargoMedium());
         flag(v, m, t, e.speed());
         ps.popPose();
         super.render(e, yaw, partial, ps, buf, light);
@@ -158,6 +159,28 @@ public class TruckRenderer extends EntityRenderer<TruckEntity> {
                         1, 1, 1, glow);
             }
         }
+    }
+
+    /** Los misiles que lleva en la caja: abajo los chiquitos, encima los medianos, en sus cunas. */
+    private void cargo(VertexConsumer v, Matrix4f m, int small, int medium) {
+        float[] xs = {-0.7f, 0f, 0.7f};
+        for (int i = 0; i < small; i++) missile(v, m, xs[i], 1.27f, -3.0f, 2.7f, 0.2f, new float[]{0.92f, 0.9f, 0.82f});
+        float[] xm = {-0.42f, 0.42f};
+        for (int i = 0; i < medium; i++) missile(v, m, xm[i], 1.78f, -3.2f, 3.9f, 0.28f, new float[]{0.32f, 0.36f, 0.3f});
+    }
+
+    private void missile(VertexConsumer v, Matrix4f m, float x, float y, float z, float len, float r, float[] c) {
+        // la cuna de madera
+        box(v, m, x - r - 0.05f, y - r - 0.06f, z + 0.3f, x + r + 0.05f, y - r * 0.4f, z + 0.5f, new float[]{0.42f, 0.3f, 0.18f});
+        box(v, m, x - r - 0.05f, y - r - 0.06f, z + len - 0.6f, x + r + 0.05f, y - r * 0.4f, z + len - 0.4f, new float[]{0.42f, 0.3f, 0.18f});
+        Matrix4f t = new Matrix4f(m).translate(x, y, 0);
+        Shapes.tube(v, t, r, r, z, z + len * 0.72f, 10, c[0] * k, c[1] * k, c[2] * k, 1);
+        Shapes.tube(v, t, r * 1.02f, r * 1.02f, z + len * 0.5f, z + len * 0.56f, 10, 0.85f * k, 0.12f * k, 0.1f * k, 1);
+        Shapes.tube(v, t, r, 0, z + len * 0.72f, z + len, 10, 0.85f * k, 0.12f * k, 0.1f * k, 1);
+        Shapes.tube(v, t, r * 0.7f, r * 0.85f, z - 0.18f, z, 8, 0.15f * k, 0.15f * k, 0.16f * k, 1);
+        // aletas
+        box(v, m, x - r * 1.9f, y - 0.02f, z + 0.02f, x + r * 1.9f, y + 0.02f, z + 0.45f, new float[]{0.2f, 0.2f, 0.22f});
+        box(v, m, x - 0.02f, y - r * 1.9f + 0.1f, z + 0.02f, x + 0.02f, y + r * 1.9f, z + 0.45f, new float[]{0.2f, 0.2f, 0.22f});
     }
 
     /** La caja de carga con su lona y arcos. */

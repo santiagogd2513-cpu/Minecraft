@@ -38,6 +38,10 @@ import java.util.List;
 public class TruckEntity extends Entity {
     private static final EntityDataAccessor<Boolean> MISSION = SynchedEntityData.defineId(TruckEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Float> SPEED = SynchedEntityData.defineId(TruckEntity.class, EntityDataSerializers.FLOAT);
+    /** La carga: misiles chiquitos (máximo 3) y medianos (máximo 2). */
+    private static final EntityDataAccessor<Integer> CARGO_S = SynchedEntityData.defineId(TruckEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> CARGO_M = SynchedEntityData.defineId(TruckEntity.class, EntityDataSerializers.INT);
+    public static final int MAX_SMALL = 3, MAX_MEDIUM = 2;
 
     /** Velocidad máxima manejando (bloques por tick) y la del conductor misterioso. */
     public static final double MAX_SPEED = 0.55, AUTO_SPEED = 0.42;
@@ -71,6 +75,8 @@ public class TruckEntity extends Entity {
     protected void defineSynchedData() {
         entityData.define(MISSION, false);
         entityData.define(SPEED, 0f);
+        entityData.define(CARGO_S, 0);
+        entityData.define(CARGO_M, 0);
     }
 
     /** ¿Es el camión de la misión (lo maneja el conductor misterioso)? */
@@ -81,6 +87,14 @@ public class TruckEntity extends Entity {
     public void setMission(boolean m) {
         entityData.set(MISSION, m);
         if (!m) route.clear();
+    }
+
+    public int cargoSmall() {
+        return entityData.get(CARGO_S);
+    }
+
+    public int cargoMedium() {
+        return entityData.get(CARGO_M);
     }
 
     /** Velocidad para las ruedas y el motor (cliente y servidor). */
@@ -243,6 +257,36 @@ public class TruckEntity extends Entity {
 
     @Override
     public InteractionResult interact(Player player, InteractionHand hand) {
+        ItemStack held = player.getItemInHand(hand);
+        if (!mission() && held.getItem() instanceof com.arsenalatomico.item.MissileItem mi) {
+            // cargar un misil en la caja
+            if (!level().isClientSide) {
+                EntityDataAccessor<Integer> slot = mi.medium ? CARGO_M : CARGO_S;
+                int max = mi.medium ? MAX_MEDIUM : MAX_SMALL;
+                if (entityData.get(slot) >= max) {
+                    player.displayClientMessage(net.minecraft.network.chat.Component.translatable(mi.medium
+                            ? "message.arsenalatomico.truck.full_medium" : "message.arsenalatomico.truck.full_small", max), true);
+                } else {
+                    entityData.set(slot, entityData.get(slot) + 1);
+                    if (!player.getAbilities().instabuild) held.shrink(1);
+                    level().playSound(null, getX(), getY() + 1, getZ(), SoundEvents.ARMOR_EQUIP_IRON, SoundSource.NEUTRAL, 1f, 0.6f);
+                    cargoMessage(player);
+                }
+            }
+            return InteractionResult.sidedSuccess(level().isClientSide);
+        }
+        if (!mission() && player.isSecondaryUseActive() && held.isEmpty() && cargoSmall() + cargoMedium() > 0) {
+            // sacar un misil (primero los medianos)
+            if (!level().isClientSide) {
+                boolean medium = cargoMedium() > 0;
+                EntityDataAccessor<Integer> slot = medium ? CARGO_M : CARGO_S;
+                entityData.set(slot, entityData.get(slot) - 1);
+                player.setItemInHand(hand, new ItemStack(medium ? ModItems.MISSILE_MEDIUM.get() : ModItems.MISSILE_SMALL.get()));
+                level().playSound(null, getX(), getY() + 1, getZ(), SoundEvents.ARMOR_EQUIP_IRON, SoundSource.NEUTRAL, 1f, 0.8f);
+                cargoMessage(player);
+            }
+            return InteractionResult.sidedSuccess(level().isClientSide);
+        }
         if (player.isSecondaryUseActive()) return InteractionResult.PASS;
         if (mission()) {
             if (!level().isClientSide) SolNegro.board(player, this);
@@ -250,6 +294,11 @@ public class TruckEntity extends Entity {
         }
         if (!level().isClientSide) player.startRiding(this);
         return InteractionResult.sidedSuccess(level().isClientSide);
+    }
+
+    private void cargoMessage(Player player) {
+        player.displayClientMessage(net.minecraft.network.chat.Component.translatable("message.arsenalatomico.truck.cargo",
+                cargoSmall(), MAX_SMALL, cargoMedium(), MAX_MEDIUM), true);
     }
 
     // ------------------------------------------------------------------ golpes y colisión
@@ -261,6 +310,8 @@ public class TruckEntity extends Entity {
         hits++;
         if (p.getAbilities().instabuild || hits >= 4) {
             if (!p.getAbilities().instabuild) spawnAtLocation(new ItemStack(ModItems.MILITARY_TRUCK.get()));
+            for (int i = 0; i < cargoSmall(); i++) spawnAtLocation(new ItemStack(ModItems.MISSILE_SMALL.get()));
+            for (int i = 0; i < cargoMedium(); i++) spawnAtLocation(new ItemStack(ModItems.MISSILE_MEDIUM.get()));
             ejectPassengers();
             discard();
         } else {
@@ -292,9 +343,13 @@ public class TruckEntity extends Entity {
     @Override
     protected void readAdditionalSaveData(CompoundTag tag) {
         setMission(false);
+        entityData.set(CARGO_S, Mth.clamp(tag.getInt("cargaChicos"), 0, MAX_SMALL));
+        entityData.set(CARGO_M, Mth.clamp(tag.getInt("cargaMedianos"), 0, MAX_MEDIUM));
     }
 
     @Override
     protected void addAdditionalSaveData(CompoundTag tag) {
+        tag.putInt("cargaChicos", cargoSmall());
+        tag.putInt("cargaMedianos", cargoMedium());
     }
 }

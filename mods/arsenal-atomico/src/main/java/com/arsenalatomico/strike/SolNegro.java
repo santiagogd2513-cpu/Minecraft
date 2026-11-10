@@ -103,6 +103,11 @@ public final class SolNegro {
         public int version;
         /** Silos cargados (bit 1–5: los chiquitos y los medianos; el Sol Negro siempre está). */
         public int loaded = FULL;
+        /** El depósito de suministros: dónde está, hacia dónde mira y cuántos misiles le quedan. */
+        public Vec3 depot;
+        public float depotYaw;
+        public int stockSmall = Depot.STOCK_SMALL, stockMedium = Depot.STOCK_MEDIUM;
+        public boolean depotBuilt, roadBuilt;
 
         static BaseData load(CompoundTag t) {
             BaseData d = new BaseData();
@@ -112,6 +117,14 @@ public final class SolNegro {
                 d.built = t.getBoolean("built");
                 d.version = t.getInt("version");
                 d.loaded = t.contains("loaded") ? t.getInt("loaded") : FULL;
+                if (t.contains("dx")) {
+                    d.depot = new Vec3(t.getDouble("dx"), t.getDouble("dy"), t.getDouble("dz"));
+                    d.depotYaw = t.getFloat("dyaw");
+                    d.stockSmall = t.getInt("stockSmall");
+                    d.stockMedium = t.getInt("stockMedium");
+                    d.depotBuilt = t.getBoolean("depotBuilt");
+                    d.roadBuilt = t.getBoolean("roadBuilt");
+                }
             }
             return d;
         }
@@ -126,6 +139,16 @@ public final class SolNegro {
                 t.putBoolean("built", built);
                 t.putInt("version", version);
                 t.putInt("loaded", loaded);
+                if (depot != null) {
+                    t.putDouble("dx", depot.x);
+                    t.putDouble("dy", depot.y);
+                    t.putDouble("dz", depot.z);
+                    t.putFloat("dyaw", depotYaw);
+                    t.putInt("stockSmall", stockSmall);
+                    t.putInt("stockMedium", stockMedium);
+                    t.putBoolean("depotBuilt", depotBuilt);
+                    t.putBoolean("roadBuilt", roadBuilt);
+                }
             }
             return t;
         }
@@ -185,6 +208,7 @@ public final class SolNegro {
             base.built = false;
             base.version = com.arsenalatomico.BaseLayout.VERSION;
             base.loaded = FULL;
+            Depot.choose(level, base);
             base.setDirty();
             broadcast(level);
         } else {
@@ -279,6 +303,11 @@ public final class SolNegro {
         if (m == null || m.phase != Phase.WALKING) {
             player.displayClientMessage(Component.translatable(m != null && m.phase == Phase.FIRING
                     ? "message.arsenalatomico.busy" : "message.arsenalatomico.thermo.no_mission").withStyle(ChatFormatting.YELLOW), false);
+            BaseData b = base(player.serverLevel());
+            if (b.depot != null) {
+                player.displayClientMessage(Component.translatable("message.arsenalatomico.depot.where", Mth.floor(b.depot.x), Mth.floor(b.depot.z),
+                        b.stockSmall, b.stockMedium).withStyle(ChatFormatting.GRAY), false);
+            }
             return;
         }
         Network.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player), new OpenConsolePacket(m.targetBlock));
@@ -322,8 +351,27 @@ public final class SolNegro {
             player.displayClientMessage(Component.translatable("message.arsenalatomico.busy").withStyle(ChatFormatting.RED), true);
             return;
         }
+        // recargar: con el misil en la mano, en un silo vacío del mismo tamaño
+        var held = player.getMainHandItem();
+        if (held.getItem() instanceof com.arsenalatomico.item.MissileItem mi) {
+            boolean fits = mi.medium == com.arsenalatomico.BaseLayout.medium(silo);
+            if (b.isLoaded(silo)) {
+                player.displayClientMessage(Component.translatable("message.arsenalatomico.silo.full", silo).withStyle(ChatFormatting.YELLOW), true);
+            } else if (!fits) {
+                player.displayClientMessage(Component.translatable(mi.medium ? "message.arsenalatomico.silo.wants_small"
+                        : "message.arsenalatomico.silo.wants_medium", silo).withStyle(ChatFormatting.RED), true);
+            } else {
+                if (!player.getAbilities().instabuild) held.shrink(1);
+                b.setLoaded(silo, true);
+                broadcast(level);
+                level.playSound(null, pos, net.minecraft.sounds.SoundEvents.PISTON_EXTEND, net.minecraft.sounds.SoundSource.BLOCKS, 1.5f, 0.5f);
+                player.displayClientMessage(Component.translatable("message.arsenalatomico.silo.loaded", silo).withStyle(ChatFormatting.GREEN), false);
+            }
+            return;
+        }
         if (!b.isLoaded(silo)) {
-            player.displayClientMessage(Component.translatable("message.arsenalatomico.silo.empty", silo).withStyle(ChatFormatting.YELLOW), false);
+            player.displayClientMessage(Component.translatable("message.arsenalatomico.silo.empty", silo,
+                    b.depot != null ? Mth.floor(b.depot.x) : 0, b.depot != null ? Mth.floor(b.depot.z) : 0).withStyle(ChatFormatting.YELLOW), false);
             return;
         }
         Network.CHANNEL.send(PacketDistributor.PLAYER.with(() -> player),
@@ -367,7 +415,9 @@ public final class SolNegro {
 
     @SubscribeEvent
     public static void onTick(TickEvent.ServerTickEvent e) {
-        if (e.phase != TickEvent.Phase.END || MISSIONS.isEmpty()) return;
+        if (e.phase != TickEvent.Phase.END) return;
+        Depot.tick();
+        if (MISSIONS.isEmpty()) return;
         MinecraftServer server = ServerLifecycleHooks.getCurrentServer();
         if (server == null) return;
         Iterator<Mission> it = MISSIONS.values().iterator();
@@ -398,6 +448,7 @@ public final class SolNegro {
                 b.setDirty();
             }
         }
+        if (b.built) Depot.ensure(level);
         long t = level.getGameTime() - m.since;
         switch (m.phase) {
             case COMING -> {
@@ -532,6 +583,7 @@ public final class SolNegro {
             BaseData b = base(p.serverLevel());
             if (b.site != null && b.version >= com.arsenalatomico.BaseLayout.VERSION) {
                 Network.CHANNEL.send(PacketDistributor.PLAYER.with(() -> p), new BasePacket(b.site, b.yaw, b.loaded));
+                if (b.built) Depot.ensure(p.serverLevel());
             }
         }
     }
