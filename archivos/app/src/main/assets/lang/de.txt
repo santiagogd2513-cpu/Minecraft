@@ -928,3 +928,20 @@
 928| kann nicht mehr lesen oder schreiben in 
 929|. Wählst du ihn in dieser App wieder mit Bóveda, bekommt sie den Zugriff zurück.
 930|Zugriff entzogen
+931|Credits
+932|Bibliotheken, Dienste, Werkzeuge und wer Bóveda gemacht hat
+933|Die Bibliotheken, Dienste und Werkzeuge, die Bóveda möglich machen
+934|Bibliotheken
+935|Archive öffnen und erstellen: 7z, tar, gz, bz2, lz4…
+936|.xz- und .lzma-Dateien
+937|Zugriff auf Android/data und Android/obb ohne Root
+938|APKs signieren, damit sie installiert werden können
+939|Grundbausteine der App
+940|Cloud-Dienste
+941|Werkzeuge
+942|Womit Bóveda gebaut wird
+943|Baut und veröffentlicht jede Version
+944|Gemacht von Forja Estudios
+945|Idee, Design und Tests · offizieller Fehlerjäger und Kreativdirektor
+946|Code und Fehlerbehebung · Erbauer russischer Brücken mit Glaube und Liebe
+947|Danke an sie alle, und an dich fürs Benutzen von Bóveda 🌙

@@ -3813,6 +3813,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                 settingsSection(col, L.t("Acerca de"));
                 settingsRow(col, "Bóveda " + BuildConfig.VERSION_NAME, L.t("Gestor de archivos · compilación ") + BuildConfig.VERSION_CODE, null);
                 addCard(col, Studio.row(this, null));
+                settingsRow(col, "🎬  " + L.t("Créditos"), L.t("Librerías, servicios, herramientas y quién hizo Bóveda"), this::showCredits);
                 settingsRow(col, "🔒  " + L.t("Política de privacidad y seguridad"), L.t("Qué hace Bóveda con tu información"), () -> Legal.show(this, Legal.PRIVACY));
                 settingsRow(col, "📄  " + L.t("Términos y condiciones"), L.t("Las reglas para usar la app"), () -> Legal.show(this, Legal.TERMS));
             }
@@ -4094,6 +4095,116 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                         + L.t("y elige «Siempre»."))
                 .setPositiveButton(L.t("Entendido"), null)
                 .show();
+    }
+
+    // ------------------------------------------------------------------ créditos
+
+    /** Como al final de una película: lo que hace posible a Bóveda y quién la hizo. */
+    private void showCredits() {
+        Dialog d = new Dialog(this);
+        d.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        LinearLayout box = Ui.column(this);
+        box.setPadding(dp(18), dp(16), dp(18), dp(22));
+        android.graphics.drawable.GradientDrawable bg = Ui.round(Ui.SURFACE, 0);
+        float r = dp(26);
+        bg.setCornerRadii(new float[]{r, r, r, r, 0, 0, 0, 0});
+        box.setBackground(bg);
+        View grip = new View(this);
+        grip.setBackground(Ui.round(Ui.STROKE, dp(3)));
+        LinearLayout.LayoutParams gp = new LinearLayout.LayoutParams(dp(42), dp(5));
+        gp.gravity = Gravity.CENTER_HORIZONTAL;
+        gp.bottomMargin = dp(14);
+        box.addView(grip, gp);
+        box.addView(Ui.text(this, "🎬  " + L.t("Créditos"), 20, Ui.TEXT, true));
+        TextView sub = Ui.text(this, L.t("Las librerías, servicios y herramientas que hacen posible a Bóveda"), 13, Ui.SUB, false);
+        sub.setPadding(0, dp(4), 0, dp(8));
+        box.addView(sub);
+        ScrollView sv = new ScrollView(this);
+        LinearLayout col = Ui.column(this);
+        sv.addView(col);
+
+        creditsSection(col, "📚  " + L.t("Librerías"));
+        creditsItem(col, "Apache Commons Compress", "The Apache Software Foundation · Apache 2.0",
+                L.t("Abrir y crear archivos comprimidos: 7z, tar, gz, bz2, lz4…"));
+        creditsItem(col, "XZ for Java", "Lasse Collin · Tukaani Project", L.t("Archivos .xz y .lzma"));
+        creditsItem(col, "Shizuku API", "RikkaApps", L.t("Entrar a Android/data y Android/obb sin root"));
+        creditsItem(col, "apksig", "The Android Open Source Project · Apache 2.0", L.t("Firmar APK para que se puedan instalar"));
+        creditsItem(col, "AndroidX Core", "Google · Apache 2.0", L.t("Piezas básicas de la app"));
+
+        creditsSection(col, "☁️  " + L.t("Servicios en la nube"));
+        creditsItem(col, "Google Drive", "Google", null);
+        creditsItem(col, "OneDrive", "Microsoft", null);
+        creditsItem(col, "MEGA", "Mega Limited", null);
+        creditsItem(col, "MediaFire", "MediaFire, LLC", null);
+
+        creditsSection(col, "🛠  " + L.t("Herramientas"));
+        creditsItem(col, "Android SDK y Gradle", "Google · Gradle, Inc.", L.t("Con lo que se construye Bóveda"));
+        creditsItem(col, "GitHub Actions", "GitHub", L.t("Compila y publica cada versión"));
+
+        creditsSection(col, "❤️  " + L.t("Hecho por Forja Estudios"));
+        creditsPerson(col, "santiagogd2513-cpu", L.t("Idea, diseño y pruebas · cazador oficial de errores y director creativo"), 0xFFFFB547, 0xFFFF7A45);
+        creditsPerson(col, "Claude · Anthropic", L.t("Código y corrección de errores · constructor de puentes rusos con fe y amor"), 0xFF4C9DFF, 0xFFB47CFF);
+
+        TextView thanks = Ui.text(this, L.t("Gracias a todos ellos, y a ti por usar Bóveda 🌙"), 13, Ui.SUB, false);
+        thanks.setGravity(Gravity.CENTER);
+        thanks.setPadding(0, dp(18), 0, dp(6));
+        col.addView(thanks);
+
+        box.addView(sv, new LinearLayout.LayoutParams(-1, (int) (getResources().getDisplayMetrics().heightPixels * 0.68f)));
+        d.setContentView(box);
+        Window w = d.getWindow();
+        if (w != null) {
+            w.setBackgroundDrawableResource(android.R.color.transparent);
+            w.setGravity(Gravity.BOTTOM);
+            w.setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+        }
+        d.show();
+    }
+
+    private void creditsSection(LinearLayout col, String title) {
+        TextView t = Ui.text(this, title, 13, Ui.ACCENT, true);
+        t.setPadding(dp(4), dp(16), 0, dp(8));
+        col.addView(t);
+    }
+
+    private void creditsItem(LinearLayout col, String name, String by, String what) {
+        LinearLayout c = Ui.column(this);
+        c.setPadding(dp(14), dp(11), dp(14), dp(11));
+        c.setBackground(Ui.roundStroke(Ui.SURFACE2, dp(14), dp(1), Ui.STROKE));
+        c.addView(Ui.text(this, name, 14.5f, Ui.TEXT, true));
+        TextView b = Ui.text(this, by, 12, Ui.SUB, false);
+        b.setPadding(0, dp(2), 0, 0);
+        c.addView(b);
+        if (what != null) {
+            TextView x = Ui.text(this, what, 12.5f, Ui.TEXT, false);
+            x.setAlpha(0.8f);
+            x.setPadding(0, dp(5), 0, 0);
+            c.addView(x);
+        }
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, -2);
+        lp.bottomMargin = dp(8);
+        col.addView(c, lp);
+    }
+
+    private void creditsPerson(LinearLayout col, String name, String role, int c1, int c2) {
+        LinearLayout c = Ui.row(this);
+        c.setGravity(Gravity.CENTER_VERTICAL);
+        c.setPadding(dp(14), dp(13), dp(14), dp(13));
+        c.setBackground(Ui.roundStroke(Ui.SURFACE2, dp(16), dp(1), Ui.STROKE));
+        TextView badge = Ui.text(this, name.substring(0, 1).toUpperCase(java.util.Locale.ROOT), 17, 0xFF0B0D14, true);
+        badge.setGravity(Gravity.CENTER);
+        badge.setBackground(Ui.gradient(dp(14), c1, c2));
+        c.addView(badge, new LinearLayout.LayoutParams(dp(42), dp(42)));
+        LinearLayout t = Ui.column(this);
+        t.setPadding(dp(12), 0, 0, 0);
+        t.addView(Ui.text(this, name, 15, Ui.TEXT, true));
+        TextView rl = Ui.text(this, role, 12.5f, Ui.SUB, false);
+        rl.setPadding(0, dp(3), 0, 0);
+        t.addView(rl);
+        c.addView(t, Ui.weight(1));
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, -2);
+        lp.bottomMargin = dp(8);
+        col.addView(c, lp);
     }
 
     // ------------------------------------------------------------------ permisos de apps con carpetas

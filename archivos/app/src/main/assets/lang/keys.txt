@@ -928,3 +928,20 @@ Quitar permiso
  ya no podrá leer ni escribir en 
 . Si la vuelves a elegir con Bóveda desde esa app, recupera el permiso.
 Permiso quitado
+Créditos
+Librerías, servicios, herramientas y quién hizo Bóveda
+Las librerías, servicios y herramientas que hacen posible a Bóveda
+Librerías
+Abrir y crear archivos comprimidos: 7z, tar, gz, bz2, lz4…
+Archivos .xz y .lzma
+Entrar a Android/data y Android/obb sin root
+Firmar APK para que se puedan instalar
+Piezas básicas de la app
+Servicios en la nube
+Herramientas
+Con lo que se construye Bóveda
+Compila y publica cada versión
+Hecho por Forja Estudios
+Idea, diseño y pruebas · cazador oficial de errores y director creativo
+Código y corrección de errores · constructor de puentes rusos con fe y amor
+Gracias a todos ellos, y a ti por usar Bóveda 🌙
