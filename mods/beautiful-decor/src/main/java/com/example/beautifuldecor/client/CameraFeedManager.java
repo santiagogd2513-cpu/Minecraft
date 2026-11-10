@@ -54,8 +54,11 @@ import java.util.Map;
 public final class CameraFeedManager {
     public static final int W = 320;
     public static final int H = 128;
-    public static final int MAX_LIVE = 2;
-    private static final int MAX_FEEDS = 3;
+    public static final int MAX_LIVE = 24;
+    private static final int MAX_FEEDS = MAX_LIVE + 1;
+    /** Visores que se pueden actualizar en un mismo cuadro (y presupuesto de tiempo), para llegar a ~16 fps cada uno con muchas cámaras. */
+    private static final int MAX_PER_FRAME = 4;
+    private static final long FRAME_BUDGET_NS = 9_000_000L;
     private static final long GRACE_MS = 15000L;
     private static final long DIRTY_MS = 5000L;
     private static final int WARMUP_FRAMES = 12;
@@ -99,6 +102,7 @@ public final class CameraFeedManager {
         final BlockPos camPos;
         final ClientLevel level;
         LevelRenderer renderer;
+        boolean shared;
         TextureTarget raw;
         TextureTarget out;
         ResourceLocation texture;
@@ -168,7 +172,7 @@ public final class CameraFeedManager {
             if (Minecraft.useShaderTransparency()) {
                 return "Gráficos Fabuloso";
             }
-            for (String id : new String[]{"embeddium", "rubidium", "sodium", "oculus", "iris"}) {
+            for (String id : new String[]{"oculus", "iris"}) {
                 if (ModList.get().isLoaded(id)) {
                     return id;
                 }
@@ -177,6 +181,23 @@ public final class CameraFeedManager {
             return "";
         }
         return null;
+    }
+
+    /**
+     * Con Embeddium/Rubidium/Sodium el dibujo de terreno es un solo objeto compartido, así que un segundo LevelRenderer pisaría el del jugador:
+     * en ese caso los visores usan el del jugador (se dibuja la cámara primero y, después, el cuadro normal lo vuelve a preparar).
+     */
+    private static boolean sharedRenderer() {
+        try {
+            for (String id : new String[]{"embeddium", "rubidium", "sodium"}) {
+                if (ModList.get().isLoaded(id)) {
+                    return true;
+                }
+            }
+        } catch (Throwable ignored) {
+            // idem
+        }
+        return false;
     }
 
     // ------------------------------------------------------------------ cada cuadro
@@ -280,20 +301,27 @@ public final class CameraFeedManager {
             f.lastWanted = now;
         }
 
-        // 4) un solo visor por cuadro: el que lleva más tiempo sin actualizarse, si le toca
-        long interval = frameMs < 30 ? 125 : frameMs < 50 ? 200 : 350;
-        Feed due = null;
-        for (long key : chosen) {
-            Feed f = FEEDS.get(key);
-            if (f != null && now - f.lastRender >= interval && (due == null || f.lastRender < due.lastRender)) {
-                due = f;
+        // 4) varios visores por cuadro (hasta MAX_PER_FRAME y ~9 ms): el que lleva más tiempo sin actualizarse, si le toca
+        long interval = frameMs < 30 ? 62 : frameMs < 50 ? 125 : 250;
+        long started = System.nanoTime();
+        for (int n = 0; n < MAX_PER_FRAME; n++) {
+            Feed due = null;
+            for (long key : chosen) {
+                Feed f = FEEDS.get(key);
+                if (f != null && now - f.lastRender >= interval && (due == null || f.lastRender < due.lastRender)) {
+                    due = f;
+                }
             }
-        }
-        if (due != null) {
+            if (due == null) {
+                break;
+            }
             BlockEntity be = level.getBlockEntity(due.camPos);
+            due.lastRender = now;
             if (be instanceof SecurityCameraBlockEntity cam) {
                 renderFeed(mc, due, cam, partialTick, now);
-                due.lastRender = now;
+            }
+            if (System.nanoTime() - started > FRAME_BUDGET_NS) {
+                break;
             }
         }
     }
@@ -304,8 +332,13 @@ public final class CameraFeedManager {
         Feed f = new Feed(key, camPos, level);
         f.raw = new TextureTarget(W, H, true, Minecraft.ON_OSX);
         f.out = new TextureTarget(W, H, false, Minecraft.ON_OSX);
-        f.renderer = new LevelRenderer(mc, mc.getEntityRenderDispatcher(), mc.getBlockEntityRenderDispatcher(), mc.renderBuffers());
-        f.renderer.setLevel(level);
+        f.shared = sharedRenderer();
+        if (f.shared) {
+            f.renderer = mc.levelRenderer;
+        } else {
+            f.renderer = new LevelRenderer(mc, mc.getEntityRenderDispatcher(), mc.getBlockEntityRenderDispatcher(), mc.renderBuffers());
+            f.renderer.setLevel(level);
+        }
         f.texture = new ResourceLocation("beautifuldecor", "camera_feed/" + (counter++));
         mc.getTextureManager().register(f.texture, new TargetTexture(f.out.getColorTextureId()));
         f.lastDirty = System.currentTimeMillis();
@@ -314,7 +347,7 @@ public final class CameraFeedManager {
 
     private static void closeFeed(Minecraft mc, Feed f) {
         try {
-            if (f.renderer != null) {
+            if (f.renderer != null && !f.shared) {
                 f.renderer.setLevel(null);                      // suelta sus bloques y su memoria
             }
         } catch (Throwable ignored) {
@@ -391,7 +424,7 @@ public final class CameraFeedManager {
         cam.updateNight(level);
         f.night = cam.isNightVision();
 
-        if (now - f.lastDirty > DIRTY_MS) {
+        if (!f.shared && now - f.lastDirty > DIRTY_MS) {
             f.lastDirty = now;
             int x = (int) Math.floor(lens.x);
             int y = (int) Math.floor(lens.y);

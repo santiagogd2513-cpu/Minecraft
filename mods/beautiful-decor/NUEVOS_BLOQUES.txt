@@ -1,3 +1,15 @@
+PARCHE V4.3.2
+=============
+Cámaras compatibles con Embeddium/Rubidium/Sodium
+   * Esos mods tienen un único dibujo de terreno compartido, por eso antes se bloqueaban ("NO DISPONIBLE"). Ahora las cámaras dibujan con el LevelRenderer del jugador. Sin probar en el juego.
+   * Oculus/Iris y gráficos Fabulosos siguen sin soportarse. Si algo falla al dibujar, las cámaras se apagan solas (no se cierra el juego).
+
+PARCHE V4.3.1
+=============
+Más cámaras a la vez
+   * Imágenes en vivo simultáneas: 2 -> 24. Cada una se actualiza a ~16 fps como máximo (antes ~8); si el juego va justo, la frecuencia baja sola.
+   * Solo cuentan los monitores que miras de frente a menos de 22 bloques. Cambio hecho en client/CameraFeedManager (MAX_LIVE, intervalo y presupuesto por cuadro).
+
 PARCHE V4.3.0
 =============
 Sistema de cámaras de seguridad (pestaña Tecnología)

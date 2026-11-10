@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Comprueba SOLO la V4.3.0: cámaras de seguridad, monitor y pantalla."""
+"""Comprueba SOLO la V4.3.2: cámaras de seguridad, monitor y pantalla."""
 import json
 import os
 import re
@@ -37,9 +37,9 @@ def run(cmd, **kw):
 
 need(re.search(r"version = '(4\.([3-9]\d*)\.\d+|([5-9]|\d{2,})\.)", read(ROOT / "build.gradle")), "build.gradle no está en 4.3.0 o superior")
 need(re.search(r"mod_version=(4\.([3-9]\d*)\.\d+|([5-9]|\d{2,})\.)", read(ROOT / "gradle.properties")), "gradle.properties no está en 4.3.0 o superior")
-need("V4.3.0" in read(ROOT / "README.md"), "README sin la entrada V4.3.0")
+need("V4.3.2" in read(ROOT / "README.md"), "README sin la entrada V4.3.2")
 nb = read(ROOT / "NUEVOS_BLOQUES.txt")
-need(nb.startswith("PARCHE V4.3.0") and "PARCHE V4.2.0" in nb, "NUEVOS_BLOQUES debe empezar con la V4.3.0 y conservar la V4.2.0")
+need(nb.startswith("PARCHE V4.3.2") and "PARCHE V4.3.1" in nb, "NUEVOS_BLOQUES debe empezar con la V4.3.2 y conservar la V4.3.1")
 mm = code(JAVA / "network/ModMessages.java")
 need('PROTOCOL = "21"' in mm, "el protocolo debe ser 21")
 for p in ("CameraListPacket", "CameraEditPacket", "MonitorSelectPacket", "OpenCameraEditPacket"):
@@ -96,6 +96,9 @@ ce = code(JAVA / "client/ClientEvents.java")
 need("SecurityCameraRenderer::new" in ce and "SecurityMonitorRenderer::new" in ce and "SecurityCameraModel.LAYER" in ce, "ClientEvents sin renderers o capa")
 need(code(JAVA / "client/CameraFeedManager.java").count("catch") >= 1, "CameraFeedManager sin protección")
 need("MAX_NAME" in code(JAVA / "camera/CameraInfo.java"), "CameraInfo")
+fm = code(JAVA / "client/CameraFeedManager.java")
+need("sharedRenderer()" in fm and "f.shared" in fm and '{"oculus", "iris"}' in fm, "modo compartido con Embeddium")
+need("MAX_LIVE = 24" in fm and "MAX_FEEDS = MAX_LIVE + 1" in fm and "MAX_PER_FRAME" in fm and "frameMs < 30 ? 62" in fm, "límite de 24 cámaras / 16 fps")
 
 javac, java = shutil.which("javac"), shutil.which("java")
 work = Path(tempfile.mkdtemp(prefix="v430_"))
@@ -127,10 +130,10 @@ finally:
     shutil.rmtree(work, ignore_errors=True)
 
 if errors:
-    print("FALLÓ la verificación V4.3.0:")
+    print("FALLÓ la verificación V4.3.2:")
     for e in errors[:25]:
         print(" -", e)
     sys.exit(1)
-print("OK V4.3.0: cámaras de seguridad; solo se verificó esta versión.")
+print("OK V4.3.2: cámaras de seguridad (hasta 24 a la vez); solo se verificó esta versión.")
 for n in notes:
     print("  (nota)", n)
