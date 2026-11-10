@@ -1,3 +1,8 @@
+## 52
+🧩 Los archivos .jar muestran su ícono
+- Los mods de Minecraft (Forge, NeoForge, Fabric, Quilt) y otros .jar ahora muestran su logo en la lista, el mismo que trae el archivo por dentro. Si no trae ninguno, queda el ícono de siempre.
+- Las miniaturas (fotos, videos, APK y .jar) también se ven dentro de Android/data y Android/obb cuando Bóveda tiene Shizuku o el permiso de esa carpeta.
+
 ## 51
 🗂 Nuevo: gestionar los permisos de las apps con carpetas (emuladores)
 - En los tres puntitos, debajo de «Dar carpetas a otras apps», está «Gestionar permisos de apps con carpetas / emuladores». También está en Ajustes → Acceso a carpetas.

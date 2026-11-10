@@ -4561,7 +4561,8 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                         : Ui.size(e.size) + "  ·  " + Ui.date(e.modified));
                 if (tk != Thumbs.NONE) {
                     if (thumb != null) showThumb(h, thumb, tk, e.hidden());
-                    else if (!Thumbs.failedBefore(e) && (Thumbs.local(e.path) || (VaultFs.isVault(e.path) && tk == Thumbs.IMAGE))) {
+                    else if (!Thumbs.failedBefore(e) && (Thumbs.local(e.path) || (e.path.startsWith("/") && Paths.restricted(e.path))
+                            || (VaultFs.isVault(e.path) && tk == Thumbs.IMAGE))) {
                         final String p = e.path;
                         final int kk = tk;
                         final boolean hid = e.hidden();
@@ -4646,13 +4647,14 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
     /** Pone la miniatura en lugar del ícono del tipo de archivo. */
     private void showThumb(Holder h, Bitmap b, int kind, boolean hidden) {
         FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) h.icon.getLayoutParams();
-        int size = kind == Thumbs.APK ? dp(40) : dp(44);
+        boolean icon = kind == Thumbs.APK || kind == Thumbs.JAR;
+        int size = icon ? dp(40) : dp(44);
         if (lp.width != size) {
             lp.width = size;
             lp.height = size;
             h.icon.setLayoutParams(lp);
         }
-        h.icon.setScaleType(kind == Thumbs.APK ? ImageView.ScaleType.FIT_CENTER : ImageView.ScaleType.CENTER_CROP);
+        h.icon.setScaleType(icon ? ImageView.ScaleType.FIT_CENTER : ImageView.ScaleType.CENTER_CROP);
         h.icon.setImageBitmap(b);
         h.icon.setAlpha(hidden ? 0.55f : 1f);
         h.iconBox.setBackground(null);
