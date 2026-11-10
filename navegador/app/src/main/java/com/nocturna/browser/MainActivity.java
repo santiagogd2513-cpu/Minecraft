@@ -1100,6 +1100,21 @@ public class MainActivity extends Activity {
         }));
         pages.add(new Kit.Page("Temas de temporada", "Navidad, Velitas, Halloween y más", R.drawable.ic_season,
                 0xFFE63946, 0xFF2DC653, (col, refresh) -> Season.settings(this, col, refresh)));
+        pages.add(new Kit.Page("Experimentales y de prueba", "Funciones en pruebas: el modo claro", R.drawable.ic_season,
+                0xFFFFB547, 0xFFFF5D6C, (col, refresh) -> {
+            TextView warn = Ui.text(this, "🧪 Estas funciones están en pruebas. Pueden fallar, cambiar o desaparecer en cualquier versión.",
+                    12.5f, Ui.WARN, false);
+            warn.setPadding(dp(14), dp(12), dp(14), dp(12));
+            warn.setBackground(Ui.round(0x1AFFB547, dp(14)));
+            Kit.add(this, col, warn);
+            Kit.section(this, col, "Apariencia");
+            android.widget.Switch[] sw = new android.widget.Switch[1];
+            sw[0] = Kit.toggle(this, col, "Permitir modo claro", "Experimental · puede causar distorsiones visuales", false, on -> {
+                if (!on) return;
+                sw[0].setChecked(false);
+                lightModeWarning();
+            });
+        }));
         pages.add(new Kit.Page("Acerca de", "Versión, privacidad y Forja Estudios", R.drawable.ic_info,
                 0xFF8B97AB, 0xFF5D6B83, (col, refresh) -> {
             String ver = "";
@@ -1114,7 +1129,24 @@ public class MainActivity extends Activity {
             Kit.section(this, col, "Hecho por");
             Kit.add(this, col, Studio.row(this, null));
         }));
-        Kit.settings(this, "Ajustes", pages);
+        settingsDialog = Kit.settings(this, "Ajustes", pages);
+    }
+
+    private Dialog settingsDialog;
+
+    /** El aviso, y luego Nocturna intenta ponerse en modo claro… hasta el 99 %. */
+    private void lightModeWarning() {
+        new AlertDialog.Builder(this, R.style.Theme_Nocturna_Dialog)
+                .setTitle("⚠️ Modo claro (experimental)")
+                .setMessage("El modo claro todavía está en pruebas y exige mucho a la GPU de tu celular.\n\n"
+                        + "Puede causar distorsiones visuales, un aumento repentino del brillo y ojos irritados a las 3 de la mañana.\n\n"
+                        + "¿Quieres intentarlo?")
+                .setNegativeButton("Mejor no 🌙", null)
+                .setPositiveButton("Activar", (d, w) -> {
+                    if (settingsDialog != null) settingsDialog.dismiss();
+                    getWindow().getDecorView().postDelayed(() -> LightMode.run(this, current != null ? current.web : null), 350);
+                })
+                .show();
     }
 
     private void confirmClear(String q, Runnable r) {

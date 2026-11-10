@@ -1,3 +1,7 @@
+## 26
+🧪 Nueva sección en Ajustes: «Experimentales y de prueba»
+- Ahí está «Permitir modo claro», una función experimental que exige mucho a la GPU de tu celular. Úsala bajo tu propio riesgo.
+
 ## 25
 💘 Temas de temporada (etapa 3): San Valentín y Amor y Amistad
 - San Valentín (1 al 14 de febrero): en la página de inicio, corazones que suben flotando y meciéndose, y el buscador con una guirnalda de corazones que laten como un corazón de verdad.
