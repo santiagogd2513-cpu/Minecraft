@@ -1,3 +1,7 @@
+PARCHE V6.1.1
+=============
+ARREGLO: las curvas (y subidas/bajadas) de los rieles del mod no se formaban. Minecraft solo conecta entre sí los rieles que están en la etiqueta minecraft:rails y los nuestros no estaban. Ahora están (carga, pasajeros y metro). Pon el riel de la esquina junto a dos rieles que salgan en direcciones distintas y se curva solo.
+
 PARCHE V6.1.0
 =============
 CURVAS ANCHAS (sin límite)

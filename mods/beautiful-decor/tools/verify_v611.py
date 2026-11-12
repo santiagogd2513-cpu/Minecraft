@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Comprueba SOLO la V6.1.0: curvas anchas (arco, bloque, dibujo, evento)."""
+"""Comprueba SOLO la V6.1.1: etiqueta rails (curvas del mod)."""
 import json, os, re, shutil, subprocess, sys, tempfile
 from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
@@ -14,32 +14,12 @@ def run(cmd, **kw):
     env = {k: v for k, v in os.environ.items() if k != "JAVA_TOOL_OPTIONS"}
     return subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", errors="replace", env=env, **kw)
 
-need("version = '6.1.0'" in read(ROOT / "build.gradle") and "mod_version=6.1.0" in read(ROOT / "gradle.properties"), "versión 6.1.0")
-need("V6.1.0" in read(ROOT / "README.md") and read(ROOT / "NUEVOS_BLOQUES.txt").startswith("PARCHE V6.1.0"), "docs")
-need('PROTOCOL = "28"' in read(J / "network/ModMessages.java"), "protocolo 28")
-blocks = read(J / "init/ModBlocks.java")
-for n in ("WIDE_FREIGHT_RAIL", "WIDE_PASSENGER_RAIL", "WIDE_METRO_RAIL"):
-    need(f"{n} = BLOCKS.register" in blocks, f"bloque {n}")
-need(re.search(r"WIDE_RAIL =\s+BLOCK_ENTITIES\.register", read(J / "init/ModBlockEntities.java")), "block entity")
-need("WideRailRenderer::new" in read(J / "client/ClientEvents.java"), "dibujo registrado")
-for pre in ("freight_rail", "passenger_rail", "metro_rail"):
-    name = "wide_" + pre
-    need((A / f"blockstates/{name}.json").exists(), f"blockstate {name}")
-    json.loads(read(A / f"blockstates/{name}.json"))
-    need((ROOT / f"src/main/resources/data/beautifuldecor/loot_tables/blocks/{name}.json").exists(), f"botín {name}")
-    need((A / f"models/block/{pre}_flat.json").exists(), f"modelo {pre}_flat")
-    for t in ("ballast", "tie", "steel"):
-        need((A / f"textures/block/{pre}_{t}.png").exists(), f"textura {pre}_{t}")
-for lang in ("es_es.json", "en_us.json"):
-    d = json.loads(read(A / "lang" / lang))
-    for k in ("block.beautifuldecor.wide_freight_rail", "block.beautifuldecor.wide_passenger_rail", "block.beautifuldecor.wide_metro_rail",
-              "message.beautifuldecor.wide.no_room", "message.beautifuldecor.wide.need_straight", "message.beautifuldecor.wide.min", "message.beautifuldecor.wide.level"):
-        need(k in d, f"{lang}: falta {k}")
-wc = read(J / "block/WideCurves.java")
-need("message.beautifuldecor.wide.no_room" in wc and "isFaceSturdy" in wc and "sendSystemMessage" in wc, "aviso de falta de espacio en el chat")
-for f in ("entity/TrainCarEntity.java", "entity/TrainRoute.java"):
-    need("FreightRailBlock.pieceAt(" in read(J / f), f"{f} usa pieceAt (los trenes leen el arco)")
-need("RightClickBlock" in read(J / "event/WideCurveEvents.java"), "evento de clic")
+need("version = '6.1.1'" in read(ROOT / "build.gradle") and "mod_version=6.1.1" in read(ROOT / "gradle.properties"), "versión 6.1.1")
+need("V6.1.1" in read(ROOT / "README.md") and read(ROOT / "NUEVOS_BLOQUES.txt").startswith("PARCHE V6.1.1"), "docs")
+tag = json.loads(read(ROOT / "src/main/resources/data/minecraft/tags/blocks/rails.json"))
+for n in ("freight_rail", "passenger_rail", "metro_rail"):
+    need(f"beautifuldecor:{n}" in tag["values"], f"etiqueta rails sin {n}")
+need(tag.get("replace") is False, "la etiqueta no debe reemplazar la de Minecraft")
 
 # ---- prueba pura (horarios, mirar la vía, frenada hasta el punto)
 javac, java = shutil.which("javac"), shutil.which("java")
@@ -68,7 +48,7 @@ try:
 finally:
     shutil.rmtree(work, ignore_errors=True)
 if errors:
-    print("FALLÓ la verificación V6.1.0:")
+    print("FALLÓ la verificación V6.1.1:")
     [print(" -", x) for x in errors]
     sys.exit(1)
-print("OK V6.1.0: curvas anchas; solo se verificó esta versión.")
+print("OK V6.1.1: curvas conectan; solo se verificó esta versión.")
