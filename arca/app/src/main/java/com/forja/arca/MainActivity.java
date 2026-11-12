@@ -69,6 +69,16 @@ public class MainActivity extends Activity {
     private BaseAdapter adapter;
     private int generation;
 
+    // pantallas y lo que hay abierto además del explorador
+    private enum Mode { HOME, PARTS, BROWSER, SEARCH, RADIO, PACKAGE }
+    private Mode mode = Mode.HOME;
+    private StfsPackage pkg;
+    private Xtaf.Entry pkgEntry;
+    private int pkgParent = -1;
+    private List<Idx> index;
+    private Runnable afterDest;
+    private static final int REQ_DEST = 22;
+
     // el cartel de «Preparando…»
     private View overlay;
     private TextView overlayDetail;
@@ -133,19 +143,34 @@ public class MainActivity extends Activity {
             skip.set(true);
             return;
         }
-        if (fs != null) {
-            if (!path.isEmpty()) {
-                int i = path.lastIndexOf('/');
-                browse(i < 0 ? "" : path.substring(0, i));
-            } else if (parts != null && parts.size() > 1) {
-                showPartitions();
-            } else {
+        switch (mode) {
+            case PACKAGE -> {
+                if (pkg != null && pkgParent >= 0) {
+                    pkgParent = pkg.items.get(pkgParent).parent;
+                    showPackage();
+                } else {
+                    pkg = null;
+                    showBrowser();
+                }
+            }
+            case SEARCH, RADIO -> showBrowser();
+            case BROWSER -> {
+                if (!path.isEmpty()) {
+                    int i = path.lastIndexOf('/');
+                    browse(i < 0 ? "" : path.substring(0, i));
+                } else if (parts != null && parts.size() > 1) {
+                    showPartitions();
+                } else {
+                    closeSession();
+                    showHome();
+                }
+            }
+            case PARTS -> {
                 closeSession();
                 showHome();
             }
-            return;
+            default -> super.onBackPressed();
         }
-        super.onBackPressed();
     }
 
     private boolean busy() {
@@ -313,6 +338,10 @@ public class MainActivity extends Activity {
         path = "";
         entries = new ArrayList<>();
         infos.clear();
+        pkg = null;
+        pkgEntry = null;
+        pkgParent = -1;
+        index = null;
     }
 
     private void fail(Throwable e) {
@@ -341,6 +370,21 @@ public class MainActivity extends Activity {
     @SuppressWarnings("deprecation")
     protected void onActivityResult(int req, int res, Intent data) {
         super.onActivityResult(req, res, data);
+        if (req == REQ_DEST) {
+            Runnable next = afterDest;
+            afterDest = null;
+            if (res == RESULT_OK && data != null && data.getData() != null) {
+                Uri d = data.getData();
+                try {
+                    getContentResolver().takePersistableUriPermission(d, Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION);
+                    getSharedPreferences("arca", MODE_PRIVATE).edit().putString("destino", d.toString()).apply();
+                    if (next != null) next.run();
+                } catch (Exception e) {
+                    Aviso.show(this, root, "No pude guardar esa carpeta", "Android no dejó guardar el permiso de esa carpeta. Elige otra, por ejemplo una dentro de «Documentos».", Aviso.details(e));
+                }
+            }
+            return;
+        }
         if (req != REQ_TREE || res != RESULT_OK || data == null || data.getData() == null) return;
         Uri tree = data.getData();
         closeSession();
@@ -434,6 +478,7 @@ public class MainActivity extends Activity {
     }
 
     private void showHome() {
+        mode = Mode.HOME;
         generation++;
         ScrollView sv = new ScrollView(this);
         LinearLayout col = Ui.column(this);
@@ -484,6 +529,7 @@ public class MainActivity extends Activity {
     }
 
     private void showPartitions() {
+        mode = Mode.PARTS;
         generation++;
         fs = null;
         path = "";
@@ -700,10 +746,16 @@ public class MainActivity extends Activity {
     }
 
     private void showBrowser() {
+        mode = Mode.BROWSER;
         LinearLayout col = Ui.column(this);
         String shownPath = partName + (path.isEmpty() ? "" : "  ›  " + path.replace("/", "  ›  "));
         String title = path.isEmpty() ? sessionLabel : path.substring(path.lastIndexOf('/') + 1);
         col.addView(header(title, shownPath, true));
+        LinearLayout tools = Ui.row(this);
+        tools.setPadding(dp(14), 0, dp(14), dp(8));
+        tools.addView(chip("🔍  Buscar", this::showSearch));
+        tools.addView(chip("📊  Radiografía", this::showRadiography));
+        col.addView(tools);
         ListView lv = new ListView(this);
         lv.setDivider(null);
         lv.setSelector(android.R.color.transparent);
@@ -796,6 +848,10 @@ public class MainActivity extends Activity {
             if (e.dir) browse(e.path);
             else showFile(e);
         });
+        lv.setOnItemLongClickListener((p, v, i, id) -> {
+            rowMenu(entries.get(i));
+            return true;
+        });
         col.addView(lv, new LinearLayout.LayoutParams(-1, 0, 1));
         setScreen(col);
     }
@@ -848,7 +904,735 @@ public class MainActivity extends Activity {
         info.setLineSpacing(0, 1.2f);
         info.setPadding(0, dp(8), 0, 0);
         box.addView(info);
-        new AlertDialog.Builder(this, R.style.Theme_Arca_Dialog).setView(box).setPositiveButton("Cerrar", null).show();
+        AlertDialog.Builder dlg = new AlertDialog.Builder(this, R.style.Theme_Arca_Dialog).setView(box).setNeutralButton("Cerrar", null)
+                .setNegativeButton("Copiar al celular", (d, w) -> exportEntry(e));
+        if (s != null) dlg.setPositiveButton("Ver por dentro", (d, w) -> openPackage(e));
+        dlg.show();
+    }
+
+    // ------------------------------------------------------------------ fichas, menú de cada fila
+
+    private TextView chip(String text, Runnable r) {
+        TextView t = Ui.text(this, text, 13.5f, Ui.TEXT, true);
+        t.setPadding(dp(14), dp(9), dp(14), dp(9));
+        t.setBackground(Ui.ripple(Ui.roundStroke(Ui.SURFACE, dp(20), dp(1), Ui.STROKE), Ui.round(Color.WHITE, dp(20))));
+        t.setOnClickListener(v -> r.run());
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-2, -2);
+        lp.rightMargin = dp(8);
+        t.setLayoutParams(lp);
+        return t;
+    }
+
+    /** Pulsación larga sobre un archivo o carpeta. */
+    private void rowMenu(Xtaf.Entry e) {
+        List<String> names = new ArrayList<>();
+        List<Runnable> acts = new ArrayList<>();
+        names.add(e.dir ? "Copiar la carpeta al celular" : "Copiar al celular");
+        acts.add(() -> exportEntry(e));
+        if (!e.dir && e.size >= 0xB000) {
+            names.add("Ver por dentro (si es un paquete)");
+            acts.add(() -> openPackage(e));
+        }
+        new AlertDialog.Builder(this, R.style.Theme_Arca_Dialog)
+                .setTitle(e.name)
+                .setItems(names.toArray(new String[0]), (d, w) -> acts.get(w).run())
+                .show();
+    }
+
+    // ------------------------------------------------------------------ copiar al celular
+
+    private static String safeName(String n) {
+        String s = n.replaceAll("[\\\\/:*?\"<>|\\u0000-\\u001f]", "_").trim();
+        return s.isEmpty() ? "sin_nombre" : s;
+    }
+
+    private static String mimeFor(String name) {
+        int dot = name.lastIndexOf('.');
+        if (dot < 0) return "application/octet-stream";
+        String m = android.webkit.MimeTypeMap.getSingleton().getMimeTypeFromExtension(name.substring(dot + 1).toLowerCase(java.util.Locale.ROOT));
+        return m == null ? "application/octet-stream" : m;
+    }
+
+    private Uri destination() {
+        String s = getSharedPreferences("arca", MODE_PRIVATE).getString("destino", null);
+        return s == null ? null : Uri.parse(s);
+    }
+
+    /** La carpeta del celular donde van las copias; la primera vez se le pide al usuario. */
+    private void withDestination(java.util.function.Consumer<Uri> action) {
+        Uri d = destination();
+        if (d != null) {
+            for (android.content.UriPermission p : getContentResolver().getPersistedUriPermissions()) {
+                if (p.getUri().equals(d) && p.isWritePermission()) {
+                    action.accept(d);
+                    return;
+                }
+            }
+        }
+        afterDest = () -> action.accept(destination());
+        new AlertDialog.Builder(this, R.style.Theme_Arca_Dialog)
+                .setTitle("¿Dónde guardo las copias?")
+                .setMessage("Elige una carpeta de tu celular (por ejemplo, crea una llamada «Arca»). Ahí irá lo que copies de tu Xbox. Solo te lo pregunto una vez.")
+                .setPositiveButton("Elegir carpeta", (x, y) -> {
+                    Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+                    i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION | Intent.FLAG_GRANT_WRITE_URI_PERMISSION
+                            | Intent.FLAG_GRANT_PERSISTABLE_URI_PERMISSION | Intent.FLAG_GRANT_PREFIX_URI_PERMISSION);
+                    try {
+                        startActivityForResult(i, REQ_DEST);
+                    } catch (Exception ex) {
+                        Aviso.show(this, root, ex);
+                    }
+                })
+                .setNegativeButton("Cancelar", (x, y) -> afterDest = null)
+                .show();
+    }
+
+    /** Lo que va pasando mientras se copia. */
+    private final class CopyState {
+        long done, total, last;
+        int files;
+
+        void add(long n) {
+            done += n;
+            long now = android.os.SystemClock.uptimeMillis();
+            if (now - last > 300) {
+                last = now;
+                final String t = Ui.size(done) + " de " + Ui.size(total) + (files > 1 ? "  ·  " + files + " archivos" : "");
+                ui.post(() -> setOverlayDetail(t));
+            }
+        }
+
+        void check() throws java.io.IOException {
+            if (skip.get() || Thread.currentThread().isInterrupted()) throw new java.io.IOException("Copia cancelada");
+        }
+    }
+
+    private interface CopyJob {
+        void run(Uri parent, CopyState st) throws Exception;
+    }
+
+    private Uri makeDir(Uri parent, String name) throws java.io.IOException {
+        Uri d = android.provider.DocumentsContract.createDocument(getContentResolver(), parent,
+                android.provider.DocumentsContract.Document.MIME_TYPE_DIR, safeName(name));
+        if (d == null) throw new java.io.IOException("Android no dejó crear la carpeta «" + name + "» en tu celular");
+        return d;
+    }
+
+    private java.io.OutputStream makeFile(Uri parent, String name) throws java.io.IOException {
+        Uri f = android.provider.DocumentsContract.createDocument(getContentResolver(), parent, mimeFor(name), safeName(name));
+        if (f == null) throw new java.io.IOException("Android no dejó crear el archivo «" + name + "» en tu celular");
+        java.io.OutputStream o = getContentResolver().openOutputStream(f);
+        if (o == null) throw new java.io.IOException("Android no dejó escribir en tu celular");
+        return new java.io.BufferedOutputStream(o, 1 << 16);
+    }
+
+    private void runCopy(String what, long total, CopyJob job) {
+        withDestination(tree -> {
+            Uri parent = android.provider.DocumentsContract.buildDocumentUriUsingTree(tree, android.provider.DocumentsContract.getTreeDocumentId(tree));
+            skip.set(false);
+            showOverlay("");
+            setOverlayText("Copiando…", what, "Cancelar");
+            CopyState st = new CopyState();
+            st.total = total;
+            exec.execute(() -> {
+                try {
+                    job.run(parent, st);
+                    ui.post(() -> {
+                        hideOverlay();
+                        new AlertDialog.Builder(this, R.style.Theme_Arca_Dialog)
+                                .setTitle("Listo ✅")
+                                .setMessage("Copié " + st.files + (st.files == 1 ? " archivo" : " archivos") + " (" + Ui.size(st.done) + ") a tu carpeta de copias.")
+                                .setPositiveButton("Entendido", null)
+                                .show();
+                    });
+                } catch (Throwable e) {
+                    ui.post(() -> {
+                        hideOverlay();
+                        if (e instanceof java.io.IOException && "Copia cancelada".equals(e.getMessage())) {
+                            Toast.makeText(this, "Copia cancelada. Lo que ya se copió queda en tu celular.", Toast.LENGTH_LONG).show();
+                        } else {
+                            Aviso.show(this, root, e);
+                        }
+                    });
+                }
+            });
+        });
+    }
+
+    private void copyXtaf(Xtaf x, Xtaf.Entry e, Uri parent, CopyState st) throws Exception {
+        st.check();
+        if (e.dir) {
+            Uri d = makeDir(parent, e.name);
+            for (Xtaf.Entry k : x.list(e)) copyXtaf(x, k, d, st);
+        } else {
+            try (java.io.OutputStream o = makeFile(parent, e.name)) {
+                long[] before = {st.done};
+                long[] prev = {0};
+                x.copyFile(e, o, p -> {
+                    st.add(p - prev[0]);
+                    prev[0] = p;
+                    if (skip.get()) throw new IllegalStateException("cancelado");
+                });
+            } catch (IllegalStateException c) {
+                throw new java.io.IOException("Copia cancelada");
+            }
+            st.files++;
+        }
+    }
+
+    /** Copia un archivo o carpeta de la consola a la carpeta de copias del celular. */
+    private void exportEntry(Xtaf.Entry e) {
+        final Xtaf x = fs;
+        if (x == null) return;
+        exec.execute(() -> {
+            try {
+                long total = e.dir ? x.totalSize(e, null) : e.size;
+                ui.post(() -> {
+                    if (e.dir && total > 4L << 30) {
+                        new AlertDialog.Builder(this, R.style.Theme_Arca_Dialog)
+                                .setTitle("Es una carpeta grande")
+                                .setMessage("«" + e.name + "» ocupa " + Ui.size(total) + ". ¿Seguro que la copias al celular? Puede tardar mucho y llenar la memoria.")
+                                .setPositiveButton("Copiar", (d, w) -> runCopy(e.name, total, (parent, st) -> copyXtaf(x, e, parent, st)))
+                                .setNegativeButton("Cancelar", null)
+                                .show();
+                    } else {
+                        runCopy(e.name, total, (parent, st) -> copyXtaf(x, e, parent, st));
+                    }
+                });
+            } catch (Throwable t) {
+                ui.post(() -> fail(t));
+            }
+        });
+    }
+
+    private void copyItem(StfsPackage p, StfsPackage.Item it, Uri parent, CopyState st) throws Exception {
+        st.check();
+        if (it.dir) {
+            Uri d = makeDir(parent, it.name);
+            for (StfsPackage.Item k : p.children(it.index)) copyItem(p, k, d, st);
+        } else {
+            try (java.io.OutputStream o = makeFile(parent, it.name)) {
+                long[] prev = {0};
+                p.copyTo(it, o, pr -> {
+                    st.add(pr - prev[0]);
+                    prev[0] = pr;
+                    if (skip.get()) throw new IllegalStateException("cancelado");
+                });
+            } catch (IllegalStateException c) {
+                throw new java.io.IOException("Copia cancelada");
+            }
+            st.files++;
+        }
+    }
+
+    private long itemSize(StfsPackage p, StfsPackage.Item it) {
+        if (!it.dir) return it.size;
+        long s = 0;
+        for (StfsPackage.Item k : p.children(it.index)) s += itemSize(p, k);
+        return s;
+    }
+
+    private void exportItem(StfsPackage.Item it) {
+        final StfsPackage p = pkg;
+        if (p == null) return;
+        runCopy(it.name, itemSize(p, it), (parent, st) -> copyItem(p, it, parent, st));
+    }
+
+    // ------------------------------------------------------------------ ver por dentro un paquete
+
+    private void openPackage(Xtaf.Entry e) {
+        final Xtaf x = fs;
+        if (x == null) return;
+        showOverlay("Abriendo el paquete…");
+        exec.execute(() -> {
+            try {
+                StfsPackage p = StfsPackage.open(x.asSource(e));
+                ui.post(() -> {
+                    hideOverlay();
+                    pkg = p;
+                    pkgEntry = e;
+                    pkgParent = -1;
+                    showPackage();
+                });
+            } catch (Throwable t) {
+                ui.post(() -> fail(t));
+            }
+        });
+    }
+
+    private void showPackage() {
+        mode = Mode.PACKAGE;
+        final StfsPackage p = pkg;
+        LinearLayout col = Ui.column(this);
+        String title = !p.header.displayName.isEmpty() ? p.header.displayName : pkgEntry.name;
+        String where = pkgParent < 0 ? "En la raíz del paquete" : pathInPackage(p, pkgParent);
+        col.addView(header(title, where, true));
+        LinearLayout info = Ui.row(this);
+        info.setPadding(dp(14), 0, dp(14), dp(8));
+        info.addView(chip(Stfs.typeName(p.header.contentType), () -> { }));
+        info.addView(chip(p.items.size() + (p.items.size() == 1 ? " elemento" : " elementos"), () -> { }));
+        col.addView(info);
+        List<StfsPackage.Item> list = new ArrayList<>(p.children(pkgParent));
+        list.sort((a, b) -> a.dir != b.dir ? (a.dir ? -1 : 1) : a.name.compareToIgnoreCase(b.name));
+        ListView lv = new ListView(this);
+        lv.setDivider(null);
+        lv.setSelector(android.R.color.transparent);
+        lv.setPadding(dp(12), 0, dp(12), dp(16));
+        lv.setClipToPadding(false);
+        if (list.isEmpty()) {
+            TextView e = Ui.text(this, "Esta carpeta está vacía", 14, Ui.SUB, false);
+            e.setGravity(Gravity.CENTER);
+            e.setPadding(0, dp(60), 0, 0);
+            col.addView(e, new LinearLayout.LayoutParams(-1, -2));
+        }
+        lv.setAdapter(new BaseAdapter() {
+            @Override
+            public int getCount() {
+                return list.size();
+            }
+
+            @Override
+            public Object getItem(int i) {
+                return list.get(i);
+            }
+
+            @Override
+            public long getItemId(int i) {
+                return i;
+            }
+
+            @Override
+            public View getView(int i, View v, ViewGroup parent) {
+                StfsPackage.Item it = list.get(i);
+                LinearLayout c = card(it.dir ? R.drawable.ic_folder : R.drawable.ic_file, it.name,
+                        it.dir ? p.children(it.index).size() + " elementos" : Ui.size(it.size) + (it.modified > 0 ? "  ·  " + Ui.date(it.modified) : ""),
+                        null);
+                return wrapRow(c);
+            }
+        });
+        lv.setOnItemClickListener((a, v, i, id) -> {
+            StfsPackage.Item it = list.get(i);
+            if (it.dir) {
+                pkgParent = it.index;
+                showPackage();
+            } else {
+                showPackageFile(it);
+            }
+        });
+        lv.setOnItemLongClickListener((a, v, i, id) -> {
+            StfsPackage.Item it = list.get(i);
+            new AlertDialog.Builder(this, R.style.Theme_Arca_Dialog).setTitle(it.name)
+                    .setItems(new String[]{it.dir ? "Copiar la carpeta al celular" : "Copiar al celular"}, (d, w) -> exportItem(it)).show();
+            return true;
+        });
+        col.addView(lv, new LinearLayout.LayoutParams(-1, 0, 1));
+        setScreen(col);
+    }
+
+    /** Una tarjeta como fila de lista, con un poco de espacio abajo. */
+    private View wrapRow(LinearLayout card) {
+        FrameLayout w = new FrameLayout(this);
+        w.setPadding(0, 0, 0, dp(8));
+        if (card.getParent() instanceof ViewGroup) ((ViewGroup) card.getParent()).removeView(card);
+        w.addView(card, new FrameLayout.LayoutParams(-1, -2));
+        w.setLayoutParams(new AbsListViewLayout(-1, -2));
+        return w;
+    }
+
+    /** Los parámetros de una fila de lista. */
+    private static final class AbsListViewLayout extends android.widget.AbsListView.LayoutParams {
+        AbsListViewLayout(int w, int h) {
+            super(w, h);
+        }
+    }
+
+    private String pathInPackage(StfsPackage p, int idx) {
+        StringBuilder b = new StringBuilder();
+        int i = idx, guard = 0;
+        while (i >= 0 && guard++ < 40) {
+            b.insert(0, "/" + p.items.get(i).name);
+            i = p.items.get(i).parent;
+        }
+        return b.toString();
+    }
+
+    private void showPackageFile(StfsPackage.Item it) {
+        final StfsPackage p = pkg;
+        exec.execute(() -> {
+            try {
+                byte[] head = p.read(it, 0, (int) Math.min(it.size, 64 * 1024));
+                ui.post(() -> showPackageFileDialog(it, head));
+            } catch (Throwable t) {
+                ui.post(() -> fail(t));
+            }
+        });
+    }
+
+    private void showPackageFileDialog(StfsPackage.Item it, byte[] head) {
+        LinearLayout box = Ui.column(this);
+        box.setPadding(dp(22), dp(18), dp(22), dp(6));
+        TextView t = Ui.text(this, it.name, 19, Ui.TEXT, true);
+        box.addView(t);
+        TextView info = Ui.text(this, "Tamaño: " + Ui.size(it.size) + (it.modified > 0 ? "\nFecha: " + Ui.date(it.modified) : ""), 14, Ui.SUB, false);
+        info.setPadding(0, dp(6), 0, dp(10));
+        box.addView(info);
+        Bitmap bmp = head.length > 8 && it.size <= head.length ? android.graphics.BitmapFactory.decodeByteArray(head, 0, head.length) : null;
+        if (bmp != null) {
+            ImageView iv = new ImageView(this);
+            iv.setImageBitmap(bmp);
+            iv.setAdjustViewBounds(true);
+            box.addView(iv, new LinearLayout.LayoutParams(-1, dp(220)));
+        } else if (head.length > 0 && looksLikeText(head)) {
+            TextView tv = Ui.text(this, new String(head, java.nio.charset.StandardCharsets.UTF_8), 12, Ui.TEXT, false);
+            tv.setTypeface(android.graphics.Typeface.MONOSPACE);
+            tv.setBackground(Ui.round(Ui.BG, dp(10)));
+            tv.setPadding(dp(10), dp(8), dp(10), dp(8));
+            ScrollView sv = new ScrollView(this);
+            sv.addView(tv);
+            box.addView(sv, new LinearLayout.LayoutParams(-1, dp(220)));
+        } else if (head.length > 0) {
+            StringBuilder hex = new StringBuilder();
+            for (int i = 0; i < Math.min(head.length, 96); i++) {
+                hex.append(String.format(java.util.Locale.US, "%02X ", head[i] & 0xFF));
+                if (i % 16 == 15) hex.append('\n');
+            }
+            TextView tv = Ui.text(this, "Los primeros bytes:\n" + hex, 11.5f, Ui.SUB, false);
+            tv.setTypeface(android.graphics.Typeface.MONOSPACE);
+            box.addView(tv);
+        }
+        new AlertDialog.Builder(this, R.style.Theme_Arca_Dialog).setView(box)
+                .setPositiveButton("Copiar al celular", (d, w) -> exportItem(it))
+                .setNegativeButton("Cerrar", null).show();
+    }
+
+    private static boolean looksLikeText(byte[] b) {
+        int bad = 0, n = Math.min(b.length, 2000);
+        for (int i = 0; i < n; i++) {
+            int c = b[i] & 0xFF;
+            if (c == 0 || (c < 9) || (c > 13 && c < 32)) bad++;
+        }
+        return bad * 50 < n;
+    }
+
+    // ------------------------------------------------------------------ buscar
+
+    private static final class Idx {
+        String path, name, titleId, lower;
+        boolean dir;
+    }
+
+    private void showSearch() {
+        mode = Mode.SEARCH;
+        final Xtaf x = fs;
+        if (x == null) return;
+        if (index == null) {
+            showOverlay("Leyendo todo lo que hay en la unidad…");
+            setOverlayText("Preparando…", "Armando la lista para buscar…");
+            skip.set(false);
+            exec.execute(() -> {
+                List<Idx> out = new ArrayList<>();
+                try {
+                    walk(x, null, "", 0, out);
+                } catch (Throwable ignored) {
+                    // lo que alcanzó a leer sirve
+                }
+                ui.post(() -> {
+                    hideOverlay();
+                    if (fs != x) return;
+                    if (skip.get()) {
+                        showBrowser();      // lo cancelaron: no se guarda una lista a medias
+                        return;
+                    }
+                    index = out;
+                    buildSearchScreen();
+                });
+            });
+        } else {
+            buildSearchScreen();
+        }
+    }
+
+    private void walk(Xtaf x, Xtaf.Entry dir, String path, int depth, List<Idx> out) throws java.io.IOException {
+        if (depth > 12 || out.size() > 200_000 || skip.get()) return;
+        List<Xtaf.Entry> kids = dir == null ? x.listRoot() : x.list(dir);
+        for (Xtaf.Entry e : kids) {
+            Idx i = new Idx();
+            i.path = e.path;
+            i.name = e.name;
+            i.lower = e.name.toLowerCase(java.util.Locale.ROOT);
+            i.dir = e.dir;
+            String[] p = e.path.split("/");
+            if (p.length >= 3 && p[0].equalsIgnoreCase("Content") && HEX8.matcher(p[2]).matches()) i.titleId = p[2].toUpperCase(java.util.Locale.US);
+            out.add(i);
+            if (e.dir) walk(x, e, e.path, depth + 1, out);
+        }
+    }
+
+    private void buildSearchScreen() {
+        LinearLayout col = Ui.column(this);
+        col.addView(header("Buscar", "Por nombre de juego, de carpeta o de archivo", true));
+        android.widget.EditText box = new android.widget.EditText(this);
+        box.setHint("Escribe, por ejemplo: gears");
+        box.setHintTextColor(Ui.SUB);
+        box.setTextColor(Ui.TEXT);
+        box.setSingleLine(true);
+        box.setPadding(dp(16), dp(12), dp(16), dp(12));
+        box.setBackground(Ui.roundStroke(Ui.SURFACE, dp(16), dp(1), Ui.STROKE));
+        LinearLayout.LayoutParams bl = new LinearLayout.LayoutParams(-1, -2);
+        bl.setMargins(dp(14), dp(4), dp(14), dp(8));
+        col.addView(box, bl);
+        TextView count = Ui.text(this, "", 12, Ui.SUB, false);
+        count.setPadding(dp(18), 0, dp(14), dp(6));
+        col.addView(count);
+        ListView lv = new ListView(this);
+        lv.setDivider(null);
+        lv.setSelector(android.R.color.transparent);
+        lv.setPadding(dp(12), 0, dp(12), dp(16));
+        lv.setClipToPadding(false);
+        List<Idx> shown = new ArrayList<>();
+        lv.setAdapter(new BaseAdapter() {
+            @Override
+            public int getCount() {
+                return shown.size();
+            }
+
+            @Override
+            public Object getItem(int i) {
+                return shown.get(i);
+            }
+
+            @Override
+            public long getItemId(int i) {
+                return i;
+            }
+
+            @Override
+            public View getView(int i, View v, ViewGroup parent) {
+                Idx x = shown.get(i);
+                String n = x.titleId != null && x.path.split("/").length == 3 ? titles.name(x.titleId) : null;
+                String title = n != null ? x.titleId + " (" + n + ")" : x.name;
+                LinearLayout c = card(x.dir ? R.drawable.ic_folder : R.drawable.ic_file, title, x.path.replace("/", " › "), null);
+                if (x.titleId != null && n != null && x.path.split("/").length == 3) {
+                    Bitmap b = titles.icon(x.titleId);
+                    if (b != null) {
+                        FrameLayout badge = (FrameLayout) c.getChildAt(0);
+                        badge.removeAllViews();
+                        ImageView iv = new ImageView(MainActivity.this);
+                        iv.setImageBitmap(b);
+                        badge.setBackground(null);
+                        badge.addView(iv, new FrameLayout.LayoutParams(-1, -1));
+                    }
+                }
+                return wrapRow(c);
+            }
+        });
+        lv.setOnItemClickListener((a, v, i, id) -> {
+            Idx x = shown.get(i);
+            if (x.dir) {
+                browse(x.path);
+            } else {
+                int k = x.path.lastIndexOf('/');
+                browse(k < 0 ? "" : x.path.substring(0, k));
+            }
+        });
+        box.addTextChangedListener(new android.text.TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int a, int b, int c) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int a, int b, int c) {
+            }
+
+            @Override
+            public void afterTextChanged(android.text.Editable s) {
+                String q = s.toString().trim().toLowerCase(java.util.Locale.ROOT);
+                shown.clear();
+                if (q.length() >= 2 && index != null) {
+                    List<Idx> titlesFirst = new ArrayList<>(), others = new ArrayList<>();
+                    for (Idx x : index) {
+                        boolean isTitleDir = x.dir && x.titleId != null && x.path.split("/").length == 3;
+                        String tn = isTitleDir ? titles.name(x.titleId) : null;
+                        if (isTitleDir && (x.lower.contains(q) || (tn != null && tn.toLowerCase(java.util.Locale.ROOT).contains(q)))) titlesFirst.add(x);
+                        else if (x.lower.contains(q)) others.add(x);
+                        if (titlesFirst.size() + others.size() > 400) break;
+                    }
+                    shown.addAll(titlesFirst);
+                    shown.addAll(others);
+                    count.setText(shown.isEmpty() ? "No encontré nada con «" + s + "»"
+                            : shown.size() + (shown.size() > 400 ? "+" : "") + " resultados");
+                } else {
+                    count.setText(index == null ? "" : q.isEmpty() ? index.size() + " elementos en la unidad" : "Escribe al menos 2 letras");
+                }
+                ((BaseAdapter) lv.getAdapter()).notifyDataSetChanged();
+            }
+        });
+        count.setText(index.size() + " elementos en la unidad");
+        col.addView(lv, new LinearLayout.LayoutParams(-1, 0, 1));
+        setScreen(col);
+        box.requestFocus();
+    }
+
+    // ------------------------------------------------------------------ radiografía
+
+    private void showRadiography() {
+        final Xtaf x = fs;
+        if (x == null) return;
+        skip.set(false);
+        showOverlay("Midiendo lo que ocupa cada juego…");
+        setOverlayText("Preparando…", "Midiendo lo que ocupa cada juego…", "Omitir");
+        exec.execute(() -> {
+            try {
+                Map<String, long[]> sizes = new HashMap<>();      // juego -> {bytes, cuántos perfiles}
+                Map<String, String> where = new HashMap<>();
+                long other = 0, content = 0;
+                Xtaf.Entry c = x.find("Content");
+                long all = 0;
+                for (Xtaf.Entry e : x.listRoot()) {
+                    if (skip.get()) break;
+                    if (c != null && e.path.equals(c.path)) continue;
+                    all += e.dir ? x.totalSize(e, skip) : e.size;
+                }
+                other = all;
+                if (c != null) {
+                    List<Xtaf.Entry> profiles = x.list(c);
+                    int n = 0;
+                    for (Xtaf.Entry p : profiles) {
+                        if (!p.dir) continue;
+                        for (Xtaf.Entry t : x.list(p)) {
+                            if (skip.get()) break;
+                            if (!t.dir) continue;
+                            n++;
+                            final int k = n;
+                            if (k % 3 == 0) ui.post(() -> setOverlayDetail("Midiendo… (" + k + " carpetas de juegos)"));
+                            long sz = x.totalSize(t, skip);
+                            long[] acc = sizes.computeIfAbsent(t.name.toUpperCase(java.util.Locale.US), k2 -> new long[2]);
+                            acc[0] += sz;
+                            acc[1]++;
+                            where.putIfAbsent(t.name.toUpperCase(java.util.Locale.US), t.path);
+                            content += sz;
+                        }
+                    }
+                }
+                List<Map.Entry<String, long[]>> list = new ArrayList<>(sizes.entrySet());
+                list.sort((a, b) -> Long.compare(b.getValue()[0], a.getValue()[0]));
+                final long ct = content, ot = other;
+                ui.post(() -> {
+                    hideOverlay();
+                    if (fs != x) return;
+                    buildRadiographyScreen(list, where, ct, ot);
+                });
+            } catch (Throwable e) {
+                ui.post(() -> fail(e));
+            }
+        });
+    }
+
+    private static final int[] BAR_COLORS = {0xFF4ADE6B, 0xFF36D1B6, 0xFF3D9BFF, 0xFFB47CFF, 0xFFFFC857, 0xFFFF8A5B};
+
+    private void buildRadiographyScreen(List<Map.Entry<String, long[]>> list, Map<String, String> where, long content, long other) {
+        mode = Mode.RADIO;
+        LinearLayout col = Ui.column(this);
+        col.addView(header("Radiografía", partName, true));
+        long part = 0;
+        try {
+            part = parts != null && !parts.isEmpty() ? parts.get(0).source.length() : 0;
+            for (XboxDisk.Part p : parts) if (p.name.equals(partName)) part = p.source.length();
+        } catch (Exception ignored) {
+        }
+        LinearLayout sum = Ui.column(this);
+        sum.setPadding(dp(16), dp(14), dp(16), dp(14));
+        sum.setBackground(Ui.roundStroke(Ui.SURFACE, dp(18), dp(1), Ui.STROKE));
+        sum.addView(Ui.text(this, Ui.size(content + other) + " usados" + (part > 0 ? " de " + Ui.size(part) : ""), 20, Ui.TEXT, true));
+        TextView t2 = Ui.text(this, "Juegos, partidas y perfiles: " + Ui.size(content) + "  ·  Otros archivos: " + Ui.size(other), 12.5f, Ui.SUB, false);
+        t2.setPadding(0, dp(4), 0, 0);
+        sum.addView(t2);
+        if (part > 0) {
+            View bar = new View(this);
+            float frac = Math.min(1f, (content + other) / (float) part);
+            bar.setBackground(Ui.gradient(dp(5), 0xFF4ADE6B, 0xFF36D1B6));
+            FrameLayout track = new FrameLayout(this);
+            track.setBackground(Ui.round(Ui.SURFACE3, dp(5)));
+            track.addView(bar, new FrameLayout.LayoutParams(Math.max(dp(6), (int) ((getResources().getDisplayMetrics().widthPixels - dp(60)) * frac)), -1));
+            LinearLayout.LayoutParams tl = new LinearLayout.LayoutParams(-1, dp(10));
+            tl.topMargin = dp(10);
+            sum.addView(track, tl);
+        }
+        LinearLayout.LayoutParams sl = new LinearLayout.LayoutParams(-1, -2);
+        sl.setMargins(dp(14), dp(4), dp(14), dp(10));
+        col.addView(sum, sl);
+        ListView lv = new ListView(this);
+        lv.setDivider(null);
+        lv.setSelector(android.R.color.transparent);
+        lv.setPadding(dp(12), 0, dp(12), dp(16));
+        lv.setClipToPadding(false);
+        final long max = list.isEmpty() ? 1 : Math.max(1, list.get(0).getValue()[0]);
+        final long grand = Math.max(1, content);
+        lv.setAdapter(new BaseAdapter() {
+            @Override
+            public int getCount() {
+                return list.size();
+            }
+
+            @Override
+            public Object getItem(int i) {
+                return list.get(i);
+            }
+
+            @Override
+            public long getItemId(int i) {
+                return i;
+            }
+
+            @Override
+            public View getView(int i, View v, ViewGroup parent) {
+                Map.Entry<String, long[]> e = list.get(i);
+                String id = e.getKey();
+                String n = titles.name(id);
+                LinearLayout row = Ui.column(MainActivity.this);
+                row.setPadding(dp(12), dp(10), dp(12), dp(10));
+                LinearLayout top = Ui.row(MainActivity.this);
+                ImageView ic = new ImageView(MainActivity.this);
+                Bitmap b = titles.icon(id);
+                if (b != null) ic.setImageBitmap(b);
+                else ic.setImageDrawable(Ui.icon(MainActivity.this, R.drawable.ic_folder, Ui.ACCENT2));
+                top.addView(ic, new LinearLayout.LayoutParams(dp(34), dp(34)));
+                LinearLayout names = Ui.column(MainActivity.this);
+                names.setPadding(dp(12), 0, dp(8), 0);
+                TextView a = Ui.text(MainActivity.this, n != null ? n : id, 14.5f, Ui.TEXT, true);
+                a.setSingleLine(true);
+                a.setEllipsize(android.text.TextUtils.TruncateAt.END);
+                names.addView(a);
+                names.addView(Ui.text(MainActivity.this, id + (e.getValue()[1] > 1 ? "  ·  en " + e.getValue()[1] + " perfiles" : ""), 11.5f, Ui.SUB, false));
+                top.addView(names, Ui.weight(1));
+                top.addView(Ui.text(MainActivity.this, Ui.size(e.getValue()[0]) + "\n" + Math.round(e.getValue()[0] * 100f / grand) + " %", 12.5f, Ui.ACCENT2, true));
+                row.addView(top);
+                FrameLayout track = new FrameLayout(MainActivity.this);
+                track.setBackground(Ui.round(Ui.SURFACE3, dp(4)));
+                View bar = new View(MainActivity.this);
+                bar.setBackground(Ui.round(BAR_COLORS[i % BAR_COLORS.length], dp(4)));
+                int full = getResources().getDisplayMetrics().widthPixels - dp(48);
+                track.addView(bar, new FrameLayout.LayoutParams(Math.max(dp(4), (int) (full * (e.getValue()[0] / (float) max))), -1));
+                LinearLayout.LayoutParams tl = new LinearLayout.LayoutParams(-1, dp(8));
+                tl.topMargin = dp(8);
+                row.addView(track, tl);
+                row.setBackground(Ui.rippleRound(0x00000000, dp(14)));
+                row.setLayoutParams(new AbsListViewLayout(-1, -2));
+                return row;
+            }
+        });
+        lv.setOnItemClickListener((a, v, i, id) -> {
+            String p = where.get(list.get(i).getKey());
+            if (p != null) browse(p);
+        });
+        if (list.isEmpty()) {
+            TextView e = Ui.text(this, "No encontré juegos en esta partición (¿es la de datos?)", 14, Ui.SUB, false);
+            e.setGravity(Gravity.CENTER);
+            e.setPadding(dp(30), dp(40), dp(30), 0);
+            col.addView(e);
+        }
+        col.addView(lv, new LinearLayout.LayoutParams(-1, 0, 1));
+        setScreen(col);
     }
 
     // ------------------------------------------------------------------ «Preparando…»
@@ -891,12 +1675,19 @@ public class MainActivity extends Activity {
     }
 
     private void setOverlayText(String title, String detail) {
+        setOverlayText(title, detail, "Omitir");
+    }
+
+    private void setOverlayText(String title, String detail, String button) {
         if (overlay == null) return;
         TextView t = overlay.findViewById(11);
         if (t != null) t.setText(title);
         setOverlayDetail(detail);
-        View skipBtn = overlay.findViewById(13);
-        if (skipBtn != null) skipBtn.setVisibility(View.VISIBLE);
+        TextView skipBtn = overlay.findViewById(13);
+        if (skipBtn != null) {
+            skipBtn.setText(button);
+            skipBtn.setVisibility(View.VISIBLE);
+        }
     }
 
     private void hideOverlay() {

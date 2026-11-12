@@ -117,6 +117,134 @@ class Xtaf:
                 struct.pack_into('>H', self.img, o, v); o += 2
         return bytes(self.img)
 
+
+def sha1(b):
+    return hashlib.sha1(b).digest()
+
+def backing_data(n, sex):
+    r = (((n + 170) // 170) << sex) + n
+    if n < 170: return r
+    r += ((n + 28900) // 28900) << sex
+    if n < 28900: return r
+    return r + (1 << sex)
+
+def backing_table(n, sex):
+    if n < 170: return 0
+    r = (n // 170) * (0xAC if sex else 0xAB)
+    r += ((n // 28900) + 1) << sex
+    if n // 28900 == 0: return r
+    return r + (1 << sex)
+
+def paquete(entradas, sex, fragmentar=False, titulo='Paquete de prueba'):
+    """entradas: lista de (nombre, indice_del_padre, es_carpeta, datos). Devuelve los bytes de un paquete STFS con SHA-1 válidos."""
+    FIRST = 0xB000
+    nft = (len(entradas) + 1 + 63) // 64          # bloques de la tabla de archivos
+    nft = max(1, (len(entradas) + 63) // 64)
+    bloques = {}      # n -> bytes
+    sig = {}          # n -> siguiente
+    n = 0
+    ft_blocks = list(range(nft)); n = nft
+    cons = {}
+    asign = {}
+    archivos = [(i, e) for i, e in enumerate(entradas) if not e[2] and len(e[3]) > 0]
+    if fragmentar and len(archivos) >= 2:
+        # los dos primeros archivos se reparten los bloques de forma intercalada (no consecutivos)
+        (ia, ea), (ib, eb) = archivos[0], archivos[1]
+        na, nb = (len(ea[3]) + 4095) // 4096, (len(eb[3]) + 4095) // 4096
+        la, lb = [], []
+        while len(la) < na or len(lb) < nb:
+            if len(la) < na: la.append(n); n += 1
+            if len(lb) < nb: lb.append(n); n += 1
+        asign[ia], asign[ib] = la, lb
+        cons[ia] = cons[ib] = False
+        resto = archivos[2:]
+    else:
+        resto = archivos
+    for i, e in resto:
+        nb = (len(e[3]) + 4095) // 4096
+        asign[i] = list(range(n, n + nb)); n += nb
+        cons[i] = True
+    total = n
+    # contenido de los bloques y cadena
+    for k, b in enumerate(ft_blocks):
+        sig[b] = ft_blocks[k + 1] if k + 1 < len(ft_blocks) else 0xFFFFFF
+    for i, lst in asign.items():
+        data = entradas[i][3]
+        for k, b in enumerate(lst):
+            bloques[b] = data[k * 4096:(k + 1) * 4096].ljust(4096, b'\x00')
+            sig[b] = lst[k + 1] if k + 1 < len(lst) else 0xFFFFFF
+    # tabla de archivos
+    ft = bytearray(nft * 4096)
+    for i, (nombre, padre, dirp, data) in enumerate(entradas):
+        nb = nombre.encode('latin-1')
+        o = i * 64
+        ft[o:o + len(nb)] = nb
+        flags = len(nb) | (0x80 if dirp else 0) | (0x40 if cons.get(i, True) and not dirp else 0)
+        ft[o + 0x28] = flags
+        cnt = len(asign.get(i, []))
+        ft[o + 0x29:o + 0x2C] = cnt.to_bytes(3, 'little')
+        ft[o + 0x2C:o + 0x2F] = cnt.to_bytes(3, 'little')
+        ft[o + 0x2F:o + 0x32] = (asign[i][0] if i in asign else 0).to_bytes(3, 'little')
+        struct.pack_into('>HI', ft, o + 0x32, 0xFFFF if padre < 0 else padre, 0 if dirp else len(data))
+        date = ((2011 - 1980) << 9) | (3 << 5) | 9
+        tm = (10 << 11) | (20 << 5) | 5
+        struct.pack_into('>I', ft, o + 0x38, (date << 16) | tm)
+    for k, b in enumerate(ft_blocks):
+        bloques[b] = bytes(ft[k * 4096:(k + 1) * 4096])
+    # el archivo completo
+    ultimo_dato = backing_data(total - 1, sex) if total else 0
+    ngrupos = (total + 169) // 170
+    ultima_tabla = backing_table((ngrupos - 1) * 170, sex) + (1 if sex else 0) if ngrupos else 0
+    tam = FIRST + (max(ultimo_dato, ultima_tabla) + 1) * 4096 + 4096
+    img = bytearray(tam)
+    ht = stfs('CON ', 1, 0x4D5307E6, titulo, 'Juego de prueba', png(32, 32, (200, 30, 30)), png(64, 64, (30, 200, 60)))
+    img[0:len(ht)] = ht
+    struct.pack_into('>I', img, 0x340, 0xAD0E)
+    img[0x379] = 0x24
+    img[0x37B] = 0 if sex else 1
+    struct.pack_into('<H', img, 0x37C, nft)
+    img[0x37E:0x381] = (0).to_bytes(3, 'little')
+    struct.pack_into('>II', img, 0x395, total, 0)
+    for b, data in bloques.items():
+        at = FIRST + (backing_data(b, sex) << 12)
+        img[at:at + 4096] = data
+    # tablas de hash de nivel 0
+    for g in range(ngrupos):
+        t = bytearray(4096)
+        for k in range(170):
+            b = g * 170 + k
+            if b >= total: break
+            e = sha1(bloques.get(b, b'\x00' * 4096)) + bytes([0x80]) + sig.get(b, 0xFFFFFF).to_bytes(3, 'big')
+            t[k * 24:(k + 1) * 24] = e
+        base = FIRST + (backing_table(g * 170, sex) << 12)
+        if sex:
+            activa = g % 2       # la copia buena alterna: la otra queda vacía
+            img[base + activa * 4096:base + activa * 4096 + 4096] = t
+        else:
+            img[base:base + 4096] = t
+    return bytes(img)
+
+def hacer_paquetes(out):
+    rnd = random.Random(11)
+    a = bytes(rnd.randrange(256) for _ in range(10_000))
+    b = bytes(rnd.randrange(256) for _ in range(300_000))
+    leeme = 'Archivo de prueba\n'.encode()
+    texto = [('leeme.txt', -1, False, leeme), ('datos', -1, True, b''), ('a.bin', 1, False, a), ('b.bin', 1, False, b), ('vacio.txt', -1, False, b'')]
+    esperado = []
+    for nombre, sex, frag in (('paquete_macho.stfs', 0, False), ('paquete_hembra.stfs', 1, False), ('paquete_fragmentado.stfs', 0, True), ('paquete_hembra_frag.stfs', 1, True)):
+        open(os.path.join(out, nombre), 'wb').write(paquete(texto, sex, frag))
+    esperado.append('paq a.bin %d %s' % (len(a), hashlib.md5(a).hexdigest()))
+    esperado.append('paq b.bin %d %s' % (len(b), hashlib.md5(b).hexdigest()))
+    # un paquete grande: cruza el límite de 28 900 bloques (tablas de segundo nivel)
+    grande = rnd.randbytes(4096 * 29_300)
+    open(os.path.join(out, 'paquete_grande.stfs'), 'wb').write(paquete([('grande.bin', -1, False, grande), ('fin.txt', -1, False, b'fin')], 0, False))
+    esperado.append('grande %d %s' % (len(grande), hashlib.md5(grande).hexdigest()))
+    # un paquete mediano con dos copias de tablas, que cruza varias tablas de 170 bloques
+    medio = rnd.randbytes(900_000)
+    open(os.path.join(out, 'paquete_medio.stfs'), 'wb').write(paquete([('medio.bin', -1, False, medio), ('x', -1, False, b'x' * 5000)], 1, False))
+    esperado.append('medio %d %s' % (len(medio), hashlib.md5(medio).hexdigest()))
+    return esperado
+
 def construir(size, spc, esperado):
     x = Xtaf(size, spc)
     x.fat[1] = 0xFFFFFFFF if x.fat32 else 0xFFFF   # la raíz, un clúster
@@ -129,6 +257,7 @@ def construir(size, spc, esperado):
     c = x.path(root, ['Content', '0000000000000000', '4D5307E6', '00000001'])
     x.add_file(c, 'SAVE0001', stfs('CON ', 1, 0x4D5307E6, 'Partida 1', 'Gears of War', png(32, 32, (200, 30, 30)), png(64, 64, (30, 200, 60)), 5000))
     c2 = x.path(root, ['Content', '0000000000000000', '4D5307E6', '00000002'])
+    x.add_file(c, 'PAQUETE', paquete([('leeme.txt', -1, False, b'Dentro de la Xbox'), ('datos', -1, True, b''), ('a.bin', 1, False, b'A' * 9000)], 0, False))
     x.add_file(c2, 'DLC0001', stfs('LIVE', 2, 0x4D5307E6, 'Paquete de mapas', 'Gears of War', b'', png(64, 64, (30, 200, 60))))
     c3 = x.path(root, ['Content', '0000000000000000', '41560817', '00000001'])
     x.add_file(c3, 'GUARDADO', stfs('CON ', 1, 0x41560817, 'Nivel 3', 'Ñandú Racing', b'', png(64, 64, (10, 10, 250))))
@@ -151,6 +280,7 @@ def main():
     open(os.path.join(out, 'particion16.img'), 'wb').write(img16)
     img32 = construir(64 << 20, 1, [])
     open(os.path.join(out, 'particion32.img'), 'wb').write(img32)
+    esperado += hacer_paquetes(out)
     open(os.path.join(out, 'esperado.txt'), 'w', encoding='utf-8').write('\n'.join(esperado) + '\n')
     # disco duro de mentira: archivo disperso con la partición en 0x130EB0000
     with open(os.path.join(out, 'disco.img'), 'wb') as f:

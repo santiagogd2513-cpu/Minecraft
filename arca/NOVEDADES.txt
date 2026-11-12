@@ -1,3 +1,10 @@
+## 2
+🔎 Arca, etapa 2: buscar, medir, copiar y ver por dentro
+- Radiografía: cuánto ocupa cada juego, con barras de colores y el total de la unidad.
+- Buscar: por nombre de juego, de carpeta o de archivo, en toda la unidad.
+- Copiar al celular: toca un archivo o mantén pulsada una carpeta y elige «Copiar al celular». La primera vez eliges la carpeta de tu celular donde irán las copias. Solo lee de la consola: no escribe nada en ella.
+- Ver por dentro: abre una partida, un perfil o una descarga y mira los archivos y carpetas que trae, igual que Horizon. Los textos y las imágenes se ven en pantalla, y cualquier archivo se puede copiar al celular.
+
 ## 1
 📦 Arca: primera versión
 - Mira lo que hay en la memoria USB o en el disco duro de tu Xbox 360, desde el celular y sin root.

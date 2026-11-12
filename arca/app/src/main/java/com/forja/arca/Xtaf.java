@@ -184,6 +184,56 @@ final class Xtaf {
         return out;
     }
 
+    /** Copia un archivo entero a una salida, siguiendo la cadena de clústeres una sola vez. */
+    void copyFile(Entry e, java.io.OutputStream out, java.util.function.LongConsumer progress) throws IOException {
+        long left = e.size, done = 0;
+        int c = e.cluster;
+        byte[] buf = new byte[clusterBytes];
+        while (left > 0 && c >= 1) {
+            int n = (int) Math.min(left, clusterBytes);
+            src.read(clusterAt(c), buf, 0, n);
+            out.write(buf, 0, n);
+            left -= n;
+            done += n;
+            if (progress != null) progress.accept(done);
+            c = next(c);
+        }
+        if (left > 0) throw new IOException("El archivo «" + e.name + "» está incompleto o dañado");
+    }
+
+    /** Un archivo como fuente de bytes (para abrir un paquete que está adentro). */
+    ByteSource asSource(Entry e) {
+        Xtaf self = this;
+        return new ByteSource() {
+            @Override
+            public long length() {
+                return e.size;
+            }
+
+            @Override
+            public void read(long off, byte[] buf, int boff, int len) throws IOException {
+                if (off < 0 || off + len > e.size) throw new IOException("Lectura fuera del archivo");
+                byte[] b = self.readFile(e, off, len);
+                System.arraycopy(b, 0, buf, boff, len);
+            }
+        };
+    }
+
+    /** Cuánto ocupa todo lo que hay dentro de una carpeta (con tope de profundidad por si la tabla está dañada). */
+    long totalSize(Entry dir, java.util.concurrent.atomic.AtomicBoolean stop) throws IOException {
+        return totalSize(dir, stop, 0);
+    }
+
+    private long totalSize(Entry dir, java.util.concurrent.atomic.AtomicBoolean stop, int depth) throws IOException {
+        if (depth > 24) return 0;
+        long sum = 0;
+        for (Entry e : list(dir)) {
+            if (stop != null && stop.get()) return sum;
+            sum += e.dir ? totalSize(e, stop, depth + 1) : e.size;
+        }
+        return sum;
+    }
+
     /** Fecha y hora de la Xbox 360 (como FAT, con año base 1980) a milisegundos. */
     private static long date(int d, int t) {
         int year = 1980 + (d >> 9), month = (d >> 5) & 0xF, day = d & 0x1F;
