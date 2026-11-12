@@ -75,6 +75,9 @@ public class MainActivity extends Activity {
     private Mode mode = Mode.HOME;
     private StfsPackage pkg;
     private Xtaf.Entry pkgEntry;
+    private String phoneName;                // si el paquete abierto viene del celular
+    private Saf.FileSource phoneFile;
+    private static final int REQ_PHONE_PKG = 25;
     private int pkgParent = -1;
     private List<Idx> index;
     private Runnable afterDest;
@@ -151,7 +154,12 @@ public class MainActivity extends Activity {
                     showPackage();
                 } else {
                     pkg = null;
-                    showBrowser();
+                    if (pkgEntry == null && fs == null) {
+                        if (phoneFile != null) phoneFile.close();
+                        phoneFile = null;
+                        phoneName = null;
+                        showHome();
+                    } else showBrowser();
                 }
             }
             case SEARCH, RADIO -> showBrowser();
@@ -383,6 +391,10 @@ public class MainActivity extends Activity {
     @SuppressWarnings("deprecation")
     protected void onActivityResult(int req, int res, Intent data) {
         super.onActivityResult(req, res, data);
+        if (req == REQ_PHONE_PKG && res == RESULT_OK && data != null && data.getData() != null) {
+            openPhonePackage(data.getData());
+            return;
+        }
         if ((req == REQ_SLOT_A || req == REQ_SLOT_B) && res == RESULT_OK && data != null && data.getData() != null) {
             slotFromPhone(data.getData(), req == REQ_SLOT_A);
             return;
@@ -504,7 +516,7 @@ public class MainActivity extends Activity {
         sv.addView(col);
         col.addView(header("Arca", "Tu Xbox 360 en el bolsillo", false));
         // aviso de modo lectura
-        TextView ro = Ui.text(this, "🔒  Modo lectura: esta versión solo mira. No modifica tu memoria ni tu disco.", 13, Ui.ACCENT2, false);
+        TextView ro = Ui.text(this, "🔒  Modo lectura: Arca no modifica tu memoria ni tu disco. El editor solo cambia copias que tienes en tu celular.", 13, Ui.ACCENT2, false);
         ro.setPadding(dp(14), dp(12), dp(14), dp(12));
         ro.setLineSpacing(0, 1.1f);
         ro.setBackground(Ui.round(0x1A4ADE6B, dp(14)));
@@ -530,6 +542,12 @@ public class MainActivity extends Activity {
         col.addView(section("Memoria USB que Android ya abrió"));
         col.addView(card(R.drawable.ic_folder, "Elegir carpeta de una memoria USB",
                 "Para memorias configuradas por la consola: elige la memoria o su carpeta «Xbox360»", this::chooseFolder));
+
+        col.addView(section("Archivos en tu celular"));
+        col.addView(card(R.drawable.ic_file, "Abrir un paquete del celular",
+                "Una partida, un perfil o un contenido guardado en tu celular: míralo por dentro, verifícalo y mira su firma", this::pickPhonePackage));
+        col.addView(card(R.drawable.ic_file, "Editor de partidas",
+                "Cambia archivos de una copia de una partida con los de otra. Solo trabaja con copias en tu celular", this::showEditor));
 
         col.addView(section("Acerca de"));
         col.addView(card(R.drawable.ic_studio, "Forja Estudios", "Quién hace Arca", () -> Studio.show(this)));
@@ -1216,14 +1234,32 @@ public class MainActivity extends Activity {
         exec.execute(() -> {
             try {
                 StfsPackage p = StfsPackage.open(x.asSource(e));
-                StfsPackage.Result r = p.verify(skip, n -> ui.post(() -> setOverlayDetail(e.name + "\nRevisando bloques… " + (n * 100L / Math.max(1, p.totalBlocks)) + " %")));
-                ui.post(() -> {
-                    hideOverlay();
-                    if (!r.cancelled) showVerifyDialog(e.name, p.header.displayName, r);
-                });
+                runVerify(p, e.name);
             } catch (Throwable t) {
                 ui.post(() -> fail(t));
             }
+        });
+    }
+
+    /** Verifica un paquete que ya está abierto (por ejemplo uno del celular). */
+    private void verifyPackage(StfsPackage p, String name) {
+        skip.set(false);
+        showOverlay("");
+        setOverlayText("Verificando…", name, "Cancelar");
+        exec.execute(() -> {
+            try {
+                runVerify(p, name);
+            } catch (Throwable t) {
+                ui.post(() -> fail(t));
+            }
+        });
+    }
+
+    private void runVerify(StfsPackage p, String name) {
+        StfsPackage.Result r = p.verify(skip, n -> ui.post(() -> setOverlayDetail(name + "\nRevisando bloques… " + (n * 100L / Math.max(1, p.totalBlocks)) + " %")));
+        ui.post(() -> {
+            hideOverlay();
+            if (!r.cancelled) showVerifyDialog(name, p.header.displayName, r);
         });
     }
 
@@ -1928,18 +1964,58 @@ public class MainActivity extends Activity {
         });
     }
 
+    private void pickPhonePackage() {
+        Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        i.setType("*/*");
+        i.addCategory(Intent.CATEGORY_OPENABLE);
+        try {
+            startActivityForResult(i, REQ_PHONE_PKG);
+        } catch (Exception e) {
+            Aviso.show(this, root, e);
+        }
+    }
+
+    private void openPhonePackage(Uri uri) {
+        showOverlay("Abriendo el paquete…");
+        exec.execute(() -> {
+            Saf.FileSource f = null;
+            try {
+                f = new Saf.FileSource(getContentResolver(), uri);
+                final Saf.FileSource ff = f;
+                String name = uri.getLastPathSegment() == null ? "paquete" : uri.getLastPathSegment().replaceAll(".*[/:]", "");
+                StfsPackage p = StfsPackage.open(f);
+                ui.post(() -> {
+                    hideOverlay();
+                    if (phoneFile != null) phoneFile.close();
+                    phoneFile = ff;
+                    phoneName = name;
+                    pkg = p;
+                    pkgEntry = null;
+                    pkgParent = -1;
+                    showPackage();
+                });
+            } catch (Throwable t) {
+                if (f != null) f.close();
+                ui.post(() -> fail(t));
+            }
+        });
+    }
+
     private void showPackage() {
         mode = Mode.PACKAGE;
         final StfsPackage p = pkg;
         LinearLayout col = Ui.column(this);
-        String title = !p.header.displayName.isEmpty() ? p.header.displayName : pkgEntry.name;
+        String title = !p.header.displayName.isEmpty() ? p.header.displayName : pkgEntry != null ? pkgEntry.name : phoneName;
         String where = pkgParent < 0 ? "En la raíz del paquete" : pathInPackage(p, pkgParent);
         col.addView(header(title, where, true));
         LinearLayout info = Ui.row(this);
         info.setPadding(dp(14), 0, dp(14), dp(8));
         info.addView(chip(Stfs.typeName(p.header.contentType), () -> { }));
         info.addView(chip(p.items.size() + (p.items.size() == 1 ? " elemento" : " elementos"), () -> { }));
-        info.addView(chip("✅  Verificar", () -> verifyEntry(pkgEntry)));
+        info.addView(chip("✅  Verificar", () -> {
+            if (pkgEntry != null) verifyEntry(pkgEntry);
+            else verifyPackage(p, phoneName);
+        }));
         info.addView(chip("🔏  Firma", () -> showSignature(p)));
         col.addView(info);
         List<StfsPackage.Item> list = new ArrayList<>(p.children(pkgParent));
