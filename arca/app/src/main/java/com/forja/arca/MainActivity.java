@@ -30,6 +30,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -70,7 +71,7 @@ public class MainActivity extends Activity {
     private int generation;
 
     // pantallas y lo que hay abierto además del explorador
-    private enum Mode { HOME, PARTS, BROWSER, SEARCH, RADIO, PACKAGE }
+    private enum Mode { HOME, PARTS, BROWSER, SEARCH, RADIO, PACKAGE, EDITOR }
     private Mode mode = Mode.HOME;
     private StfsPackage pkg;
     private Xtaf.Entry pkgEntry;
@@ -154,6 +155,10 @@ public class MainActivity extends Activity {
                 }
             }
             case SEARCH, RADIO -> showBrowser();
+            case EDITOR -> {
+                if (fs != null) showBrowser();
+                else showHome();
+            }
             case BROWSER -> {
                 if (!path.isEmpty()) {
                     int i = path.lastIndexOf('/');
@@ -342,6 +347,7 @@ public class MainActivity extends Activity {
         pkgEntry = null;
         pkgParent = -1;
         index = null;
+        resetEditor();
     }
 
     private void fail(Throwable e) {
@@ -370,6 +376,10 @@ public class MainActivity extends Activity {
     @SuppressWarnings("deprecation")
     protected void onActivityResult(int req, int res, Intent data) {
         super.onActivityResult(req, res, data);
+        if ((req == REQ_SLOT_A || req == REQ_SLOT_B) && res == RESULT_OK && data != null && data.getData() != null) {
+            slotFromPhone(data.getData(), req == REQ_SLOT_A);
+            return;
+        }
         if (req == REQ_DEST) {
             Runnable next = afterDest;
             afterDest = null;
@@ -758,6 +768,7 @@ public class MainActivity extends Activity {
         tools.addView(chip("📊  Radiografía", this::showRadiography));
         tools.addView(chip("✅  Verificar", this::verifyAllMenu));
         tools.addView(chip("💾  Copias", this::backupMenu));
+        tools.addView(chip("✏️  Editor", this::showEditor));
         android.widget.HorizontalScrollView hs = new android.widget.HorizontalScrollView(this);
         hs.setHorizontalScrollBarEnabled(false);
         hs.addView(tools);
@@ -919,6 +930,14 @@ public class MainActivity extends Activity {
             box.addView(dialogAction("✅  Verificar el paquete", () -> {
                 dlg[0].dismiss();
                 verifyEntry(e);
+            }));
+            box.addView(dialogAction("✏️  Usar como origen (A) en el editor", () -> {
+                dlg[0].dismiss();
+                useInEditor(e, true);
+            }));
+            box.addView(dialogAction("✏️  Usar como destino (B) en el editor", () -> {
+                dlg[0].dismiss();
+                useInEditor(e, false);
             }));
         }
         box.addView(dialogAction("📤  Copiar al celular", () -> {
@@ -1490,6 +1509,377 @@ public class MainActivity extends Activity {
         st.note = broken.isEmpty() ? "Todos los paquetes pasaron la verificación ✅"
                 : "⚠️ " + broken.size() + (broken.size() == 1 ? " paquete ya estaba dañado" : " paquetes ya estaban dañados") + " en la consola:" + badList(broken, 8);
         st.note += "\n\nLa copia quedó en la carpeta «Copia " + stamp + "».";
+    }
+
+    // ------------------------------------------------------------------ editor por paneles
+
+    /** Uno de los dos paquetes del editor. */
+    private static final class Slot {
+        String label;
+        StfsPackage pkg;
+        ByteSource src;
+        Saf.FileSource file;     // si viene del celular
+        Map<String, StfsPackage.Item> files = new java.util.TreeMap<>();
+    }
+
+    private Slot slotA, slotB;
+    private StfsEditor editor;
+    private final Set<String> changed = new HashSet<>();
+    private final Map<String, Boolean> sameCache = new HashMap<>();
+    private static final int REQ_SLOT_A = 23, REQ_SLOT_B = 24;
+
+    private static String pathOf(StfsPackage p, StfsPackage.Item it) {
+        StringBuilder b = new StringBuilder(it.name);
+        int i = it.parent, guard = 0;
+        while (i >= 0 && guard++ < 40) {
+            b.insert(0, p.items.get(i).name + "/");
+            i = p.items.get(i).parent;
+        }
+        return b.toString();
+    }
+
+    private Slot makeSlot(String label, ByteSource src, Saf.FileSource file) throws java.io.IOException {
+        Slot s = new Slot();
+        s.label = label;
+        s.src = src;
+        s.file = file;
+        s.pkg = StfsPackage.open(src);
+        for (StfsPackage.Item it : s.pkg.items) if (!it.dir) s.files.put(pathOf(s.pkg, it), it);
+        return s;
+    }
+
+    private void closeSlot(Slot s) {
+        if (s != null && s.file != null) s.file.close();
+    }
+
+    private void resetEditor() {
+        closeSlot(slotA);
+        closeSlot(slotB);
+        slotA = slotB = null;
+        editor = null;
+        changed.clear();
+        sameCache.clear();
+    }
+
+    /** Pone un paquete de la consola como origen (A) o destino (B). */
+    private void useInEditor(Xtaf.Entry e, boolean asSource) {
+        final Xtaf x = fs;
+        if (x == null) return;
+        exec.execute(() -> {
+            try {
+                Slot s = makeSlot(e.name + " (de la consola)", x.asSource(e), null);
+                ui.post(() -> {
+                    if (asSource) {
+                        closeSlot(slotA);
+                        slotA = s;
+                    } else {
+                        closeSlot(slotB);
+                        slotB = s;
+                        editor = null;
+                        changed.clear();
+                    }
+                    sameCache.clear();
+                    Toast.makeText(this, (asSource ? "Origen: " : "Destino: ") + e.name, Toast.LENGTH_SHORT).show();
+                });
+            } catch (Throwable t) {
+                ui.post(() -> fail(t));
+            }
+        });
+    }
+
+    private void pickSlotFile(boolean asSource) {
+        Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        i.setType("*/*");
+        i.addCategory(Intent.CATEGORY_OPENABLE);
+        try {
+            startActivityForResult(i, asSource ? REQ_SLOT_A : REQ_SLOT_B);
+        } catch (Exception e) {
+            Aviso.show(this, root, e);
+        }
+    }
+
+    private void slotFromPhone(Uri uri, boolean asSource) {
+        showOverlay("Abriendo el paquete…");
+        exec.execute(() -> {
+            Saf.FileSource f = null;
+            try {
+                f = new Saf.FileSource(getContentResolver(), uri);
+                String name = uri.getLastPathSegment() == null ? "paquete" : uri.getLastPathSegment().replaceAll(".*[/:]", "");
+                Slot s = makeSlot(name + " (del celular)", f, f);
+                ui.post(() -> {
+                    hideOverlay();
+                    if (asSource) {
+                        closeSlot(slotA);
+                        slotA = s;
+                    } else {
+                        closeSlot(slotB);
+                        slotB = s;
+                        editor = null;
+                        changed.clear();
+                    }
+                    sameCache.clear();
+                    showEditor();
+                });
+            } catch (Throwable t) {
+                if (f != null) f.close();
+                ui.post(() -> fail(t));
+            }
+        });
+    }
+
+    private void showEditor() {
+        mode = Mode.EDITOR;
+        LinearLayout col = Ui.column(this);
+        col.addView(header("Editor de partidas", "Trabaja con copias en tu celular", true));
+        TextView warn = Ui.text(this, "Esto no escribe en tu consola: cambia una COPIA de la partida en el celular. Para llevarla de vuelta falta firmarla, "
+                + "y eso todavía no está.", 12.5f, Ui.WARN, false);
+        warn.setPadding(dp(14), dp(10), dp(14), dp(10));
+        warn.setBackground(Ui.round(0x1AFFB547, dp(14)));
+        LinearLayout.LayoutParams wl = new LinearLayout.LayoutParams(-1, -2);
+        wl.setMargins(dp(14), 0, dp(14), dp(8));
+        col.addView(warn, wl);
+        col.addView(slotCard("A · Origen (de donde copio los archivos)", slotA, true));
+        col.addView(slotCard("B · Destino (el que se cambia)", slotB, false));
+        if (slotA != null && slotB != null) {
+            List<String> paths = new ArrayList<>(new java.util.TreeSet<>(union()));
+            LinearLayout bar = Ui.row(this);
+            bar.setPadding(dp(14), dp(4), dp(14), dp(8));
+            bar.addView(chip("🔁  Reemplazar todo", this::replaceAll));
+            bar.addView(chip("💾  Guardar copia editada" + (changed.isEmpty() ? "" : " (" + changed.size() + ")"), this::saveEdited));
+            android.widget.HorizontalScrollView hs = new android.widget.HorizontalScrollView(this);
+            hs.setHorizontalScrollBarEnabled(false);
+            hs.addView(bar);
+            col.addView(hs);
+            ListView lv = new ListView(this);
+            lv.setDivider(null);
+            lv.setSelector(android.R.color.transparent);
+            lv.setPadding(dp(12), 0, dp(12), dp(16));
+            lv.setClipToPadding(false);
+            lv.setAdapter(new BaseAdapter() {
+                @Override
+                public int getCount() {
+                    return paths.size();
+                }
+
+                @Override
+                public Object getItem(int i) {
+                    return paths.get(i);
+                }
+
+                @Override
+                public long getItemId(int i) {
+                    return i;
+                }
+
+                @Override
+                public View getView(int i, View v, ViewGroup parent) {
+                    String p = paths.get(i);
+                    StfsPackage.Item a = slotA.files.get(p), b = slotB.files.get(p);
+                    String state;
+                    if (a == null) state = "solo en B";
+                    else if (b == null) state = "solo en A";
+                    else if (changed.contains(p)) state = "✅ ya reemplazado";
+                    else {
+                        Boolean same = sameCache.get(p);
+                        state = same == null ? "comparando…" : same ? "igual" : "distinto";
+                    }
+                    String sizes = (a == null ? "—" : Ui.size(a.size)) + "  ·  " + (b == null ? "—" : Ui.size(b.size));
+                    LinearLayout c = card(R.drawable.ic_file, p, "A · B:  " + sizes + "   →   " + state, null);
+                    return wrapRow(c);
+                }
+            });
+            lv.setOnItemClickListener((x, v, i, id) -> replaceOne(paths.get(i)));
+            col.addView(lv, new LinearLayout.LayoutParams(-1, 0, 1));
+            compareInBackground(paths);
+        } else {
+            TextView hint = Ui.text(this, "Elige los dos paquetes: en el explorador, toca un paquete y escoge «Usar como origen (A)» o «Usar como destino (B)», "
+                    + "o ábrelos desde el celular con los botones de arriba.", 13.5f, Ui.SUB, false);
+            hint.setPadding(dp(20), dp(10), dp(20), 0);
+            col.addView(hint);
+        }
+        setScreen(col);
+    }
+
+    private Set<String> union() {
+        Set<String> u = new HashSet<>(slotA.files.keySet());
+        u.addAll(slotB.files.keySet());
+        return u;
+    }
+
+    private LinearLayout slotCard(String title, Slot s, boolean asSource) {
+        LinearLayout c = card(R.drawable.ic_file, title, s == null ? "Sin elegir" : s.label + "  ·  " + s.files.size() + " archivos", null);
+        LinearLayout t = (LinearLayout) c.getChildAt(1);
+        LinearLayout buttons = Ui.row(this);
+        buttons.setPadding(0, dp(8), 0, 0);
+        buttons.addView(chip("📱  Del celular", () -> pickSlotFile(asSource)));
+        if (s != null) {
+            buttons.addView(chip("Quitar", () -> {
+                if (asSource) {
+                    closeSlot(slotA);
+                    slotA = null;
+                } else {
+                    closeSlot(slotB);
+                    slotB = null;
+                    editor = null;
+                    changed.clear();
+                }
+                sameCache.clear();
+                showEditor();
+            }));
+        }
+        t.addView(buttons);
+        return c;
+    }
+
+    /** Dice cuáles archivos son distintos entre A y B (lee los dos). */
+    private void compareInBackground(List<String> paths) {
+        final Slot a = slotA, b = slotB;
+        exec.execute(() -> {
+            int n = 0;
+            for (String p : paths) {
+                if (mode != Mode.EDITOR || slotA != a || slotB != b) return;
+                StfsPackage.Item ia = a.files.get(p), ib = b.files.get(p);
+                if (ia == null || ib == null || sameCache.containsKey(p)) continue;
+                boolean same = false;
+                try {
+                    if (ia.size == ib.size) same = Arrays.equals(digest(a.pkg, ia), digest(b.pkg, ib));
+                } catch (Exception ignored) {
+                }
+                sameCache.put(p, same);
+                if (++n % 4 == 0) ui.post(() -> {
+                    if (mode == Mode.EDITOR) showEditor();
+                });
+            }
+            ui.post(() -> {
+                if (mode == Mode.EDITOR) showEditor();
+            });
+        });
+    }
+
+    private static byte[] digest(StfsPackage p, StfsPackage.Item it) throws Exception {
+        java.security.MessageDigest md = java.security.MessageDigest.getInstance("SHA-1");
+        p.copyTo(it, new java.io.OutputStream() {
+            @Override
+            public void write(int b) {
+                md.update((byte) b);
+            }
+
+            @Override
+            public void write(byte[] b, int off, int len) {
+                md.update(b, off, len);
+            }
+        }, null);
+        return md.digest();
+    }
+
+    private StfsEditor editorForB() throws java.io.IOException {
+        if (editor == null) editor = StfsEditor.open(slotB.pkg);
+        return editor;
+    }
+
+    private void replaceOne(String p) {
+        if (slotA == null || slotB == null) return;
+        StfsPackage.Item a = slotA.files.get(p), b = slotB.files.get(p);
+        if (a == null || b == null) {
+            Toast.makeText(this, a == null ? "Ese archivo solo está en B" : "Ese archivo solo está en A: agregar archivos nuevos todavía no se puede", Toast.LENGTH_LONG).show();
+            return;
+        }
+        if (changed.contains(p)) {
+            Toast.makeText(this, "Ya lo reemplazaste", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        new AlertDialog.Builder(this, R.style.Theme_Arca_Dialog)
+                .setTitle("Reemplazar «" + p + "»")
+                .setMessage("El de B (" + Ui.size(b.size) + ") se cambia por el de A (" + Ui.size(a.size) + "). Solo cambia la copia que guardes.")
+                .setPositiveButton("Reemplazar", (d, w) -> doReplace(List.of(p)))
+                .setNegativeButton("Cancelar", null)
+                .show();
+    }
+
+    private void replaceAll() {
+        List<String> todo = new ArrayList<>();
+        for (String p : union()) {
+            StfsPackage.Item a = slotA.files.get(p), b = slotB.files.get(p);
+            if (a != null && b != null && !changed.contains(p) && Boolean.FALSE.equals(sameCache.get(p))) todo.add(p);
+        }
+        if (todo.isEmpty()) {
+            Toast.makeText(this, "No hay archivos distintos para reemplazar (o todavía estoy comparando)", Toast.LENGTH_LONG).show();
+            return;
+        }
+        new AlertDialog.Builder(this, R.style.Theme_Arca_Dialog)
+                .setTitle("Reemplazar todo")
+                .setMessage("Se van a reemplazar " + todo.size() + " archivos de B con los de A. Los que ocupen otra cantidad de bloques no se pueden todavía y se saltan.")
+                .setPositiveButton("Reemplazar", (d, w) -> doReplace(todo))
+                .setNegativeButton("Cancelar", null)
+                .show();
+    }
+
+    private void doReplace(List<String> paths) {
+        final Slot a = slotA, b = slotB;
+        showOverlay("");
+        skip.set(false);
+        setOverlayText("Reemplazando…", "", "Cancelar");
+        exec.execute(() -> {
+            List<String> skipped = new ArrayList<>();
+            int ok = 0;
+            try {
+                StfsEditor ed = editorForB();
+                for (String p : paths) {
+                    if (skip.get()) break;
+                    StfsPackage.Item ia = a.files.get(p), ib = b.files.get(p);
+                    final String nm = p;
+                    ui.post(() -> setOverlayDetail(nm));
+                    if (!ed.fits(ib, ia.size)) {
+                        skipped.add(p + " (ocupa " + (ia.size + 4095) / 4096 + " bloques y en B ocupa " + (ib.size + 4095) / 4096 + ")");
+                        continue;
+                    }
+                    java.io.ByteArrayOutputStream o = new java.io.ByteArrayOutputStream((int) Math.min(ia.size, 1 << 26));
+                    a.pkg.copyTo(ia, o, null);
+                    ed.replace(ib, o.toByteArray());
+                    changed.add(p);
+                    ok++;
+                }
+                final int fOk = ok;
+                ui.post(() -> {
+                    hideOverlay();
+                    showEditor();
+                    if (!skipped.isEmpty()) {
+                        new AlertDialog.Builder(this, R.style.Theme_Arca_Dialog).setTitle("Algunos no se pudieron reemplazar")
+                                .setMessage(fOk + " reemplazados.\n\nNo se pudieron:" + badList(skipped, 10)
+                                        + "\n\nCambiar la cantidad de bloques de un archivo todavía no se puede.")
+                                .setPositiveButton("Entendido", null).show();
+                    }
+                });
+            } catch (Throwable t) {
+                ui.post(() -> fail(t));
+            }
+        });
+    }
+
+    private void saveEdited() {
+        if (slotB == null || editor == null || changed.isEmpty()) {
+            Toast.makeText(this, "Todavía no reemplazaste nada", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        final StfsEditor ed = editor;
+        final Slot b = slotB;
+        final long total = b.src.length();
+        runCopy("copia editada", total, (parent, st) -> {
+            ed.finish();
+            ByteSource view = ed.view();
+            StfsPackage check = StfsPackage.open(view);
+            StfsPackage.Result r = check.verify(skip, null);
+            if (r.cancelled) throw new java.io.IOException("Copia cancelada");
+            String name = b.label.replaceAll(" \\(.*\\)$", "") + " (editado)";
+            try (java.io.OutputStream o = makeFile(parent, name)) {
+                ed.writeTo(o, pr -> st.add(pr - st.done));
+            }
+            st.files = 1;
+            st.note = (r.bad == 0 && r.diag.header.equals("ok") && r.diag.top.equals("ok")
+                    ? "Revisé la copia editada: todos los bloques y las tablas están bien ✅"
+                    : "⚠️ La copia editada no pasó la revisión (" + r.bad + " bloques mal). No la uses.")
+                    + "\n\nOjo: todavía está SIN FIRMAR, así que la consola no la aceptará hasta que se firme.";
+        });
     }
 
     // ------------------------------------------------------------------ ver por dentro un paquete

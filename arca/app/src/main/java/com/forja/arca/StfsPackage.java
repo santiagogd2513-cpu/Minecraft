@@ -25,6 +25,7 @@ final class StfsPackage {
         String name = "";
         boolean dir, consecutive;
         int start, parent = -1, index;
+        int tableBlock, tableOffset;     // dónde está su entrada en la tabla de archivos
         long size, modified;
         int[] blocks;        // se calcula al leer
     }
@@ -176,6 +177,8 @@ final class StfsPackage {
                 }
                 Item it = new Item();
                 it.index = items.size();
+                it.tableBlock = b;
+                it.tableOffset = o;
                 it.name = new String(blk, o, Math.min(nameLen, 0x28), java.nio.charset.StandardCharsets.ISO_8859_1);
                 it.consecutive = (flags & 0x40) != 0;
                 it.dir = (flags & 0x80) != 0;
@@ -358,6 +361,51 @@ final class StfsPackage {
             d.header = d.top.equals("no comprobada") ? "no comprobada" : d.header;
         }
         return d;
+    }
+
+    // ------------------------------------------------------------------ para el editor
+
+    int sex() {
+        return sex;
+    }
+
+    long firstHash() {
+        return firstHash;
+    }
+
+    int level() {
+        return allBlocks <= PER_TABLE ? 0 : allBlocks <= PER_TABLE2 ? 1 : 2;
+    }
+
+    int groups() {
+        return (allBlocks + PER_TABLE - 1) / PER_TABLE;
+    }
+
+    long blockOffset(int n) {
+        return dataOffset(n);
+    }
+
+    long tableOffsetL0(int group, int copy) {
+        return tableOffset((long) group * PER_TABLE, copy);
+    }
+
+    long tableOffsetL1(int k, int copy) {
+        long step0 = sex == 1 ? 0xAC : 0xAB, step1 = sex == 1 ? 0x723A : 0x718F;
+        long backing = k == 0 ? step0 : k * step1 + (1L << sex);
+        return firstHash + ((backing + copy) << 12);
+    }
+
+    long tableOffsetL2(int copy) {
+        long step1 = sex == 1 ? 0x723A : 0x718F;
+        return firstHash + ((step1 + copy) << 12);
+    }
+
+    int[] blocksFor(Item it) throws IOException {
+        return blocksOf(it);
+    }
+
+    ByteSource source() {
+        return src;
     }
 
     int countBadBlocks(java.util.concurrent.atomic.AtomicBoolean stop) {

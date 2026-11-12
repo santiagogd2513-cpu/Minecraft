@@ -135,6 +135,59 @@ public final class ArcaTest {
         check(!p.verify(null, null).cancelled && p.verify(null, null).total == p.totalBlocks, "revisar un paquete sano no da errores");
     }
 
+    /** Edita un paquete (cambia dos archivos), recalcula todo y comprueba que queda sano y con lo nuevo. */
+    static void editar(String label, ByteSource src, String archivo, boolean conNivel2) throws Exception {
+        System.out.println("== editar: " + label);
+        StfsPackage p = StfsPackage.open(src);
+        StfsEditor ed = StfsEditor.open(p);
+        StfsPackage.Item a = null, b = null;
+        for (StfsPackage.Item it : p.items) {
+            if (it.name.equals(archivo)) a = it;
+            if (it.name.equals("fin.txt") || it.name.equals("leeme.txt")) b = it;
+        }
+        byte[] before = readAll(p, a);
+        byte[] nuevo = before.clone();
+        for (int i = 0; i < nuevo.length; i += 97) nuevo[i] ^= 0x5A;       // mismo tamaño
+        byte[] masChico = java.util.Arrays.copyOf(before, before.length - 7);   // un poco menos, mismos bloques
+        boolean chico = ed.fits(a, masChico.length);
+        check(ed.fits(a, nuevo.length), "el archivo nuevo cabe en los mismos bloques");
+        ed.replace(a, nuevo);
+        if (b != null && b.size > 0) {
+            byte[] nb = new byte[(int) b.size];
+            java.util.Arrays.fill(nb, (byte) 'Z');
+            ed.replace(b, nb);
+        }
+        // otro tamaño de bloques: debe negarse
+        boolean negado = false;
+        try {
+            ed.replace(a, new byte[nuevo.length + 5000]);
+        } catch (IOException e) {
+            negado = true;
+        }
+        check(negado, "si cambia la cantidad de bloques, se niega");
+        ed.finish();
+        ByteSource out = ed.view();
+        StfsPackage q = StfsPackage.open(out);
+        StfsPackage.Result r = q.verify(null, null);
+        check(r.bad == 0, "después de editar, todos los bloques pasan el SHA-1");
+        check(r.diag.header.equals("ok") && r.diag.top.equals("ok") && (r.diag.level1.equals("ok") || r.diag.level1.equals("no aplica") || r.diag.level1.startsWith("no comprobada")),
+                "y la estructura queda bien: " + r.diag.header + " / " + r.diag.top + " / " + r.diag.level1);
+        StfsPackage.Item a2 = null;
+        for (StfsPackage.Item it : q.items) if (it.name.equals(archivo)) a2 = it;
+        check(java.util.Arrays.equals(readAll(q, a2), nuevo), "el archivo editado tiene el contenido nuevo");
+        // los demás archivos no cambian
+        for (StfsPackage.Item it : p.items) {
+            if (it.dir || it.name.equals(archivo) || it == b) continue;
+            StfsPackage.Item m = null;
+            for (StfsPackage.Item k : q.items) if (k.name.equals(it.name)) m = k;
+            check(java.util.Arrays.equals(readAll(p, it), readAll(q, m)), "«" + it.name + "» sigue igual");
+        }
+        // se escribe a un archivo y se vuelve a leer
+        java.io.ByteArrayOutputStream bo = new java.io.ByteArrayOutputStream();
+        ed.writeTo(bo, null);
+        check(bo.size() == src.length(), "el paquete resultante mide lo mismo");
+    }
+
     public static void main(String[] a) throws Exception {
         File dir = new File(a[0]);
         String md5 = null;
@@ -195,6 +248,13 @@ public final class ArcaTest {
         check(gr.countBadBlocks(null) == 0, "todos los bloques bien");
         StfsPackage.Diag dgr = gr.verify(null, null).diag;
         check(dgr.header.equals("ok") && dgr.top.equals("ok"), "con tabla de nivel 2: " + dgr.header + " / " + dgr.top + " / " + dgr.level1);
+
+        editar("una tabla por grupo", file(new File(dir, "paquete_macho.stfs")), "a.bin", false);
+        editar("dos copias de cada tabla", file(new File(dir, "paquete_hembra.stfs")), "a.bin", false);
+        editar("fragmentado", file(new File(dir, "paquete_fragmentado.stfs")), "a.bin", false);
+        editar("dos copias y fragmentado", file(new File(dir, "paquete_hembra_frag.stfs")), "a.bin", false);
+        editar("con tabla de nivel 1 y dos copias", file(new File(dir, "paquete_medio.stfs")), "medio.bin", false);
+        editar("con tabla de nivel 2", file(new File(dir, "paquete_grande.stfs")), "grande.bin", true);
 
         System.out.println("== un paquete dentro de la partición de la consola");
         Xtaf fs0 = new Xtaf(file(new File(dir, "particion16.img")));
