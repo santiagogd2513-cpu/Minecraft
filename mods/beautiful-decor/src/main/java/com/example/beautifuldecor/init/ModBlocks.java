@@ -54,6 +54,7 @@ import com.example.beautifuldecor.block.HsDesktopBlock;
 import com.example.beautifuldecor.block.LaptopBlock;
 import com.example.beautifuldecor.block.PedestalFanBlock;
 import com.example.beautifuldecor.block.PictureBlock;
+import com.example.beautifuldecor.block.RojoToroMinibarBlock;
 import com.example.beautifuldecor.block.NeonLightBlock;
 import com.example.beautifuldecor.block.SlideRampBlock;
 import com.example.beautifuldecor.block.SofaBlock;
@@ -188,6 +189,14 @@ public class ModBlocks {
     public static final RegistryObject<Block> PAINTING_CIRCUIT_AERIAL = BLOCKS.register("painting_circuit_aerial",
             () -> new PictureBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD)
                     .strength(0.5f).sound(SoundType.WOOD).noOcclusion()));
+
+    // ===== V5.2.0: Rojo Toro (marca parodia) =====
+    public static final RegistryObject<Block> PAINTING_ROJOTORO = BLOCKS.register("painting_rojotoro",
+            () -> new PictureBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD)
+                    .strength(0.5f).sound(SoundType.WOOD).noOcclusion()));
+    public static final RegistryObject<Block> ROJOTORO_MINIBAR = BLOCKS.register("rojotoro_minibar",
+            () -> new RojoToroMinibarBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_RED)
+                    .strength(1.5f).sound(SoundType.METAL).noOcclusion()));
 
     // ===== PLANTAS Y DECORACION =====
     public static final RegistryObject<Block> PLANT_POT = BLOCKS.register("plant_pot",

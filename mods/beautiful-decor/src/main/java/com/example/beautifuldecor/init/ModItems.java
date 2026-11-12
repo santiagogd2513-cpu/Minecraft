@@ -66,6 +66,13 @@ public class ModItems {
     public static final RegistryObject<Item> TOILET_PAPER = ITEMS.register("toilet_paper",
             () -> new BlockItem(ModBlocks.TOILET_PAPER.get(), new Item.Properties()));
 
+    // V5.2.0: Rojo Toro
+    public static final RegistryObject<Item> ROJOTORO_CAN = ITEMS.register("rojotoro_can", () -> new com.example.beautifuldecor.item.RojoToroCanItem());
+    public static final RegistryObject<Item> ROJOTORO_MINIBAR = ITEMS.register("rojotoro_minibar",
+            () -> new BlockItem(ModBlocks.ROJOTORO_MINIBAR.get(), new Item.Properties()));
+    public static final RegistryObject<Item> PAINTING_ROJOTORO = ITEMS.register("painting_rojotoro",
+            () -> new BlockItem(ModBlocks.PAINTING_ROJOTORO.get(), new Item.Properties()));
+
     // V3.0.0: cuadros de pared
     public static final RegistryObject<Item> PAINTING_VALLEY_DAWN = ITEMS.register("painting_valley_dawn",
             () -> new BlockItem(ModBlocks.PAINTING_VALLEY_DAWN.get(), new Item.Properties()));

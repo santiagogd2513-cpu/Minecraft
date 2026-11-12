@@ -60,6 +60,8 @@ public final class HsAudioPlayer {
     private volatile String message = "";
     private volatile float volume = 0.8f;
     private volatile float distanceGain = 1.0f;
+    /** V5.2.0: true = más allá del alcance el sonido solo se silencia (sigue corriendo, para que el video del anuncio no pierda su reloj). */
+    private volatile boolean muteWhenFar;
     // V4.1.2: alcance propio de cada reproductor. El del navegador sigue con la bajada lineal de siempre (12 -> 40 bloques); los de
     // televisores, anuncios y radios de vehículo usan la curva de AudioFalloff con el alcance que se les ponga con setRange.
     private volatile boolean curved;
@@ -260,6 +262,10 @@ public final class HsAudioPlayer {
         }
         double d = minecraft.player.position().distanceTo(Vec3.atCenterOf(pos));
         if (d > this.maxBlocks) {
+            if (this.muteWhenFar) {
+                this.distanceGain = 0.0f;
+                return;
+            }
             stop();
             return;
         }
@@ -275,6 +281,10 @@ public final class HsAudioPlayer {
      * {@link com.example.beautifuldecor.ad.AudioFalloff}. Más allá de {@code max} el sonido se detiene solo, sin importar la distancia
      * de renderizado del juego.
      */
+    public void setMuteWhenFar(boolean mute) {
+        this.muteWhenFar = mute;
+    }
+
     public void setRange(double full, double max) {
         this.fullBlocks = full;
         this.maxBlocks = Math.max(max, full + 1.0);

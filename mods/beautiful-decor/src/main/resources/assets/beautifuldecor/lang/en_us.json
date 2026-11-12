@@ -1095,5 +1095,9 @@
   "item.beautifuldecor.metro_head": "Metro Head Car",
   "entity.beautifuldecor.metro_head": "Metro Head Car",
   "item.beautifuldecor.metro_car": "Metro Car",
-  "entity.beautifuldecor.metro_car": "Metro Car"
+  "entity.beautifuldecor.metro_car": "Metro Car",
+  "block.beautifuldecor.painting_rojotoro": "Rojo Toro Poster",
+  "block.beautifuldecor.rojotoro_minibar": "Rojo Toro Minibar",
+  "item.beautifuldecor.rojotoro_can": "Rojo Toro Can",
+  "message.beautifuldecor.rojotoro_minibar_price": "One can costs 1 emerald"
 }

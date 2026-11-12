@@ -105,6 +105,6 @@ public class AdScreenRenderer implements BlockEntityRenderer<AdScreenBlockEntity
 
     @Override
     public int getViewDistance() {
-        return 96;
+        return (int) AdPlayback.VIDEO_RANGE;
     }
 }

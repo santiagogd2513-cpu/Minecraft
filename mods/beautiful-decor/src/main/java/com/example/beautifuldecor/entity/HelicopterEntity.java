@@ -437,9 +437,9 @@ public class HelicopterEntity extends Entity implements PaintableVehicle, HasVeh
 
     /** V4.7.0: objetos en el almacenamiento (el servidor lo cuenta cada segundo y lo sincroniza: el cliente que conduce no ve el contenido). */
     private void syncCargo() {
-        if (!this.level().isClientSide && this instanceof HasVehicleStorage st && st.hasStorage() && this.tickCount % 20 == 0) {
+        if (!this.level().isClientSide && this.hasStorage() && this.tickCount % 20 == 0) {
             int items = 0;
-            net.minecraft.world.SimpleContainer box = st.getStorage();
+            net.minecraft.world.SimpleContainer box = this.getStorage();
             for (int i = 0; i < box.getContainerSize(); i++) {
                 items += box.getItem(i).getCount();
             }

@@ -1,3 +1,20 @@
+PARCHE V5.2.0
+=============
+Anuncios que no se congelan + marca parodia ROJO TORO (inspirada en Red Bull)
+   * SISTEMA DE ANUNCIOS: el video de una pantalla ahora sigue corriendo a cualquier distancia mientras la pantalla esté cargada y a menos de
+     256 bloques (antes solo dentro del alcance del sonido; más lejos eran fotos que cambiaban). Más allá del alcance el sonido solo se
+     silencia (no se detiene), así que el video no pierde su reloj. Se decodifican a la vez los 4 anuncios de las pantallas más cercanas;
+     las demás muestran el póster. Si el chunk se descarga, la pantalla deja de existir y se suelta el reproductor.
+   * ROJO TORO: anuncio nuevo (video con sonido de 12 s + póster) en la rotación de todas las pantallas de anuncios.
+   * LATA ROJO TORO: se bebe (animación de beber) y da velocidad II y salto mejorado por 60 s. Se apila de a 16.
+   * MINIBAR ROJO TORO: clic derecho con una esmeralda saca una lata.
+   * CARTEL ROJO TORO: cuadro de pared con el anuncio (tecla de colocación como los demás cuadros).
+   * Protocolo de red 25.
+
+PARCHE V5.1.1
+=============
+Arreglo de compilación (Java 17): VehicleEntity, HelicopterEntity y AirlinerEntity usaban "this instanceof HasVehicleStorage st", que no compila porque ya implementan esa interfaz; ahora llaman this.hasStorage() directo.
+
 PARCHE V5.1.0
 =============
 Metro eléctrico (284 km/h), con su vía y sus vagones

@@ -1095,5 +1095,9 @@
   "item.beautifuldecor.metro_head": "Cabeza de metro",
   "entity.beautifuldecor.metro_head": "Cabeza de metro",
   "item.beautifuldecor.metro_car": "Vagón de metro",
-  "entity.beautifuldecor.metro_car": "Vagón de metro"
+  "entity.beautifuldecor.metro_car": "Vagón de metro",
+  "block.beautifuldecor.painting_rojotoro": "Cartel Rojo Toro",
+  "block.beautifuldecor.rojotoro_minibar": "Minibar Rojo Toro",
+  "item.beautifuldecor.rojotoro_can": "Lata Rojo Toro",
+  "message.beautifuldecor.rojotoro_minibar_price": "Una lata cuesta 1 esmeralda"
 }

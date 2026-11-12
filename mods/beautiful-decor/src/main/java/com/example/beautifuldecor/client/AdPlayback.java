@@ -40,7 +40,10 @@ import org.slf4j.Logger;
  * el registro, la pantalla muestra el póster y se reintenta con el siguiente anuncio unos segundos después.
  */
 public final class AdPlayback {
-    private static final int MAX_ACTIVE = 2;
+    /** Cuántos anuncios se decodifican a la vez (los de las pantallas más cercanas; el resto muestra el póster). */
+    private static final int MAX_ACTIVE = 4;
+    /** V5.2.0: el video corre a cualquier distancia a la que la pantalla se dibuja (solo el sonido tiene alcance). Debe coincidir con AdScreenRenderer.getViewDistance. */
+    public static final double VIDEO_RANGE = 256.0;
     private static final int COOLDOWN_TICKS = 100;
     private static final int RETRY_TICKS = 160;
     private static final Logger LOGGER = LogUtils.getLogger();
@@ -142,8 +145,7 @@ public final class AdPlayback {
                 continue;
             }
             double d = me.distanceTo(screen.center());
-            double max = AudioFalloff.adMax(screen.sizeBlocks());
-            double limit = SESSIONS.containsKey(screen) ? max + 6.0 : max + 2.0;
+            double limit = SESSIONS.containsKey(screen) ? VIDEO_RANGE + 16.0 : VIDEO_RANGE;
             if (d <= limit) {
                 want.add(new Candidate(screen, d));
             }
@@ -166,6 +168,7 @@ public final class AdPlayback {
             if (s == null) {
                 HsVideoPlayer vp = HsVideoPlayer.create();
                 vp.audio().setRange(AudioFalloff.adFull(screen.sizeBlocks()), AudioFalloff.adMax(screen.sizeBlocks()));
+                vp.audio().setMuteWhenFar(true);
                 s = new Session(vp, startIndexOf(screen));
                 SESSIONS.put(screen, s);
                 playCurrent(mc, screen, s);
