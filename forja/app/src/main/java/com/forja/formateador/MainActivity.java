@@ -605,14 +605,19 @@ public class MainActivity extends Activity {
         optionsBox.addView(section("Formato"));
         LinearLayout grid = Ui.column(this);
         FsType[] all = FsType.values();
-        for (int r = 0; r < 2; r++) {
+        for (int r = 0; r < (all.length + 1) / 2; r++) {
             LinearLayout row = Ui.row(this);
             for (int k = 0; k < 2; k++) {
+                if (r * 2 + k >= all.length) {
+                    row.addView(new View(this), new LinearLayout.LayoutParams(0, 1, 1));
+                    continue;
+                }
                 FsType t = all[r * 2 + k];
                 String prob = t.problem(Forja.partitionBytes(diskBytes, sectorSize, Forja.Table.GPT), sectorSize);
                 View tile = tile(t.title, prob != null ? prob : t.usage, t == fs, prob == null, () -> {
                     fs = t;
                     cluster = 0;
+                    if (fs == FsType.XBOX360) table = Forja.Table.MBR;
                     if (label.length() > fs.labelMax) label = label.substring(0, fs.labelMax);
                     render();
                 });
@@ -626,6 +631,14 @@ public class MainActivity extends Activity {
         }
         optionsBox.addView(grid);
 
+        if (fs == FsType.XBOX360) {
+            TextView xb = Ui.text(this, "Deja la memoria como la configura la consola: una unidad FAT32 con la carpeta oculta «Xbox360» y los archivos Data0000… "
+                    + "con la partición FATX dentro. Usa hasta 32 GB de la memoria (el máximo de la consola); el resto no se usa. Después, conéctala a la Xbox 360 "
+                    + "y, si te pide configurarla, acepta. Todo lo que tenga la memoria se borra.", 12.5f, Ui.SUB, false);
+            xb.setPadding(dp(4), dp(10), dp(4), 0);
+            optionsBox.addView(xb);
+        }
+
         // tabla de particiones
         optionsBox.addView(section("Tabla de particiones"));
         boolean mbrOk = diskBytes <= Partitioner.mbrLimit(sectorSize);
@@ -635,7 +648,7 @@ public class MainActivity extends Activity {
                     table = Forja.Table.MBR;
                     render();
                 });
-        View gpt = tile("GPT", "Discos de más de 2 TB y PCs modernas (UEFI)", table == Forja.Table.GPT, true, () -> {
+        View gpt = tile("GPT", fs == FsType.XBOX360 ? "La Xbox 360 no lo lee" : "Discos de más de 2 TB y PCs modernas (UEFI)", table == Forja.Table.GPT, fs != FsType.XBOX360, () -> {
             table = Forja.Table.GPT;
             render();
         });
@@ -677,7 +690,7 @@ public class MainActivity extends Activity {
         optionsBox.addView(section("Nombre de la unidad"));
         EditText name = new EditText(this);
         name.setText(label);
-        name.setHint(fs == FsType.FAT32 ? "Ej.: JUEGOS (máx. 11)" : "Ej.: Mis cosas (máx. " + fs.labelMax + ")");
+        name.setHint(fs == FsType.FAT32 || fs == FsType.XBOX360 ? "Ej.: JUEGOS (máx. 11)" : "Ej.: Mis cosas (máx. " + fs.labelMax + ")");
         name.setHintTextColor(0xFF5E5868);
         name.setTextColor(Ui.TEXT);
         name.setSingleLine(true);

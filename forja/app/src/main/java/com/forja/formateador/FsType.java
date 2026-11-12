@@ -8,7 +8,8 @@ public enum FsType {
     FAT32("FAT32", "Consolas, autoradios, TVs, impresoras 3D, Ventoy", 0x0C, "EBD0A0A2-B9E5-4433-87C0-68B6B72699C7", 11),
     EXFAT("exFAT", "Archivos de más de 4 GB; Windows, Mac, Android, Linux", 0x07, "EBD0A0A2-B9E5-4433-87C0-68B6B72699C7", 11),
     NTFS("NTFS", "Windows y discos grandes", 0x07, "EBD0A0A2-B9E5-4433-87C0-68B6B72699C7", 32),
-    EXT4("ext4", "Linux", 0x83, "0FC63DAF-8483-4772-8E79-3D69D8477DE4", 16);
+    EXT4("ext4", "Linux", 0x83, "0FC63DAF-8483-4772-8E79-3D69D8477DE4", 16),
+    XBOX360("Xbox 360", "Memoria USB para la consola Xbox 360 (FATX)", 0x0C, "EBD0A0A2-B9E5-4433-87C0-68B6B72699C7", 11);
 
     public final String title, usage, gptType;
     public final int mbrType, labelMax;
@@ -39,6 +40,7 @@ public enum FsType {
             // 32 KB es el máximo de la especificación de Microsoft: con 64 KB Android, TVs y
             // consolas dicen que la memoria está dañada
             case FAT32 -> { min = 512; max = 32 * 1024; }
+            case XBOX360 -> { min = 2048; max = 32 * 1024; }
             case EXFAT -> { min = 512; max = 32 * 1024 * 1024; }
             case NTFS -> { min = 512; max = 64 * 1024; }
             default -> { min = 1024; max = 4096; }
@@ -52,6 +54,7 @@ public enum FsType {
     boolean valid(long volBytes, int cluster, int sectorSize) {
         long clusters = volBytes / cluster;
         return switch (this) {
+            case XBOX360 -> cluster >= 2048 && cluster <= 32 * 1024 && clusters >= 65525 + 64 && XboxUsbFormatter.usable(volBytes, cluster) > 0 && clusters <= 0x0FFFFFF5L;
             case FAT32 -> cluster <= 32 * 1024 && clusters >= 65525 + 64 && clusters <= 0x0FFFFFF5L && volBytes / sectorSize <= 0xFFFFFFFFL;
             case EXFAT -> clusters >= 64 && clusters <= 0xFFFFFFF5L;
             case NTFS -> clusters >= 1024 && clusters <= 0xFFFFFFFEL;
@@ -63,6 +66,7 @@ public enum FsType {
     public int defaultCluster(long volBytes, int sectorSize) {
         long gb = volBytes >> 30, mb = volBytes >> 20;
         int want = switch (this) {
+            case XBOX360 -> 32768;
             case FAT32 -> mb < 260 ? 512 : gb < 8 ? 4096 : gb < 16 ? 8192 : gb < 32 ? 16384 : 32768;
             case EXFAT -> mb < 256 ? 4096 : gb < 32 ? 32768 : 131072;
             case NTFS -> gb < 16 * 1024 ? 4096 : 8192;
@@ -82,6 +86,7 @@ public enum FsType {
     public String problem(long volBytes, int sectorSize) {
         if (!available()) return "El motor NTFS no se pudo cargar" + (Ntfs.loadError() == null ? "" : ": " + Ntfs.loadError());
         if (clusterChoices(volBytes, sectorSize).isEmpty()) {
+            if (this == XBOX360) return "Hace falta una memoria de 1 GB o más (y de menos de 2 TB)";
             if (this == FAT32 && volBytes / sectorSize > 0xFFFFFFFFL) return "FAT32 no llega a discos tan grandes";
             return "No sirve para un disco de este tamaño";
         }
@@ -92,7 +97,7 @@ public enum FsType {
     public String cleanLabel(String s) {
         if (s == null) s = "";
         s = s.trim();
-        if (this == FAT32) {
+        if (this == FAT32 || this == XBOX360) {
             StringBuilder b = new StringBuilder();
             for (char ch : s.toUpperCase().toCharArray()) {
                 if (ch < 0x20 || ch > 0x7E || "\"*+,./:;<=>?[\\]|".indexOf(ch) >= 0) ch = '_';

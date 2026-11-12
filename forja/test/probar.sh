@@ -5,7 +5,8 @@ set -euo pipefail
 H=$(cd "$(dirname "$0")" && pwd)
 W=$(mktemp -d)
 J=$H/../app/src/main/java/com/forja/formateador
-javac -d $W/out $J/{BlockDevice,Progress,Io,Partitioner,FsType,Fat32Formatter,ExFatFormatter,Ext4Formatter,Ntfs,Forja}.java $H/FileDev.java $H/FTest.java
+javac -encoding UTF-8 -d $W/out $J/{BlockDevice,Progress,Io,Partitioner,FsType,Fat32Formatter,ExFatFormatter,Ext4Formatter,Ntfs,XboxUsbFormatter,Forja}.java $H/FileDev.java $H/FTest.java
+javac -encoding UTF-8 -d $W/out $H/../../arca/app/src/main/java/com/forja/arca/{ByteSource,Xtaf,XboxDisk}.java $H/com/forja/arca/XboxCheck.java
 # el motor NTFS (mkntfs + puente) compilado para esta PC, igual que para el celular
 bash $H/motor_ntfs_pc.sh $W/nb
 G=$((1<<30)); TB=$((1<<40))
@@ -28,6 +29,7 @@ probar() {   # bytes sector FS TABLA cluster etiqueta
   ok=1
   case "$3" in
     FAT32) sudo_ fsck.fat -n $P | tail -1 ;;
+    XBOX360) sudo_ fsck.fat -n $P | tail -1 && java -cp $W/out com.forja.arca.XboxCheck $W/d.img $((START*$2)) | grep -E "MAL|XBOX BIEN|datos" | tee $W/xb.txt && grep -q "XBOX BIEN" $W/xb.txt ;;
     EXFAT) sudo_ fsck.exfat -n $P | tail -1 ;;
     EXT4) sudo_ e2fsck -fn $P | tail -1 ;;
     NTFS) sudo_ ntfsfix -n $P | tail -1 && sudo_ ntfsinfo -m $P | grep -E "Volume Name|Cluster Size" ;;
@@ -44,6 +46,10 @@ probar $((40*G)) 512 FAT32 GPT 0 JUEGOS
 probar $((40*G)) 512 FAT32 MBR 4096 JUEGOS
 probar $((2*TB-G)) 512 FAT32 MBR 0 GRANDE
 probar $((3*TB)) 4096 FAT32 GPT 0 GRANDE
+probar $G 512 XBOX360 MBR 0 XBOX
+probar $((4*G)) 4096 XBOX360 MBR 0 XBOX
+probar $((8*G)) 512 XBOX360 MBR 2048 XBOX
+probar $((40*G)) 512 XBOX360 MBR 0 XBOX
 probar $G 512 EXFAT MBR 0 Forja
 probar $((40*G)) 512 EXFAT GPT 0 Forja
 probar $((40*G)) 4096 EXFAT GPT 0 Forja

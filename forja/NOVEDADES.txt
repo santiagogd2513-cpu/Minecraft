@@ -1,3 +1,9 @@
+## 19
+🎮 Yunque: formato Xbox 360 (FATX) para memorias USB
+- Nueva opción «Xbox 360» en los formatos: deja la memoria como la configura la consola, con una unidad FAT32 y la carpeta oculta «Xbox360» con los archivos Data0000… y la partición FATX adentro.
+- Usa hasta 32 GB de la memoria (el máximo de la consola). La memoria debe ser de 1 GB o más.
+- Usa siempre MBR (la consola no lee GPT). Lo revisé leyendo la memoria de mentira con el mismo lector de Arca, pero todavía no con una consola de verdad: si al conectarla te pide configurarla, acepta.
+
 ## 18
 💘 Temas de temporada (etapa 3): San Valentín y Amor y Amistad
 - San Valentín (1 al 14 de febrero): corazones que suben flotando y meciéndose, y la tarjeta de la unidad con una guirnalda de corazones que laten como un corazón de verdad.

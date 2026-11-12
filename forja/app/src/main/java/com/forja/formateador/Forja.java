@@ -32,6 +32,7 @@ public final class Forja {
     }
 
     public static void format(BlockDevice dev, Options o, Progress p) throws IOException {
+        if (o.fs == FsType.XBOX360) o.table = Table.MBR;          // la consola no lee GPT
         Io io = new Io(dev);
         SecureRandom rnd = new SecureRandom();
         long disk = io.size();
@@ -77,6 +78,7 @@ public final class Forja {
             case EXFAT -> ExFatFormatter.format(io, part.start, part.size, cluster, label, serial, sub);
             case EXT4 -> Ext4Formatter.format(io, part.start, part.size, cluster, label, rnd, sub);
             case NTFS -> Ntfs.format(io, part.start, part.size, cluster, label, sub);
+            case XBOX360 -> XboxUsbFormatter.format(io, part.start, part.size, cluster, label, serial, part.start / ss, sub);
             default -> throw new IOException(o.fs.title + " llega en una próxima versión");
         }
         io.flush();

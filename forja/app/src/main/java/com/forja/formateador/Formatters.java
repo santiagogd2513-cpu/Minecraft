@@ -37,6 +37,7 @@ public final class Formatters {
             case EXFAT -> ExFatFormatter.format(io, startBytes, sizeBytes, cluster, lab, serial, p);
             case EXT4 -> Ext4Formatter.format(io, startBytes, sizeBytes, cluster, lab, rnd, p);
             case NTFS -> Ntfs.format(io, startBytes, sizeBytes, cluster, lab, p);
+            case XBOX360 -> throw new IOException("El formato de la Xbox 360 solo se hace en discos completos");
         }
         io.flush();
     }
