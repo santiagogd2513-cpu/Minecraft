@@ -2017,7 +2017,11 @@ public class MainActivity extends Activity {
             else verifyPackage(p, phoneName);
         }));
         info.addView(chip("🔏  Firma", () -> showSignature(p)));
-        col.addView(info);
+        // con letra grande las fichas no caben en el ancho: la fila se desliza hacia un lado
+        android.widget.HorizontalScrollView infoScroll = new android.widget.HorizontalScrollView(this);
+        infoScroll.setHorizontalScrollBarEnabled(false);
+        infoScroll.addView(info);
+        col.addView(infoScroll);
         List<StfsPackage.Item> list = new ArrayList<>(p.children(pkgParent));
         list.sort((a, b) -> a.dir != b.dir ? (a.dir ? -1 : 1) : a.name.compareToIgnoreCase(b.name));
         ListView lv = new ListView(this);

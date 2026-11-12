@@ -2,6 +2,7 @@
 📂 Arca: abrir paquetes que tienes en el celular
 - En la pantalla de inicio, «Abrir un paquete del celular»: elige una partida, un perfil o un contenido guardado en tu celular y míralo por dentro, verifícalo y mira su 🔏 firma, sin necesitar la consola.
 - «Editor de partidas» también está en el inicio.
+- Dentro de un paquete, la fila de botones (Verificar, Firma) ahora se desliza hacia un lado: con letra grande se salían de la pantalla y no se veían.
 
 ## 7
 🔌 Arca: memorias USB de la Xbox 360 conectadas por cable
