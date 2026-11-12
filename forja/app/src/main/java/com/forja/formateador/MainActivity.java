@@ -408,6 +408,7 @@ public class MainActivity extends Activity {
                 if (fe != null) error = "No se pudo formatear: " + fe;
                 else {
                     done = "¡Formateada en " + o.fs.title + "!  (" + time(secs) + ")";
+                    doneXbox = o.fs == FsType.XBOX360;
                     currentLayout = "Tabla " + o.table + " · 1 partición " + o.fs.title;
                 }
                 render();
@@ -505,6 +506,8 @@ public class MainActivity extends Activity {
         }
     }
 
+    private boolean doneXbox;
+
     private void render() {
         renderDevice();
         renderOptions();
@@ -515,7 +518,9 @@ public class MainActivity extends Activity {
             LinearLayout c = card();
             c.setBackground(Ui.roundStroke(ok ? 0xFF10261C : 0xFF2C1218, dp(22), dp(1), ok ? 0xFF1F6B52 : 0xFF6B2232));
             c.addView(Ui.text(this, ok ? done : "Algo salió mal", 16, ok ? Ui.GOOD : Ui.BAD, true));
-            TextView t = Ui.text(this, ok ? "Desconecta la unidad y vuelve a conectarla para usarla en el celular, o llévala a la PC, la consola o la TV."
+            TextView t = Ui.text(this, ok ? (doneXbox
+                    ? "Desconecta la memoria y conéctala a tu Xbox 360. Si la consola te pide configurarla, acepta. También puedes abrirla con Arca desde el celular."
+                    : "Desconecta la unidad y vuelve a conectarla para usarla en el celular, o llévala a la PC, la consola o la TV.")
                     : error, 13.5f, Ui.TEXT, false);
             t.setPadding(0, dp(6), 0, 0);
             c.addView(t);

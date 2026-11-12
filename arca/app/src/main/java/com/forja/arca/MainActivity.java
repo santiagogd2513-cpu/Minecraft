@@ -309,16 +309,23 @@ public class MainActivity extends Activity {
                 UsbDisk disk = new UsbDisk(um, d);
                 usb = disk;
                 usbId = d.getDeviceId();
-                List<XboxDisk.Part> found = XboxDisk.hdd(new DiskSource(disk));
+                DiskSource ds = new DiskSource(disk);
+                List<XboxDisk.Part> found = XboxDisk.hdd(ds);
+                if (found.isEmpty()) {
+                    // una memoria USB de la consola: unidad FAT32 con la carpeta Xbox360 y sus archivos Data
+                    List<ByteSource> data = Fat32.xboxDataFiles(ds, disk.sectorSize());
+                    if (!data.isEmpty()) found = XboxDisk.usbStick(data);
+                }
                 if (found.isEmpty()) {
                     throw new java.io.IOException("Esa unidad no es una partición de Xbox 360 (no encontré la marca XTAF)."
-                            + " Si es una memoria USB, usa «Elegir carpeta de una memoria USB» y escoge su carpeta «Xbox360».");
+                            + " Si es una memoria USB de la consola, también puedes usar «Elegir carpeta de una memoria USB» y escoger su carpeta «Xbox360».");
                 }
                 sessionLabel = disk.name();
                 parts = found;
+                final int nParts = found.size();
                 ui.post(() -> {
                     hideOverlay();
-                    if (found.size() == 1) openPartition(0);
+                    if (nParts == 1) openPartition(0);
                     else showPartitions();
                 });
             } catch (Throwable e) {

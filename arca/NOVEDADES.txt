@@ -1,3 +1,7 @@
+## 7
+🔌 Arca: memorias USB de la Xbox 360 conectadas por cable
+- Una memoria que la consola (o Yunque) dejó configurada, es decir, FAT32 con la carpeta Xbox360 y sus archivos Data, ahora se abre directo al conectarla, sin tener que elegir la carpeta. Antes decía «Formato desconocido».
+
 ## 6
 🔏 Arca, etapa 3 parte B: la firma de tus paquetes
 - Dentro de un paquete, la ficha «Firma» muestra la consola que lo firmó, la consola y el perfil anotados en la cabecera, y comprueba la firma con la clave pública del propio paquete. Solo lee: no escribe nada.

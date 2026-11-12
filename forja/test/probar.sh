@@ -29,7 +29,7 @@ probar() {   # bytes sector FS TABLA cluster etiqueta
   ok=1
   case "$3" in
     FAT32) sudo_ fsck.fat -n $P | tail -1 ;;
-    XBOX360) sudo_ fsck.fat -n $P | tail -1 && java -cp $W/out com.forja.arca.XboxCheck $W/d.img $((START*$2)) | grep -E "MAL|XBOX BIEN|datos" | tee $W/xb.txt && grep -q "XBOX BIEN" $W/xb.txt ;;
+    XBOX360) sudo_ fsck.fat -n $P | tail -1 && java -cp $W/out com.forja.arca.XboxCheck $W/d.img 0 $2 | grep -E "MAL|XBOX BIEN|datos" | tee $W/xb.txt && grep -q "XBOX BIEN" $W/xb.txt ;;
     EXFAT) sudo_ fsck.exfat -n $P | tail -1 ;;
     EXT4) sudo_ e2fsck -fn $P | tail -1 ;;
     NTFS) sudo_ ntfsfix -n $P | tail -1 && sudo_ ntfsinfo -m $P | grep -E "Volume Name|Cluster Size" ;;

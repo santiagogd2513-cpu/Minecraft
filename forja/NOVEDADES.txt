@@ -1,3 +1,7 @@
+## 21
+🔧 El mensaje al terminar una memoria Xbox 360 ya habla de la consola
+- En vez de «llévala a la PC, la consola o la TV», dice que la conectes a tu Xbox 360 y que, si te pide configurarla, aceptes.
+
 ## 20
 🔧 Arreglo: el formato «Xbox 360» no se veía
 - La fila nueva de formatos medía un píxel de alto y quedaba escondida. Ahora se ve «Xbox 360» debajo de NTFS y ext4.
