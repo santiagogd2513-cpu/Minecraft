@@ -1,3 +1,42 @@
+PARCHE V6.1.0
+=============
+CURVAS ANCHAS (sin límite)
+   * Clic derecho en la CARA DE ARRIBA de una curva (de carga, pasajeros o metro) con un riel de la misma vía en la mano: la curva se ensancha un nivel. Agachado + clic: la achica un nivel.
+   * Cada nivel cambia la curva por un arco de círculo de radio 0,5 + nivel que empalma con las mismas rectas (se come un bloque más de cada una). Los trenes lo recorren de verdad por el arco (también el piloto automático).
+   * Hace falta que cada recta tenga un riel recto más allá del arco. Si falta, o el sitio está ocupado, o no hay bloque debajo donde apoyar el riel, sale en el chat "No hay espacio suficiente" (o "Faltan rieles rectos") y no cambia nada.
+   * Romper un pedazo del arco deja un hueco en la vía: los trenes se detienen ahí.
+   * No cambia el protocolo de red (28).
+
+PARCHE V6.0.0
+=============
+TRENES AUTOMÁTICOS
+   * MANDO DE TRENES: clic derecho en una locomotora (o la cabeza del metro) la vincula y abre su menú: nombre del tren, automático sí/no y borrar la ruta. Clic en el aire con el mando abre otra vez el menú del tren vinculado.
+   * CONTROLADOR DE ESTACIÓN: se pone junto a la vía (a cualquier lado, hasta 3 bloques). Con el mando vinculado, clic en uno vacío lo agrega como siguiente parada de la ruta; clic en uno que ya está abre sus ajustes (nombre, espera en segundos, velocidad de salida, velocidad hasta la siguiente estación y horario del depósito).
+   * El tren sale solo después de esperar, va a la siguiente parada, frena y se detiene con el morro justo en el punto de la vía de la estación.
+   * LA ÚLTIMA PARADA ES EL DEPÓSITO: si está abierto (según su horario, en horas del mundo de 0 a 24) el tren sigue dando vueltas hacia la primera parada; si está cerrado, se queda estacionado hasta que abra.
+   * El tren carga los chunks por donde está y por donde va a pasar. Si tocas las teclas de la locomotora, mandas tú; al soltarlas sigue solo.
+   * No hay marcha atrás: la ruta tiene que ser un circuito con curva de retorno. Dos trenes en la misma vía se atraviesan.
+   * Protocolo de red 28.
+
+PARCHE V5.3.0
+=============
+Marca parodia BURGUER REINO (inspirada en Burger King)
+   * ANUNCIO: video con sonido de 12 s + póster, en la rotación de todas las pantallas y televisores de anuncios.
+   * HAMBURGUESA REINA: comida (12 de hambre) que da absorción II por 2 minutos; se apila de a 16.
+   * MOSTRADOR BURGUER REINO: clic derecho con una esmeralda saca una hamburguesa.
+   * CARTEL DE MENÚ (cuadro de pared) y CORONA dorada grande (bloque decorativo que mira hacia donde la pones).
+   * Protocolo de red 27.
+
+PARCHE V5.2.1
+=============
+TELEVISOR DE ANUNCIOS (2 x 1)
+   * Pasa los mismos anuncios que las pantallas de anuncios (mismo reproductor, mismo sonido con alcance y mismo video lejano).
+   * Se coloca como ellas: el bloque donde haces clic es la esquina inferior izquierda y se extiende a tu derecha. En la PARED queda pegado
+     atrás del bloque; en el TECHO (clic en la cara de abajo de un techo) queda colgado de dos soportes y mira hacia donde te pones tú.
+     Para el techo hace falta techo sólido sobre los dos bloques.
+   * Los anuncios son cuadrados: en el televisor van centrados y a los lados se ve el mismo video estirado y oscurecido.
+   * Clic derecho: enciende o apaga. Protocolo de red 26.
+
 PARCHE V5.2.0
 =============
 Anuncios que no se congelan + marca parodia ROJO TORO (inspirada en Red Bull)

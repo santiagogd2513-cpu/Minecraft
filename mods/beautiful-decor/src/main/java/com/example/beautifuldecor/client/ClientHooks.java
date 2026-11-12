@@ -3,6 +3,8 @@ package com.example.beautifuldecor.client;
 import com.example.beautifuldecor.elevator.ElevatorZone;
 import com.example.beautifuldecor.network.ElevatorControllerPacket;
 import com.example.beautifuldecor.network.ElevatorDisplayPacket;
+import com.example.beautifuldecor.network.StationOpenPacket;
+import com.example.beautifuldecor.network.TrainMenuOpenPacket;
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.BlockPos;
 
@@ -42,5 +44,15 @@ public class ClientHooks {
     /** V2.2.0: abre la lista de pisos de la pantalla de ascensor. */
     public static void openElevatorDisplay(ElevatorDisplayPacket packet) {
         Minecraft.getInstance().setScreen(new ElevatorDisplayScreen(packet));
+    }
+
+    /** V6.0.0: menú del tren vinculado al mando. */
+    public static void openTrainMenu(TrainMenuOpenPacket packet) {
+        Minecraft.getInstance().setScreen(new TrainRemoteScreen(packet));
+    }
+
+    /** V6.0.0: ajustes de una estación. */
+    public static void openStation(StationOpenPacket packet) {
+        Minecraft.getInstance().setScreen(new StationScreen(packet));
     }
 }

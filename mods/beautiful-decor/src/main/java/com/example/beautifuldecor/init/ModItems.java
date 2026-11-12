@@ -73,6 +73,17 @@ public class ModItems {
     public static final RegistryObject<Item> PAINTING_ROJOTORO = ITEMS.register("painting_rojotoro",
             () -> new BlockItem(ModBlocks.PAINTING_ROJOTORO.get(), new Item.Properties()));
 
+    // V5.3.0: Burguer Reino
+    public static final RegistryObject<Item> BURGUER_ROYAL = ITEMS.register("burguer_royal",
+            () -> new Item(new Item.Properties().stacksTo(16).food(new net.minecraft.world.food.FoodProperties.Builder().nutrition(12).saturationMod(0.9f)
+                    .effect(new net.minecraft.world.effect.MobEffectInstance(net.minecraft.world.effect.MobEffects.ABSORPTION, 2400, 1), 1.0f).build())));
+    public static final RegistryObject<Item> BURGUER_COUNTER = ITEMS.register("burguer_counter",
+            () -> new BlockItem(ModBlocks.BURGUER_COUNTER.get(), new Item.Properties()));
+    public static final RegistryObject<Item> BURGUER_CROWN = ITEMS.register("burguer_crown",
+            () -> new BlockItem(ModBlocks.BURGUER_CROWN.get(), new Item.Properties()));
+    public static final RegistryObject<Item> PAINTING_BURGUERREINO = ITEMS.register("painting_burguerreino",
+            () -> new BlockItem(ModBlocks.PAINTING_BURGUERREINO.get(), new Item.Properties()));
+
     // V3.0.0: cuadros de pared
     public static final RegistryObject<Item> PAINTING_VALLEY_DAWN = ITEMS.register("painting_valley_dawn",
             () -> new BlockItem(ModBlocks.PAINTING_VALLEY_DAWN.get(), new Item.Properties()));
@@ -494,6 +505,12 @@ public class ModItems {
             () -> new BlockItem(ModBlocks.SECURITY_MONITOR.get(), new Item.Properties()));
     public static final RegistryObject<Item> SECURITY_SCREEN = ITEMS.register("security_screen",
             () -> new BlockItem(ModBlocks.SECURITY_SCREEN.get(), new Item.Properties()));
+
+    // ===== V6.0.0: automatización de trenes =====
+    public static final RegistryObject<Item> STATION_CONTROLLER = ITEMS.register("station_controller",
+            () -> new BlockItem(ModBlocks.STATION_CONTROLLER.get(), new Item.Properties()));
+    public static final RegistryObject<Item> TRAIN_REMOTE = ITEMS.register("train_remote",
+            () -> new com.example.beautifuldecor.item.TrainRemoteItem());
 
     public static final RegistryObject<Item> ELEVATOR_CONTROLLER = ITEMS.register("elevator_controller",
             () -> new BlockItem(ModBlocks.ELEVATOR_CONTROLLER.get(), new Item.Properties()));

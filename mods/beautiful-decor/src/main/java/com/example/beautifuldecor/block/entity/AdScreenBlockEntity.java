@@ -48,10 +48,11 @@ public class AdScreenBlockEntity extends BlockEntity {
     public Vec3 center() {
         BlockState state = getBlockState();
         if (state.getBlock() instanceof AdScreenBlock b) {
-            double half = (b.sizeBlocks() - 1) / 2.0;
+            double halfW = (b.width() - 1) / 2.0;
+            double halfH = (b.height() - 1) / 2.0;
             net.minecraft.core.Direction right = state.getValue(AdScreenBlock.FACING).getCounterClockWise();
-            return new Vec3(worldPosition.getX() + 0.5 + right.getStepX() * half, worldPosition.getY() + 0.5 + half,
-                    worldPosition.getZ() + 0.5 + right.getStepZ() * half);
+            return new Vec3(worldPosition.getX() + 0.5 + right.getStepX() * halfW, worldPosition.getY() + 0.5 + halfH,
+                    worldPosition.getZ() + 0.5 + right.getStepZ() * halfW);
         }
         return Vec3.atCenterOf(worldPosition);
     }
@@ -123,8 +124,8 @@ public class AdScreenBlockEntity extends BlockEntity {
     public AABB getRenderBoundingBox() {
         BlockState state = getBlockState();
         if (state.getBlock() instanceof AdScreenBlock b) {
-            BlockPos far = worldPosition.relative(state.getValue(AdScreenBlock.FACING).getCounterClockWise(), b.sizeBlocks() - 1)
-                    .above(b.sizeBlocks() - 1);
+            BlockPos far = worldPosition.relative(state.getValue(AdScreenBlock.FACING).getCounterClockWise(), b.width() - 1)
+                    .above(b.height() - 1);
             return new AABB(Math.min(worldPosition.getX(), far.getX()), worldPosition.getY(), Math.min(worldPosition.getZ(), far.getZ()),
                     Math.max(worldPosition.getX(), far.getX()) + 1, far.getY() + 1, Math.max(worldPosition.getZ(), far.getZ()) + 1);
         }

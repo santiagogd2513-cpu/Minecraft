@@ -11,7 +11,7 @@ import java.util.List;
  */
 public final class AdBrands {
     /** Una marca por anuncio, en el orden de la lista. */
-    public static final List<String> BRANDS = List.of("hs", "furd", "amazoom", "lamborgonzo", "boing", "bugerati", "bugotti", "rojotoro");
+    public static final List<String> BRANDS = List.of("hs", "furd", "amazoom", "lamborgonzo", "boing", "bugerati", "bugotti", "rojotoro", "burguerreino");
     /** Cuánto dura el póster de cada marca cuando la pantalla está lejos y no reproduce el video (milisegundos). */
     public static final long POSTER_MILLIS = 7000L;
 

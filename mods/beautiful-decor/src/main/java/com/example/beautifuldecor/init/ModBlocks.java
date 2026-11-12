@@ -2,6 +2,8 @@ package com.example.beautifuldecor.init;
 
 import com.example.beautifuldecor.BeautifulDecor;
 import com.example.beautifuldecor.block.AdScreenBlock;
+import com.example.beautifuldecor.block.AdTvBlock;
+import com.example.beautifuldecor.block.BurguerCounterBlock;
 import com.example.beautifuldecor.block.FreightRailBlock;
 import com.example.beautifuldecor.block.MetroRailBlock;
 import com.example.beautifuldecor.block.PassengerRailBlock;
@@ -14,6 +16,8 @@ import com.example.beautifuldecor.block.BigTelevisionBlock;
 import com.example.beautifuldecor.block.BugeratiLampBlock;
 import com.example.beautifuldecor.block.ColdRoomBlock;
 import com.example.beautifuldecor.block.ElevatorControllerBlock;
+import com.example.beautifuldecor.block.StationControllerBlock;
+import com.example.beautifuldecor.block.WideRailBlock;
 import com.example.beautifuldecor.block.MicrophoneBlock;
 import com.example.beautifuldecor.block.PaSpeakerBlock;
 import com.example.beautifuldecor.block.ElevatorDisplayBlock;
@@ -197,6 +201,17 @@ public class ModBlocks {
     public static final RegistryObject<Block> ROJOTORO_MINIBAR = BLOCKS.register("rojotoro_minibar",
             () -> new RojoToroMinibarBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_RED)
                     .strength(1.5f).sound(SoundType.METAL).noOcclusion()));
+
+    // ===== V5.3.0: Burguer Reino (marca parodia) =====
+    public static final RegistryObject<Block> PAINTING_BURGUERREINO = BLOCKS.register("painting_burguerreino",
+            () -> new PictureBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD)
+                    .strength(0.5f).sound(SoundType.WOOD).noOcclusion()));
+    public static final RegistryObject<Block> BURGUER_COUNTER = BLOCKS.register("burguer_counter",
+            () -> new BurguerCounterBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_ORANGE)
+                    .strength(1.5f).sound(SoundType.METAL).noOcclusion()));
+    public static final RegistryObject<Block> BURGUER_CROWN = BLOCKS.register("burguer_crown",
+            () -> new ModBlock(BlockBehaviour.Properties.of().mapColor(MapColor.GOLD)
+                    .strength(1.0f).sound(SoundType.METAL).noOcclusion(), ModBlock.box(1, 0, 5, 15, 13, 11)));
 
     // ===== PLANTAS Y DECORACION =====
     public static final RegistryObject<Block> PLANT_POT = BLOCKS.register("plant_pot",
@@ -1167,6 +1182,10 @@ public class ModBlocks {
                     () -> new AdScreenBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK)
                             .strength(2.0f).sound(SoundType.METAL).noOcclusion().lightLevel(state -> 7), size)));
         }
+        // V5.2.1: televisor de anuncios (2x1, pared o techo)
+        AD_SCREENS.put("ad_tv", BLOCKS.register("ad_tv",
+                () -> new AdTvBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK)
+                        .strength(2.0f).sound(SoundType.METAL).noOcclusion().lightLevel(state -> 7))));
     }
 
     // ===== V4.0.0: megafonía =====
@@ -1224,6 +1243,20 @@ public class ModBlocks {
     public static final RegistryObject<Block> ELEVATOR_CONTROLLER = BLOCKS.register("elevator_controller",
             () -> new ElevatorControllerBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GRAY)
                     .strength(3.0f, 6.0f).sound(SoundType.METAL)));
+
+    // ===== V6.1.0: curvas anchas (sin ítem: salen al ensanchar una curva) =====
+    public static final RegistryObject<Block> WIDE_FREIGHT_RAIL = BLOCKS.register("wide_freight_rail",
+            () -> new WideRailBlock(BlockBehaviour.Properties.of().mapColor(MapColor.METAL).noCollission().noOcclusion().strength(0.7f).sound(SoundType.METAL), 0));
+    public static final RegistryObject<Block> WIDE_PASSENGER_RAIL = BLOCKS.register("wide_passenger_rail",
+            () -> new WideRailBlock(BlockBehaviour.Properties.of().mapColor(MapColor.METAL).noCollission().noOcclusion().strength(0.7f).sound(SoundType.METAL), 1));
+    public static final RegistryObject<Block> WIDE_METRO_RAIL = BLOCKS.register("wide_metro_rail",
+            () -> new WideRailBlock(BlockBehaviour.Properties.of().mapColor(MapColor.METAL).noCollission().noOcclusion().strength(0.7f).sound(SoundType.METAL), 2));
+
+    // ===== V6.0.0: automatización de trenes =====
+    /** Controlador de estación: se pone junto a la vía; el tren automático se detiene con el morro en su punto de la vía. */
+    public static final RegistryObject<Block> STATION_CONTROLLER = BLOCKS.register("station_controller",
+            () -> new StationControllerBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GRAY)
+                    .strength(2.0f, 6.0f).sound(SoundType.METAL)));
 
     /** Pantalla de pisos: se pega en cualquier cara y se vincula a un controlador. */
     public static final RegistryObject<Block> ELEVATOR_DISPLAY = BLOCKS.register("elevator_display",

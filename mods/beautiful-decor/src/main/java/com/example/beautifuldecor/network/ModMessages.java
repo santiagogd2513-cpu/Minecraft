@@ -9,7 +9,7 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 public class ModMessages {
-    private static final String PROTOCOL = "25";
+    private static final String PROTOCOL = "28";
     public static final SimpleChannel CHANNEL = NetworkRegistry.ChannelBuilder
             .named(ResourceLocation.fromNamespaceAndPath(BeautifulDecor.MOD_ID, "main"))
             .networkProtocolVersion(() -> PROTOCOL)
@@ -44,6 +44,27 @@ public class ModMessages {
                 .decoder(TrainInputPacket::decode)
                 .encoder(TrainInputPacket::encode)
                 .consumerMainThread(TrainInputPacket::handle)
+                .add();
+        // ---- V6.0.0: automatización de trenes
+        CHANNEL.messageBuilder(TrainMenuOpenPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(TrainMenuOpenPacket::decode)
+                .encoder(TrainMenuOpenPacket::encode)
+                .consumerMainThread(TrainMenuOpenPacket::handle)
+                .add();
+        CHANNEL.messageBuilder(TrainMenuSavePacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .decoder(TrainMenuSavePacket::decode)
+                .encoder(TrainMenuSavePacket::encode)
+                .consumerMainThread(TrainMenuSavePacket::handle)
+                .add();
+        CHANNEL.messageBuilder(StationOpenPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .decoder(StationOpenPacket::decode)
+                .encoder(StationOpenPacket::encode)
+                .consumerMainThread(StationOpenPacket::handle)
+                .add();
+        CHANNEL.messageBuilder(StationSavePacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .decoder(StationSavePacket::decode)
+                .encoder(StationSavePacket::encode)
+                .consumerMainThread(StationSavePacket::handle)
                 .add();
         // ---- V2.2.0: ascensores
         CHANNEL.messageBuilder(ElevatorControllerPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)

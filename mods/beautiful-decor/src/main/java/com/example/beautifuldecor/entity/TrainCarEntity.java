@@ -7,6 +7,7 @@ import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
+import com.example.beautifuldecor.item.TrainRemoteItem;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -178,6 +179,8 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
     private float slope;                        // pendiente del tramo donde está (seno, en el sentido de marcha)
     private int inputFlags;
     private long inputTime = Long.MIN_VALUE;
+    /** V6.0.0: la ruta del piloto automático (se guarda en la locomotora). */
+    private final TrainRoute route = new TrainRoute();
 
     // ---- carga
     private final ArrayList<ItemStack> hold = new ArrayList<>();
@@ -453,6 +456,18 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
         boolean client = this.level().isClientSide;
         ItemStack held = player.getItemInHand(hand);
         Variant v = this.variant();
+        // ---- V6.0.0: Mando de trenes
+        if (held.getItem() instanceof TrainRemoteItem) {
+            if (!client && player instanceof ServerPlayer sp) {
+                if (v.isLoco()) {
+                    TrainRemoteItem.link(held, this.getUUID());
+                    TrainRemoteItem.openMenu(sp, this);
+                } else {
+                    sp.displayClientMessage(Component.translatable("message.beautifuldecor.train_remote.only_loco"), true);
+                }
+            }
+            return InteractionResult.sidedSuccess(client);
+        }
         // ---- carga (o carbón del ténder)
         if (v.cargo != Cargo.NONE && this.acceptsItem(held)) {
             if (client) {
@@ -575,6 +590,10 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
     public static final int INPUT_BACK = 2;
     public static final int INPUT_BRAKE = 4;
 
+    public TrainRoute route() {
+        return this.route;
+    }
+
     public void setInput(int flags) {
         this.inputFlags = flags & 7;
         this.inputTime = this.level().getGameTime();
@@ -594,7 +613,7 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
                 return null;
             }
             BlockState state = level.getBlockState(pos);
-            return state.getBlock() instanceof FreightRailBlock rail && rail.family() == family ? FreightRailBlock.pathShape(state) : null;
+            return FreightRailBlock.pieceAt(level, pos, state, family);
         };
     }
 
@@ -639,7 +658,7 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
                     int x = base.getX() + dx;
                     int y = base.getY() + dy;
                     int z = base.getZ() + dz;
-                    RailPath.Shape shape = lk.shapeAt(x, y, z);
+                    RailPath.Piece shape = lk.shapeAt(x, y, z);
                     if (shape == null) {
                         continue;
                     }
@@ -836,12 +855,37 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
         }
         double slope = total > 0.0 ? slopeSum / total : 0.0;
 
+        // ---- V6.0.0: piloto automático (si nadie está pidiendo nada con las teclas)
+        TrainCarEntity autoCar = null;
+        for (TrainCarEntity car : chain) {
+            if (car.variant().isLoco() && car.route.active()) {
+                autoCar = car;
+                break;
+            }
+        }
+        TrainRoute.Out auto = null;
+        if (autoCar != null && this.level() instanceof ServerLevel sl) {
+            if (this.tickCount % 10 == 0) {
+                this.keepChunks(sl, chain, autoCar.route);
+            }
+            if (complete && flags == 0) {
+                auto = autoCar.route.tick(sl, this.cur.copy(), this.variant().family, this.speed, empty, total, topMs, this.variant().inset());
+                this.announce(chain, auto);
+            } else {
+                autoCar.route.invalidate();
+            }
+        }
+
         // ---- física
         double v = this.speed;
         int drive = 0;
         boolean brake = false;
         boolean hand = false;
-        if (driver != null) {
+        if (auto != null) {
+            drive = auto.drive;
+            brake = auto.brake;
+            hand = auto.hand;
+        } else if (driver != null) {
             boolean fwd = (flags & INPUT_FORWARD) != 0;
             boolean back = (flags & INPUT_BACK) != 0;
             if ((flags & INPUT_BRAKE) != 0) {
@@ -908,6 +952,51 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
         }
     }
 
+    /** V6.0.0: mantiene cargados los chunks del tren y de la vía que tiene por delante. */
+    private void keepChunks(ServerLevel sl, List<TrainCarEntity> chain, TrainRoute route) {
+        Set<Long> near = new java.util.HashSet<>();
+        for (TrainCarEntity car : chain) {
+            near.add(TrainAuto.chunkKey(Mth.floor(car.getX()), Mth.floor(car.getZ())));
+            if (car.cur != null) {
+                near.add(TrainAuto.chunkKey(car.cur.x, car.cur.z));
+            }
+        }
+        Set<Long> far = new java.util.HashSet<>(route.pathChunks());
+        far.removeAll(near);
+        TrainChunks.keep(sl, near, far);
+    }
+
+    /** V6.0.0: avisos del piloto a quienes van a bordo (y a quien esté cerca si se quedó sin vía). */
+    private void announce(List<TrainCarEntity> chain, TrainRoute.Out out) {
+        Component msg = null;
+        if (out.stuck) {
+            msg = Component.translatable("hud.beautifuldecor.train_auto_stuck");
+        } else if (out.arrived != null) {
+            msg = Component.translatable("hud.beautifuldecor.train_auto_arrived", out.arrived);
+        } else if (out.parked) {
+            msg = Component.translatable("hud.beautifuldecor.train_auto_parked");
+        } else if (out.departed != null) {
+            msg = Component.translatable("hud.beautifuldecor.train_auto_departed", out.departed);
+        }
+        if (msg == null) {
+            return;
+        }
+        for (TrainCarEntity car : chain) {
+            for (Entity p : car.getPassengers()) {
+                if (p instanceof ServerPlayer sp) {
+                    sp.displayClientMessage(msg, true);
+                }
+            }
+        }
+        if (out.stuck) {
+            for (Player p : this.level().players()) {
+                if (p.distanceToSqr(this) < 64.0 * 64.0 && p instanceof ServerPlayer sp && !this.hasPassenger(sp)) {
+                    sp.displayClientMessage(msg, true);
+                }
+            }
+        }
+    }
+
     /** Quema carbón del ténder (unidades; se acumula hasta completar una). */
     private void burn(double amount) {
         this.fuelAcc += amount;
@@ -947,7 +1036,7 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
 
     /** Si el riel de este coche cambió de forma (por un riel nuevo al lado) se ajusta; si desapareció, el coche se queda donde está. */
     private void revalidate(RailPath.Lookup lk) {
-        RailPath.Shape now = lk.shapeAt(this.cur.x, this.cur.y, this.cur.z);
+        RailPath.Piece now = lk.shapeAt(this.cur.x, this.cur.y, this.cur.z);
         if (now != null && now != this.cur.shape) {
             this.cur.shape = now;
             this.cur.s = Math.min(this.cur.s, now.length());
@@ -1047,6 +1136,9 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
         this.frontId = tag.hasUUID("Front") ? tag.getUUID("Front") : null;
         this.rearId = tag.hasUUID("Rear") ? tag.getUUID("Rear") : null;
         this.speed = tag.getDouble("Speed");
+        if (tag.contains("Route")) {
+            this.route.load(tag.getCompound("Route"));
+        }
         if (tag.getBoolean("Placed")) {
             // la forma del riel se vuelve a leer en el primer tick; mientras tanto se toma la forma recta
             this.cur = new RailPath.Cursor(tag.getInt("CurX"), tag.getInt("CurY"), tag.getInt("CurZ"), RailPath.Shape.NORTH_SOUTH,
@@ -1071,6 +1163,9 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
             tag.putUUID("Rear", this.rearId);
         }
         tag.putDouble("Speed", this.speed);
+        if (!this.route.stops.isEmpty() || !this.route.name.isEmpty()) {
+            tag.put("Route", this.route.save());
+        }
         if (this.placed && this.cur != null) {
             tag.putBoolean("Placed", true);
             tag.putInt("CurX", this.cur.x);

@@ -69,6 +69,7 @@ public class ClientEvents {
         event.registerBlockEntityRenderer(ModBlockEntities.AD_SCREEN.get(), AdScreenRenderer::new);
         event.registerBlockEntityRenderer(ModBlockEntities.SECURITY_CAMERA.get(), SecurityCameraRenderer::new);     // V4.3.0
         event.registerBlockEntityRenderer(ModBlockEntities.SECURITY_MONITOR.get(), SecurityMonitorRenderer::new);
+        event.registerBlockEntityRenderer(ModBlockEntities.WIDE_RAIL.get(), WideRailRenderer::new);                  // V6.1.0
     }
 
     @SubscribeEvent

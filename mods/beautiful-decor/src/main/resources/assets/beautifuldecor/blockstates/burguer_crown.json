@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "beautifuldecor:block/burguer_crown"
+    },
+    "facing=east": {
+      "model": "beautifuldecor:block/burguer_crown",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "beautifuldecor:block/burguer_crown",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "beautifuldecor:block/burguer_crown",
+      "y": 270
+    }
+  }
+}

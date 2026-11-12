@@ -41,8 +41,36 @@ public final class RailPath {
         }
     }
 
+    /**
+     * V6.1.0: un tramo de vía dentro de un bloque: las 10 formas de Minecraft ({@link Shape}) o un pedazo de curva ancha ({@link WideArc.Piece}).
+     * Los extremos están en un lado del bloque, a una altura y a cierta distancia {@code along} dentro de ese lado (0 a 1; 0,5 = en medio).
+     */
+    public interface Piece {
+        Side sideA();
+
+        int hA();
+
+        Side sideB();
+
+        int hB();
+
+        double length();
+
+        void point(double s, double[] out);
+
+        void tangent(double s, double[] out);
+
+        double slopeAB();
+
+        /** Dónde cae el extremo (0 = A, 1 = B) a lo largo de su lado (0 a 1, dentro del bloque). */
+        double alongAt(int end);
+
+        /** El extremo (0 = A, 1 = B) que está en ese lado, a esa altura y en ese punto del lado, o -1. */
+        int endAt(Side side, int height, double along);
+    }
+
     /** Las 10 formas de riel de Minecraft (mismos nombres que RailShape). hA/hB = altura del extremo (0 abajo, 1 arriba). */
-    public enum Shape {
+    public enum Shape implements Piece {
         NORTH_SOUTH(Side.NORTH, 0, Side.SOUTH, 0, false),
         EAST_WEST(Side.WEST, 0, Side.EAST, 0, false),
         ASCENDING_EAST(Side.WEST, 0, Side.EAST, 1, false),
@@ -88,7 +116,38 @@ public final class RailPath {
             }
         }
 
+        @Override
+        public Side sideA() {
+            return this.sideA;
+        }
+
+        @Override
+        public int hA() {
+            return this.hA;
+        }
+
+        @Override
+        public Side sideB() {
+            return this.sideB;
+        }
+
+        @Override
+        public int hB() {
+            return this.hB;
+        }
+
+        @Override
+        public double alongAt(int end) {
+            return 0.5;
+        }
+
+        @Override
+        public int endAt(Side side, int height, double along) {
+            return Math.abs(along - 0.5) < 1.0e-4 ? this.endAt(side, height) : -1;
+        }
+
         /** Largo del camino dentro del bloque (m). */
+        @Override
         public double length() {
             return this.length;
         }
@@ -98,6 +157,7 @@ public final class RailPath {
         }
 
         /** Posición dentro del bloque a distancia s del extremo A: out = {x, y (0..1), z}. */
+        @Override
         public void point(double s, double[] out) {
             double c = Math.max(0.0, Math.min(this.length, s));
             if (this.curve) {
@@ -114,6 +174,7 @@ public final class RailPath {
         }
 
         /** Dirección horizontal (unitaria) de A hacia B a distancia s: out = {tx, tz}. */
+        @Override
         public void tangent(double s, double[] out) {
             if (this.curve) {
                 double phi = Math.max(0.0, Math.min(this.length, s)) / 0.5;
@@ -129,6 +190,7 @@ public final class RailPath {
         }
 
         /** Seno del ángulo de subida yendo de A hacia B (0 en plano y en curva). */
+        @Override
         public double slopeAB() {
             return this.ascending() ? (this.hB - this.hA) / this.length : 0.0;
         }
@@ -147,7 +209,7 @@ public final class RailPath {
 
     /** Quien dice qué riel hay en cada bloque (null = no hay riel, o el chunk no está cargado). */
     public interface Lookup {
-        Shape shapeAt(int x, int y, int z);
+        Piece shapeAt(int x, int y, int z);
     }
 
     /** Un punto sobre la vía. Avanzar es moverse hacia el frente del vagón; las distancias negativas, hacia atrás. */
@@ -155,13 +217,13 @@ public final class RailPath {
         public int x;
         public int y;
         public int z;
-        public Shape shape;
+        public Piece shape;
         /** Distancia desde el extremo A dentro de este bloque. */
         public double s;
         /** +1 si el frente del vagón va de A hacia B en este bloque; -1 si va de B hacia A. */
         public int dir = 1;
 
-        public Cursor(int x, int y, int z, Shape shape, double s, int dir) {
+        public Cursor(int x, int y, int z, Piece shape, double s, int dir) {
             this.x = x;
             this.y = y;
             this.z = z;
@@ -196,8 +258,9 @@ public final class RailPath {
                     break;
                 }
                 // Llega al final de este bloque: se mira el siguiente.
-                RailPath.Side side = motion > 0 ? this.shape.sideB : this.shape.sideA;
-                int height = motion > 0 ? this.shape.hB : this.shape.hA;
+                RailPath.Side side = motion > 0 ? this.shape.sideB() : this.shape.sideA();
+                int height = motion > 0 ? this.shape.hB() : this.shape.hA();
+                double along = this.shape.alongAt(motion > 0 ? 1 : 0);
                 int nx = this.x + side.dx;
                 int nz = this.z + side.dz;
                 RailPath.Side entry = side.opposite();
@@ -205,11 +268,11 @@ public final class RailPath {
                 for (int k = 0; k < 2 && !found; k++) {
                     int ny = this.y + height - k;
                     int need = k == 0 ? 0 : 1;                         // al mismo nivel entra por el extremo bajo; un nivel abajo, por el alto
-                    Shape next = lookup.shapeAt(nx, ny, nz);
+                    Piece next = lookup.shapeAt(nx, ny, nz);
                     if (next == null) {
                         continue;
                     }
-                    int end = next.endAt(entry, need);
+                    int end = next.endAt(entry, need, along);
                     if (end < 0) {
                         continue;
                     }

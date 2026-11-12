@@ -56,7 +56,12 @@ public class AdScreenRenderer implements BlockEntityRenderer<AdScreenBlockEntity
         if (!(state.getBlock() instanceof AdScreenBlock block)) {
             return;
         }
-        int size = block.sizeBlocks();
+        int w = block.width();
+        int h = block.height();
+        boolean ceiling = state.hasProperty(com.example.beautifuldecor.block.AdTvBlock.CEILING) && state.getValue(com.example.beautifuldecor.block.AdTvBlock.CEILING);
+        float frontZ = ceiling ? 6.5f : FRONT_Z;
+        float bezelTop = ceiling ? 14f : 16f * h;
+        float bezelBottom = ceiling ? 2f : 0f;
         AdPlayback.Session session = AdPlayback.sessionOf(screen);
         boolean video = session != null && session.video.hasFrame();
         ResourceLocation tex;
@@ -70,9 +75,9 @@ public class AdScreenRenderer implements BlockEntityRenderer<AdScreenBlockEntity
 
         float yaw = (180f + state.getValue(AdScreenBlock.FACING).toYRot()) % 360f;
         float xLeft = 16f - MARGIN;
-        float xRight = 16f - 16f * size + MARGIN;
-        float yBottom = MARGIN;
-        float yTop = 16f * size - MARGIN;
+        float xRight = 16f - 16f * w + MARGIN;
+        float yBottom = bezelBottom + MARGIN;
+        float yTop = bezelTop - MARGIN;
 
         pose.pushPose();
         try {
@@ -80,9 +85,17 @@ public class AdScreenRenderer implements BlockEntityRenderer<AdScreenBlockEntity
             pose.mulPose(Axis.YP.rotationDegrees(-yaw));
             pose.translate(-0.5, 0.0, -0.5);
             Matrix4f m = pose.last().pose();
-            quad(buffer.getBuffer(RenderType.text(BLACK)), m, 16f, 16f - 16f * size, 16f * size, 0f, FRONT_Z - LAYER,
+            quad(buffer.getBuffer(RenderType.text(BLACK)), m, 16f, 16f - 16f * w, bezelTop, bezelBottom, frontZ - LAYER,
                     0, 0, 0);
-            quad(buffer.getBuffer(RenderType.text(tex)), m, xLeft, xRight, yTop, yBottom, FRONT_Z - 2 * LAYER, 255, 255, 255);
+            if (w == h) {
+                quad(buffer.getBuffer(RenderType.text(tex)), m, xLeft, xRight, yTop, yBottom, frontZ - 2 * LAYER, 255, 255, 255);
+            } else {
+                // el anuncio es cuadrado: en una pantalla rectangular va centrado y a los lados se ve el mismo video estirado y oscurecido
+                quad(buffer.getBuffer(RenderType.text(tex)), m, xLeft, xRight, yTop, yBottom, frontZ - 2 * LAYER, 70, 70, 70);
+                float side = yTop - yBottom;
+                float c = (xLeft + xRight) / 2f;
+                quad(buffer.getBuffer(RenderType.text(tex)), m, c + side / 2f, c - side / 2f, yTop, yBottom, frontZ - 3 * LAYER, 255, 255, 255);
+            }
         } finally {
             pose.popPose();
         }

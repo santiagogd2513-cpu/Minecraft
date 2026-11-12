@@ -53,8 +53,17 @@ public class AdScreenBlock extends BaseEntityBlock {
         registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(PX, 0).setValue(PY, 0));
     }
 
-    /** Cuántos bloques mide de lado la pantalla. */
+    /** Cuántos bloques mide de lado la pantalla (para el alcance del sonido; en las rectangulares, el lado mayor). */
     public int sizeBlocks() {
+        return this.size;
+    }
+
+    /** V5.2.1: ancho y alto en bloques (las pantallas cuadradas miden size x size; el televisor de anuncios 2 x 1). */
+    public int width() {
+        return this.size;
+    }
+
+    public int height() {
         return this.size;
     }
 
@@ -80,8 +89,8 @@ public class AdScreenBlock extends BaseEntityBlock {
         Direction right = facing.getCounterClockWise();
         BlockPos origin = context.getClickedPos();
         Level level = context.getLevel();
-        for (int px = 0; px < size; px++) {
-            for (int py = 0; py < size; py++) {
+        for (int px = 0; px < width(); px++) {
+            for (int py = 0; py < height(); py++) {
                 BlockPos p = origin.relative(right, px).above(py);
                 if (level.isOutsideBuildHeight(p) || !level.getBlockState(p).canBeReplaced(context)) {
                     return null;
@@ -97,8 +106,8 @@ public class AdScreenBlock extends BaseEntityBlock {
             return;
         }
         Direction right = state.getValue(FACING).getCounterClockWise();
-        for (int px = 0; px < size; px++) {
-            for (int py = 0; py < size; py++) {
+        for (int px = 0; px < width(); px++) {
+            for (int py = 0; py < height(); py++) {
                 if (px == 0 && py == 0) {
                     continue;
                 }
@@ -153,8 +162,8 @@ public class AdScreenBlock extends BaseEntityBlock {
         if (!state.is(newState.getBlock())) {
             BlockPos origin = originOf(pos, state);
             Direction right = state.getValue(FACING).getCounterClockWise();
-            for (int px = 0; px < size; px++) {
-                for (int py = 0; py < size; py++) {
+            for (int px = 0; px < width(); px++) {
+                for (int py = 0; py < height(); py++) {
                     BlockPos p = origin.relative(right, px).above(py);
                     if (p.equals(pos)) {
                         continue;

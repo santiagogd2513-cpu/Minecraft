@@ -104,7 +104,8 @@ public final class ModCreativeTabs {
     public static final List<String> VEHICLE_IDS = List.of("bicycle", "motorcycle", "ford_f150", "delivery_truck", "helicopter", "bugotti_chillon", "airliner",
             "freight_rail", "freight_loco", "coal_wagon", "food_wagon", "mineral_wagon",
             "passenger_rail", "steam_classic", "steam_modern", "coach_low", "coach_mid", "coach_high",
-            "metro_rail", "metro_head", "metro_car");
+            "metro_rail", "metro_head", "metro_car",
+            "train_remote", "station_controller");
 
     private ModCreativeTabs() {
     }

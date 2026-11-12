@@ -2,6 +2,8 @@ package com.example.beautifuldecor.init;
 
 import com.example.beautifuldecor.BeautifulDecor;
 import com.example.beautifuldecor.block.entity.ElevatorControllerBlockEntity;
+import com.example.beautifuldecor.block.entity.StationControllerBlockEntity;
+import com.example.beautifuldecor.block.entity.WideRailBlockEntity;
 import com.example.beautifuldecor.block.entity.AdScreenBlockEntity;
 import com.example.beautifuldecor.block.entity.RadioSpeakerBlockEntity;
 import com.example.beautifuldecor.block.entity.SecurityCameraBlockEntity;
@@ -92,6 +94,18 @@ public class ModBlockEntities {
             BLOCK_ENTITIES.register("elevator_controller",
                     () -> BlockEntityType.Builder.of(ElevatorControllerBlockEntity::new,
                             ModBlocks.ELEVATOR_CONTROLLER.get()).build(null));
+
+    // ===== V6.0.0: automatización de trenes =====
+    public static final RegistryObject<BlockEntityType<StationControllerBlockEntity>> STATION_CONTROLLER =
+            BLOCK_ENTITIES.register("station_controller",
+                    () -> BlockEntityType.Builder.of(StationControllerBlockEntity::new,
+                            ModBlocks.STATION_CONTROLLER.get()).build(null));
+
+    // ===== V6.1.0: curvas anchas =====
+    public static final RegistryObject<BlockEntityType<WideRailBlockEntity>> WIDE_RAIL =
+            BLOCK_ENTITIES.register("wide_rail",
+                    () -> BlockEntityType.Builder.of(WideRailBlockEntity::new,
+                            ModBlocks.WIDE_FREIGHT_RAIL.get(), ModBlocks.WIDE_PASSENGER_RAIL.get(), ModBlocks.WIDE_METRO_RAIL.get()).build(null));
 
     public static final RegistryObject<BlockEntityType<ElevatorDisplayBlockEntity>> ELEVATOR_DISPLAY =
             BLOCK_ENTITIES.register("elevator_display",
