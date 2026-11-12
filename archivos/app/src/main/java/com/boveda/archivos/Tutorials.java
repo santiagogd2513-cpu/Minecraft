@@ -320,6 +320,9 @@ final class Tutorials {
         SceneView(Context c, Tutorial t) {
             super(c);
             tut = t;
+            tp.setSubpixelText(true);
+            tp.setLinearText(true);
+            p.setSubpixelText(true);
         }
 
         int step() {
@@ -579,6 +582,11 @@ final class Tutorials {
             c.restore();
         }
 
+        /** ¿Hay filas en la parte de arriba que un cartel taparía? */
+        private boolean hasContent(Frame f) {
+            return f.rows.size() >= 3 || f.progress >= 0;
+        }
+
         private void drawCaption(Canvas c, Step s) {
             tp.setTypeface(Typeface.DEFAULT_BOLD);
             tp.setTextSize(22f);                         // se dibuja a 1/4: queda en 5,5 unidades del celular
@@ -586,13 +594,21 @@ final class Tutorials {
             StaticLayout lay = StaticLayout.Builder.obtain(s.text, 0, s.text.length(), tp, 280).build();
             float k = 0.25f;
             float h = lay.getHeight() * k + 8;
-            boolean below = !targetValid || toY < 90;
-            float top = below ? (targetValid ? Math.min(toY + 14, 150 - h) : 30) : Math.max(22, toY - 14 - h);
-            if (!targetValid) top = 30;
+            boolean below = targetValid && (toY < 90 || s.kind == BTN);
+            float top;
+            if (!targetValid) {
+                top = hasContent(s.frame) ? 96 : 30;                  // sin objetivo: en la parte vacía
+            } else if (s.kind == MENU) {
+                top = 24;                                             // el menú ocupa abajo: el cartel va arriba
+            } else if (below) {
+                top = Math.min(toY + 14, 168 - h);
+            } else {
+                top = Math.max(22, toY - 14 - h);
+            }
             RectF box = new RectF(11, top, 89, top + h);
             p.setColor(0xFFFFE9A8);
             c.drawRoundRect(box, 5, 5, p);
-            if (targetValid) {
+            if (targetValid && s.kind != MENU) {
                 Path tri = new Path();
                 float ax = Math.max(18, Math.min(82, toX));
                 if (below) {
