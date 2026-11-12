@@ -398,13 +398,14 @@ public class MainActivity extends Activity {
                 }
                 safFiles = files;
                 List<ByteSource> srcs = new ArrayList<>(files);
-                XboxDisk.Part p = XboxDisk.usbStick(srcs);
-                if (p == null) throw new java.io.IOException("Esos archivos no tienen una partición XTAF de Xbox 360.");
+                List<XboxDisk.Part> found = XboxDisk.usbStick(srcs);
+                if (found.isEmpty()) throw new java.io.IOException("Esos archivos no tienen una partición XTAF de Xbox 360.");
                 sessionLabel = "Memoria USB de la consola";
-                parts = new ArrayList<>(Collections.singletonList(p));
+                parts = new ArrayList<>(found);
                 ui.post(() -> {
                     hideOverlay();
-                    openPartition(0);
+                    if (found.size() == 1) openPartition(0);
+                    else showPartitions();
                 });
             } catch (Throwable e) {
                 ui.post(() -> fail(e));
@@ -1211,11 +1212,22 @@ public class MainActivity extends Activity {
                     + (r.files.isEmpty() ? "No pude saber qué archivos tocan." : "Archivos afectados:" + badList(r.files, 12))
                     + "\n\nLa consola tampoco podría abrir esos datos. Arca solo lee, así que no se empeoró nada.";
         }
+        if (r.diag != null) {
+            msg += "\n\nEstructura del paquete:\n• Cabecera: " + mark(r.diag.header) + "\n• Tabla principal: " + mark(r.diag.top)
+                    + (r.diag.level1.equals("no aplica") ? "" : "\n• Tablas de nivel 1: " + mark(r.diag.level1));
+            if (!r.diag.allOk() && r.bad == 0) {
+                msg += "\n\nSi un paquete sano de tu consola sale con ⚠️ aquí, es que Arca todavía no entiende bien ese tipo de paquete: mándame la captura.";
+            }
+        }
         new AlertDialog.Builder(this, R.style.Theme_Arca_Dialog)
                 .setTitle(r.bad == 0 ? "✅ Sin errores" : "⚠️ Paquete dañado")
                 .setMessage(msg)
                 .setPositiveButton("Entendido", null)
                 .show();
+    }
+
+    private static String mark(String s) {
+        return s.equals("ok") ? "✅" : s.startsWith("mal") ? "⚠️ " + s : s;
     }
 
     private void verifyAllMenu() {

@@ -25,8 +25,12 @@ final class XboxDisk {
         }
     }
 
+    // Disco duro de la consola: 0x80000 y 0x80080000 son cachés (SFCX, no XTAF); el resto sí es XTAF
     private static final long[] OFFSETS = {0x80000L, 0x80080000L, 0x10C080000L, 0x118EB0000L, 0x120EB0000L, 0x130EB0000L};
-    private static final String[] NAMES = {"Sistema", "Caché 0", "Caché 1", "Juegos viejos", "Compatibilidad", "Datos (juegos, partidas y perfiles)"};
+    private static final String[] NAMES = {"Caché del sistema", "Caché de juegos", "Sistema extendido", "Sistema extendido 2",
+            "Compatibilidad con Xbox original", "Datos (juegos, partidas y perfiles)"};
+    /** En una memoria USB de la consola, la partición de datos empieza aquí, contando todos los archivos Data juntos. */
+    private static final long USB_DATA = 0x20000000L;
 
     private XboxDisk() {}
 
@@ -46,22 +50,35 @@ final class XboxDisk {
     }
 
     /**
-     * La partición de una memoria USB de la consola, a partir de sus archivos Data0000, Data0001…
-     * (ya en orden). Busca la marca «XTAF» dentro del primero.
+     * Las particiones de una memoria USB de la consola, a partir de sus archivos Data0000, Data0001…
+     * (ya en orden). La de datos debería empezar en 0x20000000 de todos los archivos juntos; si no está ahí,
+     * se busca la marca «XTAF» en el principio del primero. Primero va la que trae la carpeta «Content».
      */
-    static Part usbStick(List<ByteSource> dataFiles) throws IOException {
-        if (dataFiles.isEmpty()) return null;
+    static List<Part> usbStick(List<ByteSource> dataFiles) throws IOException {
+        List<Part> out = new ArrayList<>();
+        if (dataFiles.isEmpty()) return out;
         ByteSource all = ByteSource.concat(dataFiles);
+        List<Long> offs = new ArrayList<>();
+        if (USB_DATA + 0x2000 < all.length()) offs.add(USB_DATA);
         ByteSource first = dataFiles.get(0);
-        long limit = Math.min(first.length() - 16, 0x1000000L);
+        long limit = Math.min(first.length() - 16, 0x4000000L);
         byte[] h = new byte[16];
         for (long off = 0; off <= limit; off += 0x1000) {
             first.read(off, h, 0, 16);
-            if (h[0] == 'X' && h[1] == 'T' && h[2] == 'A' && h[3] == 'F') {
-                ByteSource part = all.slice(off, all.length() - off);
-                if (Xtaf.isXtaf(part)) return new Part("Memoria USB de la consola", part);
-            }
+            if (h[0] == 'X' && h[1] == 'T' && h[2] == 'A' && h[3] == 'F' && !offs.contains(off)) offs.add(off);
         }
-        return null;
+        for (long off : offs) {
+            ByteSource part = all.slice(off, all.length() - off);
+            if (!Xtaf.isXtaf(part)) continue;
+            boolean content = false;
+            try {
+                for (Xtaf.Entry e : new Xtaf(part).listRoot()) if (e.dir && e.name.equalsIgnoreCase("Content")) content = true;
+            } catch (IOException ignored) {
+            }
+            Part p = new Part(content ? "Datos (juegos, partidas y perfiles)" : "Otra partición de la memoria", part);
+            if (content) out.add(0, p);
+            else out.add(p);
+        }
+        return out;
     }
 }

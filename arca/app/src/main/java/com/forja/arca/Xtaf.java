@@ -58,8 +58,9 @@ final class Xtaf {
             throw new IOException("El tamaño de clúster de la partición no es válido (" + sectorsPerCluster + ")");
         }
         clusterBytes = sectorsPerCluster * 512;
-        entries = s.length() / clusterBytes;
-        fat32 = entries >= 0xFFF4;
+        // máximo de clústeres = tamaño / clúster + 1; con menos de 0xFFF0 la tabla usa 2 bytes por entrada, si no 4
+        entries = s.length() / clusterBytes + 1;
+        fat32 = entries >= 0xFFF0;
         long fatBytes = entries * (fat32 ? 4 : 2);
         fatBytes = (fatBytes + 0xFFF) & ~0xFFFL;
         dataAt = FAT_AT + fatBytes;
@@ -127,7 +128,7 @@ final class Xtaf {
                 e.dir = (buf[o + 1] & 0x10) != 0;
                 e.cluster = be32(buf, o + 44);
                 e.size = be32(buf, o + 48) & 0xFFFFFFFFL;
-                e.modified = date(be16(buf, o + 60), be16(buf, o + 62));
+                e.modified = date(be16(buf, o + 56), be16(buf, o + 58));   // última escritura
                 e.path = parentPath.isEmpty() ? e.name : parentPath + "/" + e.name;
                 out.add(e);
             }

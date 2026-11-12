@@ -112,6 +112,8 @@ public final class ArcaTest {
         check(child(p, -1, "vacio.txt").size == 0, "un archivo vacío");
         check(leeme.modified > 0, "la fecha se lee");
         check(p.countBadBlocks(null) == 0, "todos los bloques pasan la prueba del SHA-1");
+        StfsPackage.Diag dg = p.verify(null, null).diag;
+        check(dg.allOk() && dg.header.equals("ok") && dg.top.equals("ok"), "la cabecera y la tabla de arriba coinciden: " + dg.header + " / " + dg.top + " / " + dg.level1);
         // un paquete dañado: se cambia un byte de un bloque de datos y debe detectarse
         ByteSource good = file(f);
         long corrupt = 0xB000L + 0x1000L * 5 + 77;
@@ -158,9 +160,9 @@ public final class ArcaTest {
         java.util.Arrays.sort(files);
         List<ByteSource> srcs = new ArrayList<>();
         for (File f : files) srcs.add(file(f));
-        XboxDisk.Part usb = XboxDisk.usbStick(srcs);
-        check(usb != null, "encuentra la partición dentro de " + files.length + " archivos");
-        if (usb != null) partition("dentro de la memoria USB", usb.source, md5, size);
+        List<XboxDisk.Part> usbParts = XboxDisk.usbStick(srcs);
+        check(usbParts.size() == 1 && usbParts.get(0).name.startsWith("Datos"), "encuentra la partición de datos dentro de " + files.length + " archivos");
+        if (!usbParts.isEmpty()) partition("dentro de la memoria USB", usbParts.get(0).source, md5, size);
 
         // paquetes por dentro
         String aMd5 = null, bMd5 = null, gMd5 = null, mMd5 = null;
@@ -182,6 +184,8 @@ public final class ArcaTest {
         byte[] mb = readAll(med, mi);
         check(mb.length == mSize && md5(mb).equals(mMd5), "medio.bin (" + mi.size / 4096 + " bloques) completo");
         check(med.countBadBlocks(null) == 0, "todos los bloques bien");
+        StfsPackage.Diag dm = med.verify(null, null).diag;
+        check(dm.header.equals("ok") && dm.top.equals("ok") && dm.level1.equals("ok"), "con tabla de nivel 1: " + dm.header + " / " + dm.top + " / " + dm.level1);
         System.out.println("== paquete grande (más de 28 900 bloques)");
         StfsPackage gr = StfsPackage.open(file(new File(dir, "paquete_grande.stfs")));
         StfsPackage.Item gi = child(gr, -1, "grande.bin");
@@ -189,6 +193,8 @@ public final class ArcaTest {
         check(gb.length == gSize && md5(gb).equals(gMd5), "grande.bin completo");
         check(new String(readAll(gr, child(gr, -1, "fin.txt"))).equals("fin"), "el último archivo, después de las tablas de segundo nivel");
         check(gr.countBadBlocks(null) == 0, "todos los bloques bien");
+        StfsPackage.Diag dgr = gr.verify(null, null).diag;
+        check(dgr.header.equals("ok") && dgr.top.equals("ok"), "con tabla de nivel 2: " + dgr.header + " / " + dgr.top + " / " + dgr.level1);
 
         System.out.println("== un paquete dentro de la partición de la consola");
         Xtaf fs0 = new Xtaf(file(new File(dir, "particion16.img")));

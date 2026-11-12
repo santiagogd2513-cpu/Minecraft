@@ -1,3 +1,10 @@
+## 4
+🔧 Arca: correcciones con la documentación pública del formato, y diagnóstico de paquetes
+- Memorias USB de la consola: ahora busca la partición de datos donde debe estar (a 0x20000000 de los archivos Data juntos) y, si hay más de una partición, te deja elegir; la de «Content» sale primero.
+- Disco duro: los nombres de las particiones ahora son los correctos (sistema extendido, compatibilidad con Xbox original, datos).
+- La fecha que se muestra en cada archivo ahora es la de la última escritura.
+- Verificar un paquete ahora también comprueba su estructura: el SHA-1 de la cabecera y las tablas principales. Si un paquete sano de tu consola sale con ⚠️ en la estructura, es que Arca todavía no entiende ese tipo de paquete (y es justo lo que necesito saber antes de que Arca escriba nada).
+
 ## 3
 ✅ Arca, etapa 2 parte C: verificar y copias de seguridad
 - Verificar: en la ficha de un paquete, «Verificar el paquete» revisa que ningún bloque de datos esté corrupto y dice qué archivos toca si encuentra alguno dañado. También sirve dentro de «Ver por dentro».

@@ -33,6 +33,8 @@ final class StfsPackage {
     private final long firstHash;
     private int sex;                  // 0 una tabla, 1 dos copias
     final int totalBlocks;
+    /** Bloques asignados y sin asignar: de ahí sale cuántos niveles de tablas tiene el paquete. */
+    private int allBlocks;
     final Stfs header;
     final List<Item> items = new ArrayList<>();
 
@@ -58,8 +60,10 @@ final class StfsPackage {
         int ftBlock = (h[0x37E] & 0xFF) | ((h[0x37F] & 0xFF) << 8) | ((h[0x380] & 0xFF) << 16);
         int total = be32(h, 0x395);
         if (total < 0 || total > 0xFFFFFF) throw new IOException("El número de bloques del paquete no es válido");
+        int unallocated = be32(h, 0x399);
         int guess = ((~sep) & 1);
         StfsPackage p = new StfsPackage(src, head, firstHash, total, guess);
+        p.allBlocks = unallocated > 0 && unallocated < 0xFFFFFF ? total + unallocated : total;
         // se prueba cuál de los dos tipos acierta con el SHA-1 del primer bloque de la tabla de archivos
         int best = guess;
         for (int s : new int[]{guess, 1 - guess}) {
@@ -240,9 +244,19 @@ final class StfsPackage {
         }
     }
 
+    /** Lo que se comprobó de la estructura del paquete, aparte de los datos (sirve para confirmar que se entiende bien el formato). */
+    static final class Diag {
+        String header = "no comprobada", top = "no comprobada", level1 = "no aplica";
+
+        boolean allOk() {
+            return header.equals("ok") && top.equals("ok") && (level1.equals("ok") || level1.equals("no aplica") || level1.startsWith("no comprobad"));
+        }
+    }
+
     /** El resultado de revisar un paquete. */
     static final class Result {
         int total, bad;
+        Diag diag;
         boolean cancelled;
         final List<Integer> badBlocks = new ArrayList<>();
         final List<String> files = new ArrayList<>();
@@ -276,6 +290,7 @@ final class StfsPackage {
             }
             if (progress != null && n % 400 == 0) progress.accept(n);
         }
+        r.diag = diagnose();
         if (r.bad > 0) {
             java.util.Set<Integer> bs = new java.util.HashSet<>(r.badBlocks);
             for (Item it : items) {
@@ -293,6 +308,56 @@ final class StfsPackage {
             }
         }
         return r;
+    }
+
+    /**
+     * Revisa lo de arriba de la estructura: el SHA-1 de la cabecera (de 0x344 hasta la primera tabla), el de la
+     * tabla principal que guarda el descriptor de volumen y el de las tablas de nivel 0 que anota la de nivel 1.
+     */
+    Diag diagnose() {
+        Diag d = new Diag();
+        try {
+            byte[] h = src.read(0, 0x400);
+            byte[] cover = src.read(0x344, (int) (firstHash - 0x344));
+            d.header = Arrays.equals(sha1(cover), Arrays.copyOfRange(h, 0x32C, 0x340)) ? "ok" : "mal";
+            byte[] want = Arrays.copyOfRange(h, 0x381, 0x395);
+            int level = allBlocks <= PER_TABLE ? 0 : allBlocks <= PER_TABLE2 ? 1 : 2;
+            long step0 = sex == 1 ? 0xAC : 0xAB, step1 = sex == 1 ? 0x723A : 0x718F;
+            long top = level == 0 ? 0 : level == 1 ? step0 : step1;
+            int topCopy = -1;
+            for (int c = 0; c <= sex; c++) {
+                long at = firstHash + ((top + c) << 12);
+                if (at + BLOCK <= src.length() && Arrays.equals(sha1(src.read(at, BLOCK)), want)) {
+                    topCopy = c;
+                    break;
+                }
+            }
+            d.top = topCopy >= 0 ? "ok" : "mal";
+            if (level == 2) {
+                d.level1 = "no comprobada (más de 28 900 bloques)";
+            } else if (level == 1 && topCopy >= 0) {
+                long l1 = firstHash + ((top + topCopy) << 12);
+                int groups = (allBlocks + PER_TABLE - 1) / PER_TABLE, bad = 0;
+                for (int g = 0; g < groups; g++) {
+                    byte[] e = src.read(l1 + (long) g * 0x18, 0x18);
+                    byte[] hash = Arrays.copyOf(e, 20);
+                    int preferred = sex == 1 && (e[20] & 0x40) != 0 ? 1 : 0;
+                    boolean ok = false;
+                    for (int k = 0; k <= sex && !ok; k++) {
+                        int c = k == 0 ? preferred : 1 - preferred;
+                        long at = tableOffset((long) g * PER_TABLE, c);
+                        if (at + BLOCK <= src.length() && Arrays.equals(sha1(src.read(at, BLOCK)), hash)) ok = true;
+                    }
+                    if (!ok) bad++;
+                }
+                d.level1 = bad == 0 ? "ok" : "mal (" + bad + " de " + groups + " tablas)";
+            } else if (level == 1) {
+                d.level1 = "no comprobada";
+            }
+        } catch (IOException e) {
+            d.header = d.top.equals("no comprobada") ? "no comprobada" : d.header;
+        }
+        return d;
     }
 
     int countBadBlocks(java.util.concurrent.atomic.AtomicBoolean stop) {
