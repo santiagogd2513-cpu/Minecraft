@@ -3657,12 +3657,13 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             {L.t("La Bóveda"), L.t("PIN, huella y autoborrado · pide tu PIN o tu huella")},
             {L.t("Temas de temporada"), L.t("Navidad, Velitas, Halloween y más")},
             {L.t("Experimentales y de prueba"), L.t("Funciones en pruebas · úsalas bajo tu propio riesgo")},
+            {L.t("Tutoriales y aprendizaje"), L.t("Cómo usar Bóveda, paso a paso y sin sonido")},
             {L.t("Acerca de"), L.t("Versión y Forja Estudios")},
     };
     private static final int[] SETTINGS_ICONS = {R.drawable.ic_menu, R.drawable.ic_folder, R.drawable.ic_play, R.drawable.ic_swap,
-            R.drawable.ic_download, R.drawable.ic_shield, R.drawable.ic_sd, R.drawable.ic_key, R.drawable.ic_season, R.drawable.ic_code, R.drawable.ic_info};
+            R.drawable.ic_download, R.drawable.ic_shield, R.drawable.ic_sd, R.drawable.ic_key, R.drawable.ic_season, R.drawable.ic_code, R.drawable.ic_play, R.drawable.ic_info};
     private static final int[][] SETTINGS_COLORS = {{0xFF4C9DFF, 0xFF6FD6FF}, {0xFFFFB547, 0xFFF07C2C}, {0xFF35D08A, 0xFF1EA97C},
-            {0xFFB47CFF, 0xFF7C4DFF}, {0xFF28A8EA, 0xFF0A64D6}, {0xFFFF6B8A, 0xFFE0405F}, {0xFF8B97AB, 0xFF5D6B83}, {0xFF7B4DFF, 0xFFB86BFF}, {0xFFE63946, 0xFF2DC653}, {0xFFFFB547, 0xFFFF5D6C}, {0xFFFF8A3D, 0xFFFFC857}};
+            {0xFFB47CFF, 0xFF7C4DFF}, {0xFF28A8EA, 0xFF0A64D6}, {0xFFFF6B8A, 0xFFE0405F}, {0xFF8B97AB, 0xFF5D6B83}, {0xFF7B4DFF, 0xFFB86BFF}, {0xFFE63946, 0xFF2DC653}, {0xFFFFB547, 0xFFFF5D6C}, {0xFF6FD6FF, 0xFF4C9DFF}, {0xFFFF8A3D, 0xFFFFC857}};
 
     private void settingsCategories(LinearLayout col, android.app.Dialog d, java.util.function.IntConsumer open) {
         col.removeAllViews();
@@ -3702,6 +3703,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
     private static final int VAULT_SETTINGS = 7;
     private static final int SEASON_SETTINGS = 8;
     private static final int LAB_SETTINGS = 9;
+    private static final int TUTORIAL_SETTINGS = 10;
 
     private void fillSettings(LinearLayout col, android.app.Dialog d, int category) {
         col.removeAllViews();
@@ -3716,6 +3718,10 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         }
         if (category == LAB_SETTINGS) {
             labSettings(col);
+            return;
+        }
+        if (category == TUTORIAL_SETTINGS) {
+            tutorialSettings(col, refresh);
             return;
         }
         switch (category) {
@@ -3820,6 +3826,37 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                 settingsRow(col, "🔒  " + L.t("Política de privacidad y seguridad"), L.t("Qué hace Bóveda con tu información"), () -> Legal.show(this, Legal.PRIVACY));
                 settingsRow(col, "📄  " + L.t("Términos y condiciones"), L.t("Las reglas para usar la app"), () -> Legal.show(this, Legal.TERMS));
             }
+        }
+    }
+
+    /** Tutoriales animados, sin sonido: carteles flotantes y un dedo que toca los botones. */
+    private void tutorialSettings(LinearLayout col, Runnable refresh) {
+        java.util.List<Tutorials.Tutorial> all = Tutorials.all();
+        java.util.Set<String> seen = Tutorials.seen(this);
+        int done = 0;
+        for (Tutorials.Tutorial t : all) if (seen.contains(t.id)) done++;
+        TextView head = Ui.text(this, done + L.t(" de ") + all.size() + L.t(" vistos"), 13, Ui.SUB, false);
+        head.setPadding(dp(6), dp(4), 0, dp(10));
+        col.addView(head);
+        for (Tutorials.Tutorial t : all) {
+            LinearLayout r = Ui.row(this);
+            r.setGravity(Gravity.CENTER_VERTICAL);
+            r.setPadding(dp(14), dp(13), dp(12), dp(13));
+            r.setBackground(Ui.ripple(Ui.roundStroke(Ui.SURFACE, dp(16), dp(1), Ui.STROKE), Ui.round(Color.WHITE, dp(16))));
+            TextView badge = Ui.text(this, t.emoji, 22, Color.WHITE, false);
+            badge.setGravity(Gravity.CENTER);
+            badge.setBackground(Ui.gradient(dp(12), t.c1, t.c2));
+            r.addView(badge, new LinearLayout.LayoutParams(dp(44), dp(44)));
+            LinearLayout texts = Ui.column(this);
+            texts.setPadding(dp(14), 0, 0, 0);
+            texts.addView(Ui.text(this, t.title, 15.5f, Ui.TEXT, true));
+            TextView sub = Ui.text(this, t.sub, 12.5f, Ui.SUB, false);
+            sub.setPadding(0, dp(2), 0, 0);
+            texts.addView(sub);
+            r.addView(texts, Ui.weight(1));
+            r.addView(Ui.text(this, seen.contains(t.id) ? "✅" : "▶", 18, Ui.TEXT, false));
+            r.setOnClickListener(v -> Tutorials.play(this, t, refresh));
+            addCard(col, r);
         }
     }
 

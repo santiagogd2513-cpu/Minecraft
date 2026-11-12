@@ -1,3 +1,9 @@
+## 56
+🎬 Tutoriales y aprendizaje
+- Ajustes → «Tutoriales y aprendizaje»: películas cortas dentro de la app, sin sonido y sin internet. Un celular de mentira con Bóveda, un dedo que toca los botones y carteles flotantes que explican cada paso.
+- Los dos primeros: «Comprimir y extraer» y «Copiar, mover y borrar». Se pasan solos (con pausa, anterior y siguiente), y al terminarlos aparece ✅.
+- Los demás (papelera, la nube, qué es Bóveda y cómo funciona La Bóveda) llegan en las próximas versiones.
+
 ## 55
 ⭐ Menú de Forja Estudios
 - Al tocar «Forja Estudios» ahora sale un menú con tres opciones: Contáctanos (muy pronto), Calificar apps (abre la página web, ya en la ficha de esta app) y Acerca del estudio.
