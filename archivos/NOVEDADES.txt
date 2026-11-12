@@ -1,3 +1,7 @@
+## 54
+🔧 Arreglo en la pantalla de inicio
+- Con letra grande, el nombre de «Almacenamiento interno» y de la tarjeta de memoria se partía letra por letra. Ahora el espacio usado va debajo de la barra y el nombre tiene todo el ancho.
+
 ## 53
 🎬 Créditos
 - Ajustes → Acerca de → Créditos: las librerías, los servicios en la nube y las herramientas que hacen posible a Bóveda, y quién la hizo en Forja Estudios.

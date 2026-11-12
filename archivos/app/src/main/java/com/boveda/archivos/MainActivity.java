@@ -664,13 +664,16 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             n.setPadding(dp(10), 0, 0, 0);
             r.addView(n, Ui.weight(1));
             TextView space = Ui.text(this, "…", 13, Ui.SUB, false);
-            r.addView(space);
             card.addView(r);
             FrameLayout barBox = new FrameLayout(this);
             barBox.addView(new UsageBar(this, 0));
             LinearLayout.LayoutParams bl = new LinearLayout.LayoutParams(-1, dp(8));
             bl.setMargins(0, dp(12), 0, 0);
             card.addView(barBox, bl);
+            // el espacio va debajo: con letra grande, a un lado le quitaba todo el ancho al nombre
+            LinearLayout.LayoutParams sl = new LinearLayout.LayoutParams(-2, -2);
+            sl.setMargins(0, dp(8), 0, 0);
+            card.addView(space, sl);
             // el espacio se mide aparte: una USB o SD ocupada copiando puede tardar en contestar
             new Thread(() -> {
                 long total = f.getTotalSpace(), free = f.getUsableSpace();
