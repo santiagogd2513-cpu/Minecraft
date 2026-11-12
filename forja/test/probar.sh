@@ -6,7 +6,7 @@ H=$(cd "$(dirname "$0")" && pwd)
 W=$(mktemp -d)
 J=$H/../app/src/main/java/com/forja/formateador
 javac -encoding UTF-8 -d $W/out $J/{BlockDevice,Progress,Io,Partitioner,FsType,Fat32Formatter,ExFatFormatter,Ext4Formatter,Ntfs,XboxUsbFormatter,Forja}.java $H/FileDev.java $H/FTest.java
-javac -encoding UTF-8 -d $W/out $H/../../arca/app/src/main/java/com/forja/arca/{ByteSource,Xtaf,XboxDisk}.java $H/com/forja/arca/XboxCheck.java
+javac -encoding UTF-8 -d $W/out $H/../../arca/app/src/main/java/com/forja/arca/{ByteSource,Xtaf,XboxDisk,Fat32}.java $H/com/forja/arca/XboxCheck.java
 # el motor NTFS (mkntfs + puente) compilado para esta PC, igual que para el celular
 bash $H/motor_ntfs_pc.sh $W/nb
 G=$((1<<30)); TB=$((1<<40))
