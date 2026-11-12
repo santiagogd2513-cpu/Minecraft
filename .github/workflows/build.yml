@@ -3,8 +3,10 @@ name: Amatista Launcher
 on:
   push:
     branches: [ "**" ]
+    # Solo cuando cambia el código del launcher de escritorio: antes salía una versión nueva con cualquier
+    # cambio del repositorio (Arca, Bóveda, la página…), aunque el launcher no hubiera cambiado nada.
     # El launcher de Android tiene su propio workflow.
-    paths-ignore: [ "android/**", ".github/workflows/android.yml", ".gitmodules", "mods/**", ".github/workflows/mod-arsenal.yml" ]
+    paths: [ "src-tauri/**", "ui/**", "package.json", "package-lock.json", ".github/workflows/build.yml" ]
   workflow_dispatch:
 
 permissions:
