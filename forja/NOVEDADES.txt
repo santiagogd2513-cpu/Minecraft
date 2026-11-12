@@ -1,3 +1,7 @@
+## 20
+🔧 Arreglo: el formato «Xbox 360» no se veía
+- La fila nueva de formatos medía un píxel de alto y quedaba escondida. Ahora se ve «Xbox 360» debajo de NTFS y ext4.
+
 ## 19
 🎮 Yunque: formato Xbox 360 (FATX) para memorias USB
 - Nueva opción «Xbox 360» en los formatos: deja la memoria como la configura la consola, con una unidad FAT32 y la carpeta oculta «Xbox360» con los archivos Data0000… y la partición FATX adentro.

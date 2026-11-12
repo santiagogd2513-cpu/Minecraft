@@ -609,7 +609,7 @@ public class MainActivity extends Activity {
             LinearLayout row = Ui.row(this);
             for (int k = 0; k < 2; k++) {
                 if (r * 2 + k >= all.length) {
-                    row.addView(new View(this), new LinearLayout.LayoutParams(0, 1, 1));
+                    row.addView(new View(this), new LinearLayout.LayoutParams(0, -1, 1));
                     continue;
                 }
                 FsType t = all[r * 2 + k];
