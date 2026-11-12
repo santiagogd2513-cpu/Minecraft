@@ -1,3 +1,7 @@
+## 55
+⭐ Menú de Forja Estudios
+- Al tocar «Forja Estudios» ahora sale un menú con tres opciones: Contáctanos (muy pronto), Calificar apps (abre la página web, ya en la ficha de esta app) y Acerca del estudio.
+
 ## 54
 🔧 Arreglo en la pantalla de inicio
 - Con letra grande, el nombre de «Almacenamiento interno» y de la tarjeta de memoria se partía letra por letra. Ahora el espacio usado va debajo de la barra y el nombre tiene todo el ancho.

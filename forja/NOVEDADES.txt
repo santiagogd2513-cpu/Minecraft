@@ -1,3 +1,7 @@
+## 22
+⭐ Menú de Forja Estudios
+- Al tocar «Forja Estudios» ahora sale un menú con tres opciones: Contáctanos (muy pronto), Calificar apps (abre la página web, ya en la ficha de esta app) y Acerca del estudio.
+
 ## 21
 🔧 El mensaje al terminar una memoria Xbox 360 ya habla de la consola
 - En vez de «llévala a la PC, la consola o la TV», dice que la conectes a tu Xbox 360 y que, si te pide configurarla, aceptes.

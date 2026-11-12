@@ -19,7 +19,90 @@ final class Studio {
 
     private Studio() {}
 
+    /** La página web de Forja Estudios, abierta en la ficha de esta app. */
+    private static final String SITE = "https://santiagogd2513-cpu.github.io/";
+    private static final String APP_ID = "arca";
+
+    private static String t(String s) {
+        return s;
+    }
+
+    /** Al tocar el estudio: contáctanos, calificar las apps y acerca del estudio. */
     static void show(Activity a) {
+        float dp = a.getResources().getDisplayMetrics().density;
+        Dialog d = new Dialog(a, android.R.style.Theme_Material_NoActionBar);
+        ScrollView scroll = new ScrollView(a);
+        scroll.setBackgroundColor(Ui.BG);
+        scroll.setFitsSystemWindows(true);
+        LinearLayout col = new LinearLayout(a);
+        col.setOrientation(LinearLayout.VERTICAL);
+        col.setGravity(Gravity.CENTER_HORIZONTAL);
+        col.setPadding(px(dp, 24), px(dp, 40), px(dp, 24), px(dp, 24));
+        scroll.addView(col);
+        ImageView icon = new ImageView(a);
+        icon.setImageResource(R.drawable.ic_studio);
+        col.addView(icon, new LinearLayout.LayoutParams(px(dp, 84), px(dp, 84)));
+        TextView name = text(a, NAME, 28, Ui.TEXT, true);
+        name.setPadding(0, px(dp, 14), 0, px(dp, 24));
+        name.setGravity(Gravity.CENTER);
+        col.addView(name);
+
+        col.addView(option(a, dp, "📬", t("Contáctanos"), t("Muy pronto"), false, null), cardParams(dp));
+        col.addView(option(a, dp, "⭐", t("Calificar apps"), t("Abre la página web de las apps"), true, () -> {
+            try {
+                a.startActivity(new android.content.Intent(android.content.Intent.ACTION_VIEW,
+                        android.net.Uri.parse(SITE + "#app-" + APP_ID)));
+            } catch (Exception e) {
+                android.widget.Toast.makeText(a, t("No encontré un navegador para abrir la página"), android.widget.Toast.LENGTH_LONG).show();
+            }
+        }), cardParams(dp));
+        col.addView(option(a, dp, "ℹ️", t("Acerca del estudio"), t("Quiénes somos y qué hacemos"), true, () -> {
+            d.dismiss();
+            showAbout(a);
+        }), cardParams(dp));
+
+        TextView close = text(a, t("Cerrar"), 16, 0xFF1A120C, true);
+        close.setGravity(Gravity.CENTER);
+        close.setPadding(0, px(dp, 14), 0, px(dp, 14));
+        close.setBackground(Ui.gradient(px(dp, 26), ORANGE, GOLD));
+        close.setOnClickListener(v -> d.dismiss());
+        LinearLayout.LayoutParams cl = new LinearLayout.LayoutParams(-1, -2);
+        cl.setMargins(0, px(dp, 20), 0, 0);
+        col.addView(close, cl);
+
+        d.setContentView(scroll, new ViewGroup.LayoutParams(-1, -1));
+        if (d.getWindow() != null) {
+            d.getWindow().setStatusBarColor(Ui.BG);
+            d.getWindow().setNavigationBarColor(Ui.BG);
+            d.getWindow().setLayout(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+        }
+        d.show();
+    }
+
+    private static LinearLayout option(Activity a, float dp, String emoji, String title, String sub, boolean enabled, Runnable onClick) {
+        LinearLayout row = new LinearLayout(a);
+        row.setGravity(Gravity.CENTER_VERTICAL);
+        row.setPadding(px(dp, 16), px(dp, 16), px(dp, 16), px(dp, 16));
+        row.setBackground(Ui.round(Ui.SURFACE2, px(dp, 18)));
+        TextView e = text(a, emoji, 24, Ui.TEXT, false);
+        e.setGravity(Gravity.CENTER);
+        row.addView(e, new LinearLayout.LayoutParams(px(dp, 44), px(dp, 44)));
+        LinearLayout texts = new LinearLayout(a);
+        texts.setOrientation(LinearLayout.VERTICAL);
+        texts.setPadding(px(dp, 12), 0, 0, 0);
+        texts.addView(text(a, title, 17, enabled ? Ui.TEXT : Ui.SUB, true));
+        TextView s = text(a, sub, 13, Ui.SUB, false);
+        s.setPadding(0, px(dp, 2), 0, 0);
+        texts.addView(s);
+        row.addView(texts, new LinearLayout.LayoutParams(0, -2, 1));
+        if (enabled) row.addView(text(a, "›", 22, Ui.SUB, false));
+        else row.setAlpha(0.6f);
+        if (enabled && onClick != null) row.setOnClickListener(v -> onClick.run());
+        return row;
+    }
+
+    /** La ficha del estudio: qué hacemos y sus dos autores. */
+    static void showAbout(Activity a) {
         float dp = a.getResources().getDisplayMetrics().density;
         Dialog d = new Dialog(a, android.R.style.Theme_Material_NoActionBar);
         ScrollView scroll = new ScrollView(a);

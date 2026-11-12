@@ -1,3 +1,7 @@
+## 18
+⭐ Menú de Forja Estudios
+- Al tocar «Forja Estudios» ahora sale un menú con tres opciones: Contáctanos (muy pronto), Calificar apps (abre la página web, ya en la ficha de esta app) y Acerca del estudio.
+
 ## 17
 💘 Temas de temporada (etapa 3): San Valentín y Amor y Amistad
 - San Valentín (1 al 14 de febrero): corazones que suben flotando y meciéndose, y la tarjeta de la memoria con una guirnalda de corazones que laten como un corazón de verdad.

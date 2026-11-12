@@ -1,3 +1,7 @@
+## 27
+⭐ Menú de Forja Estudios
+- Al tocar «Forja Estudios» ahora sale un menú con tres opciones: Contáctanos (muy pronto), Calificar apps (abre la página web, ya en la ficha de esta app) y Acerca del estudio.
+
 ## 26
 🧪 Nueva sección en Ajustes: «Experimentales y de prueba»
 - Ahí está «Permitir modo claro», una función experimental que exige mucho a la GPU de tu celular. Úsala bajo tu propio riesgo.
