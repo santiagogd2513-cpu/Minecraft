@@ -547,6 +547,7 @@ public class MainActivity extends Activity {
             case NTFS -> "Lo lee cualquier Windows desde XP, y admite ISOs de más de 4 GB.";
             case FAT32 -> "Lo lee cualquier PC, por vieja que sea. Ojo: no admite archivos de más de 4 GB (muchas ISOs de Windows 10/11 pesan más).";
             case EXT4 -> "Para Linux. Windows no lo lee sin programas extra.";
+            default -> "";
         };
         TextView wt = Ui.text(this, why, 12.5f, partFs == com.forja.formateador.FsType.FAT32 ? Ui.WARN : Ui.SUB, false);
         wt.setPadding(dp(4), dp(8), 0, dp(14));
