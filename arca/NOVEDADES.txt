@@ -1,3 +1,14 @@
+## 6
+🔏 Arca, etapa 3 parte B: la firma de tus paquetes
+- Dentro de un paquete, la ficha «Firma» muestra la consola que lo firmó, la consola y el perfil anotados en la cabecera, y comprueba la firma con la clave pública del propio paquete. Solo lee: no escribe nada.
+- Sirve para saber si tus partidas están firmadas por tu consola y cómo hay que firmar los paquetes editados.
+
+## 5
+✏️ Arca, etapa 3 parte A: editor de partidas (sobre copias del celular)
+- Elige dos paquetes, A de origen y B de destino, y reemplaza archivos de uno con los del otro (uno por uno o todos los distintos).
+- Guarda una copia editada en tu celular y la verifica sola. Todavía no la firma ni toca la consola.
+- Solo reemplaza archivos que ocupen la misma cantidad de bloques; solo trabaja con paquetes que verifican limpios.
+
 ## 4
 🔧 Arca: correcciones con la documentación pública del formato, y diagnóstico de paquetes
 - Memorias USB de la consola: ahora busca la partición de datos donde debe estar (a 0x20000000 de los archivos Data juntos) y, si hay más de una partición, te deja elegir; la de «Content» sale primero.

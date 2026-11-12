@@ -1904,6 +1904,23 @@ public class MainActivity extends Activity {
         });
     }
 
+    private void showSignature(StfsPackage p) {
+        exec.execute(() -> {
+            try {
+                byte[] h = new byte[0x1000];
+                p.source().read(0, h, 0, h.length);
+                Firma f = Firma.analizar(h);
+                ui.post(() -> new AlertDialog.Builder(this, R.style.Theme_Arca_Dialog)
+                        .setTitle("🔏 Firma del paquete")
+                        .setMessage(f.resumen())
+                        .setPositiveButton("Entendido", null)
+                        .show());
+            } catch (Throwable t) {
+                ui.post(() -> fail(t));
+            }
+        });
+    }
+
     private void showPackage() {
         mode = Mode.PACKAGE;
         final StfsPackage p = pkg;
@@ -1916,6 +1933,7 @@ public class MainActivity extends Activity {
         info.addView(chip(Stfs.typeName(p.header.contentType), () -> { }));
         info.addView(chip(p.items.size() + (p.items.size() == 1 ? " elemento" : " elementos"), () -> { }));
         info.addView(chip("✅  Verificar", () -> verifyEntry(pkgEntry)));
+        info.addView(chip("🔏  Firma", () -> showSignature(p)));
         col.addView(info);
         List<StfsPackage.Item> list = new ArrayList<>(p.children(pkgParent));
         list.sort((a, b) -> a.dir != b.dir ? (a.dir ? -1 : 1) : a.name.compareToIgnoreCase(b.name));

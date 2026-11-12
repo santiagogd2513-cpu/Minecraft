@@ -135,6 +135,44 @@ public final class ArcaTest {
         check(!p.verify(null, null).cancelled && p.verify(null, null).total == p.totalBlocks, "revisar un paquete sano no da errores");
     }
 
+    /** La comprobación de la firma, con una llave RSA de mentira (la misma forma de ordenar bytes que se supone). */
+    static void firma() throws Exception {
+        System.out.println("== firma del paquete");
+        java.security.KeyPairGenerator g = java.security.KeyPairGenerator.getInstance("RSA");
+        g.initialize(1024);
+        java.security.interfaces.RSAPrivateKey priv = null;
+        java.security.interfaces.RSAPublicKey pub = null;
+        for (int i = 0; i < 20; i++) {
+            java.security.KeyPair kp = g.generateKeyPair();
+            pub = (java.security.interfaces.RSAPublicKey) kp.getPublic();
+            priv = (java.security.interfaces.RSAPrivateKey) kp.getPrivate();
+            if (pub.getPublicExponent().equals(java.math.BigInteger.valueOf(65537)) && pub.getModulus().bitLength() == 1024) break;
+        }
+        byte[] h = new byte[0x1000];
+        new java.util.Random(7).nextBytes(h);
+        h[0] = 'C'; h[1] = 'O'; h[2] = 'N'; h[3] = ' ';
+        for (int i = 4; i < 0x60; i++) if (h[i] == 0 && h[i + 1] == 1) h[i] = 7;   // que no haya otro 00010001 antes
+        h[0x2B] = 0; h[0x2C] = 1; h[0x2D] = 0; h[0x2E] = 1;
+        byte[] mod = Firma.fijo(pub.getModulus(), 0x80);
+        System.arraycopy(Firma.orden(mod, 2), 0, h, 0x2F, 0x80);
+        byte[] hash = java.security.MessageDigest.getInstance("SHA-1").digest(java.util.Arrays.copyOfRange(h, Firma.SIGNED_FROM, Firma.SIGNED_TO));
+        byte[] m = new byte[0x80];
+        m[1] = 1;
+        java.util.Arrays.fill(m, 2, 0x80 - 21, (byte) 0xFF);
+        System.arraycopy(hash, 0, m, 0x80 - 20, 20);
+        java.math.BigInteger sg = new java.math.BigInteger(1, m).modPow(priv.getPrivateExponent(), priv.getModulus());
+        System.arraycopy(Firma.orden(Firma.fijo(sg, 0x80), 2), 0, h, Firma.SIG, 0x80);
+        Firma f = Firma.analizar(h);
+        check(f.estado == Firma.Estado.VALIDA, "una firma correcta se reconoce: " + f.estado + " " + f.receta);
+        h[0x300] ^= 1;
+        check(Firma.analizar(h).estado == Firma.Estado.NO_COINCIDE, "si cambia un byte firmado, ya no coincide");
+        h[0x300] ^= 1;
+        java.util.Arrays.fill(h, Firma.SIG, Firma.SIG + 0x80, (byte) 0);
+        check(Firma.analizar(h).sinFirma, "una firma en ceros se detecta");
+        h[0] = 'L';
+        check(Firma.analizar(h).estado == Firma.Estado.NO_ES_CON, "los LIVE/PIRS no se firman");
+    }
+
     /** Edita un paquete (cambia dos archivos), recalcula todo y comprueba que queda sano y con lo nuevo. */
     static void editar(String label, ByteSource src, String archivo, boolean conNivel2) throws Exception {
         System.out.println("== editar: " + label);
@@ -255,6 +293,7 @@ public final class ArcaTest {
         editar("dos copias y fragmentado", file(new File(dir, "paquete_hembra_frag.stfs")), "a.bin", false);
         editar("con tabla de nivel 1 y dos copias", file(new File(dir, "paquete_medio.stfs")), "medio.bin", false);
         editar("con tabla de nivel 2", file(new File(dir, "paquete_grande.stfs")), "grande.bin", true);
+        firma();
 
         System.out.println("== un paquete dentro de la partición de la consola");
         Xtaf fs0 = new Xtaf(file(new File(dir, "particion16.img")));
