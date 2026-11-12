@@ -755,7 +755,12 @@ public class MainActivity extends Activity {
         tools.setPadding(dp(14), 0, dp(14), dp(8));
         tools.addView(chip("🔍  Buscar", this::showSearch));
         tools.addView(chip("📊  Radiografía", this::showRadiography));
-        col.addView(tools);
+        tools.addView(chip("✅  Verificar", this::verifyAllMenu));
+        tools.addView(chip("💾  Copias", this::backupMenu));
+        android.widget.HorizontalScrollView hs = new android.widget.HorizontalScrollView(this);
+        hs.setHorizontalScrollBarEnabled(false);
+        hs.addView(tools);
+        col.addView(hs);
         ListView lv = new ListView(this);
         lv.setDivider(null);
         lv.setSelector(android.R.color.transparent);
@@ -904,10 +909,34 @@ public class MainActivity extends Activity {
         info.setLineSpacing(0, 1.2f);
         info.setPadding(0, dp(8), 0, 0);
         box.addView(info);
-        AlertDialog.Builder dlg = new AlertDialog.Builder(this, R.style.Theme_Arca_Dialog).setView(box).setNeutralButton("Cerrar", null)
-                .setNegativeButton("Copiar al celular", (d, w) -> exportEntry(e));
-        if (s != null) dlg.setPositiveButton("Ver por dentro", (d, w) -> openPackage(e));
-        dlg.show();
+        AlertDialog[] dlg = new AlertDialog[1];
+        if (s != null) {
+            box.addView(dialogAction("🧩  Ver por dentro", () -> {
+                dlg[0].dismiss();
+                openPackage(e);
+            }));
+            box.addView(dialogAction("✅  Verificar el paquete", () -> {
+                dlg[0].dismiss();
+                verifyEntry(e);
+            }));
+        }
+        box.addView(dialogAction("📤  Copiar al celular", () -> {
+            dlg[0].dismiss();
+            exportEntry(e);
+        }));
+        dlg[0] = new AlertDialog.Builder(this, R.style.Theme_Arca_Dialog).setView(box).setNeutralButton("Cerrar", null).create();
+        dlg[0].show();
+    }
+
+    private TextView dialogAction(String label, Runnable r) {
+        TextView t = Ui.text(this, label, 15, Ui.TEXT, true);
+        t.setPadding(dp(14), dp(12), dp(14), dp(12));
+        t.setBackground(Ui.ripple(Ui.roundStroke(Ui.SURFACE2, dp(14), dp(1), Ui.STROKE), Ui.round(Color.WHITE, dp(14))));
+        t.setOnClickListener(v -> r.run());
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, -2);
+        lp.topMargin = dp(8);
+        t.setLayoutParams(lp);
+        return t;
     }
 
     // ------------------------------------------------------------------ fichas, menú de cada fila
@@ -932,6 +961,8 @@ public class MainActivity extends Activity {
         if (!e.dir && e.size >= 0xB000) {
             names.add("Ver por dentro (si es un paquete)");
             acts.add(() -> openPackage(e));
+            names.add("Verificar el paquete");
+            acts.add(() -> verifyEntry(e));
         }
         new AlertDialog.Builder(this, R.style.Theme_Arca_Dialog)
                 .setTitle(e.name)
@@ -991,6 +1022,7 @@ public class MainActivity extends Activity {
     private final class CopyState {
         long done, total, last;
         int files;
+        String note;
 
         void add(long n) {
             done += n;
@@ -1041,7 +1073,8 @@ public class MainActivity extends Activity {
                         hideOverlay();
                         new AlertDialog.Builder(this, R.style.Theme_Arca_Dialog)
                                 .setTitle("Listo ✅")
-                                .setMessage("Copié " + st.files + (st.files == 1 ? " archivo" : " archivos") + " (" + Ui.size(st.done) + ") a tu carpeta de copias.")
+                                .setMessage("Copié " + st.files + (st.files == 1 ? " archivo" : " archivos") + " (" + Ui.size(st.done) + ") a tu carpeta de copias."
+                                        + (st.note != null ? "\n\n" + st.note : ""))
                                 .setPositiveButton("Entendido", null)
                                 .show();
                     });
@@ -1138,6 +1171,315 @@ public class MainActivity extends Activity {
         runCopy(it.name, itemSize(p, it), (parent, st) -> copyItem(p, it, parent, st));
     }
 
+    // ------------------------------------------------------------------ verificar paquetes
+
+    private static String badList(List<String> files, int max) {
+        StringBuilder b = new StringBuilder();
+        for (int i = 0; i < Math.min(max, files.size()); i++) b.append("\n• ").append(files.get(i));
+        if (files.size() > max) b.append("\n… y ").append(files.size() - max).append(" más");
+        return b.toString();
+    }
+
+    private void verifyEntry(Xtaf.Entry e) {
+        final Xtaf x = fs;
+        if (x == null) return;
+        skip.set(false);
+        showOverlay("");
+        setOverlayText("Verificando…", e.name, "Cancelar");
+        exec.execute(() -> {
+            try {
+                StfsPackage p = StfsPackage.open(x.asSource(e));
+                StfsPackage.Result r = p.verify(skip, n -> ui.post(() -> setOverlayDetail(e.name + "\nRevisando bloques… " + (n * 100L / Math.max(1, p.totalBlocks)) + " %")));
+                ui.post(() -> {
+                    hideOverlay();
+                    if (!r.cancelled) showVerifyDialog(e.name, p.header.displayName, r);
+                });
+            } catch (Throwable t) {
+                ui.post(() -> fail(t));
+            }
+        });
+    }
+
+    private void showVerifyDialog(String file, String display, StfsPackage.Result r) {
+        String what = display == null || display.isEmpty() ? file : display;
+        String msg;
+        if (r.bad == 0) {
+            msg = "Revisé los " + r.total + " bloques de «" + what + "» y todos están bien: ningún dato está corrupto.\n\n"
+                    + "Ojo: esto comprueba los datos, no la firma de la consola.";
+        } else {
+            msg = r.bad + " de " + r.total + " bloques están dañados.\n\n"
+                    + (r.files.isEmpty() ? "No pude saber qué archivos tocan." : "Archivos afectados:" + badList(r.files, 12))
+                    + "\n\nLa consola tampoco podría abrir esos datos. Arca solo lee, así que no se empeoró nada.";
+        }
+        new AlertDialog.Builder(this, R.style.Theme_Arca_Dialog)
+                .setTitle(r.bad == 0 ? "✅ Sin errores" : "⚠️ Paquete dañado")
+                .setMessage(msg)
+                .setPositiveButton("Entendido", null)
+                .show();
+    }
+
+    private void verifyAllMenu() {
+        new AlertDialog.Builder(this, R.style.Theme_Arca_Dialog)
+                .setTitle("Verificar paquetes")
+                .setItems(new String[]{"Solo perfiles y partidas guardadas (rápido)", "Todo el contenido (puede tardar mucho)"},
+                        (d, w) -> verifyAll(w == 0))
+                .show();
+    }
+
+    /** Todos los paquetes de «Content» (o solo los de partidas y perfiles). */
+    private List<Xtaf.Entry> packagesIn(Xtaf x, boolean onlySaves) throws java.io.IOException {
+        List<Xtaf.Entry> out = new ArrayList<>();
+        Xtaf.Entry c = x.find("Content");
+        if (c == null) return out;
+        for (Xtaf.Entry p : x.list(c)) {
+            if (!p.dir || !HEX16.matcher(p.name).matches()) continue;
+            for (Xtaf.Entry t : x.list(p)) {
+                if (!t.dir || !HEX8.matcher(t.name).matches()) continue;
+                for (Xtaf.Entry ty : x.list(t)) {
+                    if (!ty.dir) continue;
+                    if (onlySaves && !ty.name.equals("00000001") && !ty.name.equals("00010000")) continue;
+                    for (Xtaf.Entry f : x.list(ty)) if (!f.dir && f.size >= 0xB000) out.add(f);
+                }
+            }
+        }
+        return out;
+    }
+
+    private void verifyAll(boolean onlySaves) {
+        final Xtaf x = fs;
+        if (x == null) return;
+        skip.set(false);
+        showOverlay("");
+        setOverlayText("Verificando…", "Buscando los paquetes…", "Cancelar");
+        exec.execute(() -> {
+            try {
+                List<Xtaf.Entry> pk = packagesIn(x, onlySaves);
+                List<String> problems = new ArrayList<>();
+                int ok = 0, unreadable = 0, n = 0;
+                for (Xtaf.Entry f : pk) {
+                    if (skip.get()) break;
+                    n++;
+                    final int k = n;
+                    final String nm = f.path;
+                    ui.post(() -> setOverlayDetail("Paquete " + k + " de " + pk.size() + "\n" + nm));
+                    try {
+                        StfsPackage p = StfsPackage.open(x.asSource(f));
+                        StfsPackage.Result r = p.verify(skip, null);
+                        if (r.cancelled) break;
+                        if (r.bad == 0) ok++;
+                        else problems.add(f.path + " — " + r.bad + " bloques dañados");
+                    } catch (java.io.IOException ex) {
+                        String m = String.valueOf(ex.getMessage());
+                        if (m.contains("no es un paquete")) continue;
+                        unreadable++;
+                        problems.add(f.path + " — no se pudo abrir (" + m + ")");
+                    }
+                }
+                final int fOk = ok, fTotal = pk.size();
+                final boolean stopped = skip.get();
+                ui.post(() -> {
+                    hideOverlay();
+                    String head = (stopped ? "Cancelaste antes de terminar.\n\n" : "")
+                            + "Revisé " + fOk + " de " + fTotal + " paquetes sin encontrar errores.";
+                    new AlertDialog.Builder(this, R.style.Theme_Arca_Dialog)
+                            .setTitle(problems.isEmpty() ? "✅ Todo bien" : "⚠️ Hay paquetes con problemas")
+                            .setMessage(head + (problems.isEmpty() ? "" : "\n\nCon problemas:" + badList(problems, 15))
+                                    + "\n\nEsto comprueba los datos, no la firma de la consola.")
+                            .setPositiveButton("Entendido", null)
+                            .show();
+                });
+            } catch (Throwable t) {
+                ui.post(() -> fail(t));
+            }
+        });
+    }
+
+    // ------------------------------------------------------------------ copias de seguridad con fecha
+
+    private void backupMenu() {
+        new AlertDialog.Builder(this, R.style.Theme_Arca_Dialog)
+                .setTitle("Copia de seguridad al celular")
+                .setItems(new String[]{"Perfiles y partidas guardadas (todo)", "Solo un perfil…", "Solo las partidas de un juego…"}, (d, w) -> {
+                    if (w == 0) startBackup("todo", null, null);
+                    else if (w == 1) pickProfile();
+                    else pickTitle();
+                })
+                .show();
+    }
+
+    private void pickProfile() {
+        final Xtaf x = fs;
+        if (x == null) return;
+        exec.execute(() -> {
+            try {
+                List<String> ids = new ArrayList<>(), names = new ArrayList<>();
+                Xtaf.Entry c = x.find("Content");
+                if (c != null) {
+                    for (Xtaf.Entry p : x.list(c)) {
+                        if (!p.dir || !HEX16.matcher(p.name).matches()) continue;
+                        String gt = titles.profile(p.name);
+                        ids.add(p.name);
+                        names.add((p.name.matches("0+") ? "Contenido compartido" : gt != null ? gt : "Perfil") + "  ·  " + p.name);
+                    }
+                }
+                ui.post(() -> {
+                    if (ids.isEmpty()) {
+                        Toast.makeText(this, "No encontré perfiles", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    new AlertDialog.Builder(this, R.style.Theme_Arca_Dialog).setTitle("¿De cuál perfil?")
+                            .setItems(names.toArray(new String[0]), (d, w) -> startBackup("perfil " + names.get(w), ids.get(w), null)).show();
+                });
+            } catch (Throwable t) {
+                ui.post(() -> fail(t));
+            }
+        });
+    }
+
+    private void pickTitle() {
+        final Xtaf x = fs;
+        if (x == null) return;
+        exec.execute(() -> {
+            try {
+                Map<String, String> found = new java.util.TreeMap<>();
+                Xtaf.Entry c = x.find("Content");
+                if (c != null) {
+                    for (Xtaf.Entry p : x.list(c)) {
+                        if (!p.dir || !HEX16.matcher(p.name).matches()) continue;
+                        for (Xtaf.Entry t : x.list(p)) {
+                            if (!t.dir || !HEX8.matcher(t.name).matches()) continue;
+                            String id = t.name.toUpperCase(java.util.Locale.US);
+                            String n = titles.name(id);
+                            found.putIfAbsent(id, n != null ? n + "  ·  " + id : id);
+                        }
+                    }
+                }
+                List<String> ids = new ArrayList<>(found.keySet());
+                ids.sort((a, b) -> found.get(a).compareToIgnoreCase(found.get(b)));
+                List<String> names = new ArrayList<>();
+                for (String id : ids) names.add(found.get(id));
+                ui.post(() -> {
+                    if (ids.isEmpty()) {
+                        Toast.makeText(this, "No encontré juegos", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    new AlertDialog.Builder(this, R.style.Theme_Arca_Dialog).setTitle("¿De cuál juego?")
+                            .setItems(names.toArray(new String[0]), (d, w) -> startBackup("juego " + names.get(w), null, ids.get(w))).show();
+                });
+            } catch (Throwable t) {
+                ui.post(() -> fail(t));
+            }
+        });
+    }
+
+    /** Los archivos de una copia: el paquete del perfil y las partidas guardadas (o solo las de un juego). */
+    private List<Xtaf.Entry> backupFiles(Xtaf x, String profile, String title) throws java.io.IOException {
+        List<Xtaf.Entry> out = new ArrayList<>();
+        Xtaf.Entry c = x.find("Content");
+        if (c == null) return out;
+        for (Xtaf.Entry p : x.list(c)) {
+            if (!p.dir || !HEX16.matcher(p.name).matches()) continue;
+            if (profile != null && !p.name.equalsIgnoreCase(profile)) continue;
+            for (Xtaf.Entry t : x.list(p)) {
+                if (!t.dir || !HEX8.matcher(t.name).matches()) continue;
+                if (title != null && !t.name.equalsIgnoreCase(title)) continue;
+                for (Xtaf.Entry ty : x.list(t)) {
+                    if (!ty.dir) continue;
+                    boolean save = ty.name.equals("00000001"), prof = ty.name.equals("00010000");
+                    if (!save && !prof) continue;
+                    if (title != null && !save) continue;
+                    for (Xtaf.Entry f : x.list(ty)) if (!f.dir) out.add(f);
+                }
+            }
+        }
+        return out;
+    }
+
+    private void startBackup(String what, String profile, String title) {
+        final Xtaf x = fs;
+        if (x == null) return;
+        exec.execute(() -> {
+            try {
+                List<Xtaf.Entry> files = backupFiles(x, profile, title);
+                long total = 0;
+                for (Xtaf.Entry f : files) total += f.size;
+                final long tot = total;
+                ui.post(() -> {
+                    if (files.isEmpty()) {
+                        new AlertDialog.Builder(this, R.style.Theme_Arca_Dialog).setTitle("No hay nada que copiar")
+                                .setMessage("No encontré partidas guardadas ni perfiles en esta partición. ¿Estás en la partición de datos?")
+                                .setPositiveButton("Entendido", null).show();
+                    } else {
+                        runCopy("Copia de seguridad (" + what + ")", tot, (parent, st) -> doBackup(x, files, parent, st));
+                    }
+                });
+            } catch (Throwable t) {
+                ui.post(() -> fail(t));
+            }
+        });
+    }
+
+    private Uri ensureDir(Uri root, String rel, Map<String, Uri> cache) throws java.io.IOException {
+        Uri cur = root;
+        StringBuilder acc = new StringBuilder();
+        for (String part : rel.split("/")) {
+            if (part.isEmpty()) continue;
+            acc.append('/').append(part);
+            Uri known = cache.get(acc.toString());
+            if (known == null) {
+                known = makeDir(cur, part);
+                cache.put(acc.toString(), known);
+            }
+            cur = known;
+        }
+        return cur;
+    }
+
+    private void doBackup(Xtaf x, List<Xtaf.Entry> files, Uri parent, CopyState st) throws Exception {
+        String stamp = new java.text.SimpleDateFormat("yyyy-MM-dd HH-mm", java.util.Locale.US).format(new java.util.Date());
+        Uri root = makeDir(parent, "Copia " + stamp);
+        Map<String, Uri> dirs = new HashMap<>();
+        StringBuilder idx = new StringBuilder("Copia de seguridad hecha con Arca\nFecha: " + stamp + "\nUnidad: " + sessionLabel + " · " + partName
+                + "\n\nruta\ttamaño\testado\n");
+        List<String> broken = new ArrayList<>();
+        for (Xtaf.Entry f : files) {
+            st.check();
+            int cut = f.path.lastIndexOf('/');
+            Uri d = ensureDir(root, cut < 0 ? "" : f.path.substring(0, cut), dirs);
+            String state = "sin verificar";
+            if (f.size >= 0xB000) {
+                try {
+                    StfsPackage p = StfsPackage.open(x.asSource(f));
+                    StfsPackage.Result r = p.verify(skip, null);
+                    if (r.cancelled) throw new java.io.IOException("Copia cancelada");
+                    state = r.bad == 0 ? "ok" : "DAÑADO (" + r.bad + " bloques)";
+                    if (r.bad > 0) broken.add(f.path + " — " + r.bad + " bloques");
+                } catch (java.io.IOException ex) {
+                    if ("Copia cancelada".equals(ex.getMessage())) throw ex;
+                    state = "no se pudo revisar";
+                }
+            }
+            try (java.io.OutputStream o = makeFile(d, f.name)) {
+                long[] prev = {0};
+                x.copyFile(f, o, pr -> {
+                    st.add(pr - prev[0]);
+                    prev[0] = pr;
+                    if (skip.get()) throw new IllegalStateException("cancelado");
+                });
+            } catch (IllegalStateException c) {
+                throw new java.io.IOException("Copia cancelada");
+            }
+            st.files++;
+            idx.append(f.path).append('\t').append(f.size).append('\t').append(state).append('\n');
+        }
+        try (java.io.OutputStream o = makeFile(root, "indice.txt")) {
+            o.write(idx.toString().getBytes(java.nio.charset.StandardCharsets.UTF_8));
+        }
+        st.note = broken.isEmpty() ? "Todos los paquetes pasaron la verificación ✅"
+                : "⚠️ " + broken.size() + (broken.size() == 1 ? " paquete ya estaba dañado" : " paquetes ya estaban dañados") + " en la consola:" + badList(broken, 8);
+        st.note += "\n\nLa copia quedó en la carpeta «Copia " + stamp + "».";
+    }
+
     // ------------------------------------------------------------------ ver por dentro un paquete
 
     private void openPackage(Xtaf.Entry e) {
@@ -1171,6 +1513,7 @@ public class MainActivity extends Activity {
         info.setPadding(dp(14), 0, dp(14), dp(8));
         info.addView(chip(Stfs.typeName(p.header.contentType), () -> { }));
         info.addView(chip(p.items.size() + (p.items.size() == 1 ? " elemento" : " elementos"), () -> { }));
+        info.addView(chip("✅  Verificar", () -> verifyEntry(pkgEntry)));
         col.addView(info);
         List<StfsPackage.Item> list = new ArrayList<>(p.children(pkgParent));
         list.sort((a, b) -> a.dir != b.dir ? (a.dir ? -1 : 1) : a.name.compareToIgnoreCase(b.name));

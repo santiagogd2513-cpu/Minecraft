@@ -1,3 +1,10 @@
+## 3
+✅ Arca, etapa 2 parte C: verificar y copias de seguridad
+- Verificar: en la ficha de un paquete, «Verificar el paquete» revisa que ningún bloque de datos esté corrupto y dice qué archivos toca si encuentra alguno dañado. También sirve dentro de «Ver por dentro».
+- Verificar todo: en el explorador, la ficha «Verificar» revisa todas las partidas y perfiles (rápido) o todo el contenido de la unidad (lento), y te lista los paquetes con problemas.
+- Copias: la ficha «Copias» guarda en tu celular los perfiles y partidas de todos, de un solo perfil o de un solo juego, en una carpeta con la fecha y la hora, con la misma estructura de carpetas de la consola y un indice.txt. Cada paquete se verifica al copiarlo.
+- La verificación comprueba los datos, no la firma de la consola. Arca sigue solo leyendo: no escribe nada en la unidad.
+
 ## 2
 🔎 Arca, etapa 2: buscar, medir, copiar y ver por dentro
 - Radiografía: cuánto ocupa cada juego, con barras de colores y el total de la unidad.

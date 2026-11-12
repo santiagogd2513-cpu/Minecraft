@@ -126,7 +126,11 @@ public final class ArcaTest {
             }
         };
         StfsPackage q = StfsPackage.open(bad);
-        check(q.countBadBlocks(null) >= 1, "un byte cambiado se detecta");
+        StfsPackage.Result rv = q.verify(null, null);
+        int expected = label.contains("dos copias") ? 3 : 4;   // con dos copias de cada tabla hay un bloque de tabla más al principio
+        check(rv.bad == 1 && rv.badBlocks.contains(expected), "un byte cambiado se detecta, en el bloque " + expected + ": " + rv.badBlocks);
+        check(rv.files.size() == 1 && rv.files.get(0).endsWith("a.bin"), "y dice qué archivo toca: " + rv.files);
+        check(!p.verify(null, null).cancelled && p.verify(null, null).total == p.totalBlocks, "revisar un paquete sano no da errores");
     }
 
     public static void main(String[] a) throws Exception {

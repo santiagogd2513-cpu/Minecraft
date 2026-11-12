@@ -240,14 +240,63 @@ final class StfsPackage {
         }
     }
 
-    /** Revisa el SHA-1 de todos los bloques del paquete; devuelve cuántos están mal. */
-    int countBadBlocks(java.util.concurrent.atomic.AtomicBoolean stop) {
-        int bad = 0;
-        for (int n = 0; n < totalBlocks; n++) {
-            if (stop != null && stop.get()) break;
-            if (!validates(n)) bad++;
+    /** El resultado de revisar un paquete. */
+    static final class Result {
+        int total, bad;
+        boolean cancelled;
+        final List<Integer> badBlocks = new ArrayList<>();
+        final List<String> files = new ArrayList<>();
+    }
+
+    private String pathOf(Item it) {
+        StringBuilder b = new StringBuilder(it.name);
+        int i = it.parent, guard = 0;
+        while (i >= 0 && i < items.size() && guard++ < 40) {
+            b.insert(0, items.get(i).name + "/");
+            i = items.get(i).parent;
         }
-        return bad;
+        return b.toString();
+    }
+
+    /**
+     * Revisa el SHA-1 de todos los bloques del paquete y dice cuáles están mal y qué archivos tocan.
+     * Esto comprueba que los datos no estén corruptos; no comprueba la firma de la consola.
+     */
+    Result verify(java.util.concurrent.atomic.AtomicBoolean stop, java.util.function.IntConsumer progress) {
+        Result r = new Result();
+        r.total = totalBlocks;
+        for (int n = 0; n < totalBlocks; n++) {
+            if (stop != null && stop.get()) {
+                r.cancelled = true;
+                break;
+            }
+            if (!validates(n)) {
+                r.bad++;
+                if (r.badBlocks.size() < 500) r.badBlocks.add(n);
+            }
+            if (progress != null && n % 400 == 0) progress.accept(n);
+        }
+        if (r.bad > 0) {
+            java.util.Set<Integer> bs = new java.util.HashSet<>(r.badBlocks);
+            for (Item it : items) {
+                if (it.dir) continue;
+                try {
+                    for (int b : blocksOf(it)) {
+                        if (bs.contains(b)) {
+                            r.files.add(pathOf(it));
+                            break;
+                        }
+                    }
+                } catch (IOException e) {
+                    r.files.add(pathOf(it) + " (su cadena de bloques está dañada)");
+                }
+            }
+        }
+        return r;
+    }
+
+    int countBadBlocks(java.util.concurrent.atomic.AtomicBoolean stop) {
+        return verify(stop, null).bad;
     }
 
     private static long dosTime(int ts) {

@@ -201,20 +201,35 @@ final class Xtaf {
         if (left > 0) throw new IOException("El archivo «" + e.name + "» está incompleto o dañado");
     }
 
-    /** Un archivo como fuente de bytes (para abrir un paquete que está adentro). */
+    /** Un archivo como fuente de bytes (para abrir un paquete que está adentro). La cadena de clústeres se lee una sola vez. */
     ByteSource asSource(Entry e) {
         Xtaf self = this;
         return new ByteSource() {
+            private int[] clusters;
+
             @Override
             public long length() {
                 return e.size;
             }
 
             @Override
-            public void read(long off, byte[] buf, int boff, int len) throws IOException {
+            public synchronized void read(long off, byte[] buf, int boff, int len) throws IOException {
                 if (off < 0 || off + len > e.size) throw new IOException("Lectura fuera del archivo");
-                byte[] b = self.readFile(e, off, len);
-                System.arraycopy(b, 0, buf, boff, len);
+                if (clusters == null) {
+                    List<Integer> ch = self.chain(e.cluster);
+                    clusters = new int[ch.size()];
+                    for (int i = 0; i < clusters.length; i++) clusters[i] = ch.get(i);
+                }
+                int done = 0;
+                while (done < len) {
+                    long pos = off + done;
+                    int idx = (int) (pos / clusterBytes);
+                    if (idx >= clusters.length) throw new IOException("El archivo «" + e.name + "» está incompleto o dañado");
+                    int inCluster = (int) (pos % clusterBytes);
+                    int n = Math.min(len - done, clusterBytes - inCluster);
+                    src.read(self.clusterAt(clusters[idx]) + inCluster, buf, boff + done, n);
+                    done += n;
+                }
             }
         };
     }
