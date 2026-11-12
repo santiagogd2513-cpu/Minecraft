@@ -154,5 +154,12 @@
   "message.arsenalatomico.depot.orphan_medium": "Only 1 medium missile left in the depot… poor thing, it's an orphan now.",
   "message.arsenalatomico.depot.empty_small": "No small missiles left in the depot.",
   "message.arsenalatomico.depot.empty_medium": "No medium missiles left in the depot.",
-  "message.arsenalatomico.depot.building": "Building the depot and the road… (%s%%)"
+  "message.arsenalatomico.depot.building": "Building the depot and the road… (%s%%)",
+  "item.arsenalatomico.missile_train": "Missile Train",
+  "entity.arsenalatomico.train_car": "Missile Train",
+  "message.arsenalatomico.train.no_track": "Not enough track: the whole train is about 70 meters long and needs straight rails or wide curves.",
+  "message.arsenalatomico.train.full_small": "The wagon already carries 3 small missiles.",
+  "message.arsenalatomico.train.full_medium": "The wagon already carries 2 medium missiles.",
+  "hud.arsenalatomico.train_end_of_track": "End of the line!",
+  "hud.arsenalatomico.train_status": "%s km/h · %s cars · %s t · grade %s"
 }

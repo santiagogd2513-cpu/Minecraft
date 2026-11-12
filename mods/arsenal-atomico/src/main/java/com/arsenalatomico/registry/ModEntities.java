@@ -2,6 +2,7 @@ package com.arsenalatomico.registry;
 
 import com.arsenalatomico.ArsenalAtomico;
 import com.arsenalatomico.entity.MissileEntity;
+import com.arsenalatomico.entity.TrainCarEntity;
 import com.arsenalatomico.entity.TruckEntity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
@@ -28,6 +29,14 @@ public final class ModEntities {
                     .updateInterval(1)
                     .fireImmune()
                     .build(ArsenalAtomico.MODID + ":military_truck"));
+
+    public static final RegistryObject<EntityType<TrainCarEntity>> TRAIN_CAR = ENTITIES.register("train_car",
+            () -> EntityType.Builder.<TrainCarEntity>of(TrainCarEntity::new, MobCategory.MISC)
+                    .sized(3.2f, 3.6f)
+                    .clientTrackingRange(16)
+                    .updateInterval(1)
+                    .fireImmune()
+                    .build(ArsenalAtomico.MODID + ":train_car"));
 
     private ModEntities() {}
 }

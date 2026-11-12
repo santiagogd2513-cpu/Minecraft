@@ -31,6 +31,7 @@ public final class ClientSetup {
     public static void renderers(EntityRenderersEvent.RegisterRenderers e) {
         e.registerEntityRenderer(ModEntities.MISSILE.get(), MissileRenderer::new);
         e.registerEntityRenderer(ModEntities.TRUCK.get(), TruckRenderer::new);
+        e.registerEntityRenderer(ModEntities.TRAIN_CAR.get(), TrainRenderer::new);
     }
 
     private ClientSetup() {}

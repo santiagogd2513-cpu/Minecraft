@@ -154,5 +154,12 @@
   "message.arsenalatomico.depot.orphan_medium": "Solo queda 1 misil mediano en el depósito… pobrecito, se quedó huérfano.",
   "message.arsenalatomico.depot.empty_small": "Ya no quedan misiles chiquitos en el depósito.",
   "message.arsenalatomico.depot.empty_medium": "Ya no quedan misiles medianos en el depósito.",
-  "message.arsenalatomico.depot.building": "Construyendo el depósito y la carretera… (%s%%)"
+  "message.arsenalatomico.depot.building": "Construyendo el depósito y la carretera… (%s%%)",
+  "item.arsenalatomico.missile_train": "Tren Lanzamisiles",
+  "entity.arsenalatomico.train_car": "Tren Lanzamisiles",
+  "message.arsenalatomico.train.no_track": "No hay vía suficiente: el tren completo mide unos 70 metros y necesita rieles rectos o con curvas abiertas.",
+  "message.arsenalatomico.train.full_small": "El vagón ya lleva 3 misiles chiquitos.",
+  "message.arsenalatomico.train.full_medium": "El vagón ya lleva 2 misiles medianos.",
+  "hud.arsenalatomico.train_end_of_track": "¡Fin de la vía!",
+  "hud.arsenalatomico.train_status": "%s km/h · %s coches · %s t · pendiente %s"
 }
