@@ -1271,8 +1271,11 @@ public class MainActivity extends Activity {
                     + "Ojo: esto comprueba los datos, no la firma de la consola.";
         } else {
             msg = r.bad + " de " + r.total + " bloques están dañados.\n\n"
-                    + (r.files.isEmpty() ? "No pude saber qué archivos tocan." : "Archivos afectados:" + badList(r.files, 12))
-                    + "\n\nLa consola tampoco podría abrir esos datos. Arca solo lee, así que no se empeoró nada.";
+                    + (r.files.isEmpty() ? "Ningún archivo usa ese bloque." : "Archivos afectados:" + badList(r.files, 12))
+                    + (r.roles.isEmpty() ? "" : "\n\nQué es:" + badList(r.roles, 12))
+                    + (r.files.isEmpty()
+                    ? "\n\nComo ningún archivo usa ese bloque, la partida podría abrirse igual en la consola. Arca solo lee, así que no se empeoró nada."
+                    : "\n\nLa consola tampoco podría abrir esos datos. Arca solo lee, así que no se empeoró nada.");
         }
         if (r.diag != null) {
             msg += "\n\nEstructura del paquete:\n• Cabecera: " + mark(r.diag.header) + "\n• Tabla principal: " + mark(r.diag.top)

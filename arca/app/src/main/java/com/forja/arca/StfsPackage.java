@@ -36,6 +36,7 @@ final class StfsPackage {
     final int totalBlocks;
     /** Bloques asignados y sin asignar: de ahí sale cuántos niveles de tablas tiene el paquete. */
     private int allBlocks;
+    private int ftFirst, ftCount;
     final Stfs header;
     final List<Item> items = new ArrayList<>();
 
@@ -75,6 +76,8 @@ final class StfsPackage {
             }
         }
         p.sex = best;
+        p.ftFirst = ftBlock;
+        p.ftCount = Math.max(1, ftCount);
         p.readFileTable(ftBlock, ftCount);
         return p;
     }
@@ -263,6 +266,8 @@ final class StfsPackage {
         boolean cancelled;
         final List<Integer> badBlocks = new ArrayList<>();
         final List<String> files = new ArrayList<>();
+        /** Qué es cada bloque dañado: de qué archivo, o la tabla de archivos, o un bloque sin dueño. */
+        final List<String> roles = new ArrayList<>();
     }
 
     private String pathOf(Item it) {
@@ -296,6 +301,22 @@ final class StfsPackage {
         r.diag = diagnose();
         if (r.bad > 0) {
             java.util.Set<Integer> bs = new java.util.HashSet<>(r.badBlocks);
+            // qué es cada bloque dañado
+            java.util.Map<Integer, String> owner = new java.util.HashMap<>();
+            for (Item it : items) {
+                if (it.dir) continue;
+                try {
+                    int[] bl = blocksOf(it);
+                    for (int i = 0; i < bl.length; i++) owner.put(bl[i], "bloque " + (i + 1) + " de " + bl.length + " del archivo " + pathOf(it));
+                } catch (IOException ignored) {
+                }
+            }
+            for (int b : r.badBlocks) {
+                if (r.roles.size() >= 12) break;
+                String what = b >= ftFirst && b < ftFirst + ftCount ? "es de la tabla de archivos"
+                        : owner.containsKey(b) ? "es el " + owner.get(b) : "no pertenece a ningún archivo (sobra en el paquete)";
+                r.roles.add("bloque " + b + ": " + what);
+            }
             for (Item it : items) {
                 if (it.dir) continue;
                 try {
