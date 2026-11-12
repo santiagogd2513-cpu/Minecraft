@@ -16,6 +16,10 @@ public class VehicleEngineSound extends AbstractTickableSoundInstance {
     private final float pitchHigh;
     private boolean finished;
     private float smoothPitch;
+    private static final int SHIFT_TICKS = 7;
+    private int lastGear = -1;
+    private int shiftTicks;
+    private float blip;
 
     public VehicleEngineSound(VehicleEntity vehicle, SoundEvent loop) {
         super(loop, SoundSource.NEUTRAL, RandomSource.create());
@@ -51,10 +55,32 @@ public class VehicleEngineSound extends AbstractTickableSoundInstance {
             gear++;
         }
         float t = Mth.clamp((speed - this.gears[gear]) / (this.gears[gear + 1] - this.gears[gear]), 0.0f, 1.0f);
-        float target = this.pitchLow + (this.pitchHigh - this.pitchLow) * (float) Math.pow(t, 0.8);
-        this.smoothPitch += (target - this.smoothPitch) * 0.35f;
+
+        // V4.4.0: marchas más realistas. En 1ª las revoluciones suben desde ralentí; en las demás arrancan a ~40 % (no vuelven a ralentí
+        // al cambiar). Al subir de marcha se corta el gas un instante (las revoluciones caen y el motor baja de volumen); al bajar de marcha
+        // (frenando) hay un "golpe" de revoluciones.
+        float rev = gear == 0 ? t : 0.40f + 0.60f * t;
+        if (this.lastGear >= 0 && gear > this.lastGear) {
+            this.shiftTicks = SHIFT_TICKS;
+            this.blip = 0.0f;
+        } else if (this.lastGear >= 0 && gear < this.lastGear) {
+            this.blip = 0.22f;
+            this.shiftTicks = 0;
+        }
+        this.lastGear = gear;
+        float cut = 0.0f;
+        if (this.shiftTicks > 0) {
+            --this.shiftTicks;
+            cut = 0.28f * Mth.sin((float) Math.PI * (this.shiftTicks / (float) SHIFT_TICKS));
+        }
+        this.blip *= 0.85f;
+        rev = Mth.clamp(rev - cut + this.blip, 0.0f, 1.0f);
+        float target = this.pitchLow + (this.pitchHigh - this.pitchLow) * (float) Math.pow(rev, 0.85);
+        // las revoluciones suben con algo de inercia y bajan más rápido
+        float follow = target > this.smoothPitch ? 0.22f : 0.40f;
+        this.smoothPitch += (target - this.smoothPitch) * follow;
         this.pitch = Mth.clamp(this.smoothPitch, 0.5f, 2.0f);
-        this.volume = 0.6f + 0.4f * Mth.clamp(speed / this.vehicle.getMaxSpeed(), 0.0f, 1.0f);
+        this.volume = (0.6f + 0.4f * Mth.clamp(speed / this.vehicle.getMaxSpeed(), 0.0f, 1.0f)) * (1.0f - 0.35f * (cut / 0.28f));
     }
 
     public boolean isFinished() {

@@ -35,6 +35,7 @@ public class ClientEvents {
             EntityRenderers.register(ModEntities.BUGOTTI_CHILLON.get(), SupercarRenderer::new);
             EntityRenderers.register(ModEntities.HELICOPTER.get(), HelicopterRenderer::new);
             EntityRenderers.register(ModEntities.AIRLINER.get(), AirlinerRenderer::new);
+            EntityRenderers.register(ModEntities.TRAIN_CAR.get(), TrainCarRenderer::new);          // V4.8.0
             EntityRenderers.register(ModEntities.ELEVATOR_CABIN.get(), ElevatorCabinRenderer::new);
             ItemBlockRenderTypes.setRenderLayer(ModBlocks.MINI_FERRARI.get(), RenderType.translucent());
             ItemBlockRenderTypes.setRenderLayer(ModBlocks.MINI_GOLF.get(), RenderType.translucent());
@@ -55,6 +56,9 @@ public class ClientEvents {
         event.registerLayerDefinition(SupercarModel.LAYER, SupercarModel::createBodyLayer);
         event.registerLayerDefinition(HelicopterModel.LAYER, HelicopterModel::createBodyLayer);
         event.registerLayerDefinition(AirlinerModel.LAYER, AirlinerModel::createBodyLayer);
+        for (com.example.beautifuldecor.entity.TrainCarEntity.Variant tv : com.example.beautifuldecor.entity.TrainCarEntity.Variant.values()) {
+            event.registerLayerDefinition(TrainCarModel.layer(tv.id), () -> TrainCarModel.create(tv.id));          // V4.8.0 / V5.0.0
+        }
         event.registerLayerDefinition(SecurityCameraModel.LAYER, SecurityCameraModel::createLayer);       // V4.3.0
     }
 

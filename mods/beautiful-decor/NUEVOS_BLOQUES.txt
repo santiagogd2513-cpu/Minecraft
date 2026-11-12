@@ -1,3 +1,87 @@
+PARCHE V5.1.0
+=============
+Metro eléctrico (284 km/h), con su vía y sus vagones
+   * RIEL DE METRO: misma geometría que los otros rieles de tren, diseño claro de concreto; familia de vía propia (los coches del metro solo
+     andan por rieles de metro).
+   * CABEZA DE METRO (62 t, nariz de bala, pantógrafo, cabina para 2) y VAGÓN DE METRO (24 asientos, ventanas grandes). Todos los coches
+     llevan motor propio, así que cada vagón suma potencia y tracción; sin combustible ni humo. Sin límite de vagones.
+   * Física: de 0 a 100 km/h en ~15 s con 8 coches y tope de 284 km/h. Frenar desde esa velocidad necesita ~3 km de vía y las curvas de
+     1 bloque a esa velocidad son muy bruscas: conviene vía recta larga. Cada pasajero suma 80 kg. Pintura con la tecla R.
+   * El protocolo de red sube a 24.
+
+PARCHE V5.0.0
+=============
+Tren de pasajeros de vapor (cero electricidad), con sus vías y 3 clases de vagón
+   * RIEL DE PASAJEROS: misma forma que el de carga (recto, curvas, subidas y bajadas) pero con otro diseño y su propia familia de vía:
+     los coches de pasajeros solo andan por rieles de pasajeros y los de carga por los de carga.
+   * LOCOMOTORAS DE VAPOR con ténder (22 m, ~110 t, 2,2-2,4 MW): CLÁSICA (chimenea y domos) y AERODINÁMICA. Queman carbón: clic derecho con
+     carbón (agachado: todo el del inventario) lo carga al ténder (1200 unidades, bloque de carbón = 9). Sin carbón no hay potencia.
+     Humo por la chimenea mientras tiene fuego. Velocidad máxima 80 km/h.
+   * VAGONES DE PASAJEROS de 20 x 3 m: clase BAJA (28 bancas de madera), MEDIA (20 asientos con cabecera) y ALTA (12 sillones con mesa).
+     Clic derecho para sentarse (cada asiento es una posición); cada pasajero suma 80 kg al peso del tren. Shift para bajarse.
+   * Misma física que el de carga: masa total, adherencia de las locomotoras, frenos y pendientes. Todo se pinta con la tecla R.
+   * El de carga no cambia salvo que ahora la locomotora se lee como "diésel" en el código; el protocolo de red sube a 23.
+
+PARCHE V4.9.0
+=============
+Tren de carga a tamaño realista
+   * Locomotora 20 x 3 x 4,5 m (120 t, 3 MW); vagones 14 x 3 m (carbón 25 t + 102 t de carga, alimentos 22 t + 67 t, minerales 27 t + 100 t).
+   * Ruedas de 1 m, bogies a 11 m / 9 m, cabina y capó rediseñados, atlas de 1024x512.
+   * La distancia entre coches enganchados depende ahora del largo de cada uno; el enganche automático alcanza 14 bloques.
+   * La vía no cambia. Las curvas siguen siendo de 1 bloque: con coches largos conviene hacerlas en escalera o con tramos rectos largos.
+
+PARCHE V4.8.0
+=============
+Tren de carga (rieles, locomotora y vagones con física)
+   * RIEL DE CARGA: recto, curvas (cuarto de círculo), subidas y bajadas de 45°; se acomoda solo según los rieles vecinos.
+   * LOCOMOTORA DE CARGA (80 t, 2,5 MW) y vagones de CARBÓN, ALIMENTOS y MINERALES, cada uno con su diseño, 8 ruedas que giran y pintura con la tecla R.
+   * CARGA: clic derecho con el objeto (carbón; cualquier comida; minerales) carga el vagón hasta su límite; agachado carga todo lo parecido
+     del inventario; agachado con la mano vacía saca un montón (si no tiene carga, lo recoge). El montón se ve crecer desde arriba.
+   * ENGANCHE: un coche colocado a menos de ~7 bloques de la punta de un tren se engancha solo. Sin límite de vagones.
+   * FÍSICA: masa = locomotoras + vagones + carga; fuerza de tracción limitada por el peso de las locomotoras; frenos pensados para el tren vacío
+     (cargado frena mucho menos); pendientes que lo frenan o lo aceleran; tope 130 km/h. Sin conductor el tren queda con el freno de mano.
+   * CONTROLES: W acelerar · S frenar (parado: reversa) · Espacio freno de emergencia · Shift bajarse.
+   * Paquete de red nuevo: protocolo 22.
+
+PARCHE V4.7.0
+=============
+Física de vuelo del avión y el helicóptero (entity/FlightPhysics)
+   * AVIÓN: velocidad de despegue y de pérdida = base x raíz(peso) (bodega llena: ~x1,4); ascenso gradual al pasar la velocidad de despegue; sin velocidad suficiente se cae;
+     cargado, la caída se frena más lento y desciende más rápido.
+   * ATERRIZAJE: gravedad = velocidad de caída x raíz(peso). Suave < 0,20; duro 0,20-0,40 (rebota, pierde velocidad y daña a los pasajeros 1,5-4 corazones);
+     estrellarse >= 0,40 (casi se detiene y daña de 4 corazones hasta matar). No destruye el avión ni el terreno.
+   * HELICÓPTERO: con carga, menos empuje del rotor y hace falta régimen casi máximo; sobrecargado no sube y se hunde despacio. Aterriza recto sin problema.
+   * El número de objetos del almacenamiento ahora se sincroniza (antes el cliente que conduce lo veía vacío), también para los vehículos de tierra.
+   * Sin probar en el juego.
+
+PARCHE V4.6.0
+=============
+Sistema de física para todos los vehículos (entity/VehiclePhysics, Java puro con prueba)
+   * Tierra: F motor = min(fuerza de arranque, potencia/velocidad); resistencia del aire 1/2·rho·CdA·v²; rodadura; freno con fuerza máxima (más peso = frena peor);
+     freno de mano; freno motor al soltar el gas; pendiente = g·sen(theta) medida de lo que realmente sube o baja el vehículo.
+   * Masa total = vehículo + 80 kg por persona + 1 kg por objeto del almacenamiento. Cada vehículo define sus números en su clase (PHYSICS).
+   * Cuesta abajo puede pasar de su velocidad máxima hasta 1,6 veces.
+   * Helicóptero: aceleración ~3 m/s² (antes ~12), desliza más, el peso de la carga lo hace más lento. Avión: empuje ~2,4 m/s², frenos ~4,8 m/s², rodadura baja; carga = más pesado.
+   * Sin probar en el juego: los números pueden necesitar ajuste fino (lo dejé todo en un solo bloque PHYSICS por vehículo).
+
+PARCHE V4.5.0
+=============
+Cámara en 3ª persona, vidrios, marchas y despegues
+   * Cámara en 3ª persona: distancia según el vehículo (client/VehicleCameraZoom); no atraviesa bloques; si no se puede mover la cámara en tu instalación, queda como antes.
+   * Vidrios: opacidad 0,38 en los 5 vehículos con cristales (client/VehicleGlass.ALPHA).
+   * Marchas del motor (VehicleEngineSound): revoluciones continuas entre marchas, corte de gas al subir, golpe al bajar.
+   * Helicóptero: rotores 2,5 s -> ~9 s; ascenso 5 bloques/s y gradual; en tierra casi no avanza (20 %).
+   * Avión: turbinas ~11 s; aceleración en pista más lenta (~15 s hasta rotar); despegue a 3,6 bloques/tick (260 km/h); velocidad mínima en el aire 2,8 (200 km/h).
+   * Sin probar en el juego: puede necesitar ajustes de números.
+
+PARCHE V4.4.0
+=============
+Velocidades de los vehículos (1 bloque = 1 m; bloques por tick x 72 = km/h)
+   * Superdeportivo 12,5 -> 6,0 (432 km/h). Camioneta 4,0 -> 1,111 (80). Bicicleta 2,0 -> 0,556 (40). Camión 2,4 -> 0,764 (55).
+     Moto 6,0 -> 1,736 (125). Helicóptero 3,4 -> 0,833 (60). Avión 5,0 -> 9,0 (648 km/h).
+   * Aceleración y agarre lateral escalados con la velocidad máxima; velocímetros de moto, helicóptero y avión en km/h.
+   * Sin probar en el juego: puede que algún vehículo necesite un ajuste fino de aceleración o de giro.
+
 PARCHE V4.3.2
 =============
 Cámaras compatibles con Embeddium/Rubidium/Sodium

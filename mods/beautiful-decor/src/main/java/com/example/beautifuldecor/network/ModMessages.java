@@ -9,7 +9,7 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 public class ModMessages {
-    private static final String PROTOCOL = "21";
+    private static final String PROTOCOL = "24";
     public static final SimpleChannel CHANNEL = NetworkRegistry.ChannelBuilder
             .named(ResourceLocation.fromNamespaceAndPath(BeautifulDecor.MOD_ID, "main"))
             .networkProtocolVersion(() -> PROTOCOL)
@@ -39,6 +39,11 @@ public class ModMessages {
                 .decoder(VehicleActionPacket::decode)
                 .encoder(VehicleActionPacket::encode)
                 .consumerMainThread(VehicleActionPacket::handle)
+                .add();
+        CHANNEL.messageBuilder(TrainInputPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .decoder(TrainInputPacket::decode)
+                .encoder(TrainInputPacket::encode)
+                .consumerMainThread(TrainInputPacket::handle)
                 .add();
         // ---- V2.2.0: ascensores
         CHANNEL.messageBuilder(ElevatorControllerPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)

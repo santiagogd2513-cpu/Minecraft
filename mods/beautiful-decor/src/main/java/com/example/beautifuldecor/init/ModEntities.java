@@ -6,6 +6,7 @@ import com.example.beautifuldecor.entity.DeliveryTruckEntity;
 import com.example.beautifuldecor.entity.DroneEntity;
 import com.example.beautifuldecor.entity.ElevatorCabinEntity;
 import com.example.beautifuldecor.entity.AirlinerEntity;
+import com.example.beautifuldecor.entity.TrainCarEntity;
 import com.example.beautifuldecor.entity.HelicopterEntity;
 import com.example.beautifuldecor.entity.MotorcycleEntity;
 import com.example.beautifuldecor.entity.PickupEntity;
@@ -98,6 +99,15 @@ public class ModEntities {
                     .updateInterval(1)
                     .fireImmune()
                     .build("beautifuldecor:helicopter"));
+
+    /** V4.8.0: coche del tren de carga (locomotora y vagones; la variante va en un dato). */
+    public static final RegistryObject<EntityType<TrainCarEntity>> TRAIN_CAR = ENTITIES.register("train_car",
+            () -> EntityType.Builder.<TrainCarEntity>of(TrainCarEntity::new, MobCategory.MISC)
+                    .sized(5.5f, 4.8f)
+                    .clientTrackingRange(16)
+                    .updateInterval(1)
+                    .fireImmune()
+                    .build("beautifuldecor:train_car"));
 
     /** V3.8.0: avión BOING 7G7 Gigante (130 plazas, 100 bloques por segundo). La caja no gira ni cubre las alas: 7 x 7,5. */
     public static final RegistryObject<EntityType<AirlinerEntity>> AIRLINER = ENTITIES.register("airliner",

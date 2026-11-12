@@ -5,7 +5,9 @@ import com.example.beautifuldecor.item.DroneRemoteItem;
 import com.example.beautifuldecor.item.RcCarRemoteItem;
 import com.example.beautifuldecor.item.RadioSpeakerItem;
 import com.example.beautifuldecor.item.ElevatorLinkBlockItem;
+import com.example.beautifuldecor.entity.TrainCarEntity;
 import com.example.beautifuldecor.item.AirlinerItem;
+import com.example.beautifuldecor.item.TrainCarItem;
 import com.example.beautifuldecor.item.PaSpeakerItem;
 import com.example.beautifuldecor.item.HelicopterItem;
 import com.example.beautifuldecor.item.VehicleItem;
@@ -349,6 +351,36 @@ public class ModItems {
     public static final RegistryObject<Item> BUGOTTI_CHILLON = ITEMS.register("bugotti_chillon",
             () -> new VehicleItem(ModEntities.BUGOTTI_CHILLON::get, new Item.Properties().stacksTo(1)));
     /** V3.8.0: avión BOING 7G7 Gigante. */
+    // ---- V4.8.0: tren de carga
+    public static final RegistryObject<Item> FREIGHT_RAIL = ITEMS.register("freight_rail",
+            () -> new net.minecraft.world.item.BlockItem(ModBlocks.FREIGHT_RAIL.get(), new Item.Properties()));
+    public static final RegistryObject<Item> METRO_RAIL = ITEMS.register("metro_rail",
+            () -> new net.minecraft.world.item.BlockItem(ModBlocks.METRO_RAIL.get(), new Item.Properties()));
+    public static final RegistryObject<Item> METRO_HEAD = ITEMS.register("metro_head",
+            () -> new TrainCarItem(TrainCarEntity.Variant.METRO_HEAD, new Item.Properties().stacksTo(1)));
+    public static final RegistryObject<Item> METRO_CAR = ITEMS.register("metro_car",
+            () -> new TrainCarItem(TrainCarEntity.Variant.METRO_CAR, new Item.Properties().stacksTo(1)));
+    public static final RegistryObject<Item> PASSENGER_RAIL = ITEMS.register("passenger_rail",
+            () -> new net.minecraft.world.item.BlockItem(ModBlocks.PASSENGER_RAIL.get(), new Item.Properties()));
+    public static final RegistryObject<Item> STEAM_CLASSIC = ITEMS.register("steam_classic",
+            () -> new TrainCarItem(TrainCarEntity.Variant.STEAM_CLASSIC, new Item.Properties().stacksTo(1)));
+    public static final RegistryObject<Item> STEAM_MODERN = ITEMS.register("steam_modern",
+            () -> new TrainCarItem(TrainCarEntity.Variant.STEAM_MODERN, new Item.Properties().stacksTo(1)));
+    public static final RegistryObject<Item> COACH_LOW = ITEMS.register("coach_low",
+            () -> new TrainCarItem(TrainCarEntity.Variant.COACH_LOW, new Item.Properties().stacksTo(1)));
+    public static final RegistryObject<Item> COACH_MID = ITEMS.register("coach_mid",
+            () -> new TrainCarItem(TrainCarEntity.Variant.COACH_MID, new Item.Properties().stacksTo(1)));
+    public static final RegistryObject<Item> COACH_HIGH = ITEMS.register("coach_high",
+            () -> new TrainCarItem(TrainCarEntity.Variant.COACH_HIGH, new Item.Properties().stacksTo(1)));
+    public static final RegistryObject<Item> FREIGHT_LOCO = ITEMS.register("freight_loco",
+            () -> new TrainCarItem(TrainCarEntity.Variant.FREIGHT_LOCO, new Item.Properties().stacksTo(1)));
+    public static final RegistryObject<Item> COAL_WAGON = ITEMS.register("coal_wagon",
+            () -> new TrainCarItem(TrainCarEntity.Variant.COAL_WAGON, new Item.Properties().stacksTo(1)));
+    public static final RegistryObject<Item> FOOD_WAGON = ITEMS.register("food_wagon",
+            () -> new TrainCarItem(TrainCarEntity.Variant.FOOD_WAGON, new Item.Properties().stacksTo(1)));
+    public static final RegistryObject<Item> MINERAL_WAGON = ITEMS.register("mineral_wagon",
+            () -> new TrainCarItem(TrainCarEntity.Variant.MINERAL_WAGON, new Item.Properties().stacksTo(1)));
+
     public static final RegistryObject<Item> AIRLINER = ITEMS.register("airliner",
             () -> new AirlinerItem(ModEntities.AIRLINER::get, new Item.Properties().stacksTo(1)));
     public static final RegistryObject<Item> GARAGE_DOOR = ITEMS.register("garage_door",

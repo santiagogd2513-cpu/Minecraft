@@ -11,20 +11,20 @@ import net.minecraft.world.level.Level;
 
 /**
  * Camioneta Furd F-150 azul oscuro (V2.1.0): cabe el conductor (asiento izquierdo) y un acompañante.
- * Velocidad máxima {@link #MAX_SPEED} = 4 bloques por tick = 80 bloques por segundo. Sube escalones de un bloque.
+ * Velocidad máxima {@link #MAX_SPEED} = 1,111 bloques por tick = 22,2 bloques por segundo = 80 km/h. Sube escalones de un bloque.
  * <p>
  * Ojo: la caja de colisión de cualquier entidad no gira con ella, así que es un rectángulo más corto que el modelo;
  * la camioneta se ve de 4,5 bloques de largo pero choca como una caja de 2,2 x 2,2.
  */
 public class PickupEntity extends VehicleEntity {
-    /** Velocidad máxima en bloques por tick (80 bloques por segundo). */
-    public static final float MAX_SPEED = 4.0f;
+    /** Velocidad máxima en bloques por tick (V4.4.0: 80 km/h = 22,2 bloques por segundo). */
+    public static final float MAX_SPEED = 1.111f;
 
     private static final Spec SPEC = new Spec(
             MAX_SPEED, 0.40f,
-            0.09f,          // aceleración
+            0.03f,          // aceleración (V4.4.0: escalada con la velocidad máxima)
             4.5f,           // giro máximo por tick (grados)
-            0.12f,          // agarre lateral
+            0.034f,         // agarre lateral (V4.4.0: escalado con la velocidad máxima)
             0.99f,          // rueda libre
             0.45f,          // radio de la rueda
             3.0f, -0.9f,    // la carrocería se balancea un poco hacia afuera en las curvas
@@ -48,6 +48,14 @@ public class PickupEntity extends VehicleEntity {
     @Override
     public int storageRows() {
         return 3;
+    }
+
+    /** V4.6.0: física (VehiclePhysics): masa en vacío con el conductor, potencia, aceleración de arranque, frenos, arrastre, rodadura, freno motor. */
+    private static final VehiclePhysics.Params PHYSICS = new VehiclePhysics.Params(2500, 190_000, 3.5, 7.5, 3.5, 1.3, 0.015, 0.9, MAX_SPEED * 20.0, 0.40f * 20.0);
+
+    @Override
+    protected VehiclePhysics.Params physics() {
+        return PHYSICS;
     }
 
     @Override

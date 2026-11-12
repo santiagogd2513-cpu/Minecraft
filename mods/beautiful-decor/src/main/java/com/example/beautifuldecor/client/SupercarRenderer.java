@@ -53,7 +53,7 @@ public class SupercarRenderer extends EntityRenderer<SupercarEntity> {
         // Pasada 2: vidrios ahumados (translúcidos).
         this.model.showGlass(true);
         this.model.renderToBuffer(poseStack, bufferSource.getBuffer(RenderType.entityTranslucentCull(texture)),
-                packedLight, OverlayTexture.NO_OVERLAY, 1.0f, 1.0f, 1.0f, 1.0f);
+                packedLight, OverlayTexture.NO_OVERLAY, 1.0f, 1.0f, 1.0f, VehicleGlass.ALPHA);
         poseStack.popPose();
         super.render(car, entityYaw, partialTick, poseStack, bufferSource, packedLight);
     }

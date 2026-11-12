@@ -157,7 +157,7 @@ public final class AirlinerClientEvents {
                     ? "hud.beautifuldecor.airliner_gear_word_up" : "hud.beautifuldecor.airliner_gear_word_down").getString();
             status = Component.translatable("hud.beautifuldecor.airliner_status",
                     String.valueOf(Math.round(airliner.getY())),
-                    String.valueOf(Math.round(airliner.getVisualSpeed() * 20.0f)), gear).getString();
+                    String.valueOf(Math.round(airliner.getVisualSpeed() * 72.0f)), gear).getString();
         }
         graphics.drawString(minecraft.font, status, (width - minecraft.font.width(status)) / 2, y, 0xFFFFFFFF, true);
 

@@ -159,7 +159,7 @@ public final class VehicleClientEvents {
         GuiGraphics graphics = event.getGuiGraphics();
         int width = event.getWindow().getGuiScaledWidth();
         int height = event.getWindow().getGuiScaledHeight();
-        float blocksPerSecond = Math.abs(moto.getVisualSpeed()) * 20.0f;
+        float blocksPerSecond = Math.abs(moto.getVisualSpeed()) * 72.0f;      // V4.4.0: km/h
         float fraction = Mth.clamp(Math.abs(moto.getVisualSpeed()) / moto.getMaxSpeed(), 0.0f, 1.0f);
 
         String speed = Component.translatable("hud.beautifuldecor.motorcycle_speed",

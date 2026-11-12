@@ -10,21 +10,21 @@ import net.minecraft.world.level.Level;
 /**
  * Moto de carreras (V2.0.0). Se maneja con la base común {@link VehicleEntity}.
  * <ul>
- *   <li>Velocidad máxima: {@link #MAX_SPEED} = 6 bloques por tick = 120 bloques por segundo
+ *   <li>Velocidad máxima: {@link #MAX_SPEED} = 1,736 bloques por tick = 34,7 bloques por segundo = 125 km/h
  *       (en la 2.0.0 era 190; la 2.1.0 la limitó a 120).</li>
  *   <li>Salta sola los escalones de un bloque; las curvas se abren cuanto más rápido vas.</li>
  * </ul>
  */
 public class MotorcycleEntity extends VehicleEntity {
-    /** Velocidad máxima en bloques por tick (120 bloques por segundo). Cambiar solo este número cambia el tope. */
-    public static final float MAX_SPEED = 6.0f;
+    /** Velocidad máxima en bloques por tick (V4.4.0: 125 km/h = 34,7 bloques por segundo). Cambiar solo este número cambia el tope. */
+    public static final float MAX_SPEED = 1.736f;
     public static final float REVERSE_SPEED = 0.35f;
 
     private static final Spec SPEC = new Spec(
             MAX_SPEED, REVERSE_SPEED,
-            0.14f,          // aceleración
+            0.045f,         // aceleración (V4.4.0: escalada con la velocidad máxima)
             6.0f,           // giro máximo por tick (grados)
-            0.22f,          // agarre lateral
+            0.064f,         // agarre lateral (V4.4.0: escalado con la velocidad máxima)
             0.988f,         // fricción al soltar el gas
             0.34f,          // radio de la rueda
             17.0f, 2.6f,    // inclinación máxima y cuánto se inclina
@@ -38,6 +38,14 @@ public class MotorcycleEntity extends VehicleEntity {
 
     public MotorcycleEntity(EntityType<? extends MotorcycleEntity> type, Level level) {
         super(type, level);
+    }
+
+    /** V4.6.0: física (VehiclePhysics): masa en vacío con el conductor, potencia, aceleración de arranque, frenos, arrastre, rodadura, freno motor. */
+    private static final VehiclePhysics.Params PHYSICS = new VehiclePhysics.Params(330, 55_000, 7.0, 8.0, 3.0, 0.45, 0.015, 0.8, MAX_SPEED * 20.0, REVERSE_SPEED * 20.0);
+
+    @Override
+    protected VehiclePhysics.Params physics() {
+        return PHYSICS;
     }
 
     @Override

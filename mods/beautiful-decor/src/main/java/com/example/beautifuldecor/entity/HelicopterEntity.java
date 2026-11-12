@@ -50,12 +50,12 @@ import javax.annotation.Nullable;
  * choca como una caja de 2,4 x 2,9 (los rotores no chocan con nada).
  */
 public class HelicopterEntity extends Entity implements PaintableVehicle, HasVehicleStorage {
-    /** Velocidad horizontal máxima hacia adelante, en bloques por tick (V3.4.0: 68 bloques por segundo; antes 28). */
-    public static final float MAX_SPEED = 3.4f;
+    /** Velocidad horizontal máxima hacia adelante, en bloques por tick (V4.4.0: 60 km/h = 16,7 bloques por segundo). */
+    public static final float MAX_SPEED = 0.833f;     // V4.4.0: 60 km/h = 16,7 bloques por segundo
     /** Velocidad máxima hacia atrás. */
-    public static final float REVERSE_SPEED = 0.5f;
-    /** Velocidad vertical máxima al subir o bajar (8 bloques por segundo). */
-    public static final float CLIMB_SPEED = 0.4f;
+    public static final float REVERSE_SPEED = 0.3f;
+    /** Velocidad vertical máxima al subir o bajar (V4.4.0: 5 bloques por segundo). */
+    public static final float CLIMB_SPEED = 0.25f;
     /** Giro máximo por tick con A / D, en grados. */
     public static final float YAW_RATE = 3.2f;
     /** Cuántos bloques de altura sobre el suelo permite bajarse con Z. */
@@ -65,6 +65,9 @@ public class HelicopterEntity extends Entity implements PaintableVehicle, HasVeh
     public static final int SEATS = 4;
 
     // V3.2.0: colores que el jugador le puso con la tecla R (-1 = el de siempre).
+    /** V4.7.0: cantidad de objetos en el almacenamiento (sincronizada). */
+    private static final EntityDataAccessor<Integer> CARGO =
+            SynchedEntityData.defineId(HelicopterEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> PAINT_BODY =
             SynchedEntityData.defineId(HelicopterEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> PAINT_HANDLE =
@@ -75,8 +78,8 @@ public class HelicopterEntity extends Entity implements PaintableVehicle, HasVeh
     private static final EntityDataAccessor<String> PAINT_EXTRA =
             SynchedEntityData.defineId(HelicopterEntity.class, EntityDataSerializers.STRING);
 
-    private static final float SPOOL_UP = 0.02f;
-    private static final float SPOOL_DOWN = 0.01f;
+    private static final float SPOOL_UP = 0.0055f;     // V4.4.0: ~9 s hasta el régimen máximo (antes 2,5 s); puede despegar al 60 % (~5,5 s)
+    private static final float SPOOL_DOWN = 0.004f;
     /** Descenso máximo sin piloto (bloques por tick): autorrotación suave. */
     private static final double AUTOROTATE_FALL = 0.3;
     private static final float UNLOADED_LIMIT = 0.7f;
@@ -141,6 +144,7 @@ public class HelicopterEntity extends Entity implements PaintableVehicle, HasVeh
 
     @Override
     protected void defineSynchedData() {
+        this.entityData.define(CARGO, 0);
         this.entityData.define(PAINT_BODY, VehiclePaint.ORIGINAL);
         this.entityData.define(PAINT_HANDLE, VehiclePaint.ORIGINAL);
         this.entityData.define(PAINT_RIM, VehiclePaint.ORIGINAL);
@@ -342,6 +346,7 @@ public class HelicopterEntity extends Entity implements PaintableVehicle, HasVeh
     @Override
     public void tick() {
         super.tick();
+        this.syncCargo();
         this.tickLerp();
 
         if (this.isControlledByLocalInstance()) {
@@ -424,6 +429,26 @@ public class HelicopterEntity extends Entity implements PaintableVehicle, HasVeh
         this.inDown = down;
     }
 
+    /** V4.7.0: peso relativo con lo que lleva (1 = vacío). */
+    private float loadFactor() {
+        return FlightPhysics.heliLoad(this.entityData.get(CARGO));
+    }
+
+
+    /** V4.7.0: objetos en el almacenamiento (el servidor lo cuenta cada segundo y lo sincroniza: el cliente que conduce no ve el contenido). */
+    private void syncCargo() {
+        if (!this.level().isClientSide && this instanceof HasVehicleStorage st && st.hasStorage() && this.tickCount % 20 == 0) {
+            int items = 0;
+            net.minecraft.world.SimpleContainer box = st.getStorage();
+            for (int i = 0; i < box.getContainerSize(); i++) {
+                items += box.getItem(i).getCount();
+            }
+            if (items != this.entityData.get(CARGO)) {
+                this.entityData.set(CARGO, items);
+            }
+        }
+    }
+
     private void flyTick() {
         Level level = this.level();
         boolean powered = this.rpm >= TAKEOFF_RPM;
@@ -447,10 +472,17 @@ public class HelicopterEntity extends Entity implements PaintableVehicle, HasVeh
         double target = 0.0;
         if (powered) {
             target = this.inForward && !this.inBack ? MAX_SPEED : this.inBack && !this.inForward ? -REVERSE_SPEED : 0.0;
+            if (this.onGround()) {
+                target *= 0.2;                                          // V4.4.0: en tierra apenas rueda; para avanzar de verdad primero se levanta
+            }
         }
-        double accel = (this.inForward || this.inBack) ? 0.07 : 0.05;   // V3.4.0: más empuje para llegar a 68 b/s en unos 2,5 segundos
+        double accel = (this.inForward || this.inBack) ? 0.009 : 0.006;     // V4.7.0: ~3 m/s² (antes ~12): tarda en arrancar y en parar
+        if (target * forward < 0.0) {
+            accel = 0.012;                                                // frenar (inclinar contra el avance) es algo más rápido
+        }
+        accel /= this.loadFactor();   // V3.4.0: más empuje para llegar a 68 b/s en unos 2,5 segundos
         forward += Mth.clamp(target - forward, -accel, accel);
-        lateral *= 0.86;
+        lateral *= 0.94;                                                  // V4.7.0: se desliza más antes de agarrarse
 
         // ---- seguridad: no volar a ciegas hacia un chunk que aún no se cargó
         if (forward > UNLOADED_LIMIT) {
@@ -469,16 +501,19 @@ public class HelicopterEntity extends Entity implements PaintableVehicle, HasVeh
         if (!powered) {
             climbTarget = this.onGround() ? -0.04 : -0.3;
         } else if (this.inUp && !this.inDown) {
-            climbTarget = CLIMB_SPEED;
+            // V4.7.0: el rotor levanta menos con carga (puede no levantar del todo) y hace falta tenerlo casi a tope
+            float margin = FlightPhysics.heliLiftMargin(this.loadFactor());
+            climbTarget = CLIMB_SPEED * margin * FlightPhysics.heliRpmFactor(this.rpm, TAKEOFF_RPM, margin);
         } else if (this.inDown && !this.inUp) {
             climbTarget = -CLIMB_SPEED;
         } else {
-            climbTarget = 0.0;
+            float margin = FlightPhysics.heliLiftMargin(this.loadFactor());
+            climbTarget = margin < 0.3f && !this.onGround() ? -(0.3f - margin) * 0.15 : 0.0;   // sobrecargado y sin empujar hacia arriba: se hunde despacio
         }
         if (climbTarget > 0.0 && this.getY() + this.getBbHeight() + 1.0 >= level.getMaxBuildHeight()) {
             climbTarget = 0.0;                                           // techo del mundo
         }
-        this.velY += Mth.clamp(climbTarget - this.velY, -0.06, 0.05);
+        this.velY += Mth.clamp(climbTarget - this.velY, -0.03, 0.012 / this.loadFactor());     // V4.4.0: se levanta y se asienta poco a poco
 
         // ---- movimiento (el servidor repite el mismo movimiento sin problema)
         this.setDeltaMovement(this.velX, this.velY, this.velZ);

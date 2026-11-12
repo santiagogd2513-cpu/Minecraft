@@ -157,7 +157,7 @@ public final class HelicopterClientEvents {
         } else {
             status = Component.translatable("hud.beautifuldecor.helicopter_status",
                     String.valueOf(Math.round(helicopter.getY())),
-                    String.valueOf(Math.round(helicopter.getVisualSpeed() * 20.0f))).getString();
+                    String.valueOf(Math.round(helicopter.getVisualSpeed() * 72.0f))).getString();
         }
         graphics.drawString(minecraft.font, status, (width - minecraft.font.width(status)) / 2, y, 0xFFFFFFFF, true);
 

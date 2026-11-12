@@ -11,7 +11,7 @@ import net.minecraft.world.level.Level;
 
 /**
  * Superdeportivo Bugotti Chillón (V3.7.0, parodia de un hiperdeportivo famoso; diseño propio): cabe el conductor (asiento izquierdo) y un
- * acompañante. Velocidad máxima {@link #MAX_SPEED} = 12,5 bloques por tick = 250 bloques por segundo, el vehículo terrestre más rápido del mod.
+ * acompañante. Velocidad máxima {@link #MAX_SPEED} = 6 bloques por tick = 120 bloques por segundo = 432 km/h, el vehículo terrestre más rápido del mod.
  * Acelera fuerte (de 0 a tope en unos 5 segundos), tiene mucho agarre y su motor suena agudo. Sube escalones de un bloque.
  * Se maneja igual que los demás vehículos (ver {@link VehicleEntity}); la radio con la tecla X y los colores con la tecla R ya vienen de ahí.
  * <p>
@@ -19,14 +19,14 @@ import net.minecraft.world.level.Level;
  * el auto se ve de 5 bloques de largo pero choca como una caja de 2,1 x 1,3.
  */
 public class SupercarEntity extends VehicleEntity {
-    /** Velocidad máxima en bloques por tick (250 bloques por segundo). Cambiar solo este número cambia el tope. */
-    public static final float MAX_SPEED = 12.5f;
+    /** Velocidad máxima en bloques por tick (V4.4.0: 120 bloques por segundo = 432 km/h). Cambiar solo este número cambia el tope. */
+    public static final float MAX_SPEED = 6.0f;
 
     private static final Spec SPEC = new Spec(
             MAX_SPEED, 0.50f,
-            0.45f,          // aceleración
+            0.22f,          // aceleración (V4.4.0: escalada con la velocidad máxima)
             5.5f,           // giro máximo por tick (grados)
-            0.95f,          // agarre lateral (a tope gira 4,3 grados por tick)
+            0.46f,          // agarre lateral (V4.4.0: escalado con la velocidad máxima)
             0.99f,          // rueda libre
             0.34f,          // radio de la rueda
             1.5f, -0.5f,    // la carrocería se balancea un poco hacia afuera en las curvas
@@ -50,6 +50,14 @@ public class SupercarEntity extends VehicleEntity {
     @Override
     public int storageRows() {
         return 1;
+    }
+
+    /** V4.6.0: física (VehiclePhysics): masa en vacío con el conductor, potencia, aceleración de arranque, frenos, arrastre, rodadura, freno motor. */
+    private static final VehiclePhysics.Params PHYSICS = new VehiclePhysics.Params(1900, 850_000, 9.0, 11.0, 4.0, 0.7, 0.012, 1.0, MAX_SPEED * 20.0, 0.50f * 20.0);
+
+    @Override
+    protected VehiclePhysics.Params physics() {
+        return PHYSICS;
     }
 
     @Override

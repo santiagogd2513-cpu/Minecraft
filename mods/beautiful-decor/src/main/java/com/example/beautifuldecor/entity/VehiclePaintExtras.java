@@ -25,6 +25,10 @@ public final class VehiclePaintExtras {
             case "helicopter" -> new String[] {"skid", "interior", "dash", "seat", "accent", "black", "glass", "details"};
             case "bugotti_chillon" -> new String[] {"black", "carbon", "chrome", "interior", "dash", "seat", "intake", "headlight", "taillight", "glass", "details"};
             case "airliner" -> new String[] {"accent", "black", "chrome", "glass", "seat", "interior", "dash", "headlight", "taillight", "details"};
+            case "freight_loco" -> new String[] {"accent", "black", "chrome", "glass", "interior", "headlight", "taillight", "details"};
+            case "coal_wagon", "food_wagon", "mineral_wagon" -> new String[] {"accent", "black", "interior", "details"};
+            case "steam_classic", "steam_modern", "metro_head" -> new String[] {"accent", "black", "chrome", "glass", "interior", "headlight", "taillight", "details"};
+            case "coach_low", "coach_mid", "coach_high", "metro_car" -> new String[] {"accent", "black", "glass", "interior", "seat", "details"};
             default -> NONE_KEYS;
         };
     }
@@ -39,6 +43,17 @@ public final class VehiclePaintExtras {
             case "helicopter" -> new int[] {0x50545F, 0x2D2F35, 0x202225, 0x393D49, 0x283883, 0x17181D, 0x223042, 0x4A4E67};
             case "bugotti_chillon" -> new int[] {0x151519, 0x1F2024, 0x8A8E98, 0x292B32, 0x1B1C21, 0x2B2B2E, 0x171618, 0x34373F, 0x860D11, 0x213349, 0x3C3837};
             case "airliner" -> new int[] {0x313F82, 0x18191E, 0xAFB3BF, 0x1F2D3F, 0x2D407A, 0x525870, 0x222225, 0xF6F4E2, 0x9F6138, 0x7B85A1};
+            case "freight_loco" -> new int[] {0xF0C020, 0x1C1D22, 0xB8BCC8, 0x2A4058, 0x6A5A48, 0xF6F2D8, 0xC8222A, 0x3A3D46};
+            case "coal_wagon" -> new int[] {0xC8461E, 0x1C1D22, 0x2A2C32, 0x50545E};
+            case "food_wagon" -> new int[] {0xF2EFE4, 0x1C1D22, 0x9A7448, 0x6B4B2A};
+            case "mineral_wagon" -> new int[] {0xE0B030, 0x1C1D22, 0x4A4E58, 0x6A3A1E};
+            case "steam_classic" -> new int[] {0xD6AA38, 0x18191D, 0xB8BCC8, 0x2A4058, 0x6A5A48, 0xF6F2D8, 0xC8222A, 0x963428};
+            case "steam_modern" -> new int[] {0xECECF0, 0x18191D, 0xB8BCC8, 0x2A4058, 0x6A5A48, 0xF6F2D8, 0xC8222A, 0x464A54};
+            case "coach_low" -> new int[] {0xDCBE60, 0x1C1D22, 0x2A4058, 0x60503E, 0x92683E, 0x463426};
+            case "coach_mid" -> new int[] {0xF0F0F4, 0x1C1D22, 0x2A4058, 0x968C7E, 0x34487C, 0x505660};
+            case "metro_head" -> new int[] {0x1C78D2, 0x18191D, 0xB8BCC8, 0x2A4058, 0x606670, 0xF6F2D8, 0xC8222A, 0x787E8A};
+            case "metro_car" -> new int[] {0x1C78D2, 0x1C1D22, 0x2A4058, 0x969CA6, 0x1E5AA0, 0x787E8A};
+            case "coach_high" -> new int[] {0xE2BA42, 0x1C1D22, 0x2A4058, 0x745438, 0x8C2834, 0x3C281E};
             default -> NONE_REFS;
         };
     }

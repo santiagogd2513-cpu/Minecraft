@@ -40,7 +40,21 @@ public final class VehiclePaint {
         DELIVERY_TRUCK("delivery_truck", 0xECEEF4, 0xB0B6C2, 0xCED2DA),
         HELICOPTER("helicopter",     0xEAECF2, 0xB0B6C2, ORIGINAL),
         SUPERCAR("bugotti_chillon",  0x1854D6, 0x282A32, 0xEC9618),
-        AIRLINER("airliner",         0xEAECF2, 0xB0B6C2, ORIGINAL);
+        AIRLINER("airliner",         0xEAECF2, 0xB0B6C2, ORIGINAL),
+        // V4.8.0: tren de carga
+        FREIGHT_LOCO("freight_loco", 0xC8461E, 0xE8C020, 0x8A8E98),
+        COAL_WAGON("coal_wagon",     0x3A3E46, 0xE8C020, 0x8A8E98),
+        FOOD_WAGON("food_wagon",     0x3F8038, 0xE8C020, 0x8A8E98),
+        MINERAL_WAGON("mineral_wagon", 0xA5562B, 0xE8C020, 0x8A8E98),
+        // V5.0.0: tren de pasajeros
+        STEAM_CLASSIC("steam_classic", 0x24583E, 0xE8C020, 0x8A8E98),
+        STEAM_MODERN("steam_modern", 0x223E76, 0xE8C020, 0x8A8E98),
+        COACH_LOW("coach_low",       0x7A5032, 0xE8C020, 0x8A8E98),
+        COACH_MID("coach_mid",       0x2E628E, 0xE8C020, 0x8A8E98),
+        COACH_HIGH("coach_high",     0x701C2A, 0xE8C020, 0x8A8E98),
+        // V5.1.0: metro
+        METRO_HEAD("metro_head",     0xE8EAF0, 0xE8C020, 0x8A8E98),
+        METRO_CAR("metro_car",       0xE8EAF0, 0xE8C020, 0x8A8E98);
 
         private final String texture;
         private final int[] reference;

@@ -12,21 +12,21 @@ import net.minecraft.world.level.Level;
 /**
  * Camión de reparto AMAZOOM (V3.0.0, parodia de una marca de envíos famosa): furgón blanco con caja de carga, cabina con
  * dos asientos (conductor a la izquierda y acompañante). Más pesado y lento que la camioneta: velocidad máxima
- * {@link #MAX_SPEED} = 2,4 bloques por tick = 48 bloques por segundo, gira más cerrado y suena a motor diésel.
+ * {@link #MAX_SPEED} = 0,764 bloques por tick = 15,3 bloques por segundo = 55 km/h, gira más cerrado y suena a motor diésel.
  * Se maneja igual que los demás vehículos (ver {@link VehicleEntity}).
  * <p>
  * Ojo: la caja de colisión de cualquier entidad no gira con ella, así que es un rectángulo más corto que el modelo;
  * el camión se ve de casi 6 bloques de largo pero choca como una caja de 2,4 x 2,4.
  */
 public class DeliveryTruckEntity extends VehicleEntity {
-    /** Velocidad máxima en bloques por tick (48 bloques por segundo). */
-    public static final float MAX_SPEED = 2.4f;
+    /** Velocidad máxima en bloques por tick (V4.4.0: 55 km/h = 15,3 bloques por segundo). */
+    public static final float MAX_SPEED = 0.764f;
 
     private static final Spec SPEC = new Spec(
             MAX_SPEED, 0.30f,
-            0.05f,          // aceleración: pesado, tarda en arrancar
+            0.02f,          // aceleración: pesado, tarda en arrancar (V4.4.0: escalada)
             3.4f,           // giro máximo por tick (grados)
-            0.085f,         // agarre lateral
+            0.027f,         // agarre lateral (V4.4.0: escalado)
             0.988f,         // rueda libre
             0.47f,          // radio de la rueda
             2.2f, -0.7f,    // la carrocería se balancea un poco hacia afuera en las curvas
@@ -50,6 +50,14 @@ public class DeliveryTruckEntity extends VehicleEntity {
     @Override
     public int storageRows() {
         return 6;
+    }
+
+    /** V4.6.0: física (VehiclePhysics): masa en vacío con el conductor, potencia, aceleración de arranque, frenos, arrastre, rodadura, freno motor. */
+    private static final VehiclePhysics.Params PHYSICS = new VehiclePhysics.Params(7500, 150_000, 1.6, 5.0, 3.0, 3.6, 0.012, 1.2, MAX_SPEED * 20.0, 0.30f * 20.0);
+
+    @Override
+    protected VehiclePhysics.Params physics() {
+        return PHYSICS;
     }
 
     @Override

@@ -1,0 +1,88 @@
+{
+ "textures": {
+  "base": "beautifuldecor:block/passenger_rail_curve_base",
+  "top": "beautifuldecor:block/passenger_rail_curve",
+  "particle": "beautifuldecor:block/passenger_rail_ballast"
+ },
+ "render_type": "minecraft:cutout",
+ "elements": [
+  {
+   "from": [
+    0,
+    1,
+    0
+   ],
+   "to": [
+    16,
+    1,
+    16
+   ],
+   "faces": {
+    "up": {
+     "texture": "#base",
+     "uv": [
+      0,
+      16,
+      16,
+      0
+     ]
+    }
+   }
+  },
+  {
+   "from": [
+    0,
+    2,
+    0
+   ],
+   "to": [
+    16,
+    2,
+    16
+   ],
+   "faces": {
+    "up": {
+     "texture": "#base",
+     "uv": [
+      0,
+      16,
+      16,
+      0
+     ]
+    }
+   }
+  },
+  {
+   "from": [
+    0,
+    3,
+    0
+   ],
+   "to": [
+    16,
+    3,
+    16
+   ],
+   "faces": {
+    "up": {
+     "texture": "#top",
+     "uv": [
+      0,
+      16,
+      16,
+      0
+     ]
+    },
+    "down": {
+     "texture": "#base",
+     "uv": [
+      0,
+      16,
+      16,
+      0
+     ]
+    }
+   }
+  }
+ ]
+}

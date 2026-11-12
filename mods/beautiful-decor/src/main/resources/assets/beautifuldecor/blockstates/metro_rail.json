@@ -1,0 +1,35 @@
+{
+ "variants": {
+  "shape=north_south": {
+   "model": "beautifuldecor:block/metro_rail_flat"
+  },
+  "shape=east_west": {
+   "model": "beautifuldecor:block/metro_rail_flat",
+   "y": 90
+  },
+  "shape=ascending_east": {
+   "model": "beautifuldecor:block/metro_rail_up_east"
+  },
+  "shape=ascending_west": {
+   "model": "beautifuldecor:block/metro_rail_up_west"
+  },
+  "shape=ascending_north": {
+   "model": "beautifuldecor:block/metro_rail_up_north"
+  },
+  "shape=ascending_south": {
+   "model": "beautifuldecor:block/metro_rail_up_south"
+  },
+  "shape=south_east": {
+   "model": "beautifuldecor:block/metro_rail_curve_se"
+  },
+  "shape=south_west": {
+   "model": "beautifuldecor:block/metro_rail_curve_sw"
+  },
+  "shape=north_west": {
+   "model": "beautifuldecor:block/metro_rail_curve_nw"
+  },
+  "shape=north_east": {
+   "model": "beautifuldecor:block/metro_rail_curve_ne"
+  }
+ }
+}

@@ -51,7 +51,7 @@ public class HelicopterRenderer extends EntityRenderer<HelicopterEntity> {
         // Pasada 2: vidrios (translúcidos).
         this.model.showGlass(true);
         this.model.renderToBuffer(poseStack, bufferSource.getBuffer(RenderType.entityTranslucentCull(texture)),
-                packedLight, OverlayTexture.NO_OVERLAY, 1.0f, 1.0f, 1.0f, 1.0f);
+                packedLight, OverlayTexture.NO_OVERLAY, 1.0f, 1.0f, 1.0f, VehicleGlass.ALPHA);
         poseStack.popPose();
         super.render(helicopter, entityYaw, partialTick, poseStack, bufferSource, packedLight);
     }

@@ -67,6 +67,9 @@ public abstract class VehicleEntity extends Entity implements PaintableVehicle, 
             float pitchHigh) {       // tono del motor a tope
     }
 
+    /** V4.7.0: cantidad de objetos en el almacenamiento (sincronizada). */
+    private static final EntityDataAccessor<Integer> CARGO =
+            SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> LIGHT =
             SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.BOOLEAN);
     // V3.2.0: colores que el jugador le puso con la tecla R (-1 = el de siempre).
@@ -219,6 +222,7 @@ public abstract class VehicleEntity extends Entity implements PaintableVehicle, 
     @Override
     protected void defineSynchedData() {
         this.entityData.define(LIGHT, Boolean.FALSE);
+        this.entityData.define(CARGO, 0);
         this.entityData.define(PAINT_BODY, VehiclePaint.ORIGINAL);
         this.entityData.define(PAINT_HANDLE, VehiclePaint.ORIGINAL);
         this.entityData.define(PAINT_RIM, VehiclePaint.ORIGINAL);
@@ -431,6 +435,7 @@ public abstract class VehicleEntity extends Entity implements PaintableVehicle, 
     @Override
     public void tick() {
         super.tick();
+        this.syncCargo();
         this.tickLerp();
 
         if (this.isControlledByLocalInstance()) {
@@ -512,6 +517,33 @@ public abstract class VehicleEntity extends Entity implements PaintableVehicle, 
         this.inBrake = brake;
     }
 
+    /** Pendiente suavizada (tangente, positivo = cuesta arriba) que recorre el vehículo. */
+    private double slopeSmooth;
+
+    /** V4.7.0: objetos en el almacenamiento (el servidor lo cuenta cada segundo y lo sincroniza: el cliente que conduce no ve el contenido). */
+    private void syncCargo() {
+        if (!this.level().isClientSide && this instanceof HasVehicleStorage st && st.hasStorage() && this.tickCount % 20 == 0) {
+            int items = 0;
+            net.minecraft.world.SimpleContainer box = st.getStorage();
+            for (int i = 0; i < box.getContainerSize(); i++) {
+                items += box.getItem(i).getCount();
+            }
+            if (items != this.entityData.get(CARGO)) {
+                this.entityData.set(CARGO, items);
+            }
+        }
+    }
+
+    /** Números de física de este vehículo (masa, potencia, frenos...). Cada tipo define los suyos. */
+    protected VehiclePhysics.Params physics() {
+        return new VehiclePhysics.Params(1500, 120_000, 3.0, 7.5, 3.5, 0.8, 0.015, 0.9, this.spec().maxSpeed() * 20.0, this.spec().reverseSpeed() * 20.0);
+    }
+
+    /** Masa de ahora: la del vehículo vacío + 80 kg por persona + 1 kg por objeto del almacenamiento. */
+    public double totalMassKg() {
+        return this.physics().massKg() + 80.0 * this.getPassengers().size() + this.entityData.get(CARGO);
+    }
+
     private void driveTick() {
         Spec spec = this.spec();
         float maxSpeed = spec.maxSpeed();
@@ -520,35 +552,32 @@ public abstract class VehicleEntity extends Entity implements PaintableVehicle, 
         boolean grounded = this.onGround();
         float v = this.speed;
 
-        // ---- gas, freno y reversa
+        // ---- V4.6.0: física real (ver VehiclePhysics): el motor empuja con F = P / v, el aire y las ruedas frenan, los frenos tienen una fuerza máxima
+        // que rinde menos con más peso, y la pendiente suma o resta g·sen(θ). Más peso o más velocidad = cuesta más acelerar y frenar.
         if (grounded) {
+            int drive = 0;
+            boolean braking = false;
             if (this.inForward) {
                 if (v < -0.02f) {
-                    v += 0.12f;
+                    braking = true;                                  // adelante mientras va en reversa = frenar
                 } else {
-                    v += spec.acceleration() * (1.0f - v / (maxSpeed * 1.03f));
+                    drive += 1;
                 }
             }
             if (this.inBack) {
                 if (v > 0.03f) {
-                    v -= 0.10f + 0.04f * v;
+                    braking = true;                                  // atrás mientras avanza = frenar
                 } else {
-                    v = Math.max(v - 0.03f, -reverseSpeed);
+                    drive -= 1;
                 }
             }
-            if (!this.inForward && !this.inBack) {
-                v *= spec.coastDrag();
-                if (Math.abs(v) < 0.01f) {
-                    v = 0.0f;
-                }
-            }
-            if (this.inBrake) {
-                v *= 0.88f;
-            }
+            double tan = this.slopeSmooth;
+            double slope = tan / Math.sqrt(1.0 + tan * tan);
+            v = (float) VehiclePhysics.step(this.physics(), v, this.totalMassKg(), slope, drive, braking, this.inBrake);
         } else {
             v *= 0.999f;
         }
-        v = Mth.clamp(v, -reverseSpeed, maxSpeed);
+        v = Mth.clamp(v, -reverseSpeed, maxSpeed * 1.6f);             // cuesta abajo puede pasar de su tope (hasta 1,6 veces)
 
         // ---- seguridad: no correr a ciegas hacia un chunk que aún no se cargó
         float yawRad0 = this.getYRot() * Mth.DEG_TO_RAD;
@@ -602,8 +631,17 @@ public abstract class VehicleEntity extends Entity implements PaintableVehicle, 
 
         double beforeX = this.getX();
         double beforeZ = this.getZ();
+        double beforeY = this.getY();
         this.setDeltaMovement(dx, vy, dz);
         this.move(MoverType.SELF, new Vec3(dx, vy + lift, dz));
+        // pendiente que va recorriendo (suavizada: los escalones y saltos no la disparan)
+        double flat = Math.sqrt((this.getX() - beforeX) * (this.getX() - beforeX) + (this.getZ() - beforeZ) * (this.getZ() - beforeZ));
+        if (grounded && flat > 0.03) {
+            double raw = Mth.clamp((this.getY() - beforeY) / flat, -0.6, 0.6);
+            this.slopeSmooth += (raw - this.slopeSmooth) * 0.12;
+        } else {
+            this.slopeSmooth *= 0.9;
+        }
 
         if (this.horizontalCollision) {
             double moved = Math.sqrt((this.getX() - beforeX) * (this.getX() - beforeX)

@@ -2,6 +2,9 @@ package com.example.beautifuldecor.init;
 
 import com.example.beautifuldecor.BeautifulDecor;
 import com.example.beautifuldecor.block.AdScreenBlock;
+import com.example.beautifuldecor.block.FreightRailBlock;
+import com.example.beautifuldecor.block.MetroRailBlock;
+import com.example.beautifuldecor.block.PassengerRailBlock;
 import com.example.beautifuldecor.block.RadioSpeakerBlock;
 import com.example.beautifuldecor.block.SecurityCameraBlock;
 import com.example.beautifuldecor.block.SecurityMonitorBlock;
@@ -1191,6 +1194,21 @@ public class ModBlocks {
     public static final RegistryObject<Block> SECURITY_SCREEN = BLOCKS.register("security_screen",
             () -> new SecurityMonitorBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK)
                     .strength(1.5f).sound(SoundType.METAL).noOcclusion(), true));
+
+    /** V4.8.0: riel del tren de carga (recto, curvas, subidas y bajadas). */
+    public static final RegistryObject<Block> FREIGHT_RAIL = BLOCKS.register("freight_rail",
+            () -> new FreightRailBlock(BlockBehaviour.Properties.of().mapColor(MapColor.METAL)
+                    .noCollission().strength(0.7f).sound(SoundType.METAL)));
+
+    /** V5.1.0: riel del metro. */
+    public static final RegistryObject<Block> METRO_RAIL = BLOCKS.register("metro_rail",
+            () -> new MetroRailBlock(BlockBehaviour.Properties.of().mapColor(MapColor.METAL)
+                    .noCollission().strength(0.7f).sound(SoundType.METAL)));
+
+    /** V5.0.0: riel del tren de pasajeros. */
+    public static final RegistryObject<Block> PASSENGER_RAIL = BLOCKS.register("passenger_rail",
+            () -> new PassengerRailBlock(BlockBehaviour.Properties.of().mapColor(MapColor.METAL)
+                    .noCollission().strength(0.7f).sound(SoundType.METAL)));
 
     // ===== V2.2.0: sistema de ascensores =====
     /** Controlador: define la zona, el tamaño y la velocidad de la cabina. Un controlador por piso. */

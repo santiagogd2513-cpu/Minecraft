@@ -51,13 +51,13 @@ import javax.annotation.Nullable;
  * haz clic derecho en el centro del fuselaje, cerca de las alas.
  */
 public class AirlinerEntity extends Entity implements PaintableVehicle, HasVehicleStorage {
-    /** Velocidad máxima hacia adelante en bloques por tick (100 bloques por segundo). */
-    public static final float MAX_SPEED = 5.0f;
+    /** Velocidad máxima hacia adelante en bloques por tick (V4.4.0: 9 = 180 bloques por segundo = 648 km/h). */
+    public static final float MAX_SPEED = 9.0f;     // V4.4.0: 648 km/h (avión comercial) = 180 bloques por segundo
     public static final float REVERSE_SPEED = 0.35f;
-    /** Velocidad mínima para despegar desde el suelo (44 bloques por segundo). */
-    public static final float TAKEOFF_SPEED = 2.2f;
-    /** En el aire nunca baja de esta velocidad (32 bloques por segundo): no hay pérdida de sustentación. */
-    public static final float MIN_AIR_SPEED = 1.6f;
+    /** Velocidad mínima para despegar desde el suelo (V4.4.0: 72 bloques por segundo = 260 km/h). */
+    public static final float TAKEOFF_SPEED = 3.6f;
+    /** En el aire nunca baja de esta velocidad (V4.4.0: 56 bloques por segundo = 200 km/h): no hay pérdida de sustentación. */
+    public static final float MIN_AIR_SPEED = 2.8f;
     /** Velocidad vertical máxima al subir y al bajar (11 y 12 bloques por segundo). */
     public static final float CLIMB_SPEED = 0.55f;
     public static final float DESCEND_SPEED = 0.6f;
@@ -91,11 +91,14 @@ public class AirlinerEntity extends Entity implements PaintableVehicle, HasVehic
     private static final EntityDataAccessor<String> PAINT_EXTRA =
             SynchedEntityData.defineId(AirlinerEntity.class, EntityDataSerializers.STRING);
     /** true = tren de aterrizaje recogido. */
+    /** V4.7.0: cantidad de objetos en el almacenamiento (sincronizada). */
+    private static final EntityDataAccessor<Integer> CARGO =
+            SynchedEntityData.defineId(AirlinerEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Boolean> GEAR_UP =
             SynchedEntityData.defineId(AirlinerEntity.class, EntityDataSerializers.BOOLEAN);
 
-    private static final float SPOOL_UP = 0.012f;
-    private static final float SPOOL_DOWN = 0.006f;
+    private static final float SPOOL_UP = 0.0045f;     // V4.4.0: ~11 s hasta el régimen máximo; puede empezar la carrera al 60 % (~6,5 s)
+    private static final float SPOOL_DOWN = 0.003f;
     private static final float GEAR_SPEED = 0.03f;
     private static final float UNLOADED_LIMIT = 1.0f;
 
@@ -183,6 +186,7 @@ public class AirlinerEntity extends Entity implements PaintableVehicle, HasVehic
         this.entityData.define(PAINT_RIM, VehiclePaint.ORIGINAL);
         this.entityData.define(PAINT_EXTRA, PaintExtras.EMPTY);
         this.entityData.define(GEAR_UP, Boolean.FALSE);
+        this.entityData.define(CARGO, 0);
     }
 
     @Override
@@ -418,6 +422,7 @@ public class AirlinerEntity extends Entity implements PaintableVehicle, HasVehic
     @Override
     public void tick() {
         super.tick();
+        this.syncCargo();
         this.tickLerp();
 
         if (this.isPilotedHere()) {
@@ -516,6 +521,26 @@ public class AirlinerEntity extends Entity implements PaintableVehicle, HasVehic
         this.inDown = down;
     }
 
+    /** V4.7.0: peso relativo con lo que lleva (1 = vacío). */
+    private float loadFactor() {
+        return FlightPhysics.airlinerLoad(this.entityData.get(CARGO));
+    }
+
+
+    /** V4.7.0: objetos en el almacenamiento (el servidor lo cuenta cada segundo y lo sincroniza: el cliente que conduce no ve el contenido). */
+    private void syncCargo() {
+        if (!this.level().isClientSide && this instanceof HasVehicleStorage st && st.hasStorage() && this.tickCount % 20 == 0) {
+            int items = 0;
+            net.minecraft.world.SimpleContainer box = st.getStorage();
+            for (int i = 0; i < box.getContainerSize(); i++) {
+                items += box.getItem(i).getCount();
+            }
+            if (items != this.entityData.get(CARGO)) {
+                this.entityData.set(CARGO, items);
+            }
+        }
+    }
+
     private void flyTick() {
         Level level = this.level();
         if (!this.wasControlled) {                     // empieza a pilotar este cliente: recoge la velocidad con la que ya iba
@@ -536,23 +561,27 @@ public class AirlinerEntity extends Entity implements PaintableVehicle, HasVehic
         float rate = Mth.lerp(Mth.clamp(absSpeed / MAX_SPEED, 0.0f, 1.0f), 1.8f, 0.9f) * Mth.clamp(absSpeed / 0.8f, 0.0f, 1.0f);
         this.setYRot(this.getYRot() + (powered ? steer * rate : 0.0f));
 
-        // ---- aceleración
+        // ---- aceleración (V4.7.0: física con el peso de lo que lleva)
+        float load = this.loadFactor();
+        float vr = FlightPhysics.takeoffSpeed(TAKEOFF_SPEED, load);         // V4.7.0: velocidad de despegue según el peso
+        float vs = FlightPhysics.stallSpeed(MIN_AIR_SPEED, load);           // y la de pérdida: por debajo, en el aire, se cae
+        float airFloor = vs * 0.7f;
         float thrust = powered ? 1.0f : 0.0f;
         if (airborne) {
             if (this.inForward && !this.inBack) {
-                this.speed = Math.min(MAX_SPEED, this.speed + 0.03f * thrust);
+                this.speed = Math.min(MAX_SPEED, this.speed + 0.006f * thrust / load);       // V4.7.0: empuje de turbinas ~2,4 m/s²
             } else if (this.inBack && !this.inForward) {
-                this.speed = Math.max(MIN_AIR_SPEED, this.speed - 0.03f);
+                this.speed = Math.max(airFloor, this.speed - 0.005f);
             } else {
-                this.speed = Math.max(MIN_AIR_SPEED, this.speed - 0.004f);
+                this.speed = Math.max(airFloor, this.speed - 0.0015f);
             }
         } else {
             if (this.inForward && !this.inBack) {
-                this.speed = Math.min(MAX_SPEED, this.speed + 0.03f * thrust);
+                this.speed = Math.min(MAX_SPEED, this.speed + 0.009f * thrust / load);        // V4.4.0: en pista tarda ~15 s en llegar a la velocidad de rotación
             } else if (this.inBack && !this.inForward) {
-                this.speed = this.speed > 0.0f ? Math.max(0.0f, this.speed - 0.07f) : Math.max(-REVERSE_SPEED, this.speed - 0.02f);
+                this.speed = this.speed > 0.0f ? Math.max(0.0f, this.speed - 0.012f / (float) Math.sqrt(load)) : Math.max(-REVERSE_SPEED, this.speed - 0.01f);   // V4.7.0: frenos ~4,8 m/s²; con la bodega llena frena peor
             } else {
-                this.speed = this.speed > 0.0f ? Math.max(0.0f, this.speed - 0.012f) : Math.min(0.0f, this.speed + 0.02f);
+                this.speed = this.speed > 0.0f ? Math.max(0.0f, this.speed - 0.0012f) : Math.min(0.0f, this.speed + 0.01f);
             }
             if (gearUp && this.speed > 0.1f) {                                    // aterrizó sin tren: se arrastra sobre la panza
                 this.speed *= 0.93f;
@@ -578,37 +607,85 @@ public class AirlinerEntity extends Entity implements PaintableVehicle, HasVehic
         }
 
         // ---- Espacio sube (morro arriba), Shift baja (morro abajo), nada = vuelo recto y nivelado
-        boolean canLift = powered && (airborne || this.speed >= TAKEOFF_SPEED);
+        boolean canLift = powered && (airborne || this.speed >= vr);
         double climbTarget;
         float pitchTarget = 0.0f;
         float limitUp = GROUND_PITCH_UP + (MAX_PITCH_UP - GROUND_PITCH_UP) * (float) Mth.clamp((height - 1.0) / 4.0, 0.0, 1.0);
         float limitDown = MAX_PITCH_DOWN * (float) Mth.clamp((height - 1.5) / 6.0, 0.0, 1.0);
         if (this.inUp && !this.inDown && canLift) {
-            climbTarget = CLIMB_SPEED;
-            pitchTarget = -limitUp;
+            // V4.7.0: en la pista el ascenso crece poco a poco al pasar la velocidad de despegue (se va separando del suelo); en el aire depende del margen sobre la pérdida
+            float frac = airborne ? FlightPhysics.liftFraction(this.speed, vs * 0.9f) : FlightPhysics.liftFraction(this.speed, vr);
+            climbTarget = CLIMB_SPEED * FlightPhysics.climbScale(load) * Math.max(frac, airborne ? 0.0f : 0.05f);
+            pitchTarget = -limitUp * (0.4f + 0.6f * frac);
         } else if (this.inDown && !this.inUp && airborne) {
-            climbTarget = -DESCEND_SPEED * Mth.clamp(height / 6.0, 0.25, 1.0);        // se frena al acercarse al suelo
+            climbTarget = -DESCEND_SPEED * (float) Math.sqrt(load) * Mth.clamp(height / 6.0, 0.25, 1.0);        // se frena al acercarse al suelo
             pitchTarget = limitDown;
         } else if (!airborne) {
             climbTarget = -0.08;
         } else {
             climbTarget = 0.0;
         }
+        if (airborne) {
+            float sink = FlightPhysics.stallSink(this.speed, vs);          // V4.7.0: demasiado lento para su peso: se cae
+            if (sink > 0.0f) {
+                climbTarget = Math.min(climbTarget, -sink);
+                pitchTarget = Math.max(pitchTarget, 0.0f);
+            }
+        }
         if (climbTarget > 0.0 && this.getY() + this.getBbHeight() + 1.0 >= level.getMaxBuildHeight()) {
             climbTarget = 0.0;                                                        // techo del mundo
             pitchTarget = 0.0f;
         }
-        this.velY += Mth.clamp(climbTarget - this.velY, -0.05, 0.03);
+        this.velY += Mth.clamp(climbTarget - this.velY, -0.04, 0.012 / load);        // cargado, cuesta frenar la caída (no se puede "redondear" al tocar)               // V4.4.0: se despega y se asienta poco a poco
         float pitch = this.getXRot();
         this.setXRot(pitch + Mth.clamp(pitchTarget - pitch, -PITCH_RATE, PITCH_RATE));
 
         // ---- movimiento (el servidor repite el mismo movimiento sin problema)
+        double impact = this.velY;
         this.setDeltaMovement(hx * this.speed, this.velY, hz * this.speed);
         this.move(MoverType.SELF, this.getDeltaMovement());
         Vec3 after = this.getDeltaMovement();                                         // move() ya anuló lo que chocó
         this.velY = after.y;
         if (this.horizontalCollision) {
             this.speed *= 0.5f;
+        }
+        // V4.7.0: tocar el suelo con velocidad de caída: suave, duro (rebota y se frena) o estrellarse. El daño a los pasajeros lo aplica el servidor (updateVisuals).
+        if (airborne && this.onGround() && impact < -0.06) {
+            FlightPhysics.Landing land = FlightPhysics.landing((float) -impact, load);
+            if (land.kind() != FlightPhysics.Kind.SOFT) {
+                boolean crash = land.kind() == FlightPhysics.Kind.CRASH;
+                this.speed *= crash ? 0.25f : 0.7f;
+                this.velY = crash ? 0.0 : -impact * 0.3;
+                if (level.isClientSide && this.getControllingPassenger() instanceof Player pilot) {
+                    pilot.displayClientMessage(Component.translatable(crash ? "hud.beautifuldecor.airliner_crash" : "hud.beautifuldecor.airliner_hard_landing"), true);
+                    level.playLocalSound(this.getX(), this.getY(), this.getZ(), crash ? SoundEvents.GENERIC_EXPLODE : SoundEvents.ANVIL_LAND,
+                            SoundSource.NEUTRAL, crash ? 1.5f : 1.0f, crash ? 0.8f : 0.5f, false);
+                }
+            }
+        }
+    }
+
+    // V4.7.0: servidor: daño a los pasajeros según lo fuerte que tocó el suelo
+    private boolean serverAir;
+    private double serverPrevDy;
+
+    private void serverLandingCheck(double dy) {
+        if (this.level().isClientSide) {
+            return;
+        }
+        boolean air = !this.onGround();
+        if (this.serverAir && !air && this.serverPrevDy < -0.06 && this.isVehicle()) {
+            FlightPhysics.Landing land = FlightPhysics.landing((float) -this.serverPrevDy, this.loadFactor());
+            if (land.damage() > 0.0f) {
+                for (Entity passenger : this.getPassengers()) {
+                    passenger.hurt(this.level().damageSources().flyIntoWall(), land.damage());
+                }
+                this.level().playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ANVIL_LAND, SoundSource.NEUTRAL, 1.0f, 0.5f);
+            }
+        }
+        this.serverAir = air;
+        if (air) {
+            this.serverPrevDy = dy;
         }
     }
 
@@ -629,6 +706,7 @@ public class AirlinerEntity extends Entity implements PaintableVehicle, HasVehic
         this.visualClimb = (float) dy;
         this.yawDelta = Mth.wrapDegrees(this.getYRot() - this.yRotO);
         this.pitchDelta = this.getXRot() - this.xRotO;
+        this.serverLandingCheck(dy);
 
         // ---- turbinas: tardan en arrancar y en pararse
         float targetRpm = this.isVehicle() ? 1.0f : 0.0f;
