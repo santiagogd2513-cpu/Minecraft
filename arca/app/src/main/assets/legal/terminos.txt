@@ -1,0 +1,38 @@
+# Términos y condiciones
+Vigentes desde el 12 de noviembre de 2026
+
+Al instalar o usar Arca aceptas estos términos. Si no estás de acuerdo, no uses la app.
+
+## Quiénes somos
+Arca es una app de Forja Estudios, hecha por santiagogd2513-cpu y Claude de Anthropic. Es gratis y no tiene anuncios. Está inspirada en Horizon, pero es una herramienta independiente: no tiene ninguna relación con Microsoft, con Xbox ni con los autores de Horizon, y «Xbox» y «Xbox 360» son marcas de sus dueños.
+
+## Para qué es
+Arca sirve para ver el contenido de la memoria USB o del disco duro de tu propia Xbox 360: juegos, partidas guardadas, perfiles y descargas.
+
+## Cómo debes usarla
+- Úsala solo con tus propios archivos, de forma legal y respetando los derechos de otras personas.
+- No la uses para distribuir contenido pirata, malicioso o que viole derechos de autor.
+- Tú eres responsable de lo que haces con la app y con tus archivos.
+
+## Riesgos y copias de seguridad
+- Esta versión solo lee y no modifica tu memoria ni tu disco. Aun así, desconectar la unidad mientras se lee puede causar errores de lectura.
+- Haz copias de seguridad de tus partidas y perfiles. Las versiones futuras podrán modificarlos, y un cambio mal hecho puede dañarlos de forma permanente.
+- Modificar partidas o perfiles de Xbox Live puede causar la suspensión de tu cuenta o de tu consola, y hacer trampa en línea perjudica a otros jugadores. Eso sería bajo tu propia responsabilidad.
+
+## Sin garantía
+La app se entrega «tal cual», sin garantía de ningún tipo. Probamos cada versión en celulares de verdad, pero no podemos asegurar que no tenga errores ni que funcione en todos los dispositivos ni con todas las memorias.
+
+## Límite de responsabilidad
+Hasta donde lo permita la ley, Forja Estudios y sus autores no son responsables por pérdida de datos, daños a dispositivos, memorias o cuentas, ni por ningún otro perjuicio que resulte del uso o de la imposibilidad de usar la app.
+
+## Copias modificadas
+La única versión original es la que publica Forja Estudios en santiagogd2513-cpu.github.io y en nuestro GitHub. Si alguien copia la app, la modifica y la vuelve a firmar, esa copia no es nuestra: puede traer anuncios, virus o robar tus datos, y Forja Estudios no responde por ella. La app original avisa a pantalla completa cuando detecta una copia modificada.
+
+## Actualizaciones
+La app puede avisarte cuando haya una versión nueva. Instalarla es tu decisión. Podemos cambiar, agregar o quitar funciones en cualquier versión.
+
+## Cambios a estos términos
+Podemos actualizar estos términos. La versión vigente siempre está dentro de la app, en «Acerca de».
+
+## Contacto
+Escríbenos abriendo un reporte («Issue») en github.com/santiagogd2513-cpu/Minecraft.

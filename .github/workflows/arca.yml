@@ -1,0 +1,74 @@
+name: Arca
+
+on:
+  push:
+    branches: [ "**" ]
+    paths: [ "arca/**", ".github/workflows/arca.yml" ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: arca-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  apk:
+    name: Compilar Arca (APK)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: arca
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Probar los lectores de Xbox 360 (XTAF y STFS)
+        run: bash test/probar.sh
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.14.3"
+
+      - name: Compilar
+        run: gradle assembleRelease --stacktrace
+
+      - name: Preparar
+        env:
+          FIRMA_CLAVE: ${{ secrets.FIRMA_CLAVE }}
+        run: |
+          mkdir -p ../dist
+          if [ -z "${FIRMA_CLAVE:-}" ]; then echo "::error::Falta el secreto FIRMA_CLAVE (Settings → Secrets and variables → Actions)"; exit 1; fi
+          BT="$ANDROID_HOME/build-tools/$(ls "$ANDROID_HOME/build-tools" | sort -V | tail -1)"
+          UNSIGNED=$(ls app/build/outputs/apk/release/*.apk | head -1)
+          # alinear y firmar con la llave oficial de Forja Estudios
+          "$BT/zipalign" -f -p 4 "$UNSIGNED" alineado.apk
+          "$BT/apksigner" sign --ks app/firma-arca.p12 --ks-key-alias arca --ks-pass env:FIRMA_CLAVE --key-pass env:FIRMA_CLAVE \
+            --out ../dist/Arca.apk alineado.apk
+          "$BT/apksigner" verify --print-certs ../dist/Arca.apk | head -2
+          cp NOVEDADES.txt ../dist/novedades.txt
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Arca-apk
+          path: dist/Arca.apk
+
+      - name: Publicar
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: arca-${{ github.run_number }}
+          name: "Arca #${{ github.run_number }} (explorador de memorias y discos de Xbox 360 para Android)"
+          target_commitish: ${{ github.sha }}
+          make_latest: false
+          body: |
+            **Arca**, de Forja Estudios: mira lo que hay en la memoria USB o en el disco duro de tu Xbox 360 desde el celular, con el nombre y el ícono de cada juego. Sin root y sin anuncios.
+            Descarga `Arca.apk` (con Chrome, no desde otra app), instálalo y conecta la memoria o el disco por OTG.
+            Inspirada en Horizon; es una herramienta independiente y no tiene relación con Microsoft.
+          files: |
+            dist/Arca.apk
+            dist/novedades.txt

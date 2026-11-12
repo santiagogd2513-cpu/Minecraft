@@ -1,0 +1,48 @@
+# Política de privacidad y seguridad
+Vigente desde el 12 de noviembre de 2026
+
+Arca es una app de Forja Estudios. Esta política explica, en palabras sencillas, qué hace la app con tu información. La resumimos en una frase: tus datos se quedan en tu celular.
+
+## Lo más importante
+- Arca no tiene anuncios.
+- No usa herramientas de estadísticas, rastreo ni publicidad, ni de nosotros ni de terceros.
+- No tenemos servidores propios: no recibimos, no guardamos y no vendemos tu información.
+- No te pedimos crear una cuenta con nosotros.
+- Arca es una herramienta independiente, inspirada en Horizon y sin relación con Microsoft.
+
+## Qué hace la app
+Arca lee la memoria USB o el disco duro de una Xbox 360 conectados al celular: muestra sus carpetas, los juegos, las partidas guardadas y los perfiles, con el nombre y el ícono de cada juego. Esta versión solo lee: no escribe nada en tu memoria ni en tu disco.
+
+## Qué se guarda en tu celular
+- Una lista con el nombre y el ícono de los juegos que Arca encontró en tus memorias, para mostrarlos más rápido la próxima vez.
+- Tus ajustes de la app.
+
+Todo esto se queda en la memoria de tu celular, dentro de la app. Se borra si borras los datos de la app o la desinstalas. Arca no copia ni sube tus partidas, tus perfiles ni tus archivos.
+
+## Cuándo se conecta a internet
+- Para buscar actualizaciones: cada vez que abres la app consulta las versiones publicadas en GitHub (github.com). GitHub puede ver tu dirección IP como cualquier página web; no se envía nada más.
+- Leer una memoria o un disco no necesita internet: todo se hace dentro del celular.
+
+## Permisos que pide y para qué
+- Acceso a USB: Android te pregunta cada vez que conectas una memoria o disco si dejas que Arca la use. Solo se usa la que tú elijas.
+- Carpeta de una memoria: si eliges una carpeta con el selector de Android, Arca solo lee esa carpeta.
+- Internet: solo para buscar e instalar actualizaciones.
+- Instalar apps: para instalar las actualizaciones de Arca.
+
+Puedes quitar cualquier permiso cuando quieras desde los Ajustes de Android; la app seguirá funcionando en lo que no lo necesite.
+
+## Seguridad
+- Las conexiones a internet que hace la app por su cuenta van cifradas (HTTPS).
+- Las actualizaciones se descargan de las versiones oficiales publicadas en GitHub y Android te pide confirmar antes de instalarlas.
+
+## Menores de edad
+La app no está dirigida especialmente a niños y no recoge datos de nadie, tampoco de menores.
+
+## Errores de la app
+Si la app se cierra por un error, guarda una nota técnica del error solo en tu celular, para mostrártela la próxima vez que la abras. Nunca se envía sola: tú decides si la copias y nos la mandas.
+
+## Cambios a esta política
+Si algún día cambia lo que hace la app con tu información, actualizaremos esta política y lo contaremos en las novedades de la actualización.
+
+## Contacto
+Si tienes preguntas, escríbenos abriendo un reporte («Issue») en github.com/santiagogd2513-cpu/Minecraft.

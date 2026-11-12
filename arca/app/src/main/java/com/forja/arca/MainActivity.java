@@ -1,0 +1,953 @@
+package com.forja.arca;
+
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.hardware.usb.UsbDevice;
+import android.hardware.usb.UsbManager;
+import android.net.Uri;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.view.Gravity;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.BaseAdapter;
+import android.widget.FrameLayout;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.ScrollView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Pattern;
+
+/**
+ * Arca: mira desde el celular lo que hay en la memoria USB o en el disco duro de una Xbox 360, con el
+ * nombre y el ícono de cada juego. Esta primera versión solo lee: no escribe nada en la unidad.
+ */
+public class MainActivity extends Activity {
+    private static final String ACTION_PERM = "com.forja.arca.USB_PERMISO";
+    private static final int REQ_TREE = 21;
+    private static final Pattern HEX8 = Pattern.compile("[0-9A-Fa-f]{8}"), HEX16 = Pattern.compile("[0-9A-Fa-f]{16}");
+
+    private UsbManager um;
+    private TitleCache titles;
+    private FrameLayout root, content;
+    private final ExecutorService exec = Executors.newSingleThreadExecutor();
+    private final Handler ui = new Handler(Looper.getMainLooper());
+
+    // lo que está abierto
+    private UsbDisk usb;
+    private List<Saf.FileSource> safFiles;
+    private List<XboxDisk.Part> parts;
+    private Xtaf fs;
+    private String partName = "", sessionLabel = "";
+    private int usbId = -1;
+    private String path = "";
+    private List<Xtaf.Entry> entries = new ArrayList<>();
+    private final Map<String, Stfs> infos = new HashMap<>();
+    private BaseAdapter adapter;
+    private int generation;
+
+    // el cartel de «Preparando…»
+    private View overlay;
+    private TextView overlayDetail;
+    private final AtomicBoolean skip = new AtomicBoolean();
+
+    // ------------------------------------------------------------------ ciclo de vida
+
+    @Override
+    protected void onCreate(Bundle b) {
+        super.onCreate(b);
+        installCrashLog();
+        um = getSystemService(UsbManager.class);
+        titles = new TitleCache(this);
+        getWindow().setStatusBarColor(Ui.BG);
+        getWindow().setNavigationBarColor(Ui.BG);
+        root = new FrameLayout(this);
+        root.setBackgroundColor(Ui.BG);
+        root.setFitsSystemWindows(true);
+        content = new FrameLayout(this);
+        root.addView(content, new FrameLayout.LayoutParams(-1, -1));
+        setContentView(root);
+        IntentFilter f = new IntentFilter();
+        f.addAction(ACTION_PERM);
+        f.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
+        f.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
+        if (Build.VERSION.SDK_INT >= 33) registerReceiver(usbReceiver, f, Context.RECEIVER_NOT_EXPORTED);
+        else registerReceiver(usbReceiver, f);
+        showHome();
+        if (!getSharedPreferences("arca", MODE_PRIVATE).getBoolean("preparado", false)) firstRun();
+        showLastCrash();
+        UsbDevice d = intentDevice(getIntent());
+        if (d != null && UsbDisk.storageInterface(d) != null) openUsb(d);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Updater.resume(this);
+        Updater.check(this);
+        Integrity.check(this);
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        UsbDevice d = intentDevice(intent);
+        if (d != null && UsbDisk.storageInterface(d) != null && !busy()) openUsb(d);
+    }
+
+    @Override
+    protected void onDestroy() {
+        unregisterReceiver(usbReceiver);
+        closeSession();
+        exec.shutdownNow();
+        super.onDestroy();
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public void onBackPressed() {
+        if (overlay != null) {
+            skip.set(true);
+            return;
+        }
+        if (fs != null) {
+            if (!path.isEmpty()) {
+                int i = path.lastIndexOf('/');
+                browse(i < 0 ? "" : path.substring(0, i));
+            } else if (parts != null && parts.size() > 1) {
+                showPartitions();
+            } else {
+                closeSession();
+                showHome();
+            }
+            return;
+        }
+        super.onBackPressed();
+    }
+
+    private boolean busy() {
+        return overlay != null;
+    }
+
+    private int dp(float v) {
+        return Ui.dp(this, v);
+    }
+
+    // ------------------------------------------------------------------ errores de la propia app
+
+    private java.io.File crashFile() {
+        return new java.io.File(getFilesDir(), "ultimo_error.txt");
+    }
+
+    private void installCrashLog() {
+        Thread.UncaughtExceptionHandler prev = Thread.getDefaultUncaughtExceptionHandler();
+        if (prev instanceof CrashLog) return;
+        String ver = "?";
+        try {
+            ver = getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+        } catch (Exception ignored) {
+        }
+        Thread.setDefaultUncaughtExceptionHandler(new CrashLog(crashFile(), prev, ver));
+    }
+
+    private static final class CrashLog implements Thread.UncaughtExceptionHandler {
+        private final java.io.File file;
+        private final Thread.UncaughtExceptionHandler prev;
+        private final String version;
+
+        CrashLog(java.io.File file, Thread.UncaughtExceptionHandler prev, String version) {
+            this.file = file;
+            this.prev = prev;
+            this.version = version;
+        }
+
+        @Override
+        public void uncaughtException(Thread t, Throwable e) {
+            try (java.io.PrintWriter w = new java.io.PrintWriter(new java.io.FileWriter(file))) {
+                w.println("Arca " + version + " · Android " + Build.VERSION.RELEASE + " · " + Build.MODEL);
+                w.println("Hilo: " + t.getName());
+                e.printStackTrace(w);
+            } catch (Exception ignored) {
+            }
+            if (prev != null) prev.uncaughtException(t, e);
+        }
+    }
+
+    private void showLastCrash() {
+        java.io.File f = crashFile();
+        if (!f.exists()) return;
+        String text;
+        try {
+            text = new String(java.nio.file.Files.readAllBytes(f.toPath()), java.nio.charset.StandardCharsets.UTF_8);
+        } catch (Exception e) {
+            text = String.valueOf(e);
+        }
+        //noinspection ResultOfMethodCallIgnored
+        f.delete();
+        final String t = text.length() > 6000 ? text.substring(0, 6000) : text;
+        new AlertDialog.Builder(this, R.style.Theme_Arca_Dialog)
+                .setTitle("Arca se cerró la última vez")
+                .setMessage("Copia esto y mándaselo a quien te ayuda con la app:\n\n" + t)
+                .setPositiveButton("Copiar", (d, w) -> {
+                    getSystemService(android.content.ClipboardManager.class)
+                            .setPrimaryClip(android.content.ClipData.newPlainText("error", t));
+                    Toast.makeText(this, "Copiado", Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton("Cerrar", null)
+                .show();
+    }
+
+    // ------------------------------------------------------------------ USB
+
+    @SuppressWarnings("deprecation")
+    private static UsbDevice intentDevice(Intent i) {
+        if (i == null) return null;
+        return Build.VERSION.SDK_INT >= 33 ? i.getParcelableExtra(UsbManager.EXTRA_DEVICE, UsbDevice.class)
+                : (UsbDevice) i.getParcelableExtra(UsbManager.EXTRA_DEVICE);
+    }
+
+    private final BroadcastReceiver usbReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context c, Intent i) {
+            UsbDevice d = intentDevice(i);
+            switch (String.valueOf(i.getAction())) {
+                case ACTION_PERM -> {
+                    if (d != null && i.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) openNow(d);
+                    else Aviso.show(MainActivity.this, root, "Sin permiso no puedo leer la unidad",
+                            "Android te pregunta cada vez que conectas una memoria. Vuelve a tocarla y acepta el permiso.", "El usuario no dio el permiso USB.");
+                }
+                case UsbManager.ACTION_USB_DEVICE_ATTACHED -> {
+                    if (fs == null && !busy()) showHome();
+                }
+                case UsbManager.ACTION_USB_DEVICE_DETACHED -> {
+                    if (d != null && d.getDeviceId() == usbId) {
+                        closeSession();
+                        hideOverlay();
+                        showHome();
+                        Aviso.show(MainActivity.this, root, "Se desconectó la memoria",
+                                "El cable se movió o el celular dejó de darle corriente al puerto. Vuelve a conectarla y ábrela otra vez.",
+                                "USB_DEVICE_DETACHED de la unidad abierta.");
+                    } else if (fs == null && !busy()) {
+                        showHome();
+                    }
+                }
+                default -> {
+                }
+            }
+        }
+    };
+
+    private void openUsb(UsbDevice d) {
+        if (!um.hasPermission(d)) {
+            PendingIntent pi = PendingIntent.getBroadcast(this, 0, new Intent(ACTION_PERM).setPackage(getPackageName()),
+                    PendingIntent.FLAG_MUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
+            um.requestPermission(d, pi);
+        } else {
+            openNow(d);
+        }
+    }
+
+    private void openNow(UsbDevice d) {
+        if (busy()) return;
+        closeSession();
+        showOverlay("Abriendo la unidad…");
+        exec.execute(() -> {
+            try {
+                UsbDisk disk = new UsbDisk(um, d);
+                usb = disk;
+                usbId = d.getDeviceId();
+                List<XboxDisk.Part> found = XboxDisk.hdd(new DiskSource(disk));
+                if (found.isEmpty()) {
+                    throw new java.io.IOException("Esa unidad no es una partición de Xbox 360 (no encontré la marca XTAF)."
+                            + " Si es una memoria USB, usa «Elegir carpeta de una memoria USB» y escoge su carpeta «Xbox360».");
+                }
+                sessionLabel = disk.name();
+                parts = found;
+                ui.post(() -> {
+                    hideOverlay();
+                    if (found.size() == 1) openPartition(0);
+                    else showPartitions();
+                });
+            } catch (Throwable e) {
+                ui.post(() -> fail(e));
+            }
+        });
+    }
+
+    private void closeSession() {
+        generation++;
+        if (usb != null) {
+            usb.close();
+            usb = null;
+        }
+        if (safFiles != null) {
+            for (Saf.FileSource s : safFiles) s.close();
+            safFiles = null;
+        }
+        parts = null;
+        fs = null;
+        usbId = -1;
+        path = "";
+        entries = new ArrayList<>();
+        infos.clear();
+    }
+
+    private void fail(Throwable e) {
+        hideOverlay();
+        boolean wasOpen = fs != null;
+        if (!wasOpen) {
+            closeSession();
+            showHome();
+        }
+        Aviso.show(this, root, e);
+    }
+
+    // ------------------------------------------------------------------ carpeta elegida con el selector (memoria USB ya montada)
+
+    private void chooseFolder() {
+        Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+        i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        try {
+            startActivityForResult(i, REQ_TREE);
+        } catch (Exception e) {
+            Aviso.show(this, root, e);
+        }
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    protected void onActivityResult(int req, int res, Intent data) {
+        super.onActivityResult(req, res, data);
+        if (req != REQ_TREE || res != RESULT_OK || data == null || data.getData() == null) return;
+        Uri tree = data.getData();
+        closeSession();
+        showOverlay("Buscando la carpeta Xbox360…");
+        exec.execute(() -> {
+            try {
+                List<Saf.FileSource> files = Saf.dataFiles(this, tree);
+                if (files.isEmpty()) {
+                    throw new java.io.IOException("No encontré archivos Data0000, Data0001… en esa carpeta."
+                            + " Elige la memoria USB completa o su carpeta «Xbox360».");
+                }
+                safFiles = files;
+                List<ByteSource> srcs = new ArrayList<>(files);
+                XboxDisk.Part p = XboxDisk.usbStick(srcs);
+                if (p == null) throw new java.io.IOException("Esos archivos no tienen una partición XTAF de Xbox 360.");
+                sessionLabel = "Memoria USB de la consola";
+                parts = new ArrayList<>(Collections.singletonList(p));
+                ui.post(() -> {
+                    hideOverlay();
+                    openPartition(0);
+                });
+            } catch (Throwable e) {
+                ui.post(() -> fail(e));
+            }
+        });
+    }
+
+    // ------------------------------------------------------------------ pantallas
+
+    private void setScreen(View v) {
+        content.removeAllViews();
+        content.addView(v, new FrameLayout.LayoutParams(-1, -1));
+    }
+
+    private LinearLayout header(String title, String sub, boolean back) {
+        LinearLayout h = Ui.row(this);
+        h.setPadding(dp(8), dp(10), dp(16), dp(8));
+        if (back) h.addView(Ui.iconButton(this, R.drawable.ic_back, 46, v -> onBackPressed()));
+        LinearLayout t = Ui.column(this);
+        t.setPadding(back ? dp(4) : dp(12), 0, 0, 0);
+        TextView a = Ui.text(this, title, back ? 19 : 28, Ui.TEXT, true);
+        a.setSingleLine(true);
+        a.setEllipsize(android.text.TextUtils.TruncateAt.END);
+        t.addView(a);
+        if (sub != null && !sub.isEmpty()) {
+            TextView s = Ui.text(this, sub, 12.5f, Ui.SUB, false);
+            s.setSingleLine(true);
+            s.setEllipsize(android.text.TextUtils.TruncateAt.MIDDLE);
+            t.addView(s);
+        }
+        h.addView(t, Ui.weight(1));
+        return h;
+    }
+
+    private TextView section(String s) {
+        TextView t = Ui.text(this, s.toUpperCase(java.util.Locale.ROOT), 12, Ui.ACCENT, true);
+        t.setLetterSpacing(0.1f);
+        t.setPadding(dp(6), dp(20), 0, dp(8));
+        return t;
+    }
+
+    private LinearLayout card(int iconRes, String title, String sub, Runnable onClick) {
+        LinearLayout c = Ui.row(this);
+        c.setPadding(dp(14), dp(14), dp(14), dp(14));
+        c.setBackground(Ui.ripple(Ui.roundStroke(Ui.SURFACE, dp(18), dp(1), Ui.STROKE), Ui.round(Color.WHITE, dp(18))));
+        FrameLayout badge = new FrameLayout(this);
+        badge.setBackground(Ui.round(0x224ADE6B, dp(14)));
+        ImageView ic = new ImageView(this);
+        ic.setImageDrawable(Ui.icon(this, iconRes, Ui.ACCENT));
+        badge.addView(ic, new FrameLayout.LayoutParams(dp(24), dp(24), Gravity.CENTER));
+        c.addView(badge, new LinearLayout.LayoutParams(dp(46), dp(46)));
+        LinearLayout t = Ui.column(this);
+        t.setPadding(dp(14), 0, dp(8), 0);
+        t.addView(Ui.text(this, title, 15.5f, Ui.TEXT, true));
+        if (sub != null) {
+            TextView s = Ui.text(this, sub, 12.5f, Ui.SUB, false);
+            s.setPadding(0, dp(2), 0, 0);
+            t.addView(s);
+        }
+        c.addView(t, Ui.weight(1));
+        if (onClick != null) {
+            ImageView ch = new ImageView(this);
+            ch.setImageDrawable(Ui.icon(this, R.drawable.ic_chevron, Ui.SUB));
+            c.addView(ch, new LinearLayout.LayoutParams(dp(20), dp(20)));
+            c.setOnClickListener(v -> onClick.run());
+        }
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, -2);
+        lp.bottomMargin = dp(8);
+        c.setLayoutParams(lp);
+        return c;
+    }
+
+    private void showHome() {
+        generation++;
+        ScrollView sv = new ScrollView(this);
+        LinearLayout col = Ui.column(this);
+        col.setPadding(dp(14), 0, dp(14), dp(32));
+        sv.addView(col);
+        col.addView(header("Arca", "Tu Xbox 360 en el bolsillo", false));
+        // aviso de modo lectura
+        TextView ro = Ui.text(this, "🔒  Modo lectura: esta versión solo mira. No modifica tu memoria ni tu disco.", 13, Ui.ACCENT2, false);
+        ro.setPadding(dp(14), dp(12), dp(14), dp(12));
+        ro.setLineSpacing(0, 1.1f);
+        ro.setBackground(Ui.round(0x1A4ADE6B, dp(14)));
+        LinearLayout.LayoutParams rl = new LinearLayout.LayoutParams(-1, -2);
+        rl.setMargins(0, dp(4), 0, 0);
+        col.addView(ro, rl);
+
+        col.addView(section("Unidades conectadas por USB"));
+        List<UsbDevice> devices = UsbDisk.find(um);
+        if (devices.isEmpty()) {
+            TextView none = Ui.text(this, "No hay ninguna unidad conectada.\nConecta el disco duro o la memoria de tu Xbox 360 con un cable OTG (o un adaptador USB del disco) y toca «Buscar de nuevo».", 13.5f, Ui.SUB, false);
+            none.setLineSpacing(0, 1.15f);
+            none.setPadding(dp(6), dp(2), dp(6), dp(8));
+            col.addView(none);
+        }
+        for (UsbDevice d : devices) {
+            String n = d.getProductName() != null ? d.getProductName() : "Unidad USB";
+            String m = d.getManufacturerName() != null ? d.getManufacturerName() + " · " : "";
+            col.addView(card(R.drawable.ic_usb, n, m + "Toca para abrirla", () -> openUsb(d)));
+        }
+        col.addView(card(R.drawable.ic_refresh, "Buscar de nuevo", null, this::showHome));
+
+        col.addView(section("Memoria USB que Android ya abrió"));
+        col.addView(card(R.drawable.ic_folder, "Elegir carpeta de una memoria USB",
+                "Para memorias configuradas por la consola: elige la memoria o su carpeta «Xbox360»", this::chooseFolder));
+
+        col.addView(section("Acerca de"));
+        col.addView(card(R.drawable.ic_studio, "Forja Estudios", "Quién hace Arca", () -> Studio.show(this)));
+        col.addView(card(R.drawable.ic_info, "Versión " + version(), "Inspirada en Horizon · sin relación con Microsoft", null));
+        col.addView(Legal.buttons(this));
+        setScreen(sv);
+    }
+
+    private String version() {
+        try {
+            return getPackageManager().getPackageInfo(getPackageName(), 0).versionName;
+        } catch (Exception e) {
+            return "?";
+        }
+    }
+
+    private void showPartitions() {
+        generation++;
+        fs = null;
+        path = "";
+        LinearLayout col = Ui.column(this);
+        col.setPadding(dp(14), 0, dp(14), dp(14));
+        col.addView(header(sessionLabel, "Elige la partición", true));
+        for (int i = 0; i < parts.size(); i++) {
+            final int k = i;
+            XboxDisk.Part p = parts.get(i);
+            col.addView(card(R.drawable.ic_folder, p.name, Ui.size(p.source.length()), () -> openPartition(k)));
+        }
+        ScrollView sv = new ScrollView(this);
+        sv.addView(col);
+        setScreen(sv);
+    }
+
+    private void openPartition(int i) {
+        showOverlay("Abriendo la partición…");
+        exec.execute(() -> {
+            try {
+                Xtaf x = new Xtaf(parts.get(i).source);
+                x.listRoot();   // si la tabla está mal, falla aquí y no más adelante
+                fs = x;
+                partName = parts.get(i).name;
+                path = "";
+                infos.clear();
+                scanGames();
+                ui.post(() -> {
+                    hideOverlay();
+                    browse("");
+                });
+            } catch (Throwable e) {
+                fs = null;
+                ui.post(() -> fail(e));
+            }
+        });
+    }
+
+    /**
+     * Lee los juegos que hay en «Content» para aprender sus nombres e íconos (cada paquete los trae adentro).
+     * Es lo que hace la pantalla «Preparando…». Los que ya se conocen no se vuelven a leer.
+     */
+    private void scanGames() {
+        Xtaf x = fs;
+        try {
+            Xtaf.Entry content = x.find("Content");
+            if (content == null) return;
+            List<Xtaf.Entry> profiles = new ArrayList<>();
+            List<Xtaf.Entry> todo = new ArrayList<>();
+            Set<String> seen = new HashSet<>();
+            for (Xtaf.Entry p : x.list(content)) {
+                if (!p.dir || !HEX16.matcher(p.name).matches()) continue;
+                profiles.add(p);
+                for (Xtaf.Entry t : x.list(p)) {
+                    if (t.dir && HEX8.matcher(t.name).matches() && !titles.knows(t.name) && seen.add(t.name.toUpperCase(java.util.Locale.US))) todo.add(t);
+                }
+            }
+            if (todo.isEmpty() && profiles.isEmpty()) return;
+            skip.set(false);
+            int total = todo.size();
+            ui.post(() -> setOverlayText("Preparando…", total == 0 ? "Leyendo los perfiles…" : "Leyendo " + total + " juegos y sus íconos…"));
+            int n = 0;
+            for (Xtaf.Entry t : todo) {
+                if (skip.get() || Thread.currentThread().isInterrupted()) break;
+                n++;
+                final int k = n;
+                if (n == 1 || n % 4 == 0) ui.post(() -> setOverlayDetail("Preparando carátulas e íconos… (" + k + " de " + total + ")"));
+                readTitle(x, t);
+            }
+            // el nombre de cada jugador, si su perfil se puede leer
+            for (Xtaf.Entry p : profiles) {
+                if (skip.get() || !p.name.toUpperCase(java.util.Locale.US).startsWith("E000") || titles.profile(p.name) != null) continue;
+                Xtaf.Entry pk = x.find("Content/" + p.name + "/FFFE07D1/00010000/" + p.name);
+                if (pk != null && !pk.dir && pk.size >= 0x1800) {
+                    Stfs s = Stfs.parse(x.readFile(pk, 0, Stfs.HEADER));
+                    if (s != null && !s.displayName.isEmpty()) titles.putProfile(p.name, s.displayName);
+                }
+            }
+        } catch (Throwable e) {
+            // si algo falla leyendo nombres, la carpeta se muestra igual con los números
+        }
+    }
+
+    private void readTitle(Xtaf x, Xtaf.Entry title) {
+        try {
+            for (Xtaf.Entry type : x.list(title)) {
+                if (!type.dir) continue;
+                for (Xtaf.Entry f : x.list(type)) {
+                    if (f.dir || f.size < 0x1800) continue;
+                    Stfs s = Stfs.parse(x.readFile(f, 0, Stfs.HEADER));
+                    if (s == null) continue;
+                    String name = s.bestTitle();
+                    if (name.isEmpty()) continue;
+                    byte[] icon = s.titleThumbnail.length > 0 ? s.titleThumbnail : s.thumbnail;
+                    titles.put(title.name, name, icon);
+                    return;
+                }
+            }
+        } catch (Exception ignored) {
+        }
+    }
+
+    // ------------------------------------------------------------------ explorador
+
+    private static final class Row {
+        Xtaf.Entry e;
+        String title, sub;
+        Bitmap icon;
+        int iconRes;
+    }
+
+    private void browse(String p) {
+        final Xtaf x = fs;
+        if (x == null) return;
+        final int gen = ++generation;
+        // el cartel de «Preparando…» solo sale si la carpeta tarda (una memoria lenta o una carpeta enorme)
+        final Runnable late = () -> showOverlay("Leyendo la carpeta…");
+        ui.postDelayed(late, 400);
+        exec.execute(() -> {
+            try {
+                List<Xtaf.Entry> list;
+                if (p.isEmpty()) {
+                    list = x.listRoot();
+                } else {
+                    Xtaf.Entry dir = x.find(p);
+                    if (dir == null || !dir.dir) throw new java.io.IOException("No encontré la carpeta «" + p + "»");
+                    list = x.list(dir);
+                }
+                list.sort((a, b) -> a.dir != b.dir ? (a.dir ? -1 : 1) : a.name.compareToIgnoreCase(b.name));
+                ui.post(() -> {
+                    ui.removeCallbacks(late);
+                    hideOverlay();
+                    if (gen != generation || fs != x) return;
+                    path = p;
+                    entries = list;
+                    showBrowser();
+                    loadHeaders(x, list, gen);
+                });
+            } catch (Throwable e) {
+                ui.post(() -> {
+                    ui.removeCallbacks(late);
+                    fail(e);
+                });
+            }
+        });
+    }
+
+    private boolean inPackageDir() {
+        String[] q = path.isEmpty() ? new String[0] : path.split("/");
+        return q.length >= 4 && q[0].equalsIgnoreCase("Content");
+    }
+
+    /** En las carpetas de paquetes se lee la cabecera de cada archivo para mostrar su nombre y su tipo. */
+    private void loadHeaders(Xtaf x, List<Xtaf.Entry> list, int gen) {
+        if (!inPackageDir()) return;
+        exec.execute(() -> {
+            int n = 0;
+            for (Xtaf.Entry e : list) {
+                if (gen != generation || fs != x) return;
+                if (e.dir || e.size < 0x1800 || infos.containsKey(e.path)) continue;
+                try {
+                    Stfs s = Stfs.parse(x.readFile(e, 0, Stfs.HEADER));
+                    if (s != null) {
+                        infos.put(e.path, s);
+                        if (++n % 3 == 0) ui.post(() -> {
+                            if (adapter != null) adapter.notifyDataSetChanged();
+                        });
+                    }
+                } catch (Exception ignored) {
+                }
+            }
+            ui.post(() -> {
+                if (adapter != null) adapter.notifyDataSetChanged();
+            });
+        });
+    }
+
+    private Row rowFor(Xtaf.Entry e) {
+        String[] p = path.isEmpty() ? new String[0] : path.split("/");
+        boolean content = p.length >= 1 && p[0].equalsIgnoreCase("Content");
+        Row r = new Row();
+        r.e = e;
+        r.title = e.name;
+        r.iconRes = e.dir ? R.drawable.ic_folder : R.drawable.ic_file;
+        if (e.dir) r.sub = e.modified > 0 ? Ui.date(e.modified) : "";
+        else r.sub = Ui.size(e.size) + (e.modified > 0 ? "  ·  " + Ui.date(e.modified) : "");
+        if (p.length == 0 && e.dir && e.name.equalsIgnoreCase("Content")) {
+            r.sub = "Juegos, partidas guardadas, perfiles y descargas";
+        } else if (content && p.length == 1 && e.dir && HEX16.matcher(e.name).matches()) {
+            String gt = titles.profile(e.name);
+            boolean shared = e.name.matches("0+");
+            r.title = shared ? "Contenido compartido" : (gt != null ? gt : "Perfil de jugador");
+            r.sub = e.name + (shared ? "  ·  de todos los perfiles" : "");
+        } else if (content && p.length == 2 && e.dir && HEX8.matcher(e.name).matches()) {
+            String n = titles.name(e.name);
+            r.title = e.name.toUpperCase(java.util.Locale.US) + (n != null ? " (" + n + ")" : "");
+            r.icon = titles.icon(e.name);
+            r.sub = n != null ? "Juego" : "Juego o aplicación";
+        } else if (content && p.length == 3 && e.dir && HEX8.matcher(e.name).matches()) {
+            int t = (int) Long.parseLong(e.name, 16);
+            r.title = e.name.toUpperCase(java.util.Locale.US) + " · " + Stfs.typeName(t);
+            r.sub = "Tipo de contenido";
+        } else if (!e.dir) {
+            Stfs s = infos.get(e.path);
+            if (s != null) {
+                String nm = !s.displayName.isEmpty() ? s.displayName : e.name;
+                r.title = nm;
+                r.sub = Stfs.typeName(s.contentType) + "  ·  " + Ui.size(e.size);
+                byte[] ic = s.thumbnail.length > 0 ? s.thumbnail : s.titleThumbnail;
+                if (ic.length > 0) r.icon = android.graphics.BitmapFactory.decodeByteArray(ic, 0, ic.length);
+            }
+        }
+        return r;
+    }
+
+    private void showBrowser() {
+        LinearLayout col = Ui.column(this);
+        String shownPath = partName + (path.isEmpty() ? "" : "  ›  " + path.replace("/", "  ›  "));
+        String title = path.isEmpty() ? sessionLabel : path.substring(path.lastIndexOf('/') + 1);
+        col.addView(header(title, shownPath, true));
+        ListView lv = new ListView(this);
+        lv.setDivider(null);
+        lv.setSelector(android.R.color.transparent);
+        lv.setPadding(dp(12), 0, dp(12), dp(16));
+        lv.setClipToPadding(false);
+        if (entries.isEmpty()) {
+            TextView e = Ui.text(this, "Esta carpeta está vacía", 14, Ui.SUB, false);
+            e.setGravity(Gravity.CENTER);
+            e.setPadding(0, dp(60), 0, 0);
+            col.addView(e, new LinearLayout.LayoutParams(-1, -2));
+        }
+        adapter = new BaseAdapter() {
+            private final Map<Integer, Row> cache = new HashMap<>();
+
+            @Override
+            public void notifyDataSetChanged() {
+                cache.clear();
+                super.notifyDataSetChanged();
+            }
+
+            @Override
+            public int getCount() {
+                return entries.size();
+            }
+
+            @Override
+            public Object getItem(int i) {
+                return entries.get(i);
+            }
+
+            @Override
+            public long getItemId(int i) {
+                return i;
+            }
+
+            @Override
+            public View getView(int i, View v, ViewGroup parent) {
+                Row r = cache.computeIfAbsent(i, k -> rowFor(entries.get(k)));
+                LinearLayout row = v instanceof LinearLayout ? (LinearLayout) v : null;
+                if (row == null) {
+                    row = Ui.row(MainActivity.this);
+                    row.setPadding(dp(12), dp(10), dp(10), dp(10));
+                    FrameLayout box = new FrameLayout(MainActivity.this);
+                    ImageView ic = new ImageView(MainActivity.this);
+                    ic.setId(1);
+                    box.addView(ic, new FrameLayout.LayoutParams(-1, -1));
+                    row.addView(box, new LinearLayout.LayoutParams(dp(46), dp(46)));
+                    LinearLayout t = Ui.column(MainActivity.this);
+                    t.setPadding(dp(14), 0, dp(6), 0);
+                    TextView a = Ui.text(MainActivity.this, "", 15, Ui.TEXT, true);
+                    a.setId(2);
+                    a.setSingleLine(true);
+                    a.setEllipsize(android.text.TextUtils.TruncateAt.END);
+                    TextView b = Ui.text(MainActivity.this, "", 12, Ui.SUB, false);
+                    b.setId(3);
+                    b.setSingleLine(true);
+                    b.setEllipsize(android.text.TextUtils.TruncateAt.END);
+                    t.addView(a);
+                    t.addView(b);
+                    row.addView(t, Ui.weight(1));
+                    ImageView ch = new ImageView(MainActivity.this);
+                    ch.setId(4);
+                    row.addView(ch, new LinearLayout.LayoutParams(dp(18), dp(18)));
+                    row.setBackground(Ui.rippleRound(0x00000000, dp(14)));
+                }
+                ImageView ic = row.findViewById(1);
+                ((View) ic.getParent()).setBackground(r.icon != null ? null : Ui.round(0x224ADE6B, dp(12)));
+                if (r.icon != null) {
+                    ic.setImageBitmap(r.icon);
+                    ic.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                    ic.setPadding(0, 0, 0, 0);
+                } else {
+                    ic.setImageDrawable(Ui.icon(MainActivity.this, r.iconRes, r.e.dir ? Ui.ACCENT : Ui.ACCENT2));
+                    ic.setScaleType(ImageView.ScaleType.FIT_CENTER);
+                    ic.setPadding(dp(11), dp(11), dp(11), dp(11));
+                }
+                ((TextView) row.findViewById(2)).setText(r.title);
+                TextView sub = row.findViewById(3);
+                sub.setText(r.sub == null ? "" : r.sub);
+                sub.setVisibility(r.sub == null || r.sub.isEmpty() ? View.GONE : View.VISIBLE);
+                ImageView ch = row.findViewById(4);
+                if (r.e.dir) ch.setImageDrawable(Ui.icon(MainActivity.this, R.drawable.ic_chevron, Ui.SUB));
+                else ch.setImageDrawable(null);
+                return row;
+            }
+        };
+        lv.setAdapter(adapter);
+        lv.setOnItemClickListener((p, v, i, id) -> {
+            Xtaf.Entry e = entries.get(i);
+            if (e.dir) browse(e.path);
+            else showFile(e);
+        });
+        col.addView(lv, new LinearLayout.LayoutParams(-1, 0, 1));
+        setScreen(col);
+    }
+
+    private void showFile(Xtaf.Entry e) {
+        final Xtaf x = fs;
+        if (x == null) return;
+        exec.execute(() -> {
+            try {
+                Stfs s = infos.get(e.path);
+                if (s == null && e.size >= 0x1800) {
+                    s = Stfs.parse(x.readFile(e, 0, Stfs.HEADER));
+                    if (s != null) infos.put(e.path, s);
+                }
+                final Stfs st = s;
+                ui.post(() -> showFileDialog(e, st));
+            } catch (Throwable t) {
+                ui.post(() -> fail(t));
+            }
+        });
+    }
+
+    private void showFileDialog(Xtaf.Entry e, Stfs s) {
+        LinearLayout box = Ui.column(this);
+        box.setPadding(dp(22), dp(18), dp(22), dp(6));
+        StringBuilder b = new StringBuilder();
+        if (s != null) {
+            byte[] ic = s.titleThumbnail.length > 0 ? s.titleThumbnail : s.thumbnail;
+            if (ic.length > 0) {
+                ImageView iv = new ImageView(this);
+                iv.setImageBitmap(android.graphics.BitmapFactory.decodeByteArray(ic, 0, ic.length));
+                box.addView(iv, new LinearLayout.LayoutParams(dp(72), dp(72)));
+            }
+            TextView t = Ui.text(this, s.displayName.isEmpty() ? e.name : s.displayName, 19, Ui.TEXT, true);
+            t.setPadding(0, dp(10), 0, dp(2));
+            box.addView(t);
+            b.append("Juego: ").append(s.bestTitle().isEmpty() ? "(sin nombre)" : s.bestTitle());
+            b.append("\nID del juego: ").append(Stfs.hex8(s.titleId));
+            b.append("\nTipo: ").append(Stfs.typeName(s.contentType));
+            b.append("\nFormato del paquete: ").append(s.magic).append(s.magic.equals("CON") ? " (firmado por una consola)" : " (firmado por Microsoft)");
+        } else {
+            TextView t = Ui.text(this, e.name, 19, Ui.TEXT, true);
+            box.addView(t);
+            b.append("No es un paquete de la Xbox 360 (o es muy chico para tener cabecera).");
+        }
+        b.append("\nArchivo: ").append(e.name);
+        b.append("\nTamaño: ").append(Ui.size(e.size));
+        if (e.modified > 0) b.append("\nFecha: ").append(Ui.date(e.modified));
+        TextView info = Ui.text(this, b.toString(), 14, Ui.SUB, false);
+        info.setLineSpacing(0, 1.2f);
+        info.setPadding(0, dp(8), 0, 0);
+        box.addView(info);
+        new AlertDialog.Builder(this, R.style.Theme_Arca_Dialog).setView(box).setPositiveButton("Cerrar", null).show();
+    }
+
+    // ------------------------------------------------------------------ «Preparando…»
+
+    private void showOverlay(String detail) {
+        if (overlay != null) {
+            setOverlayDetail(detail);
+            return;
+        }
+        FrameLayout o = new FrameLayout(this);
+        o.setBackgroundColor(0xF20A0F0C);
+        o.setClickable(true);
+        LinearLayout col = Ui.column(this);
+        col.setGravity(Gravity.CENTER_HORIZONTAL);
+        Ring ring = new Ring(this);
+        col.addView(ring, new LinearLayout.LayoutParams(dp(128), dp(128)));
+        TextView title = Ui.text(this, "Preparando…", 22, Ui.TEXT, true);
+        title.setId(11);
+        title.setPadding(0, dp(24), 0, dp(6));
+        col.addView(title);
+        TextView d = Ui.text(this, detail, 13.5f, Ui.SUB, false);
+        d.setId(12);
+        d.setGravity(Gravity.CENTER);
+        d.setPadding(dp(30), 0, dp(30), 0);
+        col.addView(d);
+        TextView skipBtn = Ui.text(this, "Omitir", 13, Ui.ACCENT, true);
+        skipBtn.setPadding(dp(20), dp(26), dp(20), dp(10));
+        skipBtn.setOnClickListener(v -> skip.set(true));
+        skipBtn.setId(13);
+        skipBtn.setVisibility(View.GONE);
+        col.addView(skipBtn);
+        o.addView(col, new FrameLayout.LayoutParams(-2, -2, Gravity.CENTER));
+        root.addView(o, new FrameLayout.LayoutParams(-1, -1));
+        overlay = o;
+        overlayDetail = d;
+    }
+
+    private void setOverlayDetail(String s) {
+        if (overlayDetail != null) overlayDetail.setText(s);
+    }
+
+    private void setOverlayText(String title, String detail) {
+        if (overlay == null) return;
+        TextView t = overlay.findViewById(11);
+        if (t != null) t.setText(title);
+        setOverlayDetail(detail);
+        View skipBtn = overlay.findViewById(13);
+        if (skipBtn != null) skipBtn.setVisibility(View.VISIBLE);
+    }
+
+    private void hideOverlay() {
+        if (overlay != null) {
+            root.removeView(overlay);
+            overlay = null;
+            overlayDetail = null;
+        }
+    }
+
+    /** La primera vez que se abre la app: prepara lo que necesita y avisa que solo pasa una vez. */
+    private void firstRun() {
+        showOverlay("Revisando que el celular pueda leer memorias USB…");
+        exec.execute(() -> {
+            boolean host = getPackageManager().hasSystemFeature(PackageManager.FEATURE_USB_HOST);
+            step(900, "Preparando la lista de juegos…");
+            titles.count();
+            step(800, "Preparando carátulas e íconos…");
+            step(700, "Ya casi…");
+            getSharedPreferences("arca", MODE_PRIVATE).edit().putBoolean("preparado", true).apply();
+            ui.post(() -> {
+                hideOverlay();
+                readyCard(host);
+            });
+        });
+    }
+
+    private void step(long ms, String text) {
+        try {
+            Thread.sleep(ms);
+        } catch (InterruptedException ignored) {
+        }
+        ui.post(() -> setOverlayDetail(text));
+    }
+
+    private void readyCard(boolean usbHost) {
+        LinearLayout box = Ui.column(this);
+        box.setGravity(Gravity.CENTER_HORIZONTAL);
+        box.setPadding(dp(24), dp(22), dp(24), dp(6));
+        Ring ring = new Ring(this);
+        ring.setMode(Ring.DONE);
+        box.addView(ring, new LinearLayout.LayoutParams(dp(84), dp(84)));
+        TextView t = Ui.text(this, "¡Todo listo!", 22, Ui.TEXT, true);
+        t.setPadding(0, dp(14), 0, dp(8));
+        box.addView(t);
+        TextView m = Ui.text(this, "Ya preparé lo que necesito para trabajar. Este proceso solo se hace una vez.\n\n"
+                + "Desde ahora Arca lee tus memorias y discos sin internet: la conexión solo se usa para buscar actualizaciones de la app."
+                + (usbHost ? "" : "\n\n⚠️ Este celular dice que no puede leer memorias USB por cable OTG. Arca solo podrá abrir carpetas que Android ya haya montado."), 14, Ui.SUB, false);
+        m.setGravity(Gravity.CENTER);
+        m.setLineSpacing(0, 1.2f);
+        box.addView(m);
+        new AlertDialog.Builder(this, R.style.Theme_Arca_Dialog).setView(box).setPositiveButton("Empezar", null).setCancelable(false).show();
+    }
+}

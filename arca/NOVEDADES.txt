@@ -1,0 +1,7 @@
+## 1
+📦 Arca: primera versión
+- Mira lo que hay en la memoria USB o en el disco duro de tu Xbox 360, desde el celular y sin root.
+- Muestra los juegos con su nombre y su ícono (los lee de los propios paquetes), y las partidas, perfiles y descargas con su tipo.
+- Funciona con el disco duro de la consola (con un adaptador USB) y con memorias USB configuradas por la consola.
+- Esta versión solo lee: no modifica nada de tu memoria ni de tu disco.
+- Inspirada en Horizon. No tiene relación con Microsoft.
