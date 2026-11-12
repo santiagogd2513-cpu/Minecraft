@@ -1,3 +1,11 @@
+## 19
+💿 Administrador de ISOs (morado)
+- Nueva tarjeta «Administrar ISOs» en la pantalla de inicio: elige tu USB con el selector de Android (☰ → tu USB → «Usar esta carpeta») y ve sus ISOs, IMG, WIM, VHD y EFI con tamaño y fecha. Entra a las carpetas y vuelve con la flecha.
+- Agregar desde el celular: copia una o varias ISOs a la USB, con barra de progreso, velocidad y tiempo restante; se puede cancelar y no deja archivos a medias.
+- Renombrar y borrar (toca un archivo o mantenlo pulsado). Avisa si la ISO no cabe y, si pesa más de 4 GB y la USB es FAT32, te explica qué hacer.
+- Funciona con USB en FAT32 o exFAT, que son las que Android abre. Si tu partición está en NTFS o ext4, Android no la monta y no aparece.
+- Botón «Solo arranque / Todos» para ver o esconder los demás archivos.
+
 ## 18
 ⭐ Menú de Forja Estudios
 - Al tocar «Forja Estudios» ahora sale un menú con tres opciones: Contáctanos (muy pronto), Calificar apps (abre la página web, ya en la ficha de esta app) y Acerca del estudio.

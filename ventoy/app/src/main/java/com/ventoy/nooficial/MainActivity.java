@@ -308,6 +308,13 @@ public class MainActivity extends Activity {
     }
 
     private String done;
+    private IsoManager iso;
+
+    @Override
+    protected void onActivityResult(int req, int res, Intent data) {
+        super.onActivityResult(req, res, data);
+        if (iso != null) iso.onResult(req, res, data);
+    }
 
     // ------------------------------------------------------------------ interfaz
 
@@ -338,8 +345,26 @@ public class MainActivity extends Activity {
         head.addView(Ui.iconButton(this, R.drawable.ic_info, 42, v -> showAbout()));
         col.addView(head);
 
+        // administrador de ISOs: no necesita instalar nada, solo la USB ya montada por Android
+        LinearLayout isoCard = Ui.row(this);
+        isoCard.setGravity(Gravity.CENTER_VERTICAL);
+        isoCard.setPadding(dp(16), dp(14), dp(16), dp(14));
+        isoCard.setBackground(Ui.ripple(Ui.roundStroke(0xFF1C1236, dp(20), dp(1), 0xFF4A3A78), Ui.round(Color.WHITE, dp(20))));
+        TextView isoIcon = Ui.text(this, "💿", 26, Ui.TEXT, false);
+        isoCard.addView(isoIcon, new LinearLayout.LayoutParams(dp(44), -2));
+        LinearLayout isoText = Ui.column(this);
+        isoText.addView(Ui.text(this, "Administrar ISOs", 16.5f, Ui.TEXT, true));
+        isoText.addView(Ui.text(this, "Mira, copia, renombra y borra las ISOs de tu USB Ventoy", 12.5f, Ui.SUB, false));
+        isoCard.addView(isoText, Ui.weight(1));
+        isoCard.addView(Ui.text(this, "›", 22, Ui.SUB, false));
+        isoCard.setOnClickListener(v -> {
+            if (iso == null) iso = new IsoManager(this);
+            iso.open();
+        });
+        col.addView(isoCard, margins(0, 20, 0, 0));
+
         deviceCard = Ui.column(this);
-        col.addView(deviceCard, margins(0, 22, 0, 0));
+        col.addView(deviceCard, margins(0, 14, 0, 0));
         actions = Ui.column(this);
         col.addView(actions, margins(0, 14, 0, 0));
 
