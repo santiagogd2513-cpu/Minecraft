@@ -1,3 +1,13 @@
+## 85
+🎨 Herramientas: creador de pixel art
+- Herramientas → «Crear pixel art»: lienzo desde 1×1 hasta 512×512 (atajos 16, 32, 64, 128).
+- Lápiz, borrador, cubeta, gotero, línea, rectángulo y círculo (vacíos o rellenos), grosor del pincel y espejo horizontal/vertical.
+- Dos dedos para mover y acercar; cuadrícula, fondo de cuadros para ver lo transparente y modo precisión (el punto se pinta arriba del dedo para que no lo tape).
+- Paleta con tus colores recientes y selector con tono, saturación, brillo, opacidad y código hex.
+- Deshacer y rehacer, vista en mosaico 3×3 para texturas y guardado en PNG ampliado ×1 a ×16 sin borrosidad.
+- También en cualquier imagen (hasta 512×512): ⋮ → «Imagen: editar como pixel art».
+- Probado: la lógica de dibujo (cubeta, líneas, figuras) en PC. Los gestos en pantalla hay que probarlos en el teléfono.
+
 ## 84
 🗂️ Pestañas: cada una recuerda su sección del Inicio
 - Si en una pestaña abrías una sección del Inicio (Favoritas, Nube y red…) y cambiabas a otra pestaña, la otra mostraba esa misma sección en vez de su Inicio. Ahora cada pestaña recuerda la suya.

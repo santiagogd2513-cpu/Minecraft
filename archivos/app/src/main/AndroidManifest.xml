@@ -180,6 +180,13 @@
             android:theme="@style/Theme.Boveda" />
 
         <activity
+            android:name=".PixelArtActivity"
+            android:exported="false"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
+            android:windowSoftInputMode="adjustResize"
+            android:theme="@style/Theme.Boveda" />
+
+        <activity
             android:name=".PdfActivity"
             android:exported="false"
             android:configChanges="orientation|screenSize|uiMode" />

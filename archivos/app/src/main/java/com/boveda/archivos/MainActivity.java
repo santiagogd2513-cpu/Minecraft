@@ -60,6 +60,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
     private static final int REQ_TOOL_IMG = 44;
     private static final int REQ_TOOL_MEDIA = 45;
     private static final int REQ_TOOL_ANY = 46;
+    private static final int REQ_PIXEL = 47;
     private String toolMode = "resize";
     private volatile String lastToolDir;
 
@@ -666,6 +667,14 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
 
     // ------------------------------------------------------------------ herramientas de imágenes
 
+    private void openPixelArt(String src) {
+        Intent i = new Intent(this, PixelArtActivity.class);
+        String dir = src != null ? Paths.parent(src) : Paths.ROOT + "/Pictures/Bóveda";
+        i.putExtra("dir", dir);
+        if (src != null) i.putExtra("src", src);
+        startActivityForResult(i, REQ_PIXEL);
+    }
+
     /** Guarda la imagen lista en una carpeta (con otro nombre si ya hay una igual) y la anota para poder deshacer. */
     private ImageToolDialog.Saver imageSaver(String dir) {
         return (file, bytes) -> {
@@ -1059,6 +1068,9 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                     box.addView(netRow("✨", 0xFF00ACC1, 0xFF26C6DA, L.t("Convertir cualquier archivo"),
                             L.t("Elige una imagen, un audio o un video y te muestro a qué formatos se puede pasar"),
                             v -> pickToolAny(), null));
+                    box.addView(netRow("🎨", 0xFFE91E63, 0xFFFF7597, L.t("Crear pixel art"),
+                            L.t("Lienzo de hasta 512×512 con lápiz, cubeta, líneas, espejo, paleta y vista en mosaico; sale como PNG"),
+                            v -> openPixelArt(null), null));
                     box.addView(section(L.t("Imágenes")));
                     box.addView(netRow("📐", 0xFF00897B, 0xFF4DB6AC, L.t("Cambiar tamaño o recortar"),
                             L.t("Medidas exactas (64×64, 512×720…), estirar, ajustar o recortar, y pixelado nítido para texturas"),
@@ -3575,6 +3587,13 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             refreshGrants();
             return;
         }
+        if (req == REQ_PIXEL) {
+            if (res == RESULT_OK && data != null && data.getStringExtra("dir") != null) {
+                lastToolDir = data.getStringExtra("dir");
+                openToolFolder();
+            }
+            return;
+        }
         if (req == REQ_TOOL_ANY && res == RESULT_OK && data != null && data.getData() != null) {
             routeToolFile(data.getData());
             return;
@@ -3988,6 +4007,8 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                     acts.add(() -> imageFromEntry(single, "resize"));
                     labels.add(L.t("Imagen: convertir formato"));
                     acts.add(() -> imageFromEntry(single, "convert"));
+                    labels.add(L.t("Imagen: editar como pixel art"));
+                    acts.add(() -> openPixelArt(single.path));
                     labels.add(L.t("Imagen: quitar datos ocultos"));
                     acts.add(() -> imageFromEntry(single, "exif"));
                 }
