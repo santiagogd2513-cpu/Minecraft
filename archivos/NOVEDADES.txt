@@ -1,3 +1,7 @@
+## 87
+🔧 Herramientas: ahora usan el selector de archivos de Bóveda
+- «Convertir cualquier archivo», las herramientas de imagen y las de audio y video abrían el selector normal de Android. Ahora abren el de Bóveda, con tus carpetas y tu forma de moverte.
+
 ## 86
 🤝 Modo prestado
 - Selecciona una carpeta, toca ⋮ y elige «Modo prestado». Quien tenga el teléfono solo ve esa carpeta (y sus subcarpetas): fotos, videos, música y PDF.

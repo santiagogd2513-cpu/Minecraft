@@ -736,7 +736,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
 
     private void pickToolImage(String mode) {
         toolMode = mode;
-        Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        Intent i = new Intent(this, PickerActivity.class).setAction(Intent.ACTION_OPEN_DOCUMENT);
         i.setType("*/*");
         i.putExtra(Intent.EXTRA_MIME_TYPES, new String[]{"image/*", "application/octet-stream"});
         i.addCategory(Intent.CATEGORY_OPENABLE);
@@ -770,7 +770,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
     // ------------------------------------------------------------------ convertidor general
 
     private void pickToolAny() {
-        Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        Intent i = new Intent(this, PickerActivity.class).setAction(Intent.ACTION_OPEN_DOCUMENT);
         i.setType("*/*");
         i.addCategory(Intent.CATEGORY_OPENABLE);
         try {
@@ -858,7 +858,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
 
     private void pickToolMedia(String mode) {
         toolMode = mode;
-        Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        Intent i = new Intent(this, PickerActivity.class).setAction(Intent.ACTION_OPEN_DOCUMENT);
         i.setType("*/*");
         i.putExtra(Intent.EXTRA_MIME_TYPES, mode.equals("extract") ? new String[]{"video/*"} : new String[]{"audio/*", "application/ogg"});
         i.addCategory(Intent.CATEGORY_OPENABLE);
