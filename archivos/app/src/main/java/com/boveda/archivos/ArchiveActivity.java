@@ -307,9 +307,11 @@ public class ArchiveActivity extends Activity {
     /** Junto al archivo, en una carpeta con su nombre. */
     private void extractHere(List<String> picks, String base) {
         String dest = Paths.join(Paths.parent(archive), Archive.baseName(Paths.name(archive)));
-        TransferEngine.get(this).submitExtract(archive, picks, base, dest);
-        Toast.makeText(this, L.t("Extrayendo en «") + Paths.name(dest) + "»…", Toast.LENGTH_SHORT).show();
-        finish();
+        ArchivePass.ensure(this, archive, () -> {
+            TransferEngine.get(this).submitExtract(archive, picks, base, dest);
+            Toast.makeText(this, L.t("Extrayendo en «") + Paths.name(dest) + "»…", Toast.LENGTH_SHORT).show();
+            finish();
+        });
     }
 
     /** Elegir la carpeta destino en el explorador y tocar «Extraer aquí». */
@@ -321,6 +323,10 @@ public class ArchiveActivity extends Activity {
 
     /** Abre un archivo de adentro: se saca a una carpeta temporal y se abre con la app que corresponda. */
     private void openInside(Entry e) {
+        ArchivePass.ensure(this, archive, () -> openInsideNow(e));
+    }
+
+    private void openInsideNow(Entry e) {
         loading.setVisibility(View.VISIBLE);
         Toast.makeText(this, (Viewers.isMedia(e.name) ? L.t("Sacando del comprimido ") : L.t("Abriendo ")) + e.name + "…", Toast.LENGTH_SHORT).show();
         io.execute(() -> {

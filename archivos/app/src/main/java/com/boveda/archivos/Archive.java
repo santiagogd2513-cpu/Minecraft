@@ -38,6 +38,113 @@ import java.util.List;
 final class Archive {
     private Archive() {}
 
+    /** Contraseñas que el usuario escribió en esta sesión (solo en memoria), por ruta del archivo. */
+    private static final java.util.Map<String, char[]> PASSWORDS = new java.util.concurrent.ConcurrentHashMap<>();
+
+    static void setPassword(String path, char[] pw) {
+        if (pw == null) PASSWORDS.remove(path);
+        else PASSWORDS.put(path, pw);
+    }
+
+    static boolean hasPassword(String path) {
+        return PASSWORDS.containsKey(path);
+    }
+
+    /** El archivo necesita contraseña para leer su contenido. */
+    static final class PasswordException extends IOException {
+        PasswordException(String m) {
+            super(m);
+        }
+    }
+
+    /** ¿Algo de lo que hay dentro está cifrado? */
+    static boolean needsPassword(Context c, String path) {
+        Type t = type(Paths.name(path));
+        try {
+            if (t == Type.ZIP) {
+                try (Channel ch = new Channel(c, path); ZipFile zf = openZip(ch)) {
+                    Enumeration<ZipArchiveEntry> en = zf.getEntries();
+                    while (en.hasMoreElements()) {
+                        ZipArchiveEntry e = en.nextElement();
+                        if (!e.isDirectory() && e.getGeneralPurposeBit().usesEncryption()) return true;
+                    }
+                }
+            } else if (t == Type.SEVEN_Z) {
+                try (Channel ch = new Channel(c, path); SevenZFile sz = new SevenZFile(ch.ch)) {
+                    for (SevenZArchiveEntry e : sz.getEntries()) {
+                        for (org.apache.commons.compress.archivers.sevenz.SevenZMethodConfiguration m : e.getContentMethods()) {
+                            if (m.getMethod() == org.apache.commons.compress.archivers.sevenz.SevenZMethod.AES256SHA256) return true;
+                        }
+                    }
+                } catch (org.apache.commons.compress.PasswordRequiredException ex) {
+                    return true;
+                }
+            }
+        } catch (IOException ignored) {
+        }
+        return false;
+    }
+
+    /** Prueba una contraseña leyendo el comienzo del primer archivo cifrado. */
+    static boolean checkPassword(Context c, String path, char[] pw) {
+        char[] old = PASSWORDS.get(path);
+        PASSWORDS.put(path, pw);
+        try {
+            walk(c, path, (it, data) -> {
+                if (it.dir || data == null) return true;
+                byte[] buf = new byte[1 << 16];
+                long left = 4L << 20;
+                int r;
+                while (left > 0 && (r = data.read(buf, 0, (int) Math.min(buf.length, left))) >= 0) left -= r;
+                return false; // con el primero basta
+            });
+            return true;
+        } catch (IOException e) {
+            if (old == null) PASSWORDS.remove(path);
+            else PASSWORDS.put(path, old);
+            return false;
+        }
+    }
+
+    /** Un archivo en el almacenamiento propio del celular (copiándolo a la caché si hace falta). */
+    private static java.io.File localCopy(Context c, String path, boolean[] temp) throws IOException {
+        java.io.File f = new java.io.File(path);
+        if (f.isFile() && f.canRead()) return f;
+        java.io.File t = java.io.File.createTempFile("boveda-zip", ".tmp", c.getCacheDir());
+        temp[0] = true;
+        try (InputStream in = FsRouter.get(c, path).in(path); java.io.OutputStream o = new java.io.FileOutputStream(t)) {
+            byte[] buf = new byte[1 << 20];
+            int r;
+            while ((r = in.read(buf)) >= 0) o.write(buf, 0, r);
+        }
+        return t;
+    }
+
+    /** ZIP con contraseña (AES o clásica): lo lee zip4j. */
+    private static void walkZipPassword(Context c, String path, char[] pw, Visitor v) throws IOException {
+        boolean[] temp = {false};
+        java.io.File f = localCopy(c, path, temp);
+        try {
+            net.lingala.zip4j.ZipFile z = new net.lingala.zip4j.ZipFile(f, pw);
+            for (net.lingala.zip4j.model.FileHeader h : z.getFileHeaders()) {
+                Item it = new Item(clean(h.getFileName()), h.isDirectory(), Math.max(0, h.getUncompressedSize()), h.getLastModifiedTimeEpoch());
+                if (h.isDirectory()) {
+                    if (!v.entry(it, null)) return;
+                    continue;
+                }
+                try (InputStream in = z.getInputStream(h)) {
+                    if (!v.entry(it, in)) return;
+                }
+            }
+        } catch (net.lingala.zip4j.exception.ZipException e) {
+            if (e.getType() == net.lingala.zip4j.exception.ZipException.Type.WRONG_PASSWORD) throw new PasswordException(L.t("Contraseña incorrecta"));
+            throw new IOException(e.getMessage(), e);
+        } finally {
+            if (temp[0]) //noinspection ResultOfMethodCallIgnored
+                f.delete();
+        }
+    }
+
     /** Algo que hay dentro del archivo comprimido. */
     static final class Item {
         final String name;   // ruta completa dentro del archivo, sin "/" al final
@@ -170,7 +277,7 @@ final class Archive {
             return out;
         }
         if (t == Type.SEVEN_Z) {
-            try (Channel ch = new Channel(c, path); SevenZFile sz = openSevenZ(ch)) {
+            try (Channel ch = new Channel(c, path); SevenZFile sz = openSevenZ(ch, path)) {
                 for (SevenZArchiveEntry e : sz.getEntries()) {
                     out.add(new Item(clean(e.getName()), e.isDirectory(), e.getSize(), e.getHasLastModifiedDate()
                             ? e.getLastModifiedDate().getTime() : 0));
@@ -202,6 +309,11 @@ final class Archive {
         if (t == null || isRar(name)) throw new IOException(L.t("Formato no soportado"));
         switch (t) {
             case ZIP -> {
+                char[] pw = PASSWORDS.get(path);
+                if (pw != null && withData) {
+                    walkZipPassword(c, path, pw, v);
+                    return;
+                }
                 try (Channel ch = new Channel(c, path); ZipFile zf = openZip(ch)) {
                     Enumeration<ZipArchiveEntry> en = zf.getEntriesInPhysicalOrder();
                     while (en.hasMoreElements()) {
@@ -211,7 +323,8 @@ final class Archive {
                             if (!v.entry(it, null)) return;
                             continue;
                         }
-                        if (!zf.canReadEntryData(e)) throw new IOException(L.t("No se puede leer «") + it.name + L.t("» (¿tiene contraseña?)"));
+                        if (e.getGeneralPurposeBit().usesEncryption()) throw new PasswordException(L.t("Este archivo tiene contraseña"));
+                        if (!zf.canReadEntryData(e)) throw new IOException(L.t("No se puede leer «") + it.name + L.t("» (método no soportado)"));
                         try (InputStream in = zf.getInputStream(e)) {
                             if (!v.entry(it, in)) return;
                         }
@@ -219,7 +332,7 @@ final class Archive {
                 }
             }
             case SEVEN_Z -> {
-                try (Channel ch = new Channel(c, path); SevenZFile sz = openSevenZ(ch)) {
+                try (Channel ch = new Channel(c, path); SevenZFile sz = openSevenZ(ch, path)) {
                     SevenZArchiveEntry e;
                     while ((e = sz.getNextEntry()) != null) {
                         Item it = new Item(clean(e.getName()), e.isDirectory(), e.getSize(),
@@ -312,8 +425,13 @@ final class Archive {
     }
 
     @SuppressWarnings("deprecation")
-    private static SevenZFile openSevenZ(Channel ch) throws IOException {
-        return new SevenZFile(ch.ch);
+    private static SevenZFile openSevenZ(Channel ch, String path) throws IOException {
+        char[] pw = PASSWORDS.get(path);
+        try {
+            return pw == null ? new SevenZFile(ch.ch) : new SevenZFile(ch.ch, pw);
+        } catch (org.apache.commons.compress.PasswordRequiredException e) {
+            throw new PasswordException(L.t("Este archivo tiene contraseña"));
+        }
     }
 
     /** Evita que quien lee una entrada cierre el archivo entero. */

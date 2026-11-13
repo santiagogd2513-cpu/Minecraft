@@ -2950,10 +2950,14 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             });
             bottom.addView(cancel);
             TextView go = bigButton(L.t("Extraer aquí"), v -> {
-                engine.submitExtract(extractArchive, new ArrayList<>(extractPicks), extractBase, path);
+                final String arch = extractArchive, base = extractBase, to = path;
+                final List<String> picks = new ArrayList<>(extractPicks);
                 extractArchive = null;
                 updateBars();
-                Toast.makeText(this, L.t("Extrayendo…"), Toast.LENGTH_SHORT).show();
+                ArchivePass.ensure(this, arch, () -> {
+                    engine.submitExtract(arch, picks, base, to);
+                    Toast.makeText(this, L.t("Extrayendo…"), Toast.LENGTH_SHORT).show();
+                });
             });
             go.setPadding(dp(16), dp(10), dp(16), dp(10));
             bottom.addView(go);
@@ -3166,9 +3170,12 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                     });
                     labels.add(L.t("Extraer aquí"));
                     acts.add(() -> {
-                        engine.submitExtract(single.path, new ArrayList<>(), "", Paths.join(path, Archive.baseName(single.name)));
+                        final String ap = single.path, to = Paths.join(path, Archive.baseName(single.name));
                         clearSelection();
-                        Toast.makeText(this, L.t("Extrayendo…"), Toast.LENGTH_SHORT).show();
+                        ArchivePass.ensure(this, ap, () -> {
+                            engine.submitExtract(ap, new ArrayList<>(), "", to);
+                            Toast.makeText(this, L.t("Extrayendo…"), Toast.LENGTH_SHORT).show();
+                        });
                     });
                     labels.add(L.t("Extraer a…"));
                     acts.add(() -> {

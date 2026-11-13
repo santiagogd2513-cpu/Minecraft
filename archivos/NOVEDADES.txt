@@ -1,3 +1,8 @@
+## 63
+🔑 Extraer archivos con contraseña
+- Antes, extraer o abrir un .zip o .7z con contraseña daba error. Ahora Bóveda te la pide, la comprueba y, si es correcta, extrae. Si te equivocas, te lo dice y vuelves a intentar.
+- Sirve para «Extraer aquí», «Extraer a…» y para abrir un archivo de adentro. La contraseña solo se recuerda mientras la app está abierta.
+
 ## 62
 🔧 Más seguridad al comprimir y tres pestañas en aplicaciones
 - Comprimir: si el archivo nuevo se llamaría igual que lo que comprimes, Bóveda ya no lo pisa: le pone otro nombre («(1)») y lo avisa. «Eliminar el original» jamás toca el archivo recién creado.
