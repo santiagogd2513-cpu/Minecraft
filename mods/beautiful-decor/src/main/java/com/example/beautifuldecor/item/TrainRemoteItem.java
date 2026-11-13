@@ -36,7 +36,67 @@ public class TrainRemoteItem extends Item {
     }
 
     public static void link(ItemStack stack, UUID id) {
+        UUID before = linked(stack);
+        if (before != null && !before.equals(id)) {
+            stack.getOrCreateTag().remove("Pending");           // las paradas pendientes eran de otro tren
+        }
         stack.getOrCreateTag().putUUID("Train", id);
+    }
+
+    /** V6.16.2: paradas que el mando guardó porque el tren no estaba cargado (se pasan a la ruta cuando se cargue). */
+    public static net.minecraft.nbt.ListTag pending(ItemStack stack) {
+        CompoundTag tag = stack.getTag();
+        return tag == null ? new net.minecraft.nbt.ListTag() : tag.getList("Pending", net.minecraft.nbt.Tag.TAG_COMPOUND).copy();
+    }
+
+    public static void setPending(ItemStack stack, net.minecraft.nbt.ListTag list) {
+        if (list.isEmpty()) {
+            if (stack.getTag() != null) {
+                stack.getTag().remove("Pending");
+            }
+        } else {
+            stack.getOrCreateTag().put("Pending", list);
+        }
+    }
+
+    /** Pasa a la ruta del tren (ya cargado) las paradas pendientes. Devuelve cuántas se agregaron. */
+    public static int applyPending(ServerPlayer player, TrainCarEntity car, ItemStack remote) {
+        net.minecraft.nbt.ListTag list = pending(remote);
+        if (list.isEmpty()) {
+            return 0;
+        }
+        TrainRoute route = car.route();
+        ServerLevel level = (ServerLevel) car.level();
+        int added = 0;
+        for (int i = 0; i < list.size(); i++) {
+            CompoundTag t = list.getCompound(i);
+            net.minecraft.core.BlockPos ctrl = net.minecraft.core.BlockPos.of(t.getLong("Ctrl"));
+            if (route.indexOf(ctrl) >= 0 || route.stops.size() >= TrainRoute.MAX_STOPS) {
+                continue;
+            }
+            if (!route.stops.isEmpty()) {
+                net.minecraft.core.BlockPos lastCtrl = route.stops.get(route.stops.size() - 1).ctrl;
+                if (level.isLoaded(lastCtrl) && level.getBlockState(lastCtrl).getBlock() instanceof com.example.beautifuldecor.block.StationControllerBlock b && b.isDepot()) {
+                    break;                                             // el depósito es la última parada
+                }
+            }
+            TrainRoute.Stop stop = new TrainRoute.Stop(ctrl, net.minecraft.core.BlockPos.of(t.getLong("Rail")));
+            stop.name = t.getString("Name");
+            stop.dwell = t.getInt("DwellSec");
+            stop.depart = t.getInt("Depart");
+            stop.travel = t.getInt("Travel");
+            stop.open = t.getInt("Open");
+            stop.close = t.getInt("Close");
+            route.stops.add(stop);
+            added++;
+        }
+        setPending(remote, new net.minecraft.nbt.ListTag());
+        if (added > 0) {
+            route.invalidate();
+            player.playNotifySound(net.minecraft.sounds.SoundEvents.PLAYER_LEVELUP, net.minecraft.sounds.SoundSource.PLAYERS, 0.6f, 1.4f);
+            player.displayClientMessage(Component.translatable("message.beautifuldecor.station.applied", added, route.stops.size()), true);
+        }
+        return added;
     }
 
     /** La locomotora vinculada, si está cargada. */
@@ -51,6 +111,11 @@ public class TrainRemoteItem extends Item {
     }
 
     public static void openMenu(ServerPlayer player, TrainCarEntity car) {
+        for (ItemStack held : new ItemStack[] {player.getMainHandItem(), player.getOffhandItem()}) {
+            if (held.getItem() instanceof TrainRemoteItem && car.getUUID().equals(linked(held))) {
+                applyPending(player, car, held);                      // V6.16.2
+            }
+        }
         TrainRoute r = car.route();
         java.util.List<String> names = new java.util.ArrayList<>();
         for (int i = 0; i < r.stops.size(); i++) {

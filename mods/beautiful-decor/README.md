@@ -2,6 +2,10 @@
 
 Mod de decoración para **Minecraft 1.20.1** / **Forge 47.4.5**.
 
+## V6.16.2
+- Mando de trenes: si el tren vinculado no está cargado (estás lejos), las paradas se guardan en el mando y pasan a la ruta cuando el tren se cargue (al acercarte o al abrir su menú). Antes no se agregaba nada.
+- Sonidos: al guardar el nombre del tren, al agregar una parada y al dejarla pendiente.
+
 ## V6.16.1
 - Puertas automáticas por tiempo: al llegar a una estación se abren a los 2 s y se cierran 2 s antes de salir (espera de 4 s o menos: al 25 % y al 75 %). En el depósito quedan abiertas.
 

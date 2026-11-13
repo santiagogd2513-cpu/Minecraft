@@ -1,3 +1,8 @@
+PARCHE V6.16.2
+==============
+- PARADAS PENDIENTES: con el mando vinculado, clic en una estación con el tren descargado la guarda en el mando (campanita). Cuando el tren se carga, o abres el menú del tren, las paradas pasan a su ruta. Cambiar de tren vinculado borra las pendientes.
+- SONIDOS: pling al guardar el nombre, tintineo al agregar una parada, campanita si queda pendiente, nota grave si ya estaba.
+
 PARCHE V6.16.1
 ==============
 - PUERTAS AUTOMÁTICAS POR TIEMPO: en el piloto automático las puertas se abren 2 s después de llegar y se cierran 2 s antes de salir (espera de 4 s o menos: al 25 % y al 75 %). En el depósito se quedan abiertas.

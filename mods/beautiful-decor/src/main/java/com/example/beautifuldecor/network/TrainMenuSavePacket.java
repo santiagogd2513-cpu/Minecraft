@@ -63,6 +63,7 @@ public class TrainMenuSavePacket {
             } else {
                 car.setCustomName(null);
             }
+            player.playNotifySound(net.minecraft.sounds.SoundEvents.NOTE_BLOCK_PLING.value(), net.minecraft.sounds.SoundSource.PLAYERS, 0.8f, 1.6f);   // V6.16.2: aviso de que se guardó
             switch (packet.action) {
                 case 1 -> {
                     if (route.stops.isEmpty()) {
