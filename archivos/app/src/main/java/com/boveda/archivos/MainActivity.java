@@ -59,7 +59,15 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
     private static final int REQ_TREE = 21;
     private static final int REQ_TOOL_IMG = 44;
     private static final int REQ_TOOL_MEDIA = 45;
+    private static final int REQ_TOOL_ANY = 46;
     private String toolMode = "resize";
+    private volatile String lastToolDir;
+
+    /** Lleva a la carpeta donde quedó lo último que hicieron las herramientas. */
+    void openToolFolder() {
+        String d = lastToolDir;
+        if (d != null) open(d);
+    }
 
     protected Prefs prefs;
     private TransferEngine engine;
@@ -675,6 +683,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                 o.write(bytes);
             }
             UndoLog.recordCreated(this, target, false);
+            lastToolDir = dir;
             final String fn = name;
             main.post(() -> {
                 if (path != null && path.equals(dir)) load(path, true);
@@ -732,6 +741,43 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         });
     }
 
+    // ------------------------------------------------------------------ convertidor general
+
+    private void pickToolAny() {
+        Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        i.setType("*/*");
+        i.addCategory(Intent.CATEGORY_OPENABLE);
+        try {
+            startActivityForResult(i, REQ_TOOL_ANY);
+        } catch (Exception e) {
+            Toast.makeText(this, L.t("No se pudo abrir el selector de archivos"), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    /** Mira qué es el archivo elegido y abre la herramienta que corresponde (imagen, audio o video). */
+    private void routeToolFile(Uri uri) {
+        String name = "";
+        try (android.database.Cursor c = getContentResolver().query(uri, new String[]{android.provider.OpenableColumns.DISPLAY_NAME}, null, null, null)) {
+            if (c != null && c.moveToFirst() && c.getString(0) != null) name = c.getString(0);
+        } catch (Exception ignored) {
+        }
+        if (Viewers.isImage(name)) {
+            toolMode = "convert";
+            imageFromUri(uri);
+        } else if (Viewers.isAudio(name)) {
+            toolMode = "convert";
+            mediaFromUri(uri);
+        } else if (Viewers.isVideo(name)) {
+            toolMode = "extract";
+            mediaFromUri(uri);
+        } else {
+            new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                    .setTitle(L.t("Todavía no sé convertir eso"))
+                    .setMessage(L.t("Bóveda convierte imágenes, audio y video (de un video saca el audio). «") + name + L.t("» no es de esos tipos."))
+                    .setPositiveButton(L.t("Entendido"), null).show();
+        }
+    }
+
     // ------------------------------------------------------------------ herramientas de audio y video
 
     /** Pasa el archivo ya listo (en la memoria temporal) a una carpeta, sin pisar nada, y lo anota para poder deshacer. */
@@ -753,6 +799,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                 while ((r = in.read(buf)) >= 0) o.write(buf, 0, r);
             }
             UndoLog.recordCreated(this, target, false);
+            lastToolDir = dir;
             final String fn = name;
             final long size = produced.length();
             main.post(() -> {
@@ -1009,6 +1056,9 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                     box.addView(hint(L.t("Lo que borres está en la Papelera (30 días).")));
                 }
                 case "herramientas" -> {
+                    box.addView(netRow("✨", 0xFF00ACC1, 0xFF26C6DA, L.t("Convertir cualquier archivo"),
+                            L.t("Elige una imagen, un audio o un video y te muestro a qué formatos se puede pasar"),
+                            v -> pickToolAny(), null));
                     box.addView(section(L.t("Imágenes")));
                     box.addView(netRow("📐", 0xFF00897B, 0xFF4DB6AC, L.t("Cambiar tamaño o recortar"),
                             L.t("Medidas exactas (64×64, 512×720…), estirar, ajustar o recortar, y pixelado nítido para texturas"),
@@ -3523,6 +3573,10 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                 }
             }
             refreshGrants();
+            return;
+        }
+        if (req == REQ_TOOL_ANY && res == RESULT_OK && data != null && data.getData() != null) {
+            routeToolFile(data.getData());
             return;
         }
         if (req == REQ_TOOL_MEDIA && res == RESULT_OK && data != null && data.getData() != null) {

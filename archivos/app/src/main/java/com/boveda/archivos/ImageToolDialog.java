@@ -308,7 +308,10 @@ final class ImageToolDialog {
                     if (fo) {
                         d.dismiss();
                         new AlertDialog.Builder(a, R.style.Theme_Boveda_Dialog).setTitle(L.t("Listo ✅")).setMessage(finalMsg)
-                                .setPositiveButton(L.t("Entendido"), null).show();
+                                .setPositiveButton(L.t("Entendido"), null)
+                                .setNegativeButton(L.t("Abrir carpeta"), (x, w) -> {
+                                    if (a instanceof MainActivity m) m.openToolFolder();
+                                }).show();
                     } else {
                         d.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
                         d.getButton(AlertDialog.BUTTON_POSITIVE).setText(L.t("Guardar copia"));

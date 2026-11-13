@@ -164,6 +164,9 @@ final class AudioToolDialog {
             if (fmtSel[0] == AudioTools.Out.WAV) {
                 n.append("\nℹ ").append(L.t("WAV no comprime: el archivo puede pesar 10 veces más."));
             }
+            if (fmtSel[0] == AudioTools.Out.FLAC) {
+                n.append("\nℹ ").append(L.t("FLAC no pierde calidad, pero pesa mucho más que MP3 o AAC; y si el original ya estaba comprimido, no recupera lo perdido."));
+            }
             if (fmtSel[0] == AudioTools.Out.OPUS) {
                 n.append("\nℹ ").append(L.t("Es OGG con Opus. Minecraft pide OGG Vorbis, que Android no puede crear."));
             }
@@ -219,7 +222,10 @@ final class AudioToolDialog {
                     if (fo) {
                         d.dismiss();
                         new AlertDialog.Builder(a, R.style.Theme_Boveda_Dialog).setTitle(L.t("Listo ✅")).setMessage(finalMsg)
-                                .setPositiveButton(L.t("Entendido"), null).show();
+                                .setPositiveButton(L.t("Entendido"), null)
+                                .setNegativeButton(L.t("Abrir carpeta"), (x, w) -> {
+                                    if (a instanceof MainActivity m) m.openToolFolder();
+                                }).show();
                     } else {
                         bar.setVisibility(View.GONE);
                         d.getButton(AlertDialog.BUTTON_NEGATIVE).setText(L.t("Cerrar"));

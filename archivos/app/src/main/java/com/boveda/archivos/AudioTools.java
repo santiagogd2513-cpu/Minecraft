@@ -22,7 +22,7 @@ final class AudioTools {
     private AudioTools() {}
 
     enum Out {
-        M4A(".m4a", "M4A (AAC)"), WAV(".wav", "WAV"), OPUS(".ogg", "OGG (Opus)");
+        M4A(".m4a", "M4A (AAC)"), WAV(".wav", "WAV"), FLAC(".flac", "FLAC (sin pérdida)"), OPUS(".ogg", "OGG (Opus)");
 
         final String ext, label;
 
@@ -32,7 +32,12 @@ final class AudioTools {
         }
 
         boolean lossy() {
-            return this != WAV;
+            return this == M4A || this == OPUS;
+        }
+
+        /** Salidas que no pasan por un codificador de Android: se escriben directo. */
+        boolean direct() {
+            return this == WAV || this == FLAC;
         }
     }
 
@@ -86,6 +91,7 @@ final class AudioTools {
         MediaCodec dec = null, enc = null;
         MediaMuxer mux = null;
         RandomAccessFile wav = null;
+        FlacWriter flac = null;
         boolean muxStarted = false;
         try {
             ex.setDataSource(in.getAbsolutePath());
@@ -146,7 +152,7 @@ final class AudioTools {
             int muxTrack = -1;
             Resampler rs = null;
 
-            while (!(fmt == Out.WAV ? decoderDone && pcm.size() == 0 : encoderDone)) {
+            while (!(fmt.direct() ? decoderDone && pcm.size() == 0 : encoderDone)) {
                 if (prog.cancelled()) throw new IOException(L.t("Cancelado"));
                 boolean progressed = false;
 
@@ -200,6 +206,8 @@ final class AudioTools {
                         wav = new RandomAccessFile(out, "rw");
                         wav.setLength(0);
                         wav.write(wavHeader(sampleRate, channels, 0));
+                    } else if (fmt == Out.FLAC) {
+                        flac = new FlacWriter(out, sampleRate, channels);
                     } else {
                         int outRate = sampleRate;
                         if (fmt == Out.OPUS && outRate != 48000) {
@@ -225,11 +233,12 @@ final class AudioTools {
                 }
 
                 // 4. entregar el sonido: a un archivo WAV o al codificador
-                if (formatKnown && fmt == Out.WAV) {
+                if (formatKnown && fmt.direct()) {
                     while (pcm.size() > 0) {
                         byte[] c = new byte[(int) Math.min(pcm.size(), 1 << 16)];
                         int len = pcm.read(c, c.length);
-                        wav.write(c, 0, len);
+                        if (wav != null) wav.write(c, 0, len);
+                        else flac.write(c, 0, len - len % (2 * channels));
                         wavData += len;
                         progressed = true;
                     }
@@ -293,12 +302,16 @@ final class AudioTools {
                         progressed = true;
                     }
                 }
-                if (!progressed && decoderDone && fmt == Out.WAV && pcm.size() == 0) break;
+                if (!progressed && decoderDone && fmt.direct() && pcm.size() == 0) break;
             }
 
             if (fmt == Out.WAV && wav != null) {
                 wav.seek(0);
                 wav.write(wavHeader(sampleRate, channels, wavData));
+            }
+            if (flac != null) {
+                flac.close();
+                flac = null;
             }
             prog.onProgress(1f);
         } catch (IOException e) {
@@ -333,6 +346,10 @@ final class AudioTools {
             }
             try {
                 if (wav != null) wav.close();
+            } catch (IOException ignored) {
+            }
+            try {
+                if (flac != null) flac.close();
             } catch (IOException ignored) {
             }
             ex.release();

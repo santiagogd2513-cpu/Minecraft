@@ -1,3 +1,9 @@
+## 83
+🧰 Herramientas: FLAC, convertidor general y «Abrir carpeta»
+- Convertir audio ahora también a FLAC (sin pérdida). Lo comprobé decodificándolo con un programa aparte: sale idéntico al original, en mono y estéreo.
+- «Convertir cualquier archivo»: eliges una imagen, un audio o un video y se abre la herramienta que corresponde.
+- Al terminar una conversión, el aviso trae «Abrir carpeta»: te lleva directo a donde quedó el archivo (las que eliges desde Herramientas se guardan en Pictures/Bóveda o Music/Bóveda).
+
 ## 82
 🔧 Convertir audio: arreglado el error al pasar a OGG (Opus)
 - Con un MP3 de 44,1 kHz, al pasar a OGG el sonido se convierte a 48 kHz y salían más datos de los que caben en el codificador («buffer offset and size goes beyond the capacity»). Ahora lo que sobra se guarda para la siguiente tanda.
