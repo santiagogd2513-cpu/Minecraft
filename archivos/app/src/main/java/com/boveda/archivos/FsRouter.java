@@ -14,6 +14,13 @@ final class FsRouter {
             if (!Vault.unlocked()) throw new Fs.NeedAccess(path);
             return VaultFs.get(c);
         }
+        if (NetServers.isNet(path)) {
+            try {
+                return NetServers.get(c).fsFor(path);
+            } catch (java.io.IOException e) {
+                throw new Fs.NeedAccess(path);
+            }
+        }
         if (FtpServers.isFtp(path)) {
             try {
                 return FtpServers.get(c).fsFor(path);

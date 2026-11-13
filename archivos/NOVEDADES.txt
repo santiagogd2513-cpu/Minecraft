@@ -1,3 +1,12 @@
+## 77
+🌐 WebDAV y carpetas de red (SMB)
+- En Inicio → Nube y red → «Añadir servidor o carpeta de red» eliges entre FTP, WebDAV y carpeta de red (SMB).
+- WebDAV: Nextcloud, ownCloud y el WebDAV de muchos NAS y routers. Con usuario y contraseña, https o http (avisa si la contraseña viajaría sin cifrar) y opción de aceptar un certificado propio.
+- Carpeta de red (SMB 2 y 3): carpetas compartidas de Windows, Samba y NAS. Equipo, carpeta compartida, usuario, contraseña y dominio opcional.
+- Funcionan como cualquier otra carpeta: ver, copiar, mover, borrar, renombrar, comprimir, extraer, abrir archivos y Deshacer.
+- Al guardar, Bóveda prueba la conexión y te dice qué falló (contraseña, nombre de la carpeta, red).
+- Aviso: esto añade librerías, así que la app pesa algunos MB más.
+
 ## 76
 🔧 «Comprimir» ya no se corta: el texto de los botones de abajo se mide y se achica hasta que quepa entero, con cualquier tamaño de letra.
 

@@ -59,7 +59,7 @@ final class Thumbs {
     /** Solo archivos que se pueden leer directamente (no FTP, Drive ni carpetas protegidas). */
     static boolean local(String path) {
         // solo por la ruta: la pantalla no debe esperar al disco (una USB ocupada puede tardar segundos)
-        return path != null && path.startsWith("/") && !FtpServers.isFtp(path) && !DriveFs.isDrive(path) && !MegaFs.isMega(path) && !OneDriveFs.isOneDrive(path) && !VaultFs.isVault(path) && !Paths.restricted(path);
+        return path != null && path.startsWith("/") && !FtpServers.isFtp(path) && !NetServers.isNet(path) && !DriveFs.isDrive(path) && !MegaFs.isMega(path) && !OneDriveFs.isOneDrive(path) && !VaultFs.isVault(path) && !Paths.restricted(path);
     }
 
     private static String key(Entry e) {

@@ -557,6 +557,12 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             }
             return null;
         }
+        if (NetServers.isNet(p)) {
+            for (NetServers.Server sv : NetServers.get(this).all(NetServers.isDav(p) ? "dav" : "smb")) {
+                if (Paths.under(p, sv.root())) return new Volume(sv.root(), sv.name, sv.name, false);
+            }
+            return null;
+        }
         if (VaultFs.isVault(p)) return new Volume(VaultFs.ROOT, L.t("La Bóveda"), L.t("Bóveda"), false);
         if (DriveFs.isDrive(p)) return new Volume(DriveFs.ROOT, "Google Drive", "Drive", false);
         if (MegaFs.isMega(p)) return new Volume(MegaFs.ROOT, "MEGA", "MEGA", false);
@@ -734,7 +740,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             tiles.add(tile("⚡", 0xFF1E88E5, 0xFF26C6DA, L.t("Accesos directos"), L.t("Descargas, Cámara, Documentos, Android/data…"), v -> openHomePage("accesos")));
             tiles.add(tile("📌", 0xFF6C63FF, 0xFFA29BFE, L.t("Ancladas"), pins == 0 ? L.t("Ninguna todavía") : pins + (pins == 1 ? L.t(" carpeta") : L.t(" carpetas")), v -> openHomePage("ancladas")));
             tiles.add(tile("⭐", 0xFFF2A100, 0xFFFFC14D, L.t("Favoritas"), favs == 0 ? L.t("Ninguna todavía") : favs + (favs == 1 ? L.t(" carpeta") : L.t(" carpetas")), v -> openHomePage("favoritas")));
-            int servers = FtpServers.get(this).all().size();
+            int servers = FtpServers.get(this).all().size() + NetServers.get(this).all("dav").size() + NetServers.get(this).all("smb").size();
             tiles.add(tile("☁️", 0xFF0A64D6, 0xFF28A8EA, L.t("Nube y red"), servers > 0 ? servers + (servers == 1 ? L.t(" servidor") : L.t(" servidores")) + L.t(" y más") : L.t("Drive, OneDrive, MEGA y más"), v -> openHomePage("nube")));
             tiles.add(tile("🛠️", 0xFFE5603B, 0xFFFF9A5C, L.t("Funciones especiales"), L.t("Reducir peso y más por venir"), v -> openHomePage("funciones")));
             tiles.add(tile("🛡️", 0xFF7B4DFF, 0xFFB86BFF, L.t("Seguridad y privacidad"), L.t("La Bóveda, Radiografía, Apps"), v -> openHomePage("seguridad")));
@@ -800,7 +806,22 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                                     return true;
                                 }));
                     }
-                    box.addView(netRow("+", 0xFF2A3346, 0xFF2A3346, L.t("Añadir servidor FTP"), L.t("Xbox 360, PC, NAS, otro celular…"), v -> editFtp(null), null));
+                    for (NetServers.Server sv : NetServers.get(this).all("dav")) {
+                        box.addView(netRow("DAV", 0xFF0F8A7A, 0xFF35D0B8, sv.name, sv.address,
+                                v -> open(sv.root()), v -> {
+                                    netMenu(sv);
+                                    return true;
+                                }));
+                    }
+                    for (NetServers.Server sv : NetServers.get(this).all("smb")) {
+                        box.addView(netRow("SMB", 0xFF6B3FD1, 0xFFA78BFA, sv.name, sv.address + " · " + sv.share,
+                                v -> open(sv.root()), v -> {
+                                    netMenu(sv);
+                                    return true;
+                                }));
+                    }
+                    box.addView(netRow("+", 0xFF2A3346, 0xFF2A3346, L.t("Añadir servidor o carpeta de red"),
+                            L.t("FTP, WebDAV (Nextcloud, NAS) o carpeta compartida de Windows"), v -> chooseNetKind(), null));
                 }
                 case "funciones" -> {
                     box.addView(netRow("♻️", 0xFFE5603B, 0xFFFF9A5C, L.t("Reducir peso"),
@@ -1321,6 +1342,186 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             });
         }));
         d.show();
+    }
+
+    // ------------------------------------------------------------------ WebDAV y carpetas de red (SMB)
+
+    private void chooseNetKind() {
+        new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                .setTitle(L.t("¿Qué quieres añadir?"))
+                .setItems(new String[]{L.t("Servidor FTP  (Xbox 360, PC, NAS)"), L.t("WebDAV  (Nextcloud, ownCloud, NAS)"),
+                        L.t("Carpeta de red  (Windows, Samba, NAS · SMB)")}, (d, w) -> {
+                    if (w == 0) editFtp(null);
+                    else if (w == 1) editDav(null);
+                    else editSmb(null);
+                }).show();
+    }
+
+    private void netMenu(NetServers.Server sv) {
+        new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                .setTitle(sv.name)
+                .setItems(new String[]{L.t("Editar"), L.t("Borrar este servidor")}, (d, w) -> {
+                    if (w == 0) {
+                        if (sv.isDav()) editDav(sv);
+                        else editSmb(sv);
+                    } else {
+                        NetServers.get(this).remove(sv.id);
+                        prefs.favorites().stream().filter(p -> Paths.under(p, sv.root())).forEach(prefs::toggleFavorite);
+                        prefs.pinned().stream().filter(p -> Paths.under(p, sv.root())).forEach(prefs::togglePinned);
+                        showHome();
+                    }
+                })
+                .show();
+    }
+
+    private void editDav(NetServers.Server existing) {
+        NetServers.Server sv = existing != null ? existing.copy() : new NetServers.Server();
+        sv.type = "dav";
+        LinearLayout box = Ui.column(this);
+        box.setPadding(dp(20), dp(8), dp(20), dp(4));
+        EditText name = input(L.t("Nombre (ej. Mi Nextcloud)"), sv.name, android.text.InputType.TYPE_CLASS_TEXT);
+        EditText addr = input(L.t("Dirección (https://…)"), sv.address, android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_URI);
+        EditText user = input(L.t("Usuario (vacío = sin usuario)"), sv.user, android.text.InputType.TYPE_CLASS_TEXT
+                | android.text.InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD | android.text.InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+        EditText pass = input(L.t("Contraseña"), sv.pass, android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        TextView help = Ui.text(this, L.t("Nextcloud: https://tu-servidor/remote.php/dav/files/TU_USUARIO/\nownCloud: https://tu-servidor/remote.php/webdav/\nTambién sirve el WebDAV de muchos NAS y routers."), 12, Ui.SUB, false);
+        help.setPadding(dp(4), dp(8), dp(4), dp(4));
+        TextView warn = Ui.text(this, "", 12.5f, Ui.WARN, false);
+        warn.setPadding(dp(4), dp(6), dp(4), dp(2));
+        TextView trust = Ui.text(this, "", 12.5f, Ui.SUB, false);
+        trust.setPadding(dp(4), dp(8), dp(4), dp(4));
+        Runnable showTrust = () -> trust.setText((sv.insecure ? "☑ " : "☐ ") + L.t("Aceptar certificado no confiable (servidor de casa con certificado propio)"));
+        showTrust.run();
+        trust.setOnClickListener(v -> {
+            sv.insecure = !sv.insecure;
+            showTrust.run();
+        });
+        Runnable checkHttp = () -> warn.setText(addr.getText().toString().trim().toLowerCase().startsWith("http://")
+                ? L.t("⚠ Con http:// la contraseña viaja sin cifrar por tu red. Si el servidor admite https://, úsalo.") : "");
+        addr.addTextChangedListener(new android.text.TextWatcher() {
+            public void beforeTextChanged(CharSequence c, int s, int n, int a) {}
+            public void onTextChanged(CharSequence c, int s, int b, int n) {}
+            public void afterTextChanged(android.text.Editable e) {
+                checkHttp.run();
+            }
+        });
+        checkHttp.run();
+        for (EditText e : new EditText[]{name, addr, user, pass}) box.addView(e, topMargin(dp(8)));
+        box.addView(warn);
+        box.addView(trust);
+        box.addView(help);
+        ScrollView scroll = new ScrollView(this);
+        scroll.addView(box);
+        AlertDialog d = new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                .setTitle(existing == null ? L.t("Nuevo servidor WebDAV") : L.t("Editar servidor"))
+                .setView(scroll)
+                .setPositiveButton(L.t("Conectar"), null)
+                .setNegativeButton(L.t("Cancelar"), null)
+                .create();
+        d.setOnShowListener(x -> d.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+            String a = addr.getText().toString().trim();
+            if (a.isEmpty()) {
+                addr.setError(L.t("Falta la dirección"));
+                return;
+            }
+            sv.address = a;
+            sv.name = name.getText().toString().trim().isEmpty() ? a.replaceFirst("^https?://", "").replaceAll("/.*", "") : name.getText().toString().trim();
+            sv.user = user.getText().toString().trim();
+            sv.pass = pass.getText().toString();
+            if (sv.id == null) sv.id = String.valueOf(System.currentTimeMillis() % 100000000L);
+            testNet(d, sv);
+        }));
+        d.show();
+    }
+
+    private void editSmb(NetServers.Server existing) {
+        NetServers.Server sv = existing != null ? existing.copy() : new NetServers.Server();
+        sv.type = "smb";
+        LinearLayout box = Ui.column(this);
+        box.setPadding(dp(20), dp(8), dp(20), dp(4));
+        EditText name = input(L.t("Nombre (ej. Mi PC)"), sv.name, android.text.InputType.TYPE_CLASS_TEXT);
+        EditText host = input(L.t("Equipo (IP o nombre, ej. 192.168.1.20)"), sv.address, android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_URI);
+        EditText share = input(L.t("Carpeta compartida (ej. Descargas)"), sv.share, android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+        EditText user = input(L.t("Usuario (vacío = invitado)"), sv.user, android.text.InputType.TYPE_CLASS_TEXT
+                | android.text.InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD | android.text.InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+        EditText pass = input(L.t("Contraseña"), sv.pass, android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        EditText domain = input(L.t("Dominio o grupo de trabajo (casi siempre vacío)"), sv.domain, android.text.InputType.TYPE_CLASS_TEXT | android.text.InputType.TYPE_TEXT_FLAG_NO_SUGGESTIONS);
+        EditText port = input(L.t("Puerto"), String.valueOf(sv.port <= 0 ? 445 : sv.port), android.text.InputType.TYPE_CLASS_NUMBER);
+        TextView help = Ui.text(this, L.t("En Windows, la ruta \\\\MI-PC\\Descargas se escribe así: equipo = MI-PC (o su IP), carpeta compartida = Descargas. El celular y el equipo deben estar en la misma red. Bóveda usa SMB 2 y 3, que son los que hoy tienen Windows y los NAS."), 12, Ui.SUB, false);
+        help.setPadding(dp(4), dp(8), dp(4), dp(4));
+        for (EditText e : new EditText[]{name, host, share, user, pass, domain, port}) box.addView(e, topMargin(dp(8)));
+        box.addView(help);
+        ScrollView scroll = new ScrollView(this);
+        scroll.addView(box);
+        AlertDialog d = new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                .setTitle(existing == null ? L.t("Nueva carpeta de red") : L.t("Editar carpeta de red"))
+                .setView(scroll)
+                .setPositiveButton(L.t("Conectar"), null)
+                .setNegativeButton(L.t("Cancelar"), null)
+                .create();
+        d.setOnShowListener(x -> d.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+            String h = host.getText().toString().trim().replaceFirst("^(smb:)?[/\\\\]+", "");
+            String sh = share.getText().toString().trim().replaceAll("^[/\\\\]+|[/\\\\]+$", "");
+            if (h.isEmpty()) {
+                host.setError(L.t("Falta el equipo"));
+                return;
+            }
+            if (sh.isEmpty()) {
+                share.setError(L.t("Falta el nombre de la carpeta compartida"));
+                return;
+            }
+            sv.address = h;
+            sv.share = sh;
+            sv.name = name.getText().toString().trim().isEmpty() ? h : name.getText().toString().trim();
+            sv.user = user.getText().toString().trim();
+            sv.pass = pass.getText().toString();
+            sv.domain = domain.getText().toString().trim();
+            try {
+                sv.port = Integer.parseInt(port.getText().toString().trim());
+            } catch (NumberFormatException e) {
+                sv.port = 445;
+            }
+            if (sv.id == null) sv.id = String.valueOf(System.currentTimeMillis() % 100000000L);
+            testNet(d, sv);
+        }));
+        d.show();
+    }
+
+    /** Prueba la conexión; si sale bien, guarda el servidor y entra. */
+    private void testNet(AlertDialog d, NetServers.Server sv) {
+        d.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+        d.getButton(AlertDialog.BUTTON_POSITIVE).setText(L.t("Probando…"));
+        io.execute(() -> {
+            String err = null;
+            try {
+                if (sv.isDav()) new DavFs(sv, getCacheDir()).test();
+                else {
+                    SmbFs f = new SmbFs(sv, getCacheDir());
+                    try {
+                        f.test();
+                    } finally {
+                        f.close();
+                    }
+                }
+            } catch (Throwable e) {
+                err = e.getMessage() != null ? e.getMessage() : e.toString();
+            }
+            String fe = err;
+            main.post(() -> {
+                if (fe != null) {
+                    d.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                    d.getButton(AlertDialog.BUTTON_POSITIVE).setText(L.t("Conectar"));
+                    new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog).setTitle(L.t("No se pudo conectar"))
+                            .setMessage(fe + "\n\n" + (sv.isDav() ? L.t("Revisa la dirección completa (con https://), el usuario y la contraseña.")
+                                    : L.t("Revisa el nombre del equipo y de la carpeta compartida, el usuario y la contraseña, y que estén en la misma red.")))
+                            .setPositiveButton(L.t("Entendido"), null).show();
+                    return;
+                }
+                NetServers.get(this).save(sv);
+                d.dismiss();
+                open(sv.root());
+            });
+        });
     }
 
     // ------------------------------------------------------------------ OneDrive
@@ -2896,9 +3097,9 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                     } else if (DriveFs.isDrive(p)) {
                         showHome();
                         showDriveSetup();
-                    } else if (FtpServers.isFtp(p)) {
+                    } else if (FtpServers.isFtp(p) || NetServers.isNet(p)) {
                         showHome();
-                        Toast.makeText(this, L.t("Ese servidor FTP ya no está guardado"), Toast.LENGTH_SHORT).show();
+                        Toast.makeText(this, L.t("Ese servidor ya no está guardado"), Toast.LENGTH_SHORT).show();
                     } else {
                         showNeedAccess(p);
                     }
@@ -5238,7 +5439,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
     private String countOf(String dir) {
         if (!prefs.showCounts()) return null;
         String c = counts.get(dir);
-        if (c != null || FtpServers.isFtp(dir) || DriveFs.isDrive(dir) || MegaFs.isMega(dir) || OneDriveFs.isOneDrive(dir)) return c;
+        if (c != null || FtpServers.isFtp(dir) || NetServers.isNet(dir) || DriveFs.isDrive(dir) || MegaFs.isMega(dir) || OneDriveFs.isOneDrive(dir)) return c;
         if (!counting.add(dir)) return null;
         final boolean hidden = prefs.showHidden();
         counter.execute(() -> {
