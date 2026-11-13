@@ -24,7 +24,7 @@ from .common300 import draw_text, text_width
 from .delivery_truck import box, glass_faces, lr
 from ..v320.paintkit import tone
 
-TEX_W, TEX_H = 256, 256
+TEX_W, TEX_H = 256, 448     # V6.9.0: 128 filas más para los accesorios de las skins
 
 # Colores de referencia de los canales que el jugador puede cambiar (V3.2.0): pintura y manijas de las puertas (no tiene rines).
 WHITE_REF, WHITE_LO_REF = (234, 236, 242), (184, 188, 200)
@@ -35,10 +35,13 @@ HANDLE = HANDLE_REF
 NAVY = (26, 58, 140)
 NAVY_LO = (14, 30, 80)
 RED = (200, 34, 40)
+# V6.9.0: skin que se pinta (0 = original; 1 policía, 2 bomberos, 3 noticias) y rótulos; los fija tools/v690/heli_skins.py
+SKIN = 0
+DOOR_TXT, BOOM_TXT, BOOM_SCALE, FIN_TXT = "BH-6", "BOING", 2, "B"
 MAT_COLOR = {
     "paint": WHITE, "navy": NAVY, "red": RED, "dark": (24, 25, 30), "skid": (72, 76, 86), "blade": (46, 48, 54),
     "seat": (60, 64, 76), "carpet": (46, 48, 54), "dash": (28, 29, 34), "trim": (66, 68, 76), "glass": (24, 36, 54),
-    "hub": (30, 31, 36), "tip": (240, 190, 30), "metal": (170, 174, 184),
+    "hub": (30, 31, 36), "tip": (240, 190, 30), "metal": (170, 174, 184), "lens": (230, 236, 244),
 }
 
 REFS = {"body": WHITE_REF, "handle": HANDLE_REF}
@@ -85,6 +88,10 @@ def build():
     box(b, body, "nose_tip", -7, 7, 8, 12, 24, 28, "paint", kind="nose_tip")
     box(b, body, "dash", -10, 10, 13, 19, 8, 12, "dash", kind="dash")
     box(b, body, "chin", -8, 8, 5, 8, 12, 22, "navy", kind="chin")
+    # V6.6.0: faros (nariz) y foco de panza que brillan al encender las luces
+    lr(b, body, "headlamp", 3, 6, 9, 11, 28, 29, "lens", kind="lamp")
+    box(b, body, "belly_lamp", -2, 2, 4, 5, 15, 19, "lens", kind="lamp")
+    box(b, body, "strobe", -1, 1, 36, 37, -24, -22, "red", kind="lamp")
 
     # ---------------------------------------------------------------- asientos (4): delanteros z = 0, traseros z = -14
     for sx, nm in ((1, "l"), (-1, "r")):
@@ -95,6 +102,16 @@ def build():
     box(b, body, "bench", -10, 10, 8, 12, -18, -10, "seat", kind="seat")
     box(b, body, "bench_back", -10, 10, 12, 24, -20, -18, "seat", kind="seatback")
     box(b, body, "console", -2, 2, 8, 14, -4, 10, "dark", kind="plain")
+    # V6.6.0: interior: relojes en el tablero, botón de luces (HelicopterEntity.BUTTONS), palanca cíclica y panel de interruptores en el techo
+    for k, x in enumerate((-8, -5, 5, 8)):
+        box(b, body, f"gauge_{k}", x, x + 2, 15, 17, 7, 8, "metal", kind="plain")
+    box(b, body, "btn_light", -1, 1, 15, 17, 7, 8, "lens", kind="plain")
+    for sx in (1, -1):
+        box(b, body, f"stick_{sx}", 6 * sx - 1, 6 * sx + 1, 8, 15, 5, 6, "dark", kind="plain")
+        box(b, body, f"stick_knob_{sx}", 6 * sx - 1, 6 * sx + 1, 15, 17, 5, 6, "red", kind="plain")
+    box(b, body, "overhead", -5, 5, 32, 34, 2, 8, "dark", kind="plain")
+    for k, x in enumerate((-3, -1, 1, 3)):
+        box(b, body, f"switch_{k}", x, x + 1, 31, 32, 4, 6, "metal", kind="plain")
 
     # ---------------------------------------------------------------- techo: motor, mástil, rotor principal
     box(b, body, "cowl", -8, 8, 36, 40, -18, 2, "paint", kind="cowl")
@@ -133,10 +150,35 @@ def build():
     lr(b, glass, "win_f", 11, 12, 20, 33, 1, 11, "glass", kind="glass", translucent=True)
     lr(b, glass, "win_r", 11, 12, 20, 33, -22, -1, "glass", kind="glass", translucent=True)
     box(b, glass, "rear_glass", -8, 8, 22, 32, -26, -25, "glass", kind="glass", translucent=True)
+    # ---------------------------------------------------------------- V6.9.0: accesorios de las skins (material 'hub' = el repintado no los toca)
+    sb = b.part("siren_btn", body, (0, 0, 0))
+    box(b, sb, "btn_siren", 2, 4, 15, 17, 7, 8, "hub", kind="sirenbtn")                 # junto al botón de luces (HelicopterEntity.SIREN_BUTTON)
+    bar = b.part("bar", body, (0, 0, 0))                                                # barra de luces del techo (policía y bomberos)
+    box(b, bar, "bar_base", -9, 9, 36, 37, 4, 8, "hub", kind="plain")
+    box(b, bar, "bar_mid", -1, 1, 37, 39, 4, 8, "hub", kind="plain")
+    bar_red = b.part("bar_red", body, (0, 0, 0))
+    box(b, bar_red, "bar_red_lamp", 1, 9, 37, 39, 4, 8, "hub", kind="lightbar_r", glow=True)
+    bar_blue = b.part("bar_blue", body, (0, 0, 0))
+    box(b, bar_blue, "bar_blue_lamp", -9, -1, 37, 39, 4, 8, "hub", kind="lightbar_b", glow=True)
+    police = b.part("police", body, (0, 0, 0))                                          # foco gigante en el costado izquierdo
+    box(b, police, "spot_arm", 10, 14, 15, 17, 16, 18, "hub", kind="plain")
+    box(b, police, "spot", 14, 20, 11, 21, 12, 22, "hub", kind="spot", glow=True)
+    fire = b.part("fire", body, (0, 0, 0))                                              # tanques de agua laterales y cañón
+    lr(b, fire, "tank", 12, 16, 8, 18, -20, 0, "hub", kind="tank")
+    box(b, fire, "cannon_base", -2, 2, 5, 7, 22, 26, "hub", kind="steel")
+    box(b, fire, "cannon", -1, 1, 5, 7, 26, 34, "hub", kind="steel")
+    news = b.part("news", body, (0, 0, 0))                                              # cámara giratoria, plato y antena
+    box(b, news, "turret_base", -2, 2, 7, 8, 23, 27, "hub", kind="plain")
+    box(b, news, "turret", -3, 3, 2, 7, 22, 28, "hub", kind="turret")
+    box(b, news, "dish_stem", -1, 1, 36, 39, -24, -22, "hub", kind="plain")
+    box(b, news, "dish", -5, 5, 39, 41, -26, -20, "hub", kind="dish")
+    box(b, news, "antenna", 6, 7, 36, 46, -24, -23, "hub", kind="plain")
     return b
 
 
 def pose(b, rotor=0.0, tail=0.0, glass=True, body=True):
+    for nm in ("police", "fire", "news", "bar", "bar_red", "bar_blue", "siren_btn"):
+        b.parts[nm].visible = False                       # accesorios de skins: ocultos en la vista del original
     b.parts["rotor"].rot = [0.0, rotor, 0.0]
     b.parts["tail_rotor"].rot = [tail, 0.0, 0.0]
     b.parts["glass"].visible = glass
@@ -157,7 +199,11 @@ def paint_cube(c, rng):
     outer = "east" if side > 0 else "west"
     inner = "west" if side > 0 else "east"
 
-    if kind == "door":
+    if kind == "lamp":
+        for f in list(faces):
+            faces[f][..., :3] = (255, 244, 214) if c.mat == "lens" else (230, 40, 44)
+            glow[f] = solid(faces[f].shape[0], faces[f].shape[1], (255, 244, 214) if c.mat == "lens" else (255, 40, 30), 255)
+    elif kind == "door":
         img = faces[outer]                              # el render muestra las dos caras sin espejo
         h, w = img.shape[:2]
         rect(img, 0, h - 4, w, h, NAVY)                 # franja azul inferior
@@ -165,7 +211,7 @@ def paint_cube(c, rng):
         hline(img, 0, (210, 214, 224), alpha=0.8)
         for x in (0, w // 2 - 2, w - 1):
             vline(img, x, WHITE_LO, alpha=0.9)
-        txt = "BH-6"
+        txt = DOOR_TXT
         draw_text(img, txt, 3 if side > 0 else w - 3 - text_width(txt), 2, NAVY_LO)
         hx = (19, 24) if side > 0 else (11, 16)         # manija (V3.2.0): junto a la costura, en la parte lisa de la puerta
         rect(img, hx[0], 3, hx[1], 4, HANDLE)
@@ -180,9 +226,9 @@ def paint_cube(c, rng):
             img = faces[f]
             h, w = img.shape[:2]
             rect(img, 0, h - 1, w, h, NAVY)
-            txt = "BOING"
-            tw = text_width(txt, 2)
-            draw_text(img, txt, (w - tw) // 2, 0, NAVY_LO, 2)
+            txt = BOOM_TXT
+            tw = text_width(txt, BOOM_SCALE)
+            draw_text(img, txt, (w - tw) // 2, 0 if BOOM_SCALE == 2 else 3, NAVY_LO, BOOM_SCALE)
             faces[f] = img
         top[..., :3] = WHITE
         vline(top, top.shape[1] // 2, NAVY, alpha=0.5)
@@ -199,12 +245,46 @@ def paint_cube(c, rng):
         for f in ("west", "east"):
             img = faces[f]
             rect(img, 0, 0, img.shape[1], 3, RED)
-            draw_text(img, "B", 2, 6, WHITE)
+            draw_text(img, FIN_TXT, 2, 6, WHITE)
     elif kind == "stab":
         for f in ("front", "back", "west", "east"):
             faces[f][..., :3] = WHITE_LO
         top[..., :3] = WHITE
         vline(top, 0, NAVY, alpha=0.9)
+    elif kind in ("lightbar_r", "lightbar_b"):
+        col = (255, 36, 28) if kind == "lightbar_r" else (40, 96, 255)
+        for ff in list(faces):
+            faces[ff][..., :3] = tuple(int(v * 0.55) for v in col)
+            glow[ff] = solid(faces[ff].shape[0], faces[ff].shape[1], col, 255)
+    elif kind == "sirenbtn":
+        for ff in list(faces):
+            faces[ff][..., :3] = (214, 32, 30)
+    elif kind == "spot":                                   # foco gigante: carcasa oscura y lente grande al frente
+        for ff in list(faces):
+            faces[ff][..., :3] = (38, 40, 48)
+        a = faces["front"]
+        rect(a, 1, 1, a.shape[1] - 1, a.shape[0] - 1, (255, 250, 232))
+        g = solid(a.shape[0], a.shape[1], (0, 0, 0), 0)
+        rect(g, 1, 1, a.shape[1] - 1, a.shape[0] - 1, (255, 250, 232), 255)
+        glow["front"] = g
+    elif kind == "tank":                                   # tanque de agua rojo con franja blanca
+        for ff in list(faces):
+            faces[ff][..., :3] = (190, 22, 28)
+            a = faces[ff]
+            if ff in ("west", "east", "front", "back") and a.shape[0] >= 6:
+                rect(a, 0, a.shape[0] // 2 - 1, a.shape[1], a.shape[0] // 2 + 1, (245, 245, 250))
+    elif kind == "steel":
+        for ff in list(faces):
+            faces[ff][..., :3] = (176, 180, 190)
+    elif kind == "turret":                                 # cámara de noticias: bola oscura con lente
+        for ff in list(faces):
+            faces[ff][..., :3] = (30, 32, 38)
+        a = faces["front"]
+        rect(a, 1, 1, a.shape[1] - 1, a.shape[0] - 1, (70, 120, 190))
+        rect(a, 2, 2, 4, 4, (200, 230, 255))
+    elif kind == "dish":
+        for ff in list(faces):
+            faces[ff][..., :3] = (232, 234, 240)
     elif kind == "skid":
         for f in list(faces):
             a = faces[f]
@@ -391,6 +471,14 @@ public class HelicopterModel extends EntityModel<HelicopterEntity> {{
     private final ModelPart glass;
     private final ModelPart rotor;
     private final ModelPart tailRotor;
+    private final ModelPart police;
+    private final ModelPart fire;
+    private final ModelPart news;
+    private final ModelPart bar;
+    private final ModelPart barRed;
+    private final ModelPart barBlue;
+    private final ModelPart sirenBtn;
+    private boolean barsOn;
 
     public HelicopterModel(ModelPart root) {{
         this.root = root;
@@ -398,6 +486,13 @@ public class HelicopterModel extends EntityModel<HelicopterEntity> {{
         this.glass = root.getChild("glass");
         this.rotor = this.body.getChild("rotor");
         this.tailRotor = this.body.getChild("tail_rotor");
+        this.police = this.body.getChild("police");
+        this.fire = this.body.getChild("fire");
+        this.news = this.body.getChild("news");
+        this.bar = this.body.getChild("bar");
+        this.barRed = this.body.getChild("bar_red");
+        this.barBlue = this.body.getChild("bar_blue");
+        this.sirenBtn = this.body.getChild("siren_btn");
     }}
 
     public static LayerDefinition createBodyLayer() {{
@@ -411,6 +506,23 @@ public class HelicopterModel extends EntityModel<HelicopterEntity> {{
     public void pose(float rotorAngle, float tailAngle) {{
         this.rotor.yRot = rotorAngle;
         this.tailRotor.xRot = tailAngle;
+    }}
+
+    /** V6.9.0: accesorios de la skin: 0 = ninguno, 1 = policía, 2 = bomberos, 3 = noticias. */
+    public void setSkin(int skin) {{
+        this.police.visible = skin == 1;
+        this.fire.visible = skin == 2;
+        this.news.visible = skin == 3;
+        this.barsOn = skin == 1 || skin == 2;
+        this.bar.visible = this.barsOn;
+        this.sirenBtn.visible = this.barsOn;
+        this.setBarPhase(-2);
+    }}
+
+    /** V6.9.0: -2 = las dos mitades de la barra (pasada normal); en la pasada de brillo, 0 = roja, 1 = azul, otro = ninguna. */
+    public void setBarPhase(int phase) {{
+        this.barRed.visible = this.barsOn && (phase == -2 || phase == 0);
+        this.barBlue.visible = this.barsOn && (phase == -2 || phase == 1);
     }}
 
     /** false = solo la carrocería y el interior (opaco); true = solo los vidrios. */
@@ -462,6 +574,7 @@ def main():
     if args.write:
         (ASSETS / "textures/entity").mkdir(parents=True, exist_ok=True)
         tex.save(ASSETS / "textures/entity/helicopter.png")
+        glow.save(ASSETS / "textures/entity/helicopter_glow.png")
         (JAVA / "client/HelicopterModel.java").write_text(java_model(b), encoding="utf-8")
         pose(b, 0.0, 0.0)
         icon = vc.make_icon(b, tex, glow, (TEX_W, TEX_H), 140, 18, CENTER, 4.0, outline=(8, 12, 30, 255), brighten=1.05)

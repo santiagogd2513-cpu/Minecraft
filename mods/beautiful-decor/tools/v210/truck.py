@@ -20,7 +20,10 @@ from . import vcommon as vc
 from .vcommon import (ASSETS, JAVA, deg, edges, hline, noise, outline_rect, rect, solid, text, text_width, vline)
 from ..v320.paintkit import tone
 
-TEX_W = TEX_H = 256
+TEX_W, TEX_H = 256, 320     # V6.8.0: 64 filas más para los accesorios de las skins
+
+# V6.8.0: skin que se pinta (0 = original repintable; 1 policía, 2 reparto, 3 construcción, 4 bomberos). La cambia tools/v680/pickup_skins.py.
+SKIN = 0
 
 # Colores de referencia de los tres canales que el jugador puede cambiar (V3.2.0): pintura, manijas y rines.
 BODY_REF, BODY_HI_REF, BODY_LO_REF = (18, 38, 100), (52, 88, 170), (8, 20, 60)
@@ -138,6 +141,9 @@ def build():
     box(b, wheel, "sw_hub", -1, 2, -1, 2, -1, 1, "dark", kind="swhub")
     box(b, wheel, "sw_spoke", -2, 3, 0, 1, 0, 1, "dark", kind="plain")
     box(b, body, "column", SEAT_X - 1, SEAT_X + 1, 14, 16, 9, 12, "dark", kind="plain")
+    # V6.3.0: botones del tablero (en PickupEntity.BUTTONS): luces a la derecha del centro y radio a la izquierda; el claxon es el centro del volante
+    box(b, body, "btn_light", 1, 3, 18, 20, 8, 9, "lens", kind="plain")
+    box(b, body, "btn_radio", -3, -1, 18, 20, 8, 9, "chrome", kind="plain")
 
     # ---------------------------------------------------------------- capó, defensas y parte delantera
     box(b, body, "front_block", -14, 14, 15, 22, 13, 35, "paint", kind="hood")
@@ -168,11 +174,43 @@ def build():
     lr(b, glass, "win_f3", 13, 14, 28, 30, 1, 7, "glass", kind="glass", translucent=True)
     lr(b, glass, "win_r", 13, 14, 22, 30, -9, -1, "glass", kind="glass", translucent=True)
     box(b, glass, "rear_glass", -10, 10, 22, 30, -11, -10, "glass", kind="glass", translucent=True)
+
+    # ---------------------------------------------------------------- V6.8.0: accesorios de las skins (se muestran según PickupModel.setSkin; material 'tire' para que el repintado no los toque)
+    sirenbtn = b.part("siren_btn", body, (0, 0, 0))
+    box(b, sirenbtn, "btn_siren", -7, -5, 18, 20, 8, 9, "tire", kind="sirenbtn")       # botón de la sirena en el tablero (PickupEntity.BUTTONS)
+    bar = b.part("bar", body, (0, 0, 0))                                            # barra de luces del techo (policía y bomberos)
+    box(b, bar, "bar_base", -10, 10, 32, 33, -4, 4, "tire", kind="plain")
+    box(b, bar, "bar_mid", -1, 1, 33, 35, -4, 4, "tire", kind="plain")
+    bar_red = b.part("bar_red", body, (0, 0, 0))
+    box(b, bar_red, "bar_red_lamp", 1, 10, 33, 35, -4, 4, "tire", kind="lightbar_r", glow=True)
+    bar_blue = b.part("bar_blue", body, (0, 0, 0))
+    box(b, bar_blue, "bar_blue_lamp", -10, -1, 33, 35, -4, 4, "tire", kind="lightbar_b", glow=True)
+    police = b.part("police", body, (0, 0, 0))                                      # defensa delantera
+    lr(b, police, "bull_post", 8, 10, 13, 21, 38, 39, "tire", kind="plain")
+    box(b, police, "bull_bar", -10, 10, 19, 21, 38, 39, "tire", kind="plain")
+    box(b, police, "bull_low", -10, 10, 13, 15, 38, 39, "tire", kind="plain")
+    delivery = b.part("delivery", body, (0, 0, 0))                                  # caja de carga del repartidor
+    box(b, delivery, "dbox_main", -13, 13, 12, 34, -37, -12, "tire", kind="dbox")
+    lr(b, delivery, "dbox_tail", 10, 13, 15, 18, -38, -37, "tire", kind="taillight", glow=True)
+    construction = b.part("construction", body, (0, 0, 0))                          # baliza, conos y arena
+    box(b, construction, "beacon_base", -2, 2, 32, 33, -2, 2, "tire", kind="plain")
+    box(b, construction, "beacon", -2, 2, 33, 36, -2, 2, "tire", kind="amber", glow=True)
+    lr(b, construction, "cone", 8, 11, 12, 18, -33, -30, "tire", kind="cone")
+    box(b, construction, "sand", -6, 6, 12, 17, -28, -16, "tire", kind="sand")
+    fire = b.part("fire", body, (0, 0, 0))                                          # escalera en el techo y carrete de manguera
+    box(b, fire, "hose_box", -11, 11, 12, 26, -32, -14, "tire", kind="hose")
+    lr(b, fire, "ladder_rail", 10, 11, 32, 33, -30, 7, "tire", kind="silver")
+    lr(b, fire, "ladder_post", 10, 11, 26, 32, -30, -29, "tire", kind="silver")
+    lr(b, fire, "ladder_post2", 10, 11, 26, 32, -15, -14, "tire", kind="silver")
+    for i, z in enumerate((-28, -24, -20, -16, -12, -8, 5)):
+        box(b, fire, f"ladder_rung{i}", -9, 9, 32, 33, z, z + 1, "tire", kind="silver")
     return b
 
 
 def pose(b, wheel_rot=0.0, steer=0.0, glass=True, body=True):
     """Pose del modelo (mismo cálculo que PickupModel.pose)."""
+    for nm in ("police", "delivery", "construction", "fire", "bar", "bar_red", "bar_blue", "siren_btn"):
+        b.parts[nm].visible = False                       # accesorios de skins: ocultos en la vista del original
     for nm in ("wheel_rl", "wheel_rr", "wheel_fl", "wheel_fr"):
         b.parts[nm].rot = [wheel_rot, 0.0, 0.0]
     b.parts["steer_l"].rot = [0.0, steer, 0.0]
@@ -225,6 +263,38 @@ def side_names(c):
     return ("east", "west") if side > 0 else ("west", "east")      # (exterior, interior)
 
 
+def rtext(img, face, s_, x, y, color, scale=1):
+    """Texto legible desde fuera: en la cara 'west' (lado derecho del vehículo) la imagen se ve al revés, así que se escribe volteada."""
+    if face == "east":
+        tmp = img[:, ::-1].copy()
+        text(tmp, s_, x, y, color, scale=scale)
+        img[:] = tmp[:, ::-1]
+    else:
+        text(img, s_, x, y, color, scale=scale)
+
+
+def decal_door(img, face="east"):
+    """V6.8.0: rotulado de la puerta según la skin (la imagen se ve con el frente a la derecha)."""
+    h, w = img.shape[:2]
+    if SKIN == 1:                                                      # policía: franja azul marino con dorado y PN
+        rect(img, 0, 6, w, 10, (16, 30, 84))
+        hline(img, 6, (255, 205, 50), alpha=1.0)
+        hline(img, 9, (255, 205, 50), alpha=1.0)
+        rtext(img, face, "PN", 15, 1, (16, 30, 84))
+    elif SKIN == 2:                                                    # reparto: franja naranja y AZ
+        rect(img, 0, 7, w, 9, (255, 150, 30))
+        rtext(img, face, "AZ", 15, 1, (255, 150, 30))
+    elif SKIN == 3:                                                    # construcción: franja de peligro y OBRAS
+        for x in range(w):
+            for y in range(7, 11):
+                img[y, x, :3] = (22, 22, 24) if ((x + y) // 2) % 2 == 0 else (245, 190, 20)
+        rtext(img, face, "OBRAS", 3, 1, (22, 22, 24))
+    elif SKIN == 4:                                                    # bomberos (Aguacero): franjas blanca y dorada y AGUA
+        rect(img, 0, 7, w, 9, (245, 245, 250))
+        rect(img, 0, 9, w, 10, (255, 205, 50))
+        rtext(img, face, "AGUA", 4, 1, (245, 245, 250))
+
+
 def paint_cube(c, rng):
     if c.opts.get("wheel"):
         return vc.wheel_faces(c, rng, wheel_art, tread=((26, 26, 29), (42, 42, 47)))
@@ -271,6 +341,7 @@ def paint_cube(c, rng):
         hline(img, h - 4, BODY_HI, alpha=0.30)                         # pliegue de la carrocería
         hline(img, h - 1, BODY_LO, alpha=0.7)
         rect(img, 0, h - 3, w, h - 1, (26, 28, 34))                    # faldón inferior oscuro
+        decal_door(img, outer)
         vc.store_side(faces, outer, img)
         trim = vc.natural_side(faces, inner)
         trim[..., :3] = TRIM
@@ -432,6 +503,67 @@ def paint_cube(c, rng):
     elif kind == "swhub":
         for f in ("front", "back"):
             rect(faces[f], 0, 0, faces[f].shape[1], faces[f].shape[0], (22, 54, 140))
+    elif kind in ("lightbar_r", "lightbar_b"):
+        col = (255, 36, 28) if kind == "lightbar_r" else (40, 96, 255)
+        for ff in list(faces):
+            faces[ff][..., :3] = tuple(int(v * 0.55) for v in col)
+            glow[ff] = solid(faces[ff].shape[0], faces[ff].shape[1], col, 255)
+    elif kind == "amber":
+        for ff in list(faces):
+            faces[ff][..., :3] = (150, 82, 8)
+            glow[ff] = solid(faces[ff].shape[0], faces[ff].shape[1], (255, 160, 30), 255)
+    elif kind == "cone":
+        for ff in list(faces):
+            a = faces[ff]
+            a[..., :3] = (255, 110, 20)
+            if ff in ("west", "east", "front", "back") and a.shape[0] >= 4:
+                rect(a, 0, a.shape[0] // 2 - 1, a.shape[1], a.shape[0] // 2 + 1, (245, 245, 245))
+    elif kind == "sand":
+        for ff in list(faces):
+            a = faces[ff]
+            a[..., :3] = (196, 170, 112)
+            noise(a, rng, 0.12)
+    elif kind == "hose":
+        for ff in list(faces):
+            faces[ff][..., :3] = (150, 14, 20)
+        for ff in ("west", "east", "back"):
+            a = faces[ff]
+            rows, cols = a.shape[:2]
+            cx, cy, r = cols // 2, rows // 2, min(rows, cols) // 2 - 2
+            for yy in range(rows):
+                for xx in range(cols):
+                    d = math.hypot(xx - cx, yy - cy)
+                    if d < r and int(d) % 2 == 0:
+                        a[yy, xx, :3] = (30, 32, 38)
+                    elif d < r:
+                        a[yy, xx, :3] = (196, 200, 210)
+            hline(a, 0, (230, 60, 50), alpha=0.8)
+    elif kind == "dbox":
+        navy, orange = (24, 36, 84), (255, 150, 30)
+        for ff in list(faces):
+            faces[ff][..., :3] = navy
+            noise(faces[ff], rng, 0.03)
+        for ff in ("west", "east"):
+            img = vc.natural_side(faces, ff)
+            h, w = img.shape[:2]
+            rect(img, 0, h - 7, w, h - 5, orange)
+            rtext(img, ff, "AZ", w // 2 - 7, h // 2 - 6, orange, scale=2)
+            hline(img, 0, (60, 78, 140), alpha=0.8)
+            vc.store_side(faces, ff, img)
+        a = faces["back"]
+        rows, cols = a.shape[:2]
+        vline(a, cols // 2, (10, 16, 44), alpha=1.0)
+        rect(a, 1, rows - 7, cols - 1, rows - 5, orange)
+        text(a, "AZ", cols // 2 - 7, rows // 2 - 6, orange, scale=2)
+        faces["back"] = a
+    elif kind == "silver":
+        for ff in list(faces):
+            faces[ff][..., :3] = (196, 200, 210)
+        for y in range(top.shape[0]):
+            top[y, :, :3] *= 1.05
+    elif kind == "sirenbtn":
+        for ff in list(faces):
+            faces[ff][..., :3] = (214, 32, 30)
     elif kind in ("plain",):
         pass
 
@@ -496,6 +628,15 @@ public class PickupModel extends EntityModel<PickupEntity> {{
     private final ModelPart steerL;
     private final ModelPart steerR;
     private final ModelPart steeringWheel;
+    private final ModelPart police;
+    private final ModelPart delivery;
+    private final ModelPart construction;
+    private final ModelPart fire;
+    private final ModelPart bar;
+    private final ModelPart barRed;
+    private final ModelPart barBlue;
+    private final ModelPart sirenBtn;
+    private boolean barsOn;
 
     public PickupModel(ModelPart root) {{
         this.root = root;
@@ -508,6 +649,14 @@ public class PickupModel extends EntityModel<PickupEntity> {{
         this.wheelRl = this.body.getChild("wheel_rl");
         this.wheelRr = this.body.getChild("wheel_rr");
         this.steeringWheel = this.body.getChild("steering_tilt").getChild("steering_wheel");
+        this.police = this.body.getChild("police");
+        this.delivery = this.body.getChild("delivery");
+        this.construction = this.body.getChild("construction");
+        this.fire = this.body.getChild("fire");
+        this.bar = this.body.getChild("bar");
+        this.barRed = this.body.getChild("bar_red");
+        this.barBlue = this.body.getChild("bar_blue");
+        this.sirenBtn = this.body.getChild("siren_btn");
     }}
 
     public static LayerDefinition createBodyLayer() {{
@@ -526,6 +675,24 @@ public class PickupModel extends EntityModel<PickupEntity> {{
         this.steerL.yRot = steerRot;
         this.steerR.yRot = steerRot;
         this.steeringWheel.zRot = -steerRot * 2.5f;
+    }}
+
+    /** V6.8.0: accesorios de la skin: 0 = ninguno, 1 = policía, 2 = reparto, 3 = construcción, 4 = bomberos. */
+    public void setSkin(int skin) {{
+        this.police.visible = skin == 1;
+        this.delivery.visible = skin == 2;
+        this.construction.visible = skin == 3;
+        this.fire.visible = skin == 4;
+        this.barsOn = skin == 1 || skin == 4;
+        this.bar.visible = this.barsOn;
+        this.sirenBtn.visible = this.barsOn;
+        this.setBarPhase(-2);
+    }}
+
+    /** V6.8.0: -2 = las dos mitades de la barra (pasada normal); en la pasada de brillo, 0 = roja, 1 = azul, otro = ninguna. */
+    public void setBarPhase(int phase) {{
+        this.barRed.visible = this.barsOn && (phase == -2 || phase == 0);
+        this.barBlue.visible = this.barsOn && (phase == -2 || phase == 1);
     }}
 
     /** false = solo la carrocería y el interior (opaco); true = solo los vidrios. */

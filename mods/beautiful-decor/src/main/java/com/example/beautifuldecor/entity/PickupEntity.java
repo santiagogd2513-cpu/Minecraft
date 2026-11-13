@@ -17,6 +17,14 @@ import net.minecraft.world.level.Level;
  * la camioneta se ve de 4,5 bloques de largo pero choca como una caja de 2,2 x 2,2.
  */
 public class PickupEntity extends VehicleEntity {
+    /** V6.13.0: caja de colisión igual al modelo (ancho, largo, desfase hacia delante, alto; tools/v6130/hulls.py). */
+    private static final VehicleHull.Spec HULL = new VehicleHull.Spec(2.0, 4.81, 0.03, 2.25);
+
+    @Override
+    protected VehicleHull.Spec hull() {
+        return HULL;
+    }
+
     /** Velocidad máxima en bloques por tick (V4.4.0: 80 km/h = 22,2 bloques por segundo). */
     public static final float MAX_SPEED = 1.111f;
 
@@ -42,6 +50,44 @@ public class PickupEntity extends VehicleEntity {
 
     public PickupEntity(EntityType<? extends PickupEntity> type, Level level) {
         super(type, level);
+    }
+
+    @Override
+    public boolean hasCabButtons() {
+        return true;
+    }
+
+    /** V6.3.0: botones del tablero (medidas del modelo, tools/v210/truck.py): centro del volante = claxon, luces y radio en el tablero. */
+    private static final double[][] BUTTONS = {
+            {0.42, 1.09, 0.52, 0.17, ACTION_HORN},
+            {0.125, 1.19, 0.53, 0.10, ACTION_LIGHT},
+            {-0.125, 1.19, 0.53, 0.10, ACTION_RADIO},
+            {-0.375, 1.19, 0.53, 0.10, ACTION_SIREN}};
+
+    /** V6.8.0: skins: 0 = original, 1 = policía, 2 = reparto, 3 = construcción, 4 = bomberos (policía y bomberos llevan sirena; botón rojo del tablero). */
+    @Override
+    public int skinCount() {
+        return 5;
+    }
+
+    @Override
+    public int policeSkin() {
+        return 1;
+    }
+
+    @Override
+    public boolean skinHasSiren(int skin) {
+        return skin == 1 || skin == 4;
+    }
+
+    @Override
+    public String skinKey(int skin) {
+        return "skin.beautifuldecor.ford_f150." + skin;
+    }
+
+    @Override
+    protected double[][] cabButtons() {
+        return BUTTONS;
     }
 
     /** V3.9.0: almacenamiento de 3 fila(s) de 9 casillas. */

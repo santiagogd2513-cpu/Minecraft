@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "beautifuldecor:block/painting_aguacero"
+    },
+    "facing=east": {
+      "model": "beautifuldecor:block/painting_aguacero",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "beautifuldecor:block/painting_aguacero",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "beautifuldecor:block/painting_aguacero",
+      "y": 270
+    }
+  }
+}

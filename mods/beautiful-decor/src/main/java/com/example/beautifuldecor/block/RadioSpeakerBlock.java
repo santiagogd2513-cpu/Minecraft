@@ -42,22 +42,29 @@ import javax.annotation.Nullable;
  */
 public class RadioSpeakerBlock extends BaseEntityBlock {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
+    /** V6.11.0: true si está montada en la pared (se coloca haciendo clic en el costado de un bloque); entonces queda pegada atrás. */
+    public static final net.minecraft.world.level.block.state.properties.BooleanProperty WALL = net.minecraft.world.level.block.state.properties.BooleanProperty.create("wall");
+    private static final VoxelShape[] WALL_SHAPES = ShapeRotator.all(ModBlock.box(3, 0, 8, 13, 13, 16));
     private static final VoxelShape SHAPE_NS = Shapes.box(3.0 / 16.0, 0.0, 4.0 / 16.0, 13.0 / 16.0, 13.0 / 16.0, 12.0 / 16.0);
     private static final VoxelShape SHAPE_EW = Shapes.box(4.0 / 16.0, 0.0, 3.0 / 16.0, 12.0 / 16.0, 13.0 / 16.0, 13.0 / 16.0);
 
     public RadioSpeakerBlock(BlockBehaviour.Properties properties) {
         super(properties);
-        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
+        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(WALL, Boolean.FALSE));
     }
 
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
-        builder.add(FACING);
+        builder.add(FACING, WALL);
     }
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
-        return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite());
+        Direction face = context.getClickedFace();
+        if (face.getAxis().isHorizontal()) {
+            return this.defaultBlockState().setValue(FACING, face).setValue(WALL, Boolean.TRUE);
+        }
+        return this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite()).setValue(WALL, Boolean.FALSE);
     }
 
     @Override
@@ -72,6 +79,9 @@ public class RadioSpeakerBlock extends BaseEntityBlock {
 
     @Override
     public VoxelShape getShape(BlockState state, BlockGetter level, BlockPos pos, CollisionContext context) {
+        if (state.getValue(WALL)) {
+            return WALL_SHAPES[state.getValue(FACING).get2DDataValue()];
+        }
         return state.getValue(FACING).getAxis() == Direction.Axis.Z ? SHAPE_NS : SHAPE_EW;
     }
 

@@ -87,7 +87,14 @@ public class AdScreenRenderer implements BlockEntityRenderer<AdScreenBlockEntity
             Matrix4f m = pose.last().pose();
             quad(buffer.getBuffer(RenderType.text(BLACK)), m, 16f, 16f - 16f * w, bezelTop, bezelBottom, frontZ - LAYER,
                     0, 0, 0);
-            if (w == h) {
+            if (session != null && session.news) {
+                // V6.11.0: el noticiero de HS News (cada 3 anuncios, 20 segundos)
+                if (session.lottery) {
+                    LotteryScreenRenderer.draw(buffer, m, xLeft, xRight, yTop, yBottom, frontZ, LAYER, System.currentTimeMillis() - session.newsStartMs);
+                } else {
+                    NewsScreenRenderer.draw(buffer, m, xLeft, xRight, yTop, yBottom, frontZ, LAYER, System.currentTimeMillis() - session.newsStartMs);
+                }
+            } else if (w == h) {
                 quad(buffer.getBuffer(RenderType.text(tex)), m, xLeft, xRight, yTop, yBottom, frontZ - 2 * LAYER, 255, 255, 255);
             } else {
                 // el anuncio es cuadrado: en una pantalla rectangular va centrado y a los lados se ve el mismo video estirado y oscurecido

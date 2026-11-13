@@ -160,6 +160,10 @@ public class MotorcycleModel extends EntityModel<MotorcycleEntity> {{
     private final ModelPart rearWheel;
     private final ModelPart steer;
     private final ModelPart kickstand;
+    private final ModelPart police;
+    private final ModelPart barRed;
+    private final ModelPart barBlue;
+    private final ModelPart deliveryBox;
 
     public MotorcycleModel(ModelPart root) {{
         this.root = root;
@@ -168,6 +172,10 @@ public class MotorcycleModel extends EntityModel<MotorcycleEntity> {{
         this.steer = bike.getChild("steer");
         this.frontWheel = this.steer.getChild("fork").getChild("front_wheel");
         this.kickstand = bike.getChild("kickstand");
+        this.police = bike.getChild("police");
+        this.barRed = this.police.getChild("bar_red");
+        this.barBlue = this.police.getChild("bar_blue");
+        this.deliveryBox = bike.getChild("delivery_box");
     }}
 
     public static LayerDefinition createBodyLayer() {{
@@ -183,6 +191,20 @@ public class MotorcycleModel extends EntityModel<MotorcycleEntity> {{
         this.rearWheel.xRot = wheelRot;
         this.steer.yRot = steerRot;
         this.kickstand.visible = parked;
+    }}
+
+    /** V6.7.0: accesorios de la skin: 0 = ninguno, 1 = policía (barra de luces), 2 = repartidor (caja). */
+    public void setSkin(int skin) {{
+        this.police.visible = skin == 1;
+        this.deliveryBox.visible = skin == 2;
+        this.barRed.visible = true;
+        this.barBlue.visible = true;
+    }}
+
+    /** V6.7.0: en la pasada de brillo solo se ve una mitad de la barra a la vez (0 = roja, 1 = azul, otro = ninguna). */
+    public void setBarPhase(int phase) {{
+        this.barRed.visible = phase == 0;
+        this.barBlue.visible = phase == 1;
     }}
 
     @Override

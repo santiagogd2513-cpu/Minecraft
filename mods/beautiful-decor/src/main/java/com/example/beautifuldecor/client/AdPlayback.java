@@ -45,6 +45,11 @@ public final class AdPlayback {
     /** V5.2.0: el video corre a cualquier distancia a la que la pantalla se dibuja (solo el sonido tiene alcance). Debe coincidir con AdScreenRenderer.getViewDistance. */
     public static final double VIDEO_RANGE = 256.0;
     private static final int COOLDOWN_TICKS = 100;
+    /** V6.11.0: después de cuántos anuncios sale el noticiero, y cuánto dura (20 segundos). */
+    private static final int ADS_PER_NEWS = 3;
+    private static final int NEWS_TICKS = 400;
+    private static final int ADS_PER_LOTTERY = 5;     // V6.15.0: cada 5 anuncios, el segmento de la lotería (15 s)
+    private static final int LOTTERY_TICKS = 300;
     private static final int RETRY_TICKS = 160;
     private static final Logger LOGGER = LogUtils.getLogger();
 
@@ -55,10 +60,18 @@ public final class AdPlayback {
         public int index;
         /** Tick en que algo falló, o -1. */
         long failedAt = -1L;
+        /** V6.11.0: true mientras la pantalla pasa el noticiero de HS News (en vez de un anuncio). */
+        public boolean news;
+        public boolean lottery;
+        public long newsStartMs;
+        long newsStartTick;
+        int adsPlayed;
+        int seenNewsVersion;
 
         Session(HsVideoPlayer video, int index) {
             this.video = video;
             this.index = index;
+            this.seenNewsVersion = NewsClient.version();
         }
     }
 
@@ -94,6 +107,8 @@ public final class AdPlayback {
         SESSIONS.clear();
         SCREENS.clear();
         cooldown = 0;
+        NewsClient.reset();
+        LotteryClient.reset();
     }
 
     /** Número de marca por el que empieza una pantalla. */
@@ -182,6 +197,16 @@ public final class AdPlayback {
     /** Actualiza el reproductor de una pantalla y pasa al siguiente anuncio cuando termina o falla. */
     private static void advance(Minecraft mc, AdScreenBlockEntity screen, Session s) {
         try {
+            if (s.news) {
+                // V6.11.0: noticiero en curso; al terminar sigue el anuncio que tocaba
+                if (ticks - s.newsStartTick >= (s.lottery ? LOTTERY_TICKS : NEWS_TICKS)) {
+                    s.news = false;
+                    s.lottery = false;
+                    s.index = AdBrands.next(s.index);
+                    playCurrent(mc, screen, s);
+                }
+                return;
+            }
             s.video.audio().tick(mc);                       // el volumen baja con la distancia
             s.video.update();
             int st = s.video.state();
@@ -191,6 +216,22 @@ public final class AdPlayback {
                     playCurrent(mc, screen, s);
                 }
             } else if (st == HsVideoPlayer.ENDED) {
+                s.adsPlayed++;
+                // cada 3 anuncios sale el noticiero; si hay una noticia nueva que esta pantalla aún no mostró, se adelanta
+                if (s.adsPlayed % ADS_PER_NEWS == 0 || s.seenNewsVersion != NewsClient.version()) {
+                    s.seenNewsVersion = NewsClient.version();
+                    s.news = true;
+                    s.newsStartTick = ticks;
+                    s.newsStartMs = System.currentTimeMillis();
+                    return;
+                }
+                if (s.adsPlayed % ADS_PER_LOTTERY == 0) {
+                    s.news = true;
+                    s.lottery = true;
+                    s.newsStartTick = ticks;
+                    s.newsStartMs = System.currentTimeMillis();
+                    return;
+                }
                 s.index = AdBrands.next(s.index);
                 playCurrent(mc, screen, s);
             } else if (st == HsVideoPlayer.ERROR) {

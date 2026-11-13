@@ -21,7 +21,7 @@ from ..v210 import vcommon as vc
 from ..v210.vcommon import (ASSETS, JAVA, deg, edges, hline, noise, outline_rect, rect, solid, vline)
 from ..v320.paintkit import tone
 
-TEX_W, TEX_H = 384, 256
+TEX_W, TEX_H = 384, 320     # V6.14.0: 64 filas más para los accesorios de las skins
 NAME = "bugotti_chillon"
 
 # Colores de referencia de los tres canales que el jugador puede cambiar con la tecla R: pintura, manijas y rines.
@@ -33,7 +33,7 @@ HANDLE = HANDLE_REF
 RIM, RIM_HUB, RIM_SPOKE = RIM_REF, RIM_HUB_REF, RIM_SPOKE_REF
 TRIM = (46, 48, 56)
 MAT_COLOR = {
-    "paint": BODY, "carbon": (26, 27, 32), "chrome": (190, 196, 208), "dark": (20, 21, 25), "carpet": (32, 34, 40), "seat": (38, 40, 46),
+    "paint": BODY, "carbon": (26, 27, 32), "chrome": (190, 196, 208), "dark": (20, 21, 25), "carpet": (32, 34, 40), "seat": (52, 54, 64),
     "dash": (24, 25, 30), "trim": TRIM, "tire": (26, 26, 29), "glass": (24, 40, 58), "lens": (172, 184, 202),
     "taillight": (150, 12, 16), "mirror": (24, 24, 28), "intake": (14, 14, 18), "grille": (12, 12, 16),
 }
@@ -50,6 +50,32 @@ def set_paint(body=(0, 0, 0), handle=(0, 0, 0), rim=(0, 0, 0)):
     RIM = tone(RIM_REF, RIM_REF, rim)
     RIM_HUB = tone(RIM_HUB_REF, RIM_REF, rim)
     RIM_SPOKE = tone(RIM_SPOKE_REF, RIM_REF, rim)
+    MAT_COLOR["paint"] = BODY
+
+
+# ---- V6.14.0: skins (colores fijos: no se repintan con la tecla R). 0 = original, 1 = carreras, 2 = policía, 3 = callejero, 4 = taxi
+SKIN = 0
+ACCENT = (236, 150, 24)
+SKIN_DEFS = {
+    1: ("racing", (206, 28, 34), (240, 84, 76), (120, 12, 16), (245, 245, 248), (232, 232, 238)),
+    2: ("police", (236, 238, 244), (252, 253, 255), (168, 174, 190), (16, 30, 84), (200, 204, 214)),
+    3: ("street", (30, 30, 36), (60, 60, 72), (12, 12, 16), (40, 255, 130), (40, 255, 130)),
+    4: ("taxi", (250, 198, 24), (255, 228, 96), (176, 128, 8), (20, 20, 24), (210, 214, 224)),
+}
+
+
+def set_skin(n):
+    """Pone la paleta de la skin n (0 = la original, repintable)."""
+    global SKIN, ACCENT, BODY, BODY_HI, BODY_LO, RIM, RIM_HUB, RIM_SPOKE
+    SKIN = n
+    if n == 0:
+        ACCENT = (236, 150, 24)
+        set_paint()
+        return
+    _, BODY, BODY_HI, BODY_LO, ACCENT, rim = SKIN_DEFS[n]
+    RIM = rim
+    RIM_HUB = tuple(max(0, v - 8) for v in rim)
+    RIM_SPOKE = tuple(max(0, v - 28) for v in rim)
     MAT_COLOR["paint"] = BODY
 
 
@@ -129,15 +155,45 @@ def build():
         box(b, body, f"seat_back_{nm}", cx - 4, cx + 4, 6, 15, SEAT_Z - 6, SEAT_Z - 4, "seat", kind="seatback")
         box(b, body, f"headrest_{nm}", cx - 2, cx + 2, 15, 19, SEAT_Z - 6, SEAT_Z - 4, "seat", kind="seatback")
         box(b, body, f"bolster_{nm}", cx - 5 if sx > 0 else cx + 4, cx - 4 if sx > 0 else cx + 5, 6, 10, SEAT_Z - 4, SEAT_Z + 3, "seat", kind="plain")
+    # V6.12.0: interior deportivo: pedales, cuadro de instrumentos, palanca, asientos tipo baquet con cinturón, paneles de puerta y arco de seguridad
+    box(b, body, "pedal_brake", 5, 7, 5, 8, 3, 4, "dark", kind="pedal")
+    box(b, body, "pedal_gas", 8, 9, 5, 9, 3, 4, "dark", kind="pedal")
+    box(b, body, "footrest", 10, 12, 5, 7, 2, 5, "dark", kind="pedal")
+    box(b, body, "binnacle", 2, 11, 11, 13, 4, 7, "dash", kind="binnacle")
+    box(b, body, "console_top", -2, 2, 9, 10, -9, 1, "dash", kind="ctrlpanel")
+    box(b, body, "shifter_boot", -2, 2, 10, 11, -4, 0, "dark", kind="boot")
+    box(b, body, "shifter_stem", -1, 1, 11, 13, -3, -1, "dark", kind="plain")
+    box(b, body, "shifter_knob", -1, 1, 13, 14, -3, -1, "chrome", kind="knob")
+    box(b, body, "handbrake", -2, -1, 10, 11, -9, -5, "dark", kind="boot")
+    box(b, body, "paddle_l", 10, 11, 11, 14, 1, 2, "chrome", kind="paddle")
+    box(b, body, "paddle_r", 2, 3, 11, 14, 1, 2, "chrome", kind="paddle")
+    for sx, nm in ((1, "l"), (-1, "r")):
+        cx = SEAT_X * sx
+        ox = cx + 4 * sx      # lado de afuera del asiento
+        box(b, body, f"seat_wing_{nm}", min(ox, ox + sx), max(ox, ox + sx), 6, 10, SEAT_Z - 4, SEAT_Z + 4, "seat", kind="seatwing")
+        box(b, body, f"back_wing_{nm}", min(ox, ox + sx), max(ox, ox + sx), 8, 14, SEAT_Z - 6, SEAT_Z - 2, "seat", kind="seatwing")
+        box(b, body, f"seat_front_{nm}", cx - 4, cx + 4, 5, 7, SEAT_Z + 4, SEAT_Z + 5, "seat", kind="seatwing")
+        belt = b.part(f"belt_{nm}", body, (cx + 3.0 * sx, 17.5, SEAT_Z - 3.5), (0.0, 0.0, deg(32.0) * sx))
+        b.cube(belt, f"belt_strap_{nm}", (0.0, -5.5, 0.0), (2, 11, 1), "dark", kind="belt", side=sx)
+        box(b, body, f"buckle_{nm}", cx - 4 * sx - (1 if sx > 0 else 0), cx - 4 * sx + (0 if sx > 0 else 1), 6, 8, SEAT_Z - 1, SEAT_Z, "chrome", kind="plain")
+    lr(b, body, "armrest", 11, 12, 9, 11, -7, 3, "trim", kind="armrest")
+    lr(b, body, "inner_handle", 11, 12, 11, 13, -2, 2, "chrome", kind="plain")
+    lr(b, body, "hoop_post", 7, 9, 14, 21, -13, -11, "carbon", kind="carbon")
+    box(b, body, "hoop_bar", -9, 9, 19, 21, -13, -11, "carbon", kind="carbon")
+    box(b, body, "rv_mirror", -3, 3, 17, 19, -3, -1, "mirror", kind="mirror")
+    box(b, body, "rv_stem", -1, 1, 19, 21, -3, -2, "dark", kind="plain")
     tilt = b.part("steering_tilt", body, (SEAT_X, 11.5, 3.0), (-deg(30.0), 0.0, 0.0))
     wheel = b.part("steering_wheel", tilt, (0, 0, 0))
-    box(b, wheel, "sw_top", -3, 3, 3, 4, -1, 1, "dark", kind="plain")
+    box(b, wheel, "sw_top", -3, 3, 3, 4, -1, 1, "dark", kind="swtop")
     box(b, wheel, "sw_bottom", -2, 2, -3, -2, -1, 1, "dark", kind="plain")
     box(b, wheel, "sw_left", 3, 4, -3, 3, -1, 1, "dark", kind="plain")
     box(b, wheel, "sw_right", -4, -3, -3, 3, -1, 1, "dark", kind="plain")
     box(b, wheel, "sw_hub", -1, 2, -1, 2, -1, 1, "dark", kind="swhub")
     box(b, wheel, "sw_spoke", -3, 4, 0, 1, 0, 1, "dark", kind="plain")
     box(b, body, "column", SEAT_X - 1, SEAT_X + 1, 8, 10, 3, 6, "dark", kind="plain")
+    # V6.5.0: botones del tablero (en SupercarEntity.BUTTONS): luces a la derecha del centro y radio a la izquierda; el claxon es el centro del volante
+    box(b, body, "btn_light", 1, 3, 8, 10, 3, 4, "lens", kind="plain")
+    box(b, body, "btn_radio", -3, -1, 8, 10, 3, 4, "chrome", kind="plain")
 
     # ---------------------------------------------------------------- techo, parabrisas, pilares y toma de aire del techo
     box(b, body, "roof", -13, 13, 21, 22, -12, -2, "paint", kind="roof")
@@ -168,11 +224,35 @@ def build():
     wg = b.part("ws_glass", glass, (0, 13.0, 8.0), (-deg(WS_ANGLE), 0.0, 0.0))
     b.cube(wg, "windshield", (0, 7.0, 0.0), (22, 14, 1), "glass", kind="glass", translucent=True)
     lr(b, glass, "side_win", 13, 14, 15, 21, -10, 3, "glass", kind="glass", translucent=True)
+
+    # ---------------------------------------------------------------- V6.14.0: accesorios de las skins (se muestran según SupercarModel.setSkin; material 'tire' para que el repintado no los toque)
+    sirenbtn = b.part("siren_btn", body, (0, 0, 0))
+    box(b, sirenbtn, "btn_siren", -6, -4, 8, 10, 3, 4, "tire", kind="sirenbtn")            # botón de la sirena en el tablero (SupercarEntity.BUTTONS)
+    bar = b.part("bar", body, (0, 0, 0))                                                  # barra de luces del techo (policía)
+    box(b, bar, "bar_base", -9, 9, 22, 23, -4, -2, "tire", kind="plain")
+    box(b, bar, "bar_mid", -1, 1, 23, 25, -4, -2, "tire", kind="plain")
+    bar_red = b.part("bar_red", body, (0, 0, 0))
+    box(b, bar_red, "bar_red_lamp", 1, 9, 23, 25, -4, -2, "tire", kind="lightbar_r", glow=True)
+    bar_blue = b.part("bar_blue", body, (0, 0, 0))
+    box(b, bar_blue, "bar_blue_lamp", -9, -1, 23, 25, -4, -2, "tire", kind="lightbar_b", glow=True)
+    racing = b.part("racing", body, (0, 0, 0))                                            # aletas del frente y alerón extra de carreras
+    lr(b, racing, "canard", 13, 17, 5, 6, 35, 38, "tire", kind="plain")
+    box(b, racing, "rear_lip", -13, 13, 14, 15, -38, -37, "tire", kind="plain")
+    cop = b.part("cop", body, (0, 0, 0))                                                  # defensa de empuje de la policía
+    box(b, cop, "push_bar", -8, 8, 4, 6, 39, 40, "tire", kind="plain")
+    lr(b, cop, "push_post", 7, 8, 4, 8, 38, 39, "tire", kind="plain")
+    street = b.part("street", body, (0, 0, 0))                                            # luces de neón bajo la carrocería
+    lr(b, street, "neon_side", 14, 16, 3, 4, -16, 16, "tire", kind="neon", glow=True)
+    box(b, street, "neon_front", -10, 10, 2, 3, 38, 39, "tire", kind="neon", glow=True)
+    taxi = b.part("taxi", body, (0, 0, 0))                                                # letrero luminoso del techo
+    box(b, taxi, "taxi_sign", -5, 5, 22, 25, -4, -2, "tire", kind="taxisign", glow=True)
     return b
 
 
 def pose(b, wheel_rot=0.0, steer=0.0, glass=True, body=True):
     """Pose del modelo (mismo cálculo que SupercarModel.pose)."""
+    for nm in ("racing", "cop", "street", "taxi", "bar", "bar_red", "bar_blue", "siren_btn"):
+        b.parts[nm].visible = False                       # accesorios de skins: ocultos en la vista del original
     for nm in ("wheel_rl", "wheel_rr", "wheel_fl", "wheel_fr"):
         b.parts[nm].rot = [wheel_rot, 0.0, 0.0]
     b.parts["steer_l"].rot = [0.0, steer, 0.0]
@@ -232,6 +312,45 @@ def weave(a, c1, c2, step=2):
             a[y, x, :3] = c1 if ((x // step) + (y // step)) % 2 == 0 else c2
 
 
+def natural_flip(a):
+    return a
+
+
+def rtext(img, face, s_, x, y, color, scale=1):
+    """Texto legible desde fuera: en la cara 'east' la imagen se ve al revés, así que se escribe volteada."""
+    if face == "east":
+        tmp = img[:, ::-1].copy()
+        vc.text(tmp, s_, x, y, color, scale=scale)
+        img[:] = tmp[:, ::-1]
+    else:
+        vc.text(img, s_, x, y, color, scale=scale)
+
+
+def decal_door(img, face):
+    """V6.14.0: rotulado de la puerta según la skin (la imagen se ve con el frente a la derecha). La fila de arriba queda tapada por el panel del hombro: se empieza en la fila 1."""
+    h, w = img.shape[:2]
+    if SKIN == 1:                                                      # carreras: círculo blanco con el 7
+        cx, cy = w // 2, 4
+        for y in range(h):
+            for x in range(w):
+                if (x - cx) ** 2 + (y - cy) ** 2 <= 10:
+                    img[y, x, :3] = (245, 245, 248)
+        rtext(img, face, "7", cx - 1, cy - 2, (206, 28, 34))
+        rect(img, 0, h - 2, w, h - 1, (245, 245, 248))
+    elif SKIN == 2:                                                    # policía: franja azul marino con dorado y PN
+        rect(img, 0, 6, w, 9, (16, 30, 84))
+        hline(img, 6, (255, 205, 50), alpha=1.0)
+        rtext(img, face, "PN", 8, 1, (16, 30, 84))
+    elif SKIN == 3:                                                    # callejero: franja de neón y el nombre
+        rect(img, 0, 7, w, 8, (40, 255, 130))
+        rtext(img, face, "NITRO", 1, 1, (40, 255, 130))
+    elif SKIN == 4:                                                    # taxi: cuadros blanco y negro y el rótulo
+        for x in range(w):
+            for y in range(6, 9):
+                img[y, x, :3] = (20, 20, 24) if ((x // 2) + y) % 2 == 0 else (245, 245, 248)
+        rtext(img, face, "TAXI", 3, 1, (20, 20, 24))
+
+
 def paint_cube(c, rng):
     if c.opts.get("wheel"):
         return vc.wheel_faces(c, rng, wheel_art, tread=((26, 26, 29), (42, 42, 47)))
@@ -253,6 +372,12 @@ def paint_cube(c, rng):
         vline(top, cols - 4, BODY_HI, alpha=0.35)
         for x in (cols // 2 - 4, cols // 2 + 3):                 # dos respiraderos negros
             rect(top, x, rows // 2 - 2, x + 1, rows // 2 + 2, (14, 14, 18))
+        if SKIN == 1:                                            # carreras: franjas blancas a lo largo
+            rect(top, cols // 2 - 3, 0, cols // 2 - 1, rows, ACCENT)
+            rect(top, cols // 2 + 1, 0, cols // 2 + 3, rows, ACCENT)
+        elif SKIN == 3:                                          # callejero: dos líneas de neón
+            vline(top, 2, ACCENT, alpha=1.0)
+            vline(top, cols - 3, ACCENT, alpha=1.0)
     elif kind in ("fender", "panel", "nose", "lip", "tail", "deck", "endplate", "scoop"):
         a = faces["front"]
         hline(a, a.shape[0] - 1, LO, alpha=0.7)
@@ -278,7 +403,7 @@ def paint_cube(c, rng):
             hline(top, 0, BODY_HI, alpha=0.4)
         if kind == "endplate":
             img = vc.natural_side(faces, outer)
-            rect(img, 1, 1, img.shape[1] - 1, 3, (236, 150, 24))            # franja naranja
+            rect(img, 1, 1, img.shape[1] - 1, 3, ACCENT)            # franja naranja
             vc.store_side(faces, outer, img)
     elif kind == "door":
         img = vc.natural_side(faces, outer)
@@ -288,7 +413,10 @@ def paint_cube(c, rng):
         hline(img, 0, BODY_HI, alpha=0.55)
         hline(img, h - 3, BODY_HI, alpha=0.3)
         rect(img, 0, h - 2, w, h, (24, 26, 32))
-        rect(img, 3, 3, w - 3, 4, (236, 150, 24))                         # filete naranja que baja por la puerta
+        if SKIN == 0:
+            rect(img, 3, 3, w - 3, 4, ACCENT)                     # filete naranja que baja por la puerta
+        else:
+            decal_door(img, outer)
         vc.store_side(faces, outer, img)
         trim = vc.natural_side(faces, inner)
         trim[..., :3] = TRIM
@@ -302,7 +430,7 @@ def paint_cube(c, rng):
         vline(top, 0, BODY_HI, alpha=0.4)
         vline(top, cols - 1, BODY_HI, alpha=0.4)
         faces["bottom"][..., :3] = (60, 62, 72)
-        rect(top, cols // 2 - 1, 0, cols // 2 + 1, rows, (236, 150, 24))  # franja naranja de lado a lado del techo
+        rect(top, cols // 2 - 1, 0, cols // 2 + 1, rows, ACCENT)  # franja naranja de lado a lado del techo
     elif kind == "pillar":
         for f in ("west", "east", "front", "back", "bottom"):
             faces[f][..., :3] = TRIM
@@ -327,7 +455,7 @@ def paint_cube(c, rng):
         weave(top, (24, 25, 29), (40, 41, 48))
         weave(faces["bottom"], (20, 21, 25), (30, 31, 36))
         a = faces["front"]
-        hline(a, 0, (236, 150, 24), alpha=0.9)
+        hline(a, 0, ACCENT, alpha=0.9)
     elif kind == "intake" or kind == "grille":
         for f in ("front", "back", "top", "west", "east", "bottom"):
             a = faces[f]
@@ -338,7 +466,7 @@ def paint_cube(c, rng):
             a = faces["front"]
             for y in range(a.shape[0]):
                 a[y, :, :3] = (30, 32, 38) if y % 2 == 0 else (10, 10, 13)
-            hline(a, 0, (236, 150, 24), alpha=0.95)
+            hline(a, 0, ACCENT, alpha=0.95)
     elif kind == "lampbar":
         a = faces["front"]
         rows, cols = a.shape[:2]
@@ -377,17 +505,22 @@ def paint_cube(c, rng):
         a = faces["back"]
         h, w = a.shape[:2]
         a[..., :3] = (30, 31, 36)
-        rect(a, 9, 1, 15, 4, (24, 24, 28))
-        rect(a, 10, 2, 14, 3, (44, 150, 220))                              # pantalla central
-        rect(a, 2, 1, 7, 3, (16, 16, 20))
-        rect(a, 3, 2, 6, 3, (240, 120, 40))                                # tablero del conductor
+        rect(a, 8, 0, 16, 3, (12, 12, 16))                                 # marco de la pantalla central
+        rect(a, 9, 1, 15, 2, (44, 150, 220))
+        rect(a, 10, 1, 12, 2, (120, 220, 255))
+        rect(a, 13, 1, 14, 2, (250, 200, 60))
+        for x0 in (2, 5, 17, 20):                                          # rejillas de ventilación
+            rect(a, x0, 1, x0 + 2, 2, (10, 10, 13))
+            rect(a, x0, 2, x0 + 2, 3, (46, 48, 56))
+        rect(a, 6, 3, 8, 4, ACCENT)                                # botones
+        rect(a, 16, 3, 18, 4, ACCENT)
         hline(a, h - 1, (14, 14, 18), alpha=0.8)
     elif kind == "seat":
         for y in range(top.shape[0]):
             for x in range(top.shape[1]):
                 if (x + y) % 2 == 0:
                     top[y, x, :3] *= 1.12
-        rect(top, 0, 0, 1, top.shape[0], (236, 150, 24))                   # costura naranja
+        rect(top, 0, 0, 1, top.shape[0], ACCENT)                   # costura naranja
         outline_rect(top, (40, 42, 50), alpha=0.8)
     elif kind == "seatback":
         for f in ("front", "back"):
@@ -397,7 +530,7 @@ def paint_cube(c, rng):
                     if (x + y) % 2 == 0:
                         a[y, x, :3] *= 1.12
             outline_rect(a, (40, 42, 50), alpha=0.8)
-        vline(faces["back"], faces["back"].shape[1] // 2, (236, 150, 24), alpha=0.9)
+        vline(faces["back"], faces["back"].shape[1] // 2, ACCENT, alpha=0.9)
     elif kind == "mirror":
         for f in ("west", "east", "top", "bottom", "front"):
             faces[f][..., :3] = (22, 22, 26)
@@ -407,9 +540,122 @@ def paint_cube(c, rng):
     elif kind == "swhub":
         for f in ("front", "back"):
             rect(faces[f], 0, 0, faces[f].shape[1], faces[f].shape[0], (206, 26, 32))
+    elif kind == "pedal":
+        for f in ("back", "top"):
+            a = faces[f]
+            for y in range(a.shape[0]):
+                a[y, :, :3] = (150, 154, 164) if y % 2 == 0 else (60, 62, 70)      # pedal de aluminio con estrías
+        top = faces["top"].copy()
+        top = natural_flip(top)
+    elif kind == "binnacle":
+        a = faces["back"]
+        h, w = a.shape[:2]
+        a[..., :3] = (14, 14, 18)
+        rect(a, 0, 0, 2, 2, (30, 30, 36)); rect(a, 0, 0, 1, 1, (236, 240, 250))   # reloj izquierdo (velocímetro)
+        rect(a, w - 2, 0, w, 2, (30, 30, 36)); rect(a, w - 1, 0, w, 1, (236, 240, 250))
+        rect(a, 3, 0, w - 3, 2, (8, 40, 70))                                       # pantalla digital central
+        rect(a, 4, 0, 6, 1, (90, 220, 255))
+        rect(a, w - 6, 1, w - 4, 2, (250, 200, 60))
+        top[..., :3] = (22, 23, 28)
+    elif kind == "ctrlpanel":
+        rows, cols = top.shape[:2]
+        top[..., :3] = (22, 23, 28)
+        for k in range(rows - 1):                                                  # botones en dos filas
+            if k % 2 == 0:
+                for x in (0, 2, 3):
+                    if x < cols:
+                        top[k, x, :3] = ACCENT if (k // 2) % 3 == 0 else (150, 154, 164)
+    elif kind == "boot":
+        top[..., :3] = (18, 19, 23)
+        weave(top, (18, 19, 23), (30, 31, 36), step=1)
+    elif kind == "knob":
+        top[..., :3] = (206, 26, 32)
+        for f in ("west", "east", "front", "back"):
+            faces[f][..., :3] = (190, 196, 208)
+    elif kind == "paddle":
+        for f in list(faces):
+            faces[f][..., :3] = (150, 154, 164)
+        top[..., :3] = (190, 196, 208)
+    elif kind in ("lightbar_r", "lightbar_b"):
+        col = (255, 36, 28) if kind == "lightbar_r" else (40, 96, 255)
+        for ff in list(faces):
+            faces[ff][..., :3] = tuple(int(v * 0.55) for v in col)
+            glow[ff] = solid(faces[ff].shape[0], faces[ff].shape[1], col, 255)
+    elif kind == "neon":
+        for ff in list(faces):
+            faces[ff][..., :3] = (40, 255, 130)
+            glow[ff] = solid(faces[ff].shape[0], faces[ff].shape[1], (60, 255, 150), 255)
+    elif kind == "taxisign":
+        for ff in list(faces):
+            faces[ff][..., :3] = (255, 214, 60)
+            glow[ff] = solid(faces[ff].shape[0], faces[ff].shape[1], (255, 220, 80), 255)
+        for ff in ("front", "back"):
+            a = faces[ff]
+            rect(a, 0, a.shape[0] // 2, a.shape[1], a.shape[0] // 2 + 1, (20, 20, 24))
+            glow[ff] = solid(a.shape[0], a.shape[1], (255, 220, 80), 255)
+    elif kind == "sirenbtn":
+        for ff in list(faces):
+            faces[ff][..., :3] = (214, 32, 30)
+    elif kind == "swtop":
+        for f in ("front", "back", "top", "bottom", "west", "east"):
+            faces[f][..., :3] = (20, 21, 25)
+        rect(faces["front"], 2, 0, 4, faces["front"].shape[0], ACCENT)     # marca naranja a las 12
+        rect(faces["back"], 2, 0, 4, faces["back"].shape[0], ACCENT)
+        rect(top, 2, 0, 4, top.shape[0], ACCENT)
+    elif kind == "seatwing":
+        for f in list(faces):
+            weave(faces[f], (46, 48, 58), (58, 60, 72), step=1)
+        weave(top, (46, 48, 58), (60, 62, 74), step=1)
+        outline_rect(top, ACCENT, alpha=0.7)
+    elif kind == "belt":
+        for f in list(faces):
+            faces[f][..., :3] = (20, 21, 25)
+        a = faces["back"]
+        for y in range(1, a.shape[0], 4):
+            a[y, :, :3] = (214, 30, 36)                                            # rayitas rojas del cinturón
+        a = faces["front"]
+        for y in range(1, a.shape[0], 4):
+            a[y, :, :3] = (214, 30, 36)
+    elif kind == "armrest":
+        img = vc.natural_side(faces, inner)
+        img[..., :3] = (34, 36, 42)
+        hline(img, 0, ACCENT, alpha=0.9)
+        vc.store_side(faces, inner, img)
+        top[..., :3] = (34, 36, 42)
+        rect(top, 0, 1, 1, 3, (206, 210, 220)); rect(top, 0, 5, 1, 6, (206, 210, 220))   # botones de ventanilla
+        rect(top, 0, 8, 1, 9, ACCENT)
+    elif kind == "bulkhead_unused":
+        a = faces["front"]
+        h, w = a.shape[:2]
+        a[..., :3] = (36, 38, 44)
+        for x in range(0, w, 4):
+            a[:, x, :3] = (30, 32, 38)
+        for cx in (w // 2 - 7, w // 2 + 5):                                        # dos bocinas traseras
+            rect(a, cx, 2, cx + 3, 5, (14, 14, 18))
+            rect(a, cx + 1, 3, cx + 2, 4, (60, 62, 72))
+        hline(a, 0, ACCENT, alpha=0.8)
     elif kind == "trimwall":
         for f in list(faces):
             faces[f][..., :3] = TRIM
+        if c.name.startswith("tub"):
+            img = vc.natural_side(faces, inner)
+            h, w = img.shape[:2]
+            hline(img, 3, ACCENT, alpha=0.9)                               # filete naranja
+            rect(img, w - 7, 4, w - 3, 8, (14, 14, 18))                            # bocina delantera
+            rect(img, w - 6, 5, w - 4, 7, (60, 62, 72))
+            rect(img, 4, 4, 9, 8, (26, 28, 34))                                    # panel acolchado
+            outline_rect(img[3:8, 3:10], (46, 48, 56), alpha=0.8)
+            vc.store_side(faces, inner, img)
+        if c.name == "cab_back":
+            a = faces["front"]
+            h, w = a.shape[:2]
+            a[..., :3] = (36, 38, 44)
+            for x in range(0, w, 4):
+                a[:, x, :3] = (30, 32, 38)
+            for cx in (w // 2 - 8, w // 2 + 5):
+                rect(a, cx, 2, cx + 3, 5, (14, 14, 18))
+                rect(a, cx + 1, 3, cx + 2, 4, (60, 62, 72))
+            hline(a, 0, ACCENT, alpha=0.8)
 
     vc.store_top(faces, top)
     if c.mat in ("paint",) and kind not in ("pillar", "handle", "tail"):
@@ -443,12 +689,19 @@ def java_model(b):
                       "Superdeportivo Bugotti Chillón (V3.7.0). ARCHIVO GENERADO por tools/v370/supercar.py")
     src = src.replace("LayerDefinition.create(mesh, 256, 256)", f"LayerDefinition.create(mesh, {TEX_W}, {TEX_H})")
     src = src.replace("Atlas de textura de 256x256", f"Atlas de textura de {TEX_W}x{TEX_H}")
+    # V6.14.0: las piezas de skin de la plantilla de la camioneta se renombran a las del superdeportivo (1 carreras, 2 policía, 3 callejero, 4 taxi)
+    import re
+    for a, c in (("police", "racing"), ("delivery", "cop"), ("construction", "street"), ("fire", "taxi")):
+        src = re.sub(r"\b" + a + r"\b", c, src)
+    src = src.replace("this.barsOn = skin == 1 || skin == 4;", "this.barsOn = skin == 2;")
+    src = src.replace("0 = ninguno, 1 = policía, 2 = reparto, 3 = construcción, 4 = bomberos", "0 = ninguno, 1 = carreras, 2 = policía, 3 = callejero, 4 = taxi")
     assert "ford_f150" not in src and "Pickup" not in src
     return src
 
 
 # ----------------------------------------------------------------------------------------------- main
 VIEWS = [(145, 14), (215, 14), (90, 3), (0, 6), (180, 6), (180, 80)]
+CUT_VIEWS = [(150, 30), (210, 30), (90, 10), (0, 15), (180, 15), (180, 85)]
 CENTER = (0, 12.0, 0)
 
 
@@ -459,14 +712,22 @@ def main():
     ap.add_argument("--wheel", type=float, default=0.5)
     ap.add_argument("--steer", type=float, default=0.0)
     ap.add_argument("--dark", action="store_true")
+    ap.add_argument("--cutaway", action="store_true")
     args = ap.parse_args()
 
     b, tex, glow = build_all()
     used = max(c.v + int(c.h + c.d) for c in b.cubes)
     print(f"{len(b.cubes)} cubos, atlas usado hasta y={used}/{TEX_H}")
     pose(b, args.wheel, args.steer)
+    if args.cutaway:                    # solo para mirar la cabina: quita techo, puertas, vidrios y paneles de afuera
+        hide = ("roof", "scoop", "door_", "pillar", "shoulder", "cowl", "side_win", "windshield", "mirror", "side_intake", "handle", "a_pillar", "deck", "quarter", "fender", "haunch", "tail")
+        def strip(part):
+            part.cubes = [c for c in part.cubes if not c.name.startswith(hide) or c.name.startswith("rv_")]
+            for ch in part.children:
+                strip(ch)
+        strip(b.root)
     if args.preview:
-        imgs = vc.views(b, tex, glow, (TEX_W, TEX_H), VIEWS, CENTER, 4.6, light_on=not args.dark, size=(420, 330))
+        imgs = vc.views(b, tex, glow, (TEX_W, TEX_H), CUT_VIEWS if args.cutaway else VIEWS, CENTER, 4.6, light_on=not args.dark, size=(420, 330))
         vc.sheet(imgs).convert("RGB").save(args.preview)
         big = tex.resize((TEX_W * 2, TEX_H * 2), Image.NEAREST)
         bg = Image.new("RGBA", big.size, (90, 96, 108, 255))

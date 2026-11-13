@@ -19,6 +19,14 @@ import net.minecraft.world.level.Level;
  * el auto se ve de 5 bloques de largo pero choca como una caja de 2,1 x 1,3.
  */
 public class SupercarEntity extends VehicleEntity {
+    /** V6.13.0: caja de colisión igual al modelo (ancho, largo, desfase hacia delante, alto; tools/v6130/hulls.py). */
+    private static final VehicleHull.Spec HULL = new VehicleHull.Spec(2.25, 4.94, -0.03, 1.56);
+
+    @Override
+    protected VehicleHull.Spec hull() {
+        return HULL;
+    }
+
     /** Velocidad máxima en bloques por tick (V4.4.0: 120 bloques por segundo = 432 km/h). Cambiar solo este número cambia el tope. */
     public static final float MAX_SPEED = 6.0f;
 
@@ -63,6 +71,39 @@ public class SupercarEntity extends VehicleEntity {
     @Override
     protected Spec spec() {
         return SPEC;
+    }
+
+    @Override
+    public boolean hasCabButtons() {
+        return true;
+    }
+
+    /** V6.5.0: botones del tablero (medidas del modelo, tools/v370/supercar.py): centro del volante = claxon, luces y radio en el tablero. */
+    private static final double[][] BUTTONS = {
+            {0.406, 0.72, 0.19, 0.15, ACTION_HORN},
+            {0.125, 0.56, 0.22, 0.09, ACTION_LIGHT},
+            {-0.125, 0.56, 0.22, 0.09, ACTION_RADIO},
+            {-0.3125, 0.56, 0.22, 0.09, ACTION_SIREN}};
+
+    /** V6.14.0: skins: 0 = original, 1 = carreras, 2 = policía (con sirena; botón rojo del tablero), 3 = callejero, 4 = taxi. */
+    @Override
+    public int skinCount() {
+        return 5;
+    }
+
+    @Override
+    public int policeSkin() {
+        return 2;
+    }
+
+    @Override
+    public String skinKey(int skin) {
+        return "skin.beautifuldecor.bugotti_chillon." + skin;
+    }
+
+    @Override
+    protected double[][] cabButtons() {
+        return BUTTONS;
     }
 
     @Override

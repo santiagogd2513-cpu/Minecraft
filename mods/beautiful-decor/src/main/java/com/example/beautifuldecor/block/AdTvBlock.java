@@ -29,19 +29,29 @@ public class AdTvBlock extends AdScreenBlock {
     private static final VoxelShape[] CEILING_SHAPES = ShapeRotator.all(Shapes.or(
             ModBlock.box(0, 2, 6.5, 16, 14, 9.5), ModBlock.box(2, 14, 7, 4, 16, 9), ModBlock.box(12, 14, 7, 14, 16, 9)));
 
+    private final int tvWidth;
+    private final int tvHeight;
+
     public AdTvBlock(BlockBehaviour.Properties properties) {
-        super(properties, 2);
+        this(properties, 2, 1);
+    }
+
+    /** V6.11.0: televisores de anuncios de otros tamaños (3x2, 4x2, 6x4). Los de más de 1 de alto solo van en la pared. */
+    public AdTvBlock(BlockBehaviour.Properties properties, int width, int height) {
+        super(properties, Math.max(width, height));
+        this.tvWidth = width;
+        this.tvHeight = height;
         registerDefaultState(defaultBlockState().setValue(CEILING, false));
     }
 
     @Override
     public int width() {
-        return 2;
+        return this.tvWidth;
     }
 
     @Override
     public int height() {
-        return 1;
+        return this.tvHeight;
     }
 
     @Override
@@ -65,7 +75,7 @@ public class AdTvBlock extends AdScreenBlock {
         if (base == null) {
             return null;
         }
-        if (context.getClickedFace() != Direction.DOWN) {
+        if (context.getClickedFace() != Direction.DOWN || this.tvHeight > 1) {
             return base.setValue(CEILING, false);
         }
         Direction right = base.getValue(FACING).getCounterClockWise();

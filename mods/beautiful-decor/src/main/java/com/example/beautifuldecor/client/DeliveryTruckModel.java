@@ -66,9 +66,9 @@ public class DeliveryTruckModel extends EntityModel<DeliveryTruckEntity> {
                 .texOffs(108, 278).addBox(-15f, -12f, 68f, 30f, 4f, 3f)
                 .texOffs(88, 278).addBox(11f, -21f, 68f, 4f, 7f, 1f)
                 .texOffs(98, 278).addBox(-15f, -21f, 68f, 4f, 7f, 1f)
-                .texOffs(70, 293).addBox(12f, -42f, 4f, 2f, 1f, 1f)
-                .texOffs(76, 293).addBox(-14f, -42f, 4f, 2f, 1f, 1f)
-                .texOffs(82, 293).addBox(-1f, -42f, 4f, 2f, 1f, 1f)
+                .texOffs(82, 293).addBox(12f, -42f, 4f, 2f, 1f, 1f)
+                .texOffs(88, 293).addBox(-14f, -42f, 4f, 2f, 1f, 1f)
+                .texOffs(94, 293).addBox(-1f, -42f, 4f, 2f, 1f, 1f)
                 .texOffs(0, 169).addBox(-14f, -12f, -24f, 28f, 2f, 26f)
                 .texOffs(188, 0).addBox(12f, -25f, -22f, 2f, 14f, 24f)
                 .texOffs(0, 98).addBox(-14f, -25f, -22f, 2f, 14f, 24f)
@@ -87,6 +87,8 @@ public class DeliveryTruckModel extends EntityModel<DeliveryTruckEntity> {
                 .texOffs(20, 255).addBox(-11f, -25f, -5f, 8f, 11f, 2f)
                 .texOffs(52, 287).addBox(-9f, -29f, -5f, 4f, 4f, 2f)
                 .texOffs(226, 278).addBox(6f, -18f, -20f, 2f, 3f, 4f)
+                .texOffs(38, 293).addBox(1f, -21f, -17f, 2f, 2f, 1f)
+                .texOffs(44, 293).addBox(-3f, -21f, -17f, 2f, 2f, 1f)
                 .texOffs(0, 237).addBox(-14f, -25f, -26f, 28f, 14f, 4f)
                 .texOffs(42, 268).addBox(-8f, -22f, -27f, 16f, 9f, 1f)
                 .texOffs(64, 278).addBox(9f, -21f, -27f, 5f, 7f, 1f)
@@ -103,8 +105,8 @@ public class DeliveryTruckModel extends EntityModel<DeliveryTruckEntity> {
                 .texOffs(76, 255).addBox(-14f, -34f, -2f, 2f, 9f, 4f)
                 .texOffs(88, 255).addBox(10f, -34f, -24f, 2f, 9f, 4f)
                 .texOffs(100, 255).addBox(-12f, -34f, -24f, 2f, 9f, 4f)
-                .texOffs(54, 293).addBox(14f, -29f, -21f, 3f, 1f, 1f)
-                .texOffs(62, 293).addBox(-17f, -29f, -21f, 3f, 1f, 1f)
+                .texOffs(66, 293).addBox(14f, -29f, -21f, 3f, 1f, 1f)
+                .texOffs(74, 293).addBox(-17f, -29f, -21f, 3f, 1f, 1f)
                 .texOffs(228, 237).addBox(17f, -32f, -22f, 2f, 10f, 4f)
                 .texOffs(240, 237).addBox(-19f, -32f, -22f, 2f, 10f, 4f)
                 .texOffs(112, 255).addBox(-13f, -38f, -6f, 26f, 2f, 10f)
@@ -205,7 +207,7 @@ public class DeliveryTruckModel extends EntityModel<DeliveryTruckEntity> {
                 .texOffs(140, 268).addBox(4f, -4f, -1f, 1f, 8f, 2f)
                 .texOffs(146, 268).addBox(-4f, -4f, -1f, 1f, 8f, 2f)
                 .texOffs(130, 287).addBox(-2f, -2f, -1f, 5f, 3f, 2f)
-                .texOffs(38, 293).addBox(-3f, -1f, -1f, 7f, 1f, 1f),
+                .texOffs(50, 293).addBox(-3f, -1f, -1f, 7f, 1f, 1f),
                 PartPose.offset(0f, 0f, 0f));
         PartDefinition p_ws_frame = p_body.addOrReplaceChild("ws_frame",
                 CubeListBuilder.create()

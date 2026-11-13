@@ -49,7 +49,7 @@ import javax.annotation.Nullable;
  * La caja de colisión de cualquier entidad no gira con ella: el helicóptero se ve de más de 6 bloques de largo pero
  * choca como una caja de 2,4 x 2,9 (los rotores no chocan con nada).
  */
-public class HelicopterEntity extends Entity implements PaintableVehicle, HasVehicleStorage {
+public class HelicopterEntity extends Entity implements PaintableVehicle, HasVehicleStorage, SkinnableVehicle {
     /** Velocidad horizontal máxima hacia adelante, en bloques por tick (V4.4.0: 60 km/h = 16,7 bloques por segundo). */
     public static final float MAX_SPEED = 0.833f;     // V4.4.0: 60 km/h = 16,7 bloques por segundo
     /** Velocidad máxima hacia atrás. */
@@ -77,6 +77,96 @@ public class HelicopterEntity extends Entity implements PaintableVehicle, HasVeh
     // V3.6.0: los colores de "Otros" (vidrios, asientos, luces...) viajan juntos en un texto (ver PaintExtras).
     private static final EntityDataAccessor<String> PAINT_EXTRA =
             SynchedEntityData.defineId(HelicopterEntity.class, EntityDataSerializers.STRING);
+
+
+    /** V6.6.0: luces encendidas (faros que brillan y luz real alrededor; ver VehicleLights). */
+    private static final EntityDataAccessor<Boolean> LIGHT =
+            SynchedEntityData.defineId(HelicopterEntity.class, EntityDataSerializers.BOOLEAN);
+
+    public boolean isLightOn() {
+        return this.entityData.get(LIGHT);
+    }
+
+    // ---- V6.9.0: skins (0 = normal, 1 = policía, 2 = bomberos, 3 = noticias) y sirena (policía y bomberos)
+    private static final EntityDataAccessor<Integer> SKIN =
+            SynchedEntityData.defineId(HelicopterEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Boolean> SIREN =
+            SynchedEntityData.defineId(HelicopterEntity.class, EntityDataSerializers.BOOLEAN);
+    /** Botón de la sirena del tablero (tools/v300/helicopter.py: btn_siren), junto al de luces. */
+    private static final double[] SIREN_BUTTON = {3.0 / 16.0, 1.0, 7.5 / 16.0};
+
+    @Override
+    public int skinCount() {
+        return 4;
+    }
+
+    @Override
+    public String skinKey(int skin) {
+        return "skin.beautifuldecor.helicopter." + skin;
+    }
+
+    @Override
+    public int getSkin() {
+        return this.entityData.get(SKIN);
+    }
+
+    @Override
+    public void setSkin(int skin) {
+        this.entityData.set(SKIN, Math.max(0, Math.min(this.skinCount() - 1, skin)));
+        if (!this.hasSiren()) {
+            this.entityData.set(SIREN, Boolean.FALSE);
+        }
+    }
+
+    public boolean hasSiren() {
+        int skin = this.getSkin();
+        return skin == 1 || skin == 2;
+    }
+
+    @Override
+    public boolean isSirenOn() {
+        return this.hasSiren() && this.entityData.get(SIREN);
+    }
+
+    private void toggleSiren(ServerPlayer player) {
+        boolean on = !this.isSirenOn();
+        this.entityData.set(SIREN, on);
+        this.level().playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.LEVER_CLICK, SoundSource.NEUTRAL, 0.6f, on ? 1.3f : 0.8f);
+        player.displayClientMessage(Component.translatable(on ? "hud.beautifuldecor.siren_on" : "hud.beautifuldecor.siren_off"), true);
+    }
+
+    private void toggleLight(ServerPlayer player) {
+        boolean on = !this.isLightOn();
+        this.entityData.set(LIGHT, on);
+        this.level().playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.LEVER_CLICK, SoundSource.NEUTRAL, 0.8f, on ? 1.2f : 0.9f);
+        player.displayClientMessage(Component.translatable(on ? "hud.beautifuldecor.motorcycle_light_on" : "hud.beautifuldecor.motorcycle_light_off"), true);
+    }
+
+    /** V6.6.0: ¿apunta el jugador a este punto del interior (x izquierda, y arriba, z adelante, en metros desde el centro) con tolerancia r? */
+    private boolean lookingAt(Player player, double lx, double ly, double lz, double r) {
+        float yaw = this.getYRot() * Mth.DEG_TO_RAD;
+        double px = this.getX() - Mth.sin(yaw) * lz + Mth.cos(yaw) * lx;
+        double py = this.getY() + ly;
+        double pz = this.getZ() + Mth.cos(yaw) * lz + Mth.sin(yaw) * lx;
+        net.minecraft.world.phys.Vec3 eye = player.getEyePosition();
+        net.minecraft.world.phys.Vec3 look = player.getViewVector(1.0f);
+        double t = (px - eye.x) * look.x + (py - eye.y) * look.y + (pz - eye.z) * look.z;
+        if (t < 0.05 || t > 4.0) {
+            return false;
+        }
+        double cx = eye.x + look.x * t - px;
+        double cy = eye.y + look.y * t - py;
+        double cz = eye.z + look.z * t - pz;
+        return cx * cx + cy * cy + cz * cz < r * r;
+    }
+
+    @Override
+    public boolean canRiderInteract() {
+        return true;
+    }
+
+    /** V6.6.0: botón de luces del tablero (tools/v300/helicopter.py: btn_light, 1/16 de bloque por unidad). */
+    private static final double[] LIGHT_BUTTON = {0.0, 1.0, 7.5 / 16.0};
 
     private static final float SPOOL_UP = 0.0055f;     // V4.4.0: ~9 s hasta el régimen máximo (antes 2,5 s); puede despegar al 60 % (~5,5 s)
     private static final float SPOOL_DOWN = 0.004f;
@@ -145,6 +235,9 @@ public class HelicopterEntity extends Entity implements PaintableVehicle, HasVeh
     @Override
     protected void defineSynchedData() {
         this.entityData.define(CARGO, 0);
+        this.entityData.define(LIGHT, Boolean.FALSE);
+        this.entityData.define(SKIN, 0);
+        this.entityData.define(SIREN, Boolean.FALSE);
         this.entityData.define(PAINT_BODY, VehiclePaint.ORIGINAL);
         this.entityData.define(PAINT_HANDLE, VehiclePaint.ORIGINAL);
         this.entityData.define(PAINT_RIM, VehiclePaint.ORIGINAL);
@@ -234,6 +327,21 @@ public class HelicopterEntity extends Entity implements PaintableVehicle, HasVeh
 
     @Override
     public InteractionResult interact(Player player, InteractionHand hand) {
+        if (player.getVehicle() == this && hand == InteractionHand.MAIN_HAND && !player.isSecondaryUseActive()) {
+            boolean light = this.lookingAt(player, LIGHT_BUTTON[0], LIGHT_BUTTON[1], LIGHT_BUTTON[2], 0.2);
+            boolean siren = !light && this.hasSiren() && this.lookingAt(player, SIREN_BUTTON[0], SIREN_BUTTON[1], SIREN_BUTTON[2], 0.15);
+            if (!light && !siren) {
+                return InteractionResult.PASS;
+            }
+            if (!this.level().isClientSide && player instanceof ServerPlayer sp) {
+                if (light) {
+                    this.toggleLight(sp);
+                } else {
+                    this.toggleSiren(sp);
+                }
+            }
+            return InteractionResult.sidedSuccess(this.level().isClientSide);
+        }
         if (player.isSecondaryUseActive()) {
             if (!this.isVehicle()) {
                 if (!this.level().isClientSide) {
@@ -343,11 +451,22 @@ public class HelicopterEntity extends Entity implements PaintableVehicle, HasVeh
     // Tick
     // =====================================================================================================
 
+    /** V6.13.0: casco del cuerpo (sin las aspas): ancho, largo, desfase hacia delante y alto, sacados del modelo. */
+    private static final VehicleHull.Spec HULL = new VehicleHull.Spec(1.5, 6.81, -1.6, 2.88);
+
+    @Override
+    public void move(MoverType type, Vec3 delta) {
+        VehicleHull.refresh(this, HULL);
+        super.move(type, delta);
+        VehicleHull.fixPosition(this, HULL);
+    }
+
     @Override
     public void tick() {
         super.tick();
         this.syncCargo();
         this.tickLerp();
+        VehicleLights.update(this, this.isLightOn(), true);       // V6.4.0: foco potente (V6.6.0: con el botón de luces)
 
         if (this.isControlledByLocalInstance()) {
             this.flyTick();
@@ -361,6 +480,7 @@ public class HelicopterEntity extends Entity implements PaintableVehicle, HasVeh
             }
         }
         this.updateVisuals();
+        VehicleHull.refresh(this, HULL);
     }
 
     private void tickLerp() {
@@ -657,6 +777,7 @@ public class HelicopterEntity extends Entity implements PaintableVehicle, HasVeh
     /** Al recogerlo, destruirlo o matarlo, lo que lleva dentro cae al suelo. */
     @Override
     public void remove(Entity.RemovalReason reason) {
+        VehicleLights.clear(this);
         if (reason.shouldDestroy()) {
             VehicleStorage.drop(this, this.storage);
         }
@@ -667,12 +788,18 @@ public class HelicopterEntity extends Entity implements PaintableVehicle, HasVeh
     protected void readAdditionalSaveData(CompoundTag tag) {
         VehiclePaint.read(this, tag);
         VehicleStorage.load(this.storage, tag);
+        this.entityData.set(LIGHT, tag.getBoolean("Light"));
+        this.entityData.set(SKIN, Math.max(0, Math.min(this.skinCount() - 1, tag.getInt("Skin"))));
+        this.entityData.set(SIREN, tag.getBoolean("Siren"));
     }
 
     @Override
     protected void addAdditionalSaveData(CompoundTag tag) {
         VehiclePaint.write(this, tag);
         VehicleStorage.save(this.storage, tag);
+        tag.putBoolean("Light", this.isLightOn());
+        tag.putInt("Skin", this.getSkin());
+        tag.putBoolean("Siren", this.isSirenOn());
     }
 
     @Override

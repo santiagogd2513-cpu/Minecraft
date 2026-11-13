@@ -134,6 +134,20 @@ def build():
     b.cube(ks, "stand_leg", (0, -2.5, 0), (1, 5, 1), "black", kind="plain")
     b.cube(ks, "stand_foot", (0, -5.3, 0), (2, 1, 2), "black", kind="plain")
 
+    # ---------------------------------------------------------------- V6.7.0: accesorios de las skins (se muestran u ocultan según la skin)
+    # policía: barra de luces sobre la cola (mitad roja y mitad azul que alternan) y botón de sirena sobre el tanque
+    police = b.part("police", root, (0, 0, 0))
+    b.cube(police, "bar_base", (0, 15.0, -9.5), (7, 1, 2), "black", kind="plain")
+    bar_r = b.part("bar_red", police, (0, 0, 0))
+    b.cube(bar_r, "bar_red_lamp", (-1.75, 16.0, -9.5), (3, 1, 2), "taillight", kind="lightbar_r")
+    bar_b = b.part("bar_blue", police, (0, 0, 0))
+    b.cube(bar_b, "bar_blue_lamp", (1.75, 16.0, -9.5), (3, 1, 2), "glass", kind="lightbar_b")
+    b.cube(police, "btn_siren", (0, 18.0, 0.5), (1, 1, 1), "taillight", kind="plain")
+    # repartidor: caja de reparto sobre la cola
+    box = b.part("delivery_box", root, (0, 0, 0))
+    b.cube(box, "dbox_main", (0, 18.0, -12.0), (8, 7, 7), "black", kind="dbox")
+    b.cube(box, "dbox_lid", (0, 21.9, -12.0), (8, 1, 7), "black", kind="dbox_lid")
+
     # ---------------------------------------------------------------- ruedas
     wheel(b, root, "rear_wheel", (0, REAR_AXLE[0], REAR_AXLE[1]), 4, 6, 4)
 
@@ -145,6 +159,10 @@ def build():
         b.cube(steer, f"bar_{nm}", (3.9 * sx, -1.2, -0.4), (4, 1, 1), "black_gloss", kind="bar")
         b.cube(steer, f"grip_{nm}", (6.4 * sx, -1.4, -0.6), (2, 1, 1), "rubber", kind="grip")
         b.cube(steer, f"lever_{nm}", (6.4 * sx, -0.6, 1.8), (1, 1, 3), "chrome", kind="lever")
+    # V6.7.0: botones del manubrio y del tablero (MotorcycleEntity.BUTTONS): luces a la izquierda, claxon a la derecha, radio en el tablero
+    b.cube(steer, "sw_light", (3.0, -0.2, -0.9), (1, 1, 1), "lens", kind="plain")
+    b.cube(steer, "sw_horn", (-3.0, -0.2, -0.9), (1, 1, 1), "chrome", kind="plain")
+    b.cube(steer, "dash_btn", (0, 2.6, -1.2), (1, 1, 1), "lens", kind="plain")
     fork = b.part("fork", steer, (0, 0, 0), (-deg(RAKE), 0, 0))
     for sx, nm in ((1, "l"), (-1, "r")):
         b.cube(fork, f"fork_up_{nm}", (3.3 * sx, -4.0, 0), (2, 6, 2), "black_gloss", kind="fork")
@@ -164,3 +182,5 @@ def pose(b, wheel_rot=0.0, steer=0.0, parked=False):
     b.parts["front_wheel"].rot = [wheel_rot, 0.0, 0.0]
     b.parts["steer"].rot = [0.0, steer, 0.0]
     b.parts["kickstand"].visible = parked
+    b.parts["police"].visible = False            # V6.7.0: los accesorios de las skins no salen en las vistas ni en el ícono
+    b.parts["delivery_box"].visible = False

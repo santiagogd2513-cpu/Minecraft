@@ -38,6 +38,10 @@ public final class GarageClientEvents {
         VehicleRadioClient.tick(minecraft);                 // V3.5.0: las radios de los vehículos cercanos
         RadioBlockClient.tick(minecraft);                   // V4.2.0: radios de mesa y bafles
         while (VehicleKeys.RADIO.consumeClick()) {
+            if (minecraft.player != null && minecraft.player.getVehicle() instanceof com.example.beautifuldecor.entity.VehicleEntity ve
+                    && !VehicleClientEvents.keysActive(ve)) {
+                continue;
+            }
             VehicleRadioScreen.tryOpen(minecraft);          // V3.5.0: X yendo montado en un vehículo terrestre
         }
         while (GarageKeys.COLORS.consumeClick()) {

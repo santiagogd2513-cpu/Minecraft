@@ -139,6 +139,9 @@ def build():
     box(b, wheel, "sw_hub", -2, 3, -1, 2, -1, 1, "dark", kind="swhub")
     box(b, wheel, "sw_spoke", -3, 4, 0, 1, 0, 1, "dark", kind="plain")
     box(b, body, "column", SEAT_X - 1, SEAT_X + 1, 15, 18, 16, 20, "dark", kind="plain")
+    # V6.3.0: botones del tablero (en DeliveryTruckEntity.BUTTONS): luces a la derecha del centro y radio a la izquierda; el claxon es el centro del volante
+    box(b, body, "btn_light", 1, 3, 19, 21, 16, 17, "lens", kind="plain")
+    box(b, body, "btn_radio", -3, -1, 19, 21, 16, 17, "chrome", kind="plain")
 
     # ---------------------------------------------------------------- frente de la cabina (cabina adelantada)
     box(b, body, "front_panel", -14, 14, 11, 25, 22, 26, "paint", kind="front_panel")

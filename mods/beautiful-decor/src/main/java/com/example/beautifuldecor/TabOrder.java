@@ -20,7 +20,7 @@ public final class TabOrder {
     public static void moveToEnd() {
         try {
             List<CreativeModeTab> mine = List.of(ModCreativeTabs.BEAUTIFUL_DECOR.get(), ModCreativeTabs.BEAUTIFUL_DECOR_TECH.get(),
-                    ModCreativeTabs.BEAUTIFUL_DECOR_VEHICLES.get());
+                    ModCreativeTabs.BEAUTIFUL_DECOR_VEHICLES.get(), ModCreativeTabs.BEAUTIFUL_DECOR_PARTS.get());
             TabReorder.Result result = TabReorder.moveToEnd(CreativeModeTabRegistry.class, mine);
             if (result.found() == 0) {
                 LOGGER.info("Beautiful Decor: no se encontró la lista ordenada de pestañas (Forge la arma más tarde)");

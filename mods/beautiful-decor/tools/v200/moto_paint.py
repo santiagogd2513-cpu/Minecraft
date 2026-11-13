@@ -359,6 +359,14 @@ def paint_cube(c, rng):
         glow["front"] = g
         for ff in ("west", "east", "top", "bottom", "back"):
             faces[ff][..., :3] = (36, 38, 44)
+    elif kind in ("lightbar_r", "lightbar_b"):
+        col = (255, 36, 28) if kind == "lightbar_r" else (40, 96, 255)
+        for ff in list(faces):
+            faces[ff][..., :3] = tuple(int(v * 0.55) for v in col)
+            glow[ff] = solid(faces[ff].shape[0], faces[ff].shape[1], col, 255)
+    elif kind in ("dbox", "dbox_lid"):
+        for ff in list(faces):
+            faces[ff][..., :3] = (26, 28, 34)
     elif kind == "taillight":
         for ff in ("front", "west", "east", "top", "bottom", "back"):
             faces[ff][..., :3] = (120, 10, 14)

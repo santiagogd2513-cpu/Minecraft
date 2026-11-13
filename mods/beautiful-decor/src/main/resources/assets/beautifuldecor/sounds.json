@@ -306,5 +306,140 @@
         "volume": 1.0
       }
     ]
+  },
+  "train_roll_freight": {
+    "sounds": [
+      {
+        "name": "beautifuldecor:train_roll_freight",
+        "volume": 1.0,
+        "attenuation_distance": 56
+      }
+    ]
+  },
+  "train_roll_passenger": {
+    "sounds": [
+      {
+        "name": "beautifuldecor:train_roll_passenger",
+        "volume": 1.0,
+        "attenuation_distance": 48
+      }
+    ]
+  },
+  "train_roll_steam": {
+    "sounds": [
+      {
+        "name": "beautifuldecor:train_roll_steam",
+        "volume": 1.0,
+        "attenuation_distance": 56
+      }
+    ]
+  },
+  "train_roll_metro": {
+    "sounds": [
+      {
+        "name": "beautifuldecor:train_roll_metro",
+        "volume": 1.0,
+        "attenuation_distance": 44
+      }
+    ]
+  },
+  "train_brake_squeal": {
+    "sounds": [
+      {
+        "name": "beautifuldecor:train_brake_squeal",
+        "volume": 1.0,
+        "attenuation_distance": 72
+      }
+    ]
+  },
+  "train_brake_metro": {
+    "sounds": [
+      {
+        "name": "beautifuldecor:train_brake_metro",
+        "volume": 1.0,
+        "attenuation_distance": 40
+      }
+    ]
+  },
+  "train_emergency": {
+    "sounds": [
+      {
+        "name": "beautifuldecor:train_emergency",
+        "volume": 1.0,
+        "attenuation_distance": 120
+      }
+    ]
+  },
+  "train_chime": {
+    "sounds": [
+      {
+        "name": "beautifuldecor:train_chime",
+        "volume": 1.0,
+        "attenuation_distance": 24
+      }
+    ]
+  },
+  "train_say_next": {
+    "sounds": [
+      {
+        "name": "beautifuldecor:train_say_next",
+        "volume": 1.0,
+        "attenuation_distance": 24
+      }
+    ]
+  },
+  "train_say_arrived": {
+    "sounds": [
+      {
+        "name": "beautifuldecor:train_say_arrived",
+        "volume": 1.0,
+        "attenuation_distance": 24
+      }
+    ]
+  },
+  "train_say_departing": {
+    "sounds": [
+      {
+        "name": "beautifuldecor:train_say_departing",
+        "volume": 1.0,
+        "attenuation_distance": 24
+      }
+    ]
+  },
+  "train_say_final": {
+    "sounds": [
+      {
+        "name": "beautifuldecor:train_say_final",
+        "volume": 1.0,
+        "attenuation_distance": 24
+      }
+    ]
+  },
+  "train_say_destination": {
+    "sounds": [
+      {
+        "name": "beautifuldecor:train_say_destination",
+        "volume": 1.0,
+        "attenuation_distance": 24
+      }
+    ]
+  },
+  "vehicle_siren": {
+    "sounds": [
+      {
+        "name": "beautifuldecor:vehicle_siren",
+        "volume": 1.0,
+        "attenuation_distance": 96
+      }
+    ]
+  },
+  "taser_zap": {
+    "sounds": [
+      {
+        "name": "beautifuldecor:taser_zap",
+        "volume": 1.0,
+        "attenuation_distance": 24
+      }
+    ]
   }
 }

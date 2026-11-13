@@ -40,6 +40,8 @@ public class VehicleActionPacket {
                     vehicle.toggleLight(player);
                 } else if (packet.action == VehicleEntity.ACTION_HORN) {
                     vehicle.honk();
+                } else if (packet.action == VehicleEntity.ACTION_SIREN) {
+                    vehicle.toggleSiren(player);
                 }
             }
         });

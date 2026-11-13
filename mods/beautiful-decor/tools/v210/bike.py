@@ -115,11 +115,32 @@ def build():
     b.cube(fork, "front_fender", (0, -FORK_LEN + R + 1.0, 0.3), (2, 1, 9), "frame", kind="fender")
     b.cube(fork, "front_fender_tip", (0, -FORK_LEN + R - 0.1, 4.8), (2, 1, 2), "frame", kind="fender")
     vc.add_wheel(b, fork, "front_wheel", (0, -FORK_LEN, 0), R, 1, hub_w=5, tire_depth=4)
+
+    # ---------------------------------------------------------------- V6.14.0: accesorios de las skins (se muestran según BicycleModel.setSkin; material 'tire' para que el repintado no los toque)
+    mtb_fork = b.part("mtb_fork", fork, (0, 0, 0))                                    # montaña: amortiguador de la horquilla
+    for sx, nm in ((1, "l"), (-1, "r")):
+        b.cube(mtb_fork, f"shock_{nm}", (1.9 * sx, -(FORK_LEN / 2.0) + 1.0, 0), (2, 4, 2), "tire", kind="shock")
+    mtb_frame = b.part("mtb_frame", bike, (0, 0, 0))                                  # montaña: caramañola en el cuadro
+    b.cube(mtb_frame, "bottle", (1.8, 10.0, 1.6), (2, 4, 2), "tire", kind="bottle")
+    race_bars = b.part("race_bars", steer, (0, 0, 0))                                 # competición: manubrio de carreras (puntas hacia abajo)
+    for sx, nm in ((1, "l"), (-1, "r")):
+        b.cube(race_bars, f"drop_{nm}", (4.6 * sx, 1.6, 0.4), (1, 3, 3), "tire", kind="dropbar")
+    race_disc = b.part("race_disc", rear, (0, 0, 0))                                  # competición: rueda trasera lenticular
+    b.cube(race_disc, "disc", (0, 0, 0), (1, 9, 9), "tire", kind="disc")
+    del_front = b.part("del_front", steer, (0, 0, 0))                                 # reparto: canasto delantero
+    b.cube(del_front, "basket", (0, -1.2, 5.0), (8, 4, 5), "tire", kind="basket")
+    del_rear = b.part("del_rear", bike, (0, 0, 0))                                    # reparto: caja de carga trasera
+    b.cube(del_rear, "cargo_box", (0, 16.4, REAR[1] - 1.2), (6, 6, 7), "tire", kind="dbox")
+    cop_rear = b.part("cop_rear", bike, (0, 0, 0))                                    # policía: luces azul y roja atrás
+    b.cube(cop_rear, "cop_red", (1.2, 13.8, REAR[1] - 1.2), (2, 2, 2), "tire", kind="copred")
+    b.cube(cop_rear, "cop_blue", (-1.2, 13.8, REAR[1] - 1.2), (2, 2, 2), "tire", kind="copblue")
     return b
 
 
 def pose(b, wheel_rot=0.0, steer=0.0, parked=False):
     """Pose del modelo (mismo cálculo que BicycleModel.pose)."""
+    for nm in ("mtb_fork", "mtb_frame", "race_bars", "race_disc", "del_front", "del_rear", "cop_rear"):
+        b.parts[nm].visible = False                       # accesorios de skins: ocultos en la vista del original
     b.parts["rear_wheel"].rot = [wheel_rot, 0.0, 0.0]
     b.parts["front_wheel"].rot = [wheel_rot, 0.0, 0.0]
     b.parts["crank"].rot = [wheel_rot * 0.45, 0.0, 0.0]
@@ -138,6 +159,33 @@ RIM = RIM_REF
 RIM_SPOKE = RIM_SPOKE_REF
 RIM_HUB = RIM_HUB_REF
 LEATHER = (112, 66, 36)
+# ---- V6.14.0: skins (colores fijos, no se repintan con la tecla R). 0 = original, 1 = montaña, 2 = competición, 3 = reparto, 4 = policía
+SKIN = 0
+STRIPE = (240, 244, 248)
+SKIN_DEFS = {
+    1: ("mountain", (60, 140, 40), (110, 200, 70), (30, 80, 20), (255, 140, 20), (30, 30, 34), (255, 140, 20)),
+    2: ("racing", (210, 26, 34), (250, 90, 80), (120, 10, 16), (245, 245, 248), (24, 24, 28), (245, 245, 248)),
+    3: ("delivery", (250, 190, 20), (255, 225, 90), (170, 120, 6), (20, 40, 100), (36, 36, 42), (20, 40, 100)),
+    4: ("police", (236, 238, 244), (252, 253, 255), (168, 174, 190), (16, 30, 84), (16, 30, 84), (16, 30, 84)),
+}
+
+
+def set_skin(n):
+    """Pone la paleta de la skin n (0 = la original, repintable)."""
+    global SKIN, STRIPE, FRAME, FRAME_HI, FRAME_LO, RIM, RIM_SPOKE, RIM_HUB
+    SKIN = n
+    if n == 0:
+        STRIPE = (240, 244, 248)
+        MAT_COLOR["saddle"] = LEATHER
+        set_paint()
+        return
+    _, FRAME, FRAME_HI, FRAME_LO, rim, saddle, STRIPE = SKIN_DEFS[n]
+    RIM = rim
+    RIM_SPOKE = tuple(max(0, v - 40) for v in rim)
+    RIM_HUB = tuple(max(0, v - 20) for v in rim)
+    MAT_COLOR["frame"] = FRAME
+    MAT_COLOR["saddle"] = saddle
+
 MAT_COLOR = {
     "frame": FRAME, "chrome": (176, 182, 194), "black": (26, 26, 30), "saddle": LEATHER, "chain": (58, 58, 64),
     "taillight": (150, 12, 16), "lamp": (150, 160, 172), "bell": (196, 202, 214), "tire": (28, 28, 30),
@@ -179,6 +227,12 @@ def wheel_art(Y, Z, kind):
     return (176, 182, 194, 255)
 
 
+def weave(a, c1, c2, step=1):
+    for y in range(a.shape[0]):
+        for x in range(a.shape[1]):
+            a[y, x, :3] = c1 if ((x // step) + (y // step)) % 2 == 0 else c2
+
+
 def paint_cube(c, rng):
     if c.opts.get("wheel"):
         return vc.wheel_faces(c, rng, wheel_art, tread=((30, 30, 33), (44, 44, 48)))
@@ -199,7 +253,7 @@ def paint_cube(c, rng):
             for f in ("west", "east"):                     # franja blanca con el nombre del cuadro
                 a = vc.natural_side(faces, f)
                 if a.shape[0] >= 2 and a.shape[1] >= 8:
-                    rect(a, 2, a.shape[0] // 2, a.shape[1] - 2, a.shape[0] // 2 + 1, (240, 244, 248))
+                    rect(a, 2, a.shape[0] // 2, a.shape[1] - 2, a.shape[0] // 2 + 1, STRIPE)
                 vc.store_side(faces, f, a)
     elif kind == "fender":
         stripe = top.shape[1] // 2
@@ -260,6 +314,41 @@ def paint_cube(c, rng):
             if f == "top":
                 for x in range(0, top.shape[1], 2):
                     top[:, x, :3] = (52, 52, 58)
+    elif kind == "shock":
+        for ff in list(faces):
+            faces[ff][..., :3] = (30, 30, 34)
+        rect(faces["front"], 0, 1, 2, 2, (255, 140, 20))
+        rect(faces["back"], 0, 1, 2, 2, (255, 140, 20))
+    elif kind == "bottle":
+        for ff in list(faces):
+            faces[ff][..., :3] = (230, 236, 244)
+        top[..., :3] = (40, 120, 220)
+    elif kind == "dropbar":
+        for ff in list(faces):
+            faces[ff][..., :3] = (30, 30, 34)
+    elif kind == "disc":
+        for ff in ("west", "east"):
+            a = faces[ff]
+            h, w = a.shape[:2]
+            for y in range(h):
+                for x in range(w):
+                    r = math.hypot(x - (w - 1) / 2.0, y - (h - 1) / 2.0)
+                    a[y, x, :3] = (240, 240, 244) if r < 3.4 else (24, 24, 28)
+                    a[y, x, 3] = 255 if r < 4.6 else 0
+    elif kind == "basket":
+        for ff in list(faces):
+            weave(faces[ff], (150, 110, 64), (120, 84, 46))
+        top[..., :3] = (60, 42, 24)
+    elif kind == "dbox":
+        for ff in list(faces):
+            faces[ff][..., :3] = (20, 40, 100)
+        for ff in ("west", "east"):
+            a = faces[ff]
+            rect(a, 1, a.shape[0] // 2, a.shape[1] - 1, a.shape[0] // 2 + 1, (255, 150, 30))
+    elif kind in ("copred", "copblue"):
+        col = (255, 36, 28) if kind == "copred" else (40, 96, 255)
+        for ff in list(faces):
+            faces[ff][..., :3] = col
     elif kind in ("plain", "bar"):
         pass
 
@@ -319,6 +408,13 @@ public class BicycleModel extends EntityModel<BicycleEntity> {{
     private final ModelPart crank;
     private final ModelPart steer;
     private final ModelPart kickstand;
+    private final ModelPart mtbFork;
+    private final ModelPart mtbFrame;
+    private final ModelPart raceBars;
+    private final ModelPart raceDisc;
+    private final ModelPart delFront;
+    private final ModelPart delRear;
+    private final ModelPart copRear;
 
     public BicycleModel(ModelPart root) {{
         this.root = root;
@@ -328,6 +424,13 @@ public class BicycleModel extends EntityModel<BicycleEntity> {{
         this.steer = bike.getChild("steer");
         this.frontWheel = this.steer.getChild("fork").getChild("front_wheel");
         this.kickstand = bike.getChild("kickstand");
+        this.mtbFork = this.steer.getChild("fork").getChild("mtb_fork");
+        this.mtbFrame = bike.getChild("mtb_frame");
+        this.raceBars = this.steer.getChild("race_bars");
+        this.raceDisc = this.rearWheel.getChild("race_disc");
+        this.delFront = this.steer.getChild("del_front");
+        this.delRear = bike.getChild("del_rear");
+        this.copRear = bike.getChild("cop_rear");
     }}
 
     public static LayerDefinition createBodyLayer() {{
@@ -344,6 +447,17 @@ public class BicycleModel extends EntityModel<BicycleEntity> {{
         this.crank.xRot = wheelRot * 0.45f;
         this.steer.yRot = steerRot;
         this.kickstand.visible = parked;
+    }}
+
+    /** V6.14.0: accesorios de la skin: 0 = ninguno, 1 = montaña, 2 = competición, 3 = reparto, 4 = policía. */
+    public void setSkin(int skin) {{
+        this.mtbFork.visible = skin == 1;
+        this.mtbFrame.visible = skin == 1;
+        this.raceBars.visible = skin == 2;
+        this.raceDisc.visible = skin == 2;
+        this.delFront.visible = skin == 3;
+        this.delRear.visible = skin == 3;
+        this.copRear.visible = skin == 4;
     }}
 
     @Override

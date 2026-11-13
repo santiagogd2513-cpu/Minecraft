@@ -82,6 +82,45 @@ public class AirlinerEntity extends Entity implements PaintableVehicle, HasVehic
     private static final double SEAT_FEET_Y = 16.0 / 4.0 - 0.75;
 
     // Colores que el jugador le puso con la tecla R (-1 = el de siempre).
+
+    /** V6.6.0: luces encendidas (faros que brillan y luz real alrededor; ver VehicleLights). */
+    private static final EntityDataAccessor<Boolean> LIGHT =
+            SynchedEntityData.defineId(AirlinerEntity.class, EntityDataSerializers.BOOLEAN);
+
+    public boolean isLightOn() {
+        return this.entityData.get(LIGHT);
+    }
+
+    private void toggleLight(ServerPlayer player) {
+        boolean on = !this.isLightOn();
+        this.entityData.set(LIGHT, on);
+        this.level().playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.LEVER_CLICK, SoundSource.NEUTRAL, 0.8f, on ? 1.2f : 0.9f);
+        player.displayClientMessage(Component.translatable(on ? "hud.beautifuldecor.motorcycle_light_on" : "hud.beautifuldecor.motorcycle_light_off"), true);
+    }
+
+    /** V6.6.0: ¿apunta el jugador a este punto del interior (x izquierda, y arriba, z adelante, en metros desde el centro) con tolerancia r? */
+    private boolean lookingAt(Player player, double lx, double ly, double lz, double r) {
+        float yaw = this.getYRot() * Mth.DEG_TO_RAD;
+        double px = this.getX() - Mth.sin(yaw) * lz + Mth.cos(yaw) * lx;
+        double py = this.getY() + ly;
+        double pz = this.getZ() + Mth.cos(yaw) * lz + Mth.sin(yaw) * lx;
+        net.minecraft.world.phys.Vec3 eye = player.getEyePosition();
+        net.minecraft.world.phys.Vec3 look = player.getViewVector(1.0f);
+        double t = (px - eye.x) * look.x + (py - eye.y) * look.y + (pz - eye.z) * look.z;
+        if (t < 0.05 || t > 4.0) {
+            return false;
+        }
+        double cx = eye.x + look.x * t - px;
+        double cy = eye.y + look.y * t - py;
+        double cz = eye.z + look.z * t - pz;
+        return cx * cx + cy * cy + cz * cz < r * r;
+    }
+
+    /** V6.6.0: botón de luces en el pedestal (tools/v380/airliner.py: btn_light, 1/4 de bloque por unidad). */
+    private static final double[] LIGHT_BUTTON = {2.0 / 4.0, 18.5 / 4.0, 85.0 / 4.0};
+    /** V6.6.0: los pilotos van sentados 75 cm más alto para ver por el parabrisas (el modelo lo sube igual: tools/v380/airliner.py). */
+    private static final double PILOT_RAISE = 0.75;
+
     private static final EntityDataAccessor<Integer> PAINT_BODY =
             SynchedEntityData.defineId(AirlinerEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> PAINT_HANDLE =
@@ -107,8 +146,8 @@ public class AirlinerEntity extends Entity implements PaintableVehicle, HasVehic
 
     private static double[][] buildSeatPositions() {
         double[][] seats = new double[SEATS][];
-        seats[0] = new double[]{2.5, SEAT_FEET_Y, 80.5 / 4.0};            // piloto (izquierda)
-        seats[1] = new double[]{-2.5, SEAT_FEET_Y, 80.5 / 4.0};           // copiloto
+        seats[0] = new double[]{2.5, SEAT_FEET_Y + PILOT_RAISE, 80.5 / 4.0};            // piloto (izquierda), asiento alto (V6.6.0)
+        seats[1] = new double[]{-2.5, SEAT_FEET_Y + PILOT_RAISE, 80.5 / 4.0};           // copiloto
         double[] xs = {13.5, 10.5, 4.5, 1.5, -1.5, -4.5, -10.5, -13.5};   // 2 + pasillo + 4 + pasillo + 2 (unidades de 1/4 de bloque)
         int n = 2;
         for (int row = 0; row < 16; row++) {
@@ -186,6 +225,7 @@ public class AirlinerEntity extends Entity implements PaintableVehicle, HasVehic
         this.entityData.define(PAINT_RIM, VehiclePaint.ORIGINAL);
         this.entityData.define(PAINT_EXTRA, PaintExtras.EMPTY);
         this.entityData.define(GEAR_UP, Boolean.FALSE);
+        this.entityData.define(LIGHT, Boolean.FALSE);
         this.entityData.define(CARGO, 0);
     }
 
@@ -284,8 +324,49 @@ public class AirlinerEntity extends Entity implements PaintableVehicle, HasVehic
         callback.accept(passenger, this.getX() + ox, this.getY() + y, this.getZ() + oz);
     }
 
+    /** V6.5.0: el piloto y el copiloto pueden tocar la palanca del tren de aterrizaje del pedestal. */
+    @Override
+    public boolean canRiderInteract() {
+        return true;
+    }
+
+    /** V6.5.0: posición de la palanca del tren en el modelo (tools/v380/airliner.py: 1 unidad = 1/4 de bloque): x izquierda, y arriba, z adelante. */
+    private static final double[] GEAR_LEVER = {0.0, 19.5 / 4.0, 81.0 / 4.0};
+
+    private boolean lookingAtGearLever(Player player) {
+        float yaw = this.getYRot() * Mth.DEG_TO_RAD;
+        double px = this.getX() - Mth.sin(yaw) * GEAR_LEVER[2] + Mth.cos(yaw) * GEAR_LEVER[0];
+        double py = this.getY() + GEAR_LEVER[1];
+        double pz = this.getZ() + Mth.cos(yaw) * GEAR_LEVER[2] + Mth.sin(yaw) * GEAR_LEVER[0];
+        net.minecraft.world.phys.Vec3 eye = player.getEyePosition();
+        net.minecraft.world.phys.Vec3 look = player.getViewVector(1.0f);
+        double t = (px - eye.x) * look.x + (py - eye.y) * look.y + (pz - eye.z) * look.z;
+        if (t < 0.05 || t > 4.0) {
+            return false;
+        }
+        double cx = eye.x + look.x * t - px;
+        double cy = eye.y + look.y * t - py;
+        double cz = eye.z + look.z * t - pz;
+        return cx * cx + cy * cy + cz * cz < 0.35 * 0.35;
+    }
+
     @Override
     public InteractionResult interact(Player player, InteractionHand hand) {
+        if (player.getVehicle() == this && hand == InteractionHand.MAIN_HAND && !player.isSecondaryUseActive()) {
+            boolean gear = this.lookingAtGearLever(player);
+            boolean light = !gear && this.lookingAt(player, LIGHT_BUTTON[0], LIGHT_BUTTON[1], LIGHT_BUTTON[2], 0.3);
+            if (!gear && !light) {
+                return InteractionResult.PASS;
+            }
+            if (!this.level().isClientSide && this.getControllingPassenger() == player && player instanceof ServerPlayer sp) {
+                if (gear) {
+                    this.requestGear(sp);
+                } else {
+                    this.toggleLight(sp);
+                }
+            }
+            return InteractionResult.sidedSuccess(this.level().isClientSide);
+        }
         if (player.isSecondaryUseActive()) {
             if (!this.isVehicle()) {
                 if (!this.level().isClientSide) {
@@ -424,6 +505,7 @@ public class AirlinerEntity extends Entity implements PaintableVehicle, HasVehic
         super.tick();
         this.syncCargo();
         this.tickLerp();
+        VehicleLights.update(this, this.isLightOn(), true);       // V6.4.0: foco potente (V6.6.0: con el botón de luces)
 
         if (this.isPilotedHere()) {
             this.flyTick();
@@ -823,6 +905,7 @@ public class AirlinerEntity extends Entity implements PaintableVehicle, HasVehic
     /** Al recogerlo, destruirlo o matarlo, lo que lleva dentro cae al suelo. */
     @Override
     public void remove(Entity.RemovalReason reason) {
+        VehicleLights.clear(this);
         if (reason.shouldDestroy()) {
             VehicleStorage.drop(this, this.storage);
         }
@@ -834,6 +917,7 @@ public class AirlinerEntity extends Entity implements PaintableVehicle, HasVehic
         VehiclePaint.read(this, tag);
         VehicleStorage.load(this.storage, tag);
         this.entityData.set(GEAR_UP, tag.getBoolean("GearUp"));
+        this.entityData.set(LIGHT, tag.getBoolean("Light"));
     }
 
     @Override
@@ -841,6 +925,7 @@ public class AirlinerEntity extends Entity implements PaintableVehicle, HasVehic
         VehiclePaint.write(this, tag);
         VehicleStorage.save(this.storage, tag);
         tag.putBoolean("GearUp", this.isGearUp());
+        tag.putBoolean("Light", this.isLightOn());
     }
 
     @Override

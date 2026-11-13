@@ -5,6 +5,7 @@ import com.example.beautifuldecor.entity.AirlinerEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
 import net.minecraft.client.renderer.entity.EntityRendererProvider;
@@ -16,6 +17,8 @@ import net.minecraft.resources.ResourceLocation;
  * giran, tren que se pliega y cabeceo alrededor del punto bajo las ruedas principales (el mismo que usan los asientos).
  */
 public class AirlinerRenderer extends EntityRenderer<AirlinerEntity> {
+    private static final ResourceLocation GLOW =
+            ResourceLocation.fromNamespaceAndPath(BeautifulDecor.MOD_ID, "textures/entity/airliner_glow.png");
     private static final ResourceLocation TEXTURE =
             ResourceLocation.fromNamespaceAndPath(BeautifulDecor.MOD_ID, "textures/entity/airliner.png");
     private final AirlinerModel model;
@@ -50,6 +53,11 @@ public class AirlinerRenderer extends EntityRenderer<AirlinerEntity> {
         this.model.showGlass(false);
         this.model.renderToBuffer(poseStack, bufferSource.getBuffer(RenderType.entityCutoutNoCull(texture)),
                 packedLight, OverlayTexture.NO_OVERLAY, 1.0f, 1.0f, 1.0f, 1.0f);
+        if (airliner.isLightOn()) {
+            // V6.6.0: faros, balizas y luces de posición a pleno brillo, de día y de noche.
+            this.model.renderToBuffer(poseStack, bufferSource.getBuffer(RenderType.eyes(GLOW)),
+                    LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 1.0f, 1.0f, 1.0f, 1.0f);
+        }
         // Pasada 2: vidrios (translúcidos).
         this.model.showGlass(true);
         this.model.renderToBuffer(poseStack, bufferSource.getBuffer(RenderType.entityTranslucentCull(texture)),

@@ -1,0 +1,82 @@
+{
+ "multipart": [
+  {
+   "when": {
+    "facing": "north",
+    "ceiling": "false"
+   },
+   "apply": {
+    "model": "beautifuldecor:block/ad_panel"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "ceiling": "false"
+   },
+   "apply": {
+    "model": "beautifuldecor:block/ad_panel",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "ceiling": "false"
+   },
+   "apply": {
+    "model": "beautifuldecor:block/ad_panel",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "ceiling": "false"
+   },
+   "apply": {
+    "model": "beautifuldecor:block/ad_panel",
+    "y": 270
+   }
+  },
+  {
+   "when": {
+    "facing": "north",
+    "ceiling": "true"
+   },
+   "apply": {
+    "model": "beautifuldecor:block/ad_tv_ceiling"
+   }
+  },
+  {
+   "when": {
+    "facing": "east",
+    "ceiling": "true"
+   },
+   "apply": {
+    "model": "beautifuldecor:block/ad_tv_ceiling",
+    "y": 90
+   }
+  },
+  {
+   "when": {
+    "facing": "south",
+    "ceiling": "true"
+   },
+   "apply": {
+    "model": "beautifuldecor:block/ad_tv_ceiling",
+    "y": 180
+   }
+  },
+  {
+   "when": {
+    "facing": "west",
+    "ceiling": "true"
+   },
+   "apply": {
+    "model": "beautifuldecor:block/ad_tv_ceiling",
+    "y": 270
+   }
+  }
+ ]
+}

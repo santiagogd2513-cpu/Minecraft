@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "beautifuldecor:block/lottery_booth"
+    },
+    "facing=east": {
+      "model": "beautifuldecor:block/lottery_booth",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "beautifuldecor:block/lottery_booth",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "beautifuldecor:block/lottery_booth",
+      "y": 270
+    }
+  }
+}

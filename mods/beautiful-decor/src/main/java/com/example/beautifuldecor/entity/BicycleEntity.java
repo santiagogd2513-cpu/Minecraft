@@ -12,6 +12,14 @@ import net.minecraft.world.level.Level;
  * Sin motor ni arranque; H toca el timbre. Aguanta escalones de medio bloque (losas y escaleras).
  */
 public class BicycleEntity extends VehicleEntity {
+    /** V6.13.0: caja de colisión igual al modelo (ancho, largo, desfase hacia delante, alto; tools/v6130/hulls.py). */
+    private static final VehicleHull.Spec HULL = new VehicleHull.Spec(0.82, 1.81, -0.01, 1.24);
+
+    @Override
+    protected VehicleHull.Spec hull() {
+        return HULL;
+    }
+
     /** Velocidad máxima en bloques por tick (V4.4.0: 40 km/h = 11,1 bloques por segundo). */
     public static final float MAX_SPEED = 0.556f;
 
@@ -30,6 +38,17 @@ public class BicycleEntity extends VehicleEntity {
             120.0f,
             9.0f,
             1.0f, 1.0f);
+
+    /** V6.14.0: skins: 0 = original, 1 = montaña, 2 = competición, 3 = reparto, 4 = policía (sin sirena). */
+    @Override
+    public int skinCount() {
+        return 5;
+    }
+
+    @Override
+    public String skinKey(int skin) {
+        return "skin.beautifuldecor.bicycle." + skin;
+    }
 
     public BicycleEntity(EntityType<? extends BicycleEntity> type, Level level) {
         super(type, level);

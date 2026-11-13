@@ -100,7 +100,8 @@ public class CreativeSidebar {
         Object tab = selectedTab();
         return tab != null && (tab == ModCreativeTabs.BEAUTIFUL_DECOR.get()
                 || tab == ModCreativeTabs.BEAUTIFUL_DECOR_TECH.get()
-                || tab == ModCreativeTabs.BEAUTIFUL_DECOR_VEHICLES.get());
+                || tab == ModCreativeTabs.BEAUTIFUL_DECOR_VEHICLES.get()
+                || tab == ModCreativeTabs.BEAUTIFUL_DECOR_PARTS.get());
     }
 
     private static int buttonX(CreativeModeInventoryScreen screen, int index) {

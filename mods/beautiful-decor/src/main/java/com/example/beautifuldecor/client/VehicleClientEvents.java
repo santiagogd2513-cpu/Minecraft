@@ -81,17 +81,23 @@ public final class VehicleClientEvents {
 
         VehicleEntity vehicle = driven(minecraft);
         // Se vacía siempre la cola de pulsaciones, aunque no conduzcas, para que no se acumulen.
+        boolean keysOn = vehicle != null && keysActive(vehicle);
         while (VehicleKeys.LIGHT.consumeClick()) {
-            if (vehicle != null && minecraft.screen == null) {
+            if (keysOn && minecraft.screen == null) {
                 ModMessages.CHANNEL.sendToServer(new VehicleActionPacket(vehicle.getId(), VehicleEntity.ACTION_LIGHT));
             }
         }
         while (VehicleKeys.HORN.consumeClick()) {
-            if (vehicle != null && minecraft.screen == null) {
+            if (keysOn && minecraft.screen == null) {
                 ModMessages.CHANNEL.sendToServer(new VehicleActionPacket(vehicle.getId(), VehicleEntity.ACTION_HORN));
             }
         }
         updateEngineSounds(minecraft);
+    }
+
+    /** V6.3.0: las teclas valen siempre en los vehículos sin botones en el interior; en los demás, solo si se activan en la configuración. */
+    public static boolean keysActive(VehicleEntity vehicle) {
+        return !vehicle.hasCabButtons() || com.example.beautifuldecor.config.ModClientConfig.vehicleKeys();
     }
 
     // ------------------------------------------------------------------------------------------------
@@ -181,7 +187,8 @@ public final class VehicleClientEvents {
         graphics.drawString(minecraft.font, light, (width - minecraft.font.width(light)) / 2, y0 + 8,
                 moto.isLightOn() ? 0xFFFFE9A0 : 0xFF9A9AA6, true);
 
-        String controls = Component.translatable("hud.beautifuldecor.motorcycle_controls",
+        String controls = !keysActive(moto) ? Component.translatable("hud.beautifuldecor.cab_buttons_hint").getString()
+                : Component.translatable("hud.beautifuldecor.motorcycle_controls",
                 VehicleKeys.LIGHT.getTranslatedKeyMessage().getString(),
                 VehicleKeys.HORN.getTranslatedKeyMessage().getString()).getString();
         graphics.drawString(minecraft.font, controls, Math.max(6, (width - minecraft.font.width(controls)) / 2),
@@ -192,7 +199,23 @@ public final class VehicleClientEvents {
     // Sonido del motor
     // ------------------------------------------------------------------------------------------------
 
+    private static final Map<Integer, VehicleSirenSound> SIRENS = new HashMap<>();
+
     private static void updateEngineSounds(Minecraft minecraft) {
+        for (Entity entity : minecraft.level.entitiesForRendering()) {
+            if (entity instanceof com.example.beautifuldecor.entity.SkinnableVehicle vehicle && vehicle.isSirenOn() && !entity.isRemoved() && !SIRENS.containsKey(entity.getId())) {
+                VehicleSirenSound siren = new VehicleSirenSound(entity, vehicle);
+                SIRENS.put(entity.getId(), siren);
+                minecraft.getSoundManager().play(siren);
+            }
+        }
+        SIRENS.values().removeIf(s -> {
+            if (s.isFinished()) {
+                minecraft.getSoundManager().stop(s);
+                return true;
+            }
+            return false;
+        });
         for (Entity entity : minecraft.level.entitiesForRendering()) {
             if (entity instanceof VehicleEntity vehicle && vehicle.isVehicle() && !vehicle.isRemoved()
                     && vehicle.getEngineLoop() != null && !ENGINE_SOUNDS.containsKey(vehicle.getId())) {
@@ -216,5 +239,9 @@ public final class VehicleClientEvents {
             minecraft.getSoundManager().stop(sound);
         }
         ENGINE_SOUNDS.clear();
+        for (VehicleSirenSound sound : SIRENS.values()) {
+            minecraft.getSoundManager().stop(sound);
+        }
+        SIRENS.clear();
     }
 }

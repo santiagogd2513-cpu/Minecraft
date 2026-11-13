@@ -131,10 +131,21 @@ def cockpit(b, body, glass):
     """Cabina de mando: dos asientos, pedestal, tablero y parabrisas inclinado."""
     for sx, nm in ((1, "l"), (-1, "r")):
         x0, x1 = (PILOT_X[0], PILOT_X[1]) if sx > 0 else (-PILOT_X[1], -PILOT_X[0])
-        box(b, body, f"pilot_cush_{nm}", x0, x1, 14, 16, 78, 83, "seat", kind="cushion", share="pilot_cush")
-        box(b, body, f"pilot_back_{nm}", x0, x1, 16, 24, 77, 78, "seat", kind="seatback", share="pilot_back")
+        # V6.6.0: asientos de los pilotos 3 unidades (75 cm) más altos para ver por el parabrisas (AirlinerEntity.PILOT_RAISE)
+        box(b, body, f"pilot_cush_{nm}", x0, x1, 17, 19, 78, 83, "seat", kind="cushion", share="pilot_cush")
+        box(b, body, f"pilot_back_{nm}", x0, x1, 19, 27, 77, 78, "seat", kind="seatback", share="pilot_back")
+        box(b, body, f"pilot_base_{nm}", x0 + 1, x1 - 1, 14, 17, 79, 82, "dark", kind="plain")
     box(b, body, "pedestal", -3, 3, 14, 18, 76, 90, "dash", kind="pedestal")
     box(b, body, "glare", -15, 15, 17, 21, 90, 95, "dash", kind="dash")
+    # V6.5.0: palanca del tren de aterrizaje en el pedestal (AirlinerEntity.GEAR_LEVER): clic = recoger / bajar el tren
+    box(b, body, "gear_lever", -1, 1, 18, 19, 80, 82, "chrome", kind="plain")
+    box(b, body, "gear_knob", -1, 1, 19, 20, 80, 82, "taillight", kind="plain")
+    # V6.6.0: interior: botón de luces del pedestal (AirlinerEntity.LIGHT_BUTTON), relojes en el tablero y palancas de los motores
+    box(b, body, "btn_light", 1, 3, 18, 19, 84, 86, "lens", kind="plain")
+    for k, x in enumerate((-12, -9, -6, 6, 9, 12)):
+        box(b, body, f"gauge_{k}", x, x + 2, 18, 21, 89, 90, "metal", kind="plain")
+    for k, x in enumerate((-2, 0)):
+        box(b, body, f"throttle_{k}", x - 1, x, 18, 22, 86, 88, "metal", kind="plain")
     box(b, body, "overhead", -6, 6, 24, 27, 80, 90, "dash", kind="overhead")
     ws = b.part("ws_frame", body, (0, 20.0, 97.0), (-deg(30.0), 0.0, 0.0))
     for k, x in enumerate((14, 0, -14)):
@@ -485,13 +496,15 @@ def paint_cube(c, rng):
     elif kind == "light":
         for f in list(faces):
             faces[f][..., :3] = color
-        glow = {}
+            glow[f] = solid(faces[f].shape[0], faces[f].shape[1], tuple(min(255, int(v * 1.2) + 20) for v in color), 255)     # V6.6.0: brillan con las luces
     elif kind == "navred":
         for f in list(faces):
             faces[f][..., :3] = (230, 40, 44)
+            glow[f] = solid(faces[f].shape[0], faces[f].shape[1], (255, 40, 40), 255)
     elif kind == "navgreen":
         for f in list(faces):
             faces[f][..., :3] = (40, 220, 90)
+            glow[f] = solid(faces[f].shape[0], faces[f].shape[1], (40, 255, 100), 255)
 
     if c.mat in ("paint", "navy") and kind in ("hold_a", "roof_a", "nose0", "tail0", "nacelle"):
         for f in ("west", "east", "front", "back"):
@@ -686,6 +699,7 @@ def main():
     if args.write:
         (ASSETS / "textures/entity").mkdir(parents=True, exist_ok=True)
         tex.save(ASSETS / f"textures/entity/{NAME}.png")
+        glow.save(ASSETS / f"textures/entity/{NAME}_glow.png")
         pose(b, 0.0, 0.0, 0.0)          # el modelo Java se escribe en reposo (la pose real la pone el renderizador en cada fotograma)
         (JAVA / "client/AirlinerModel.java").write_text(java_model(b), encoding="utf-8")
         from ..v200.softrender import Camera, render

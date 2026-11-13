@@ -16,6 +16,13 @@ import net.minecraft.resources.ResourceLocation;
 public class SupercarRenderer extends EntityRenderer<SupercarEntity> {
     private static final ResourceLocation TEXTURE =
             ResourceLocation.fromNamespaceAndPath(BeautifulDecor.MOD_ID, "textures/entity/bugotti_chillon.png");
+    /** V6.14.0: texturas de las skins (colores fijos): 0 = la repintable, 1 = carreras, 2 = policía, 3 = callejero, 4 = taxi. */
+    private static final ResourceLocation[] SKINS = {
+            null,
+            ResourceLocation.fromNamespaceAndPath(BeautifulDecor.MOD_ID, "textures/entity/bugotti_chillon_racing.png"),
+            ResourceLocation.fromNamespaceAndPath(BeautifulDecor.MOD_ID, "textures/entity/bugotti_chillon_police.png"),
+            ResourceLocation.fromNamespaceAndPath(BeautifulDecor.MOD_ID, "textures/entity/bugotti_chillon_street.png"),
+            ResourceLocation.fromNamespaceAndPath(BeautifulDecor.MOD_ID, "textures/entity/bugotti_chillon_taxi.png")};
     private static final ResourceLocation GLOW =
             ResourceLocation.fromNamespaceAndPath(BeautifulDecor.MOD_ID, "textures/entity/bugotti_chillon_glow.png");
     private final SupercarModel model;
@@ -30,7 +37,9 @@ public class SupercarRenderer extends EntityRenderer<SupercarEntity> {
     public void render(SupercarEntity car, float entityYaw, float partialTick, PoseStack poseStack,
                        MultiBufferSource bufferSource, int packedLight) {
         // V3.2.0: si el jugador lo repintó con la tecla R, se dibuja con la textura repintada.
-        ResourceLocation texture = VehiclePaintTextures.textureFor(car, TEXTURE);
+        // V6.14.0: con una skin puesta se usa su textura (colores fijos); sin skin, la repintada de siempre.
+        int skin = car.getSkin();
+        ResourceLocation texture = skin > 0 && skin < SKINS.length ? SKINS[skin] : VehiclePaintTextures.textureFor(car, TEXTURE);
         poseStack.pushPose();
         poseStack.mulPose(Axis.YP.rotationDegrees(180.0f - entityYaw));
         float roll = car.getLean(partialTick);
@@ -41,12 +50,14 @@ public class SupercarRenderer extends EntityRenderer<SupercarEntity> {
         poseStack.translate(0.0, -1.501, 0.0);
 
         this.model.pose(car.getWheelRot(partialTick), car.getSteer(partialTick));
+        this.model.setSkin(skin);
         // Pasada 1: carrocería e interior, opacos. Los vidrios van aparte, al final, para mezclarse con lo que hay detrás.
         this.model.showGlass(false);
         this.model.renderToBuffer(poseStack, bufferSource.getBuffer(RenderType.entityCutoutNoCull(texture)),
                 packedLight, OverlayTexture.NO_OVERLAY, 1.0f, 1.0f, 1.0f, 1.0f);
-        if (car.isLightOn()) {
-            // Faros y luces traseras a pleno brillo, de día y de noche.
+        if (car.isLightOn() || car.isSirenOn()) {
+            // Faros y luces traseras a pleno brillo, de día y de noche. Con la sirena, la barra alterna rojo y azul.
+            this.model.setBarPhase(car.isSirenOn() ? (car.tickCount / 5) % 2 : -1);
             this.model.renderToBuffer(poseStack, bufferSource.getBuffer(RenderType.eyes(GLOW)),
                     LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY, 1.0f, 1.0f, 1.0f, 1.0f);
         }
@@ -60,6 +71,7 @@ public class SupercarRenderer extends EntityRenderer<SupercarEntity> {
 
     @Override
     public ResourceLocation getTextureLocation(SupercarEntity car) {
-        return VehiclePaintTextures.textureFor(car, TEXTURE);
+        int skin = car.getSkin();
+        return skin > 0 && skin < SKINS.length ? SKINS[skin] : VehiclePaintTextures.textureFor(car, TEXTURE);
     }
 }

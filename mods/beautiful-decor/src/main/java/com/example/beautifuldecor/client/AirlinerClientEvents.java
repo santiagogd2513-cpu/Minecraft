@@ -89,7 +89,8 @@ public final class AirlinerClientEvents {
         AirlinerEntity airliner = ridden(minecraft);
         // Se vacía siempre la cola de pulsaciones, aunque no vayas montado, para que no se acumulen.
         while (AirlinerKeys.GEAR.consumeClick()) {
-            if (airliner != null && airliner.getControllingPassenger() == minecraft.player && minecraft.screen == null) {
+            if (airliner != null && airliner.getControllingPassenger() == minecraft.player && minecraft.screen == null
+                    && com.example.beautifuldecor.config.ModClientConfig.vehicleKeys()) {          // V6.5.0: la tecla del tren solo si se activa en la configuración
                 ModMessages.CHANNEL.sendToServer(new AirlinerActionPacket(airliner.getId(), AirlinerActionPacket.ACTION_GEAR));
             }
         }
@@ -162,7 +163,9 @@ public final class AirlinerClientEvents {
         graphics.drawString(minecraft.font, status, (width - minecraft.font.width(status)) / 2, y, 0xFFFFFFFF, true);
 
         String exit = HelicopterKeys.EXIT.getTranslatedKeyMessage().getString();
-        String controls = pilot
+        String controls = pilot && !com.example.beautifuldecor.config.ModClientConfig.vehicleKeys()
+                ? Component.translatable("hud.beautifuldecor.airliner_controls_lever", exit).getString()
+                : pilot
                 ? Component.translatable("hud.beautifuldecor.airliner_controls",
                         AirlinerKeys.GEAR.getTranslatedKeyMessage().getString(), exit).getString()
                 : Component.translatable("hud.beautifuldecor.airliner_passenger", exit).getString();

@@ -178,6 +178,25 @@ def wagon(b, kind):
             handrail_ladder(b, body, sx, zz, 11, top)
 
 
+BUTTONS = {}     # V6.2.0: nombre -> (x, y, z) en metros del botón rojo del freno de emergencia (se genera TrainSeats.button)
+
+
+def cab_desk(b, body, z0, z1, y0, name):
+    """V6.2.0: pupitre de cabina: mesa, relojes, palancas de aceleración y freno y el botón rojo de emergencia (centro de la mesa)."""
+    zc = (z0 + z1) // 2
+    box(b, body, "console", -9, 9, y0, 21, z0, z1, "interior", kind="dash")
+    box(b, body, "console_top", -9, 9, 21, 22, z0, z1, "details", kind="dash")
+    box(b, body, "btn_housing", -2, 2, 22, 23, zc - 2, zc + 2, "black", kind="frame")
+    box(b, body, "btn_red", -1, 1, 23, 25, zc - 1, zc + 1, "taillight", kind="light")
+    for nm, x in (("g0", -8), ("g1", -5), ("g2", 4), ("g3", 7)):
+        box(b, body, "gauge_" + nm, x, x + 2, 22, 24, zc - 1, zc, "chrome", kind="metal")
+    box(b, body, "throttle_base", 5, 8, 22, 23, zc - 2, zc + 2, "black", kind="frame")
+    box(b, body, "throttle", 6, 7, 23, 28, zc - 1, zc, "chrome", kind="metal")
+    box(b, body, "brake_base", -8, -5, 22, 23, zc - 2, zc + 2, "black", kind="frame")
+    box(b, body, "brake_lever", -7, -6, 23, 28, zc - 1, zc, "chrome", kind="metal")
+    BUTTONS[name] = (0.0, 24.0 / 8.0, zc / 8.0)
+
+
 def loco(b):
     """Locomotora diésel de carga de 20 m: cabina atrás, capó largo y nariz adelante."""
     body = b.part("body", b.root, (0, 0, 0))
@@ -196,27 +215,31 @@ def loco(b):
         xs0, xs1 = (12, 13) if sx > 0 else (-13, -12)
         box(b, body, f"stripe_{nm}", xs0, xs1, 15, 19, -80, 74, "accent", kind="stripe")
     box(b, body, "cab_back", -11, 11, 12, 36, -80, -79, "body", kind="seam")
-    box(b, body, "cab_front_low", -11, 11, 12, 26, -49, -48, "body", kind="seam")
+    box(b, body, "cab_front_low", -11, 11, 12, 22, -49, -48, "body", kind="seam")
     box(b, body, "cab_front_top", -11, 11, 34, 36, -49, -48, "body", kind="seam")
-    box(b, glass, "cab_front_win", -11, 11, 26, 34, -49, -48, "glass", kind="glass")
+    box(b, glass, "cab_front_win", -11, 11, 22, 34, -49, -48, "glass", kind="glass")
     box(b, body, "cab_roof", -13, 13, 36, 38, -82, -46, "body", kind="roof")
     sym(b, body, "roof_stripe", 10, 13, 38, 39, -82, -46, "accent", kind="stripe")
     box(b, body, "cab_fan", -5, 5, 38, 41, -70, -56, "black", kind="fan")
     # interior: piso, pupitre, asiento
     box(b, body, "cab_floor", -11, 11, 12, 13, -79, -49, "interior", kind="floor")
-    box(b, body, "console", -9, 9, 13, 20, -54, -50, "interior", kind="dash")
-    box(b, body, "seat", 3, 9, 13, 18, -68, -62, "interior", kind="seat")
-    box(b, body, "seat_back", 3, 9, 18, 26, -69, -68, "interior", kind="seat")
+    cab_desk(b, body, -54, -50, 13, "freight_loco")
+    box(b, body, "seat", 3, 9, 13, 22, -68, -62, "interior", kind="seat")
+    box(b, body, "seat_back", 3, 9, 22, 30, -69, -68, "interior", kind="seat")
+    box(b, body, "seat2", -9, -3, 13, 22, -68, -62, "interior", kind="seat")
+    box(b, body, "seat2_back", -9, -3, 22, 30, -69, -68, "interior", kind="seat")
+    box(b, body, "cab_light", -3, 3, 35, 36, -66, -58, "headlight", kind="light")
+    box(b, body, "cab_locker", -9, 9, 13, 30, -79, -78, "details", kind="frame")
     # ---- capó y nariz
-    box(b, body, "hood", -10, 10, 12, 28, -48, 60, "body", kind="seam")
-    box(b, body, "hood_top", -8, 8, 28, 30, -40, 52, "details", kind="vent")
-    box(b, body, "nose", -11, 11, 12, 24, 60, 74, "body", kind="seam")
+    box(b, body, "hood", -10, 10, 12, 22, -48, 60, "body", kind="seam")
+    box(b, body, "hood_top", -8, 8, 22, 24, -40, 52, "details", kind="vent")
+    box(b, body, "nose", -11, 11, 12, 22, 60, 74, "body", kind="seam")
     box(b, body, "grille", -8, 8, 14, 22, 74, 75, "black", kind="grille")
     sym(b, body, "headlight", 7, 10, 21, 24, 74, 76, "headlight", kind="light")
     sym(b, body, "taillight", 6, 9, 14, 17, -82, -80, "taillight", kind="light")
     for zz in (0, 24):
-        box(b, body, f"stack{zz}", -3, 3, 30, 36, zz, zz + 6, "black", kind="frame")
-        box(b, body, f"stack_cap{zz}", -4, 4, 36, 37, zz - 1, zz + 7, "chrome", kind="metal")
+        box(b, body, f"stack{zz}", -3, 3, 24, 30, zz, zz + 6, "black", kind="frame")
+        box(b, body, f"stack_cap{zz}", -4, 4, 30, 31, zz - 1, zz + 7, "chrome", kind="metal")
     # ---- barandales a lo largo del capó
     for sx in (1, -1):
         x0 = 11 if sx > 0 else -12
@@ -229,7 +252,7 @@ def loco(b):
 # ---------------------------------------------------------------------------------------------- V5.0.0: tren de pasajeros
 STEAM_L, COACH_L = 176, 160
 STEAM_BOGIE, COACH_BOGIE = 56, 56          # ejes de los bogies a +- este valor del centro (14 m entre bogies)
-SEATS = {"freight_loco": [(0.6, 1.65, -6.5), (-0.6, 1.65, -6.5)]}                                 # nombre -> lista de (x, y, z) en metros: dónde se sienta quien va montado
+SEATS = {"freight_loco": [(0.6, 2.15, -8.0), (-0.6, 2.15, -8.0)]}                                 # nombre -> lista de (x, y, z) en metros: dónde se sienta quien va montado
 
 
 def wheel(b, body, n, x, z, r):
@@ -296,10 +319,18 @@ def steam(b, modern):
     box(b, body, "cab_floor", -11, 11, 12, 13, -35, 19, "interior", kind="floor")
     box(b, body, "backhead", -8, 8, 13, 28, 13, 19, "black", kind="frame")
     box(b, body, "gauge", -2, 2, 28, 31, 14, 18, "chrome", kind="metal")
-    box(b, body, "seat", 3, 9, 13, 18, -22, -16, "interior", kind="seat")
-    box(b, body, "seat_back", 3, 9, 18, 26, -23, -22, "interior", kind="seat")
-    box(b, body, "seat2", -9, -3, 13, 18, -22, -16, "interior", kind="seat")
-    box(b, body, "seat2_back", -9, -3, 18, 26, -23, -22, "interior", kind="seat")
+    # V6.2.0: panel en la cara de la caldera: relojes, palancas y botón rojo de emergencia
+    box(b, body, "btn_housing", -2, 2, 20, 24, 11, 13, "details", kind="frame")
+    box(b, body, "btn_red", -1, 1, 21, 23, 9, 11, "taillight", kind="light")
+    box(b, body, "gauge_l", -7, -4, 22, 26, 12, 13, "chrome", kind="metal")
+    box(b, body, "gauge_r", 4, 7, 22, 26, 12, 13, "chrome", kind="metal")
+    box(b, body, "regulator", 5, 6, 14, 20, 11, 13, "chrome", kind="metal")
+    box(b, body, "brake_valve", -6, -5, 14, 20, 11, 13, "chrome", kind="metal")
+    BUTTONS["steam_classic" if not modern else "steam_modern"] = (0.0, 22.0 / 8.0, 10.0 / 8.0)
+    box(b, body, "seat", 3, 9, 13, 22, -12, -6, "interior", kind="seat")
+    box(b, body, "seat_back", 3, 9, 22, 30, -13, -12, "interior", kind="seat")
+    box(b, body, "seat2", -9, -3, 13, 22, -12, -6, "interior", kind="seat")
+    box(b, body, "seat2_back", -9, -3, 22, 30, -13, -12, "interior", kind="seat")
     sym(b, body, "taillight", 6, 9, 14, 17, -90, -88, "taillight", kind="light")
     # ---- caldera y delantera
     if not modern:
@@ -345,7 +376,7 @@ def steam(b, modern):
             box(b, body, f"buffer_{sx}_{sz}", x0, x0 + 2, 7, 10, zz, zz + 3, "black", kind="frame")
         box(b, body, f"coupler_{sz}", -1, 1, 7, 9, zz + (0 if sz > 0 else 0), zz + 3, "black", kind="frame")
     box(b, body, "pilot", -10, 10, 5, 8, 88, 91, "black", kind="frame")
-    SEATS["steam_classic" if not modern else "steam_modern"] = [(0.6, 1.65, -2.6), (-0.6, 1.65, -2.6)]
+    SEATS["steam_classic" if not modern else "steam_modern"] = [(0.6, 2.15, -1.0), (-0.6, 2.15, -1.0)]
 
 
 COACH_STYLE = {
@@ -460,7 +491,7 @@ def metro_head(b):
     # nariz de bala: escalones cada vez más angostos y bajos; arriba, la visera de vidrio
     stages = [(52, 60, 11, 10, 34), (60, 66, 10, 10, 31), (66, 71, 8, 10, 28), (71, 75, 6, 11, 25), (75, 78, 4, 12, 22)]
     for i, (za, zb, hw, ya, yt) in enumerate(stages):
-        gl = yt - 8 if i < 4 else yt - 4
+        gl = yt - 12 if i < 4 else yt - 8
         box(b, body, f"nose{i}", -hw, hw, 11, gl, za, zb, "body", kind="seam")
         box(b, glass, f"nose{i}_visor", -hw, hw, gl, yt, za, zb, "glass", kind="glass")
         box(b, body, f"nose{i}_roof", -hw, hw, yt, yt + 2, za, zb, "body", kind="roof")
@@ -471,10 +502,10 @@ def metro_head(b):
     sym(b, body, "taillight", 6, 9, 14, 17, -82, -80, "taillight", kind="light")
     # cabina
     box(b, body, "cab_floor", -11, 11, 11, 12, 28, 56, "interior", kind="floor")
-    box(b, body, "console", -9, 9, 12, 19, 52, 56, "interior", kind="dash")
+    cab_desk(b, body, 52, 56, 12, "metro_head")
     for nm, (a, c) in (("seat", (3, 9)), ("seat2", (-9, -3))):
-        box(b, body, nm, a, c, 12, 17, 34, 40, "interior", kind="seat")
-        box(b, body, nm + "_back", a, c, 17, 25, 33, 34, "interior", kind="seat")
+        box(b, body, nm, a, c, 12, 22, 34, 40, "interior", kind="seat")
+        box(b, body, nm + "_back", a, c, 22, 30, 33, 34, "interior", kind="seat")
     box(b, body, "roof_vent", -4, 4, 40, 42, 6, 22, "details", kind="vent")
     # pantógrafo
     box(b, body, "panto_base", -6, 6, 40, 42, -26, -18, "black", kind="frame")
@@ -483,7 +514,7 @@ def metro_head(b):
     box(b, body, "panto_head", -7, 7, 50, 51, -24, -18, "chrome", kind="metal")
     for sx in (1, -1):
         handrail_ladder(b, body, sx, -76, 11, 30)
-    SEATS["metro_head"] = [(0.6, 1.65, 4.8), (-0.6, 1.65, 4.8)]
+    SEATS["metro_head"] = [(0.6, 2.05, 4.6), (-0.6, 2.05, 4.6)]
 
 
 BUILD = {
@@ -742,6 +773,7 @@ def java_seats():
     for name in sorted(SEATS):
         pts = ", ".join(f"{{{x:.3f}, {y:.3f}, {z:.3f}}}" for x, y, z in SEATS[name])
         rows.append(f'        SEATS.put("{name}", new double[][] {{{pts}}});')
+    brows = [f'        BUTTONS.put("{n}", new double[] {{{x:.3f}, {y:.3f}, {z:.3f}}});' for n, (x, y, z) in sorted(BUTTONS.items())]
     return f'''package com.example.beautifuldecor.entity;
 
 import java.util.HashMap;
@@ -754,9 +786,11 @@ import java.util.Map;
 public final class TrainSeats {{
     private static final Map<String, double[][]> SEATS = new HashMap<>();
     private static final double[][] NONE = new double[0][];
+    private static final Map<String, double[]> BUTTONS = new HashMap<>();
 
     static {{
 {chr(10).join(rows)}
+{chr(10).join(brows)}
     }}
 
     private TrainSeats() {{
@@ -764,6 +798,11 @@ public final class TrainSeats {{
 
     public static double[][] of(String variantId) {{
         return SEATS.getOrDefault(variantId, NONE);
+    }}
+
+    /** V6.2.0: posición (x, y, z en metros) del botón de emergencia del panel de la cabina, o null si el coche no tiene. */
+    public static double[] button(String variantId) {{
+        return BUTTONS.get(variantId);
     }}
 }}
 '''

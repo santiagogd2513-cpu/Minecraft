@@ -73,6 +73,32 @@ public class ModItems {
     public static final RegistryObject<Item> PAINTING_ROJOTORO = ITEMS.register("painting_rojotoro",
             () -> new BlockItem(ModBlocks.PAINTING_ROJOTORO.get(), new Item.Properties()));
 
+    // V6.7.0: Polisía Nasional
+    public static final RegistryObject<Item> HANDCUFFS = ITEMS.register("handcuffs", () -> new com.example.beautifuldecor.item.HandcuffsItem());
+    public static final RegistryObject<Item> TASER = ITEMS.register("taser", () -> new com.example.beautifuldecor.item.TaserItem());
+    public static final RegistryObject<Item> PAINTING_POLISIA = ITEMS.register("painting_polisia",
+            () -> new BlockItem(ModBlocks.PAINTING_POLISIA.get(), new Item.Properties()));
+
+    // V6.10.0: Aguacero Bomberos
+    public static final RegistryObject<Item> FIRE_EXTINGUISHER = ITEMS.register("fire_extinguisher", () -> new com.example.beautifuldecor.item.FireExtinguisherItem());
+    public static final RegistryObject<Item> FIRE_HOSE = ITEMS.register("fire_hose", () -> new com.example.beautifuldecor.item.FireHoseItem());
+    public static final RegistryObject<Item> PAINTING_AGUACERO = ITEMS.register("painting_aguacero",
+            () -> new BlockItem(ModBlocks.PAINTING_AGUACERO.get(), new Item.Properties()));
+
+    // V6.11.0: HS News
+    public static final RegistryObject<Item> HSNEWS_MIC = ITEMS.register("hsnews_mic", () -> new com.example.beautifuldecor.item.HsNewsMicItem());
+    public static final RegistryObject<Item> PAINTING_HSNEWS = ITEMS.register("painting_hsnews",
+            () -> new BlockItem(ModBlocks.PAINTING_HSNEWS.get(), new Item.Properties()));
+
+    // V6.15.0: lotería
+    public static final RegistryObject<Item> LOTTERY_TICKET = ITEMS.register("lottery_ticket", () -> new com.example.beautifuldecor.item.LotteryTicketItem());
+    public static final RegistryObject<Item> PAINTING_LOTERIA = ITEMS.register("painting_loteria",
+            () -> new BlockItem(ModBlocks.PAINTING_LOTERIA.get(), new Item.Properties()));
+    public static final RegistryObject<Item> LOTTERY_BOOTH = ITEMS.register("lottery_booth",
+            () -> new BlockItem(ModBlocks.LOTTERY_BOOTH.get(), new Item.Properties()));
+    public static final RegistryObject<Item> CASH_REGISTER = ITEMS.register("cash_register",
+            () -> new BlockItem(ModBlocks.CASH_REGISTER.get(), new Item.Properties()));
+
     // V5.3.0: Burguer Reino
     public static final RegistryObject<Item> BURGUER_ROYAL = ITEMS.register("burguer_royal",
             () -> new Item(new Item.Properties().stacksTo(16).food(new net.minecraft.world.food.FoodProperties.Builder().nutrition(12).saturationMod(0.9f)

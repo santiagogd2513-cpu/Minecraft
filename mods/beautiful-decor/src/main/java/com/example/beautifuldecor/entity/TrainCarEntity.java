@@ -25,6 +25,7 @@ import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.entity.Entity;
+import net.minecraftforge.entity.PartEntity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -122,6 +123,11 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
             return this.drive == Drive.DIESEL || this.drive == Drive.STEAM || this.drive == Drive.ELECTRIC;
         }
 
+        /** V6.2.0: coches del metro (familia de vía 2). */
+        public boolean isMetro() {
+            return this.family == 2;
+        }
+
         public boolean isSteam() {
             return this.drive == Drive.STEAM;
         }
@@ -164,6 +170,8 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
     private static final EntityDataAccessor<String> PAINT_EXTRA = SynchedEntityData.defineId(TrainCarEntity.class, EntityDataSerializers.STRING);
     private static final EntityDataAccessor<Integer> VARIANT = SynchedEntityData.defineId(TrainCarEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> FILL = SynchedEntityData.defineId(TrainCarEntity.class, EntityDataSerializers.INT);
+    /** V6.2.0: 0 = sin frenar, 1 = frenando, 2 = freno de emergencia (lo escribe la cabeza para todo el tren). */
+    private static final EntityDataAccessor<Integer> BRAKE_STATE = SynchedEntityData.defineId(TrainCarEntity.class, EntityDataSerializers.INT);
 
     // ---- vía y cadena (servidor)
     @Nullable
@@ -181,6 +189,12 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
     private long inputTime = Long.MIN_VALUE;
     /** V6.0.0: la ruta del piloto automático (se guarda en la locomotora). */
     private final TrainRoute route = new TrainRoute();
+    /** V6.2.0: freno de emergencia puesto (solo cuenta en la cabeza del tren; se quita con otro clic en el botón). */
+    private boolean emergency;
+    /** V6.2.0 (cliente): los sonidos de este coche. */
+    public Object soundRoll;
+    public Object soundBrake;
+    public Object soundEmergency;
 
     // ---- carga
     private final ArrayList<ItemStack> hold = new ArrayList<>();
@@ -217,6 +231,12 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
         this.entityData.define(PAINT_EXTRA, PaintExtras.EMPTY);
         this.entityData.define(VARIANT, 0);
         this.entityData.define(FILL, 0);
+        this.entityData.define(BRAKE_STATE, 0);
+    }
+
+    /** V6.2.0: 0 = sin frenar, 1 = frenando, 2 = emergencia. */
+    public int brakeState() {
+        return this.entityData.get(BRAKE_STATE);
     }
 
     public Variant variant() {
@@ -402,6 +422,12 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
         return !this.isRemoved();
     }
 
+    /** V6.2.0: quien va en la cabina tiene que poder apretar el botón del panel. */
+    @Override
+    public boolean canRiderInteract() {
+        return true;
+    }
+
     @Override
     public boolean isPushable() {
         return false;
@@ -456,6 +482,26 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
         boolean client = this.level().isClientSide;
         ItemStack held = player.getItemInHand(hand);
         Variant v = this.variant();
+        // ---- V6.2.0: botón del freno de emergencia en el panel de la cabina
+        if (hand == InteractionHand.MAIN_HAND && v.isLoco() && this.lookingAtButton(player)) {
+            if (!client) {
+                TrainCarEntity head = this;
+                for (int guard = 0; guard < 64 && head.frontId != null; guard++) {
+                    TrainCarEntity next = head.carById(head.frontId);
+                    if (next == null) {
+                        break;
+                    }
+                    head = next;
+                }
+                head.emergency = !head.emergency;
+                this.level().playSound(null, this.getX(), this.getY() + 2.5, this.getZ(), SoundEvents.STONE_BUTTON_CLICK_ON, SoundSource.NEUTRAL, 1.0f,
+                        head.emergency ? 0.7f : 1.2f);
+                if (player instanceof ServerPlayer sp) {
+                    sp.displayClientMessage(Component.translatable(head.emergency ? "hud.beautifuldecor.train_emergency_on" : "hud.beautifuldecor.train_emergency_off"), true);
+                }
+            }
+            return InteractionResult.sidedSuccess(client);
+        }
         // ---- V6.0.0: Mando de trenes
         if (held.getItem() instanceof TrainRemoteItem) {
             if (!client && player instanceof ServerPlayer sp) {
@@ -694,6 +740,7 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
         this.slope = (float) ((this.cur.slope() + rc.slope()) * 0.5);
         this.setPos((f[0] + r[0]) / 2.0, (f[1] + r[1]) / 2.0, (f[2] + r[2]) / 2.0);
         this.setRot(yaw, pitch);
+        this.updateHull();
     }
 
     // =====================================================================================================
@@ -754,8 +801,84 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
     // Tick
     // =====================================================================================================
 
+    // =====================================================================================================
+    // V6.13.0: colisión (el coche es sólido; se descompone en trozos que siguen su giro)
+    // =====================================================================================================
+
+    private static final double HULL_WIDTH = 3.0;
+    private static final double HULL_BOTTOM = 0.5;
+    private static final double HULL_TILE = 2.5;
+    private HullPart[] hullParts = new HullPart[0];
+    private int hullCount = -1;
+
+    @Override
+    public boolean isMultipartEntity() {
+        return true;
+    }
+
+    @Override
+    public PartEntity<?>[] getParts() {
+        return this.hullParts;
+    }
+
+    /** Alto (sobre el riel) del cuerpo sólido de cada coche, sin chimeneas ni pantógrafo. */
+    private static double hullTop(Variant v) {
+        switch (v) {
+            case COAL_WAGON:
+                return 3.5;
+            case FOOD_WAGON:
+                return 3.75;
+            case MINERAL_WAGON:
+                return 4.0;
+            case FREIGHT_LOCO:
+            case STEAM_CLASSIC:
+            case STEAM_MODERN:
+                return 5.0;
+            default:
+                return 5.25;
+        }
+    }
+
+    /** Acomoda los trozos de colisión y la caja grande (la que usa el juego para encontrar al coche). */
+    private void updateHull() {
+        Variant v = this.variant();
+        double length = v.length;
+        double top = hullTop(v);
+        int n = Math.max(1, (int) Math.ceil(length / HULL_TILE));
+        if (n != this.hullCount) {
+            HullPart[] parts = new HullPart[n];
+            for (int i = 0; i < n; i++) {
+                parts[i] = new HullPart(this);
+            }
+            this.hullParts = parts;
+            this.hullCount = n;
+        }
+        float yaw = this.getYRot();
+        double yawRad = yaw * Mth.DEG_TO_RAD;
+        double fx = -Math.sin(yawRad);
+        double fz = Math.cos(yawRad);
+        double theta = -this.getXRot() * Mth.DEG_TO_RAD;
+        double sinT = Math.sin(theta);
+        double cosT = Math.cos(theta);
+        double tile = length / n;
+        VehicleHull.Spec spec = new VehicleHull.Spec(HULL_WIDTH, tile, 0.0, top - HULL_BOTTOM);
+        for (int i = 0; i < n; i++) {
+            double zt = -length / 2.0 + tile * (i + 0.5);
+            double f = zt * cosT - HULL_BOTTOM * sinT;
+            double up = HULL_BOTTOM * cosT + zt * sinT;
+            net.minecraft.world.phys.Vec3 base = new net.minecraft.world.phys.Vec3(this.getX() + fx * f, this.getY() + up, this.getZ() + fz * f);
+            this.hullParts[i].place(VehicleHull.box(base, yaw, spec));
+        }
+        this.setBoundingBox(VehicleHull.box(this.position(), yaw, new VehicleHull.Spec(HULL_WIDTH, length, 0.0, top)).inflate(0.0, 1.5, 0.0));
+    }
+
     @Override
     public void tick() {
+        this.tickCore();
+        this.updateHull();
+    }
+
+    private void tickCore() {
         super.tick();
         if (this.level().isClientSide) {
             this.clientTick();
@@ -868,7 +991,7 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
             if (this.tickCount % 10 == 0) {
                 this.keepChunks(sl, chain, autoCar.route);
             }
-            if (complete && flags == 0) {
+            if (complete && flags == 0 && !this.emergency) {
                 auto = autoCar.route.tick(sl, this.cur.copy(), this.variant().family, this.speed, empty, total, topMs, this.variant().inset());
                 this.announce(chain, auto);
             } else {
@@ -881,7 +1004,10 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
         int drive = 0;
         boolean brake = false;
         boolean hand = false;
-        if (auto != null) {
+        if (this.emergency) {
+            brake = true;
+            hand = true;
+        } else if (auto != null) {
             drive = auto.drive;
             brake = auto.brake;
             hand = auto.hand;
@@ -913,6 +1039,14 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
                 for (TrainCarEntity car : burners) {
                     car.burn(TrainPhysics.FUEL_PER_TICK);
                 }
+            }
+        }
+
+        // V6.2.0: estado de frenado para todos los coches (sonidos y chispas en el cliente)
+        int brakeState = this.emergency ? (Math.abs(this.speed) > 0.01 ? 2 : 0) : (brake && Math.abs(this.speed) > 0.05 ? 1 : 0);
+        for (TrainCarEntity car : chain) {
+            if (car.entityData.get(BRAKE_STATE) != brakeState) {
+                car.entityData.set(BRAKE_STATE, brakeState);
             }
         }
 
@@ -948,7 +1082,7 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
             boolean steamTrain = this.variant().isSteam();
             sp.displayClientMessage(Component.translatable(steamTrain && power <= 0.0 ? "hud.beautifuldecor.train_no_fuel" : "hud.beautifuldecor.train_status",
                     String.format("%.0f", Math.abs(v) * 72.0), chain.size(), String.format("%.0f", total / 1000.0), grade, locos,
-                    steamTrain ? String.valueOf(fuelLeft) : "—"), true);
+                    steamTrain ? String.valueOf(fuelLeft) : "—").append(this.emergency ? Component.translatable("hud.beautifuldecor.train_emergency_tag") : Component.empty()), true);
         }
     }
 
@@ -966,17 +1100,82 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
         TrainChunks.keep(sl, near, far);
     }
 
+    /** V6.2.0: ¿está el jugador apuntando al botón de emergencia del panel (a menos de 3 m)? */
+    private boolean lookingAtButton(Player player) {
+        double[] b = TrainSeats.button(this.variant().id);
+        if (b == null) {
+            return false;
+        }
+        float yaw = this.getYRot() * Mth.DEG_TO_RAD;
+        double theta = -this.getXRot() * Mth.DEG_TO_RAD;
+        double up = b[1] * Math.cos(theta) + b[2] * Math.sin(theta);
+        double f = b[2] * Math.cos(theta) - b[1] * Math.sin(theta);
+        double px = this.getX() - Mth.sin(yaw) * f + Mth.cos(yaw) * b[0];
+        double py = this.getY() + up;
+        double pz = this.getZ() + Mth.cos(yaw) * f + Mth.sin(yaw) * b[0];
+        Vec3 eye = player.getEyePosition();
+        Vec3 look = player.getViewVector(1.0f);
+        double t = (px - eye.x) * look.x + (py - eye.y) * look.y + (pz - eye.z) * look.z;
+        if (t < 0.1 || t > 3.2) {
+            return false;
+        }
+        double cx = eye.x + look.x * t - px;
+        double cy = eye.y + look.y * t - py;
+        double cz = eye.z + look.z * t - pz;
+        return cx * cx + cy * cy + cz * cz < 0.30 * 0.30;
+    }
+
+    /** V6.2.0: aviso de estación por el megáfono: timbre + frase (a quienes van a bordo) y el nombre en grande en pantalla. */
+    private void megaphone(List<TrainCarEntity> chain, TrainRoute.Out out) {
+        if (out.say == null) {
+            return;
+        }
+        net.minecraft.sounds.SoundEvent phrase;
+        Component title;
+        Component sub;
+        switch (out.say) {
+            case "next" -> {
+                phrase = com.example.beautifuldecor.init.ModSounds.TRAIN_SAY_NEXT.get();
+                title = Component.literal(out.sayName);
+                sub = Component.translatable("hud.beautifuldecor.say_next");
+            }
+            case "arrived" -> {
+                phrase = com.example.beautifuldecor.init.ModSounds.TRAIN_SAY_ARRIVED.get();
+                title = Component.literal(out.sayName);
+                sub = Component.translatable("hud.beautifuldecor.say_arrived");
+            }
+            case "final" -> {
+                phrase = com.example.beautifuldecor.init.ModSounds.TRAIN_SAY_FINAL.get();
+                title = Component.literal(out.sayName);
+                sub = Component.translatable("hud.beautifuldecor.say_final");
+            }
+            default -> {
+                phrase = com.example.beautifuldecor.init.ModSounds.TRAIN_SAY_DEPARTING.get();
+                title = Component.translatable("hud.beautifuldecor.say_departing");
+                sub = Component.translatable("hud.beautifuldecor.say_destination", out.sayDest == null ? "" : out.sayDest);
+            }
+        }
+        for (TrainCarEntity car : chain) {
+            for (Entity p : car.getPassengers()) {
+                if (p instanceof ServerPlayer sp) {
+                    sp.playNotifySound(com.example.beautifuldecor.init.ModSounds.TRAIN_CHIME.get(), SoundSource.NEUTRAL, 0.8f, 1.0f);
+                    sp.connection.send(new net.minecraft.network.protocol.game.ClientboundSetTitlesAnimationPacket(5, 60, 15));
+                    sp.connection.send(new net.minecraft.network.protocol.game.ClientboundSetSubtitleTextPacket(sub));
+                    sp.connection.send(new net.minecraft.network.protocol.game.ClientboundSetTitleTextPacket(title));
+                    sp.playNotifySound(phrase, SoundSource.NEUTRAL, 1.0f, 1.0f);
+                }
+            }
+        }
+    }
+
     /** V6.0.0: avisos del piloto a quienes van a bordo (y a quien esté cerca si se quedó sin vía). */
     private void announce(List<TrainCarEntity> chain, TrainRoute.Out out) {
+        this.megaphone(chain, out);
         Component msg = null;
         if (out.stuck) {
             msg = Component.translatable("hud.beautifuldecor.train_auto_stuck");
-        } else if (out.arrived != null) {
-            msg = Component.translatable("hud.beautifuldecor.train_auto_arrived", out.arrived);
         } else if (out.parked) {
             msg = Component.translatable("hud.beautifuldecor.train_auto_parked");
-        } else if (out.departed != null) {
-            msg = Component.translatable("hud.beautifuldecor.train_auto_departed", out.departed);
         }
         if (msg == null) {
             return;
@@ -1070,11 +1269,39 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
                         this.getZ() + Mth.cos(yaw) * fwd, 0.0, 0.07, 0.0);
             }
         }
-        // traqueteo de las ruedas: la locomotora y uno de cada cuatro vagones
-        float abs = Math.abs(this.visualSpeed);
-        if (abs > 0.12f && this.tickCount % 7 == 0 && (this.variant().isLoco() || this.getId() % 4 == 0)) {
-            this.level().playLocalSound(this.getX(), this.getY() + 0.5, this.getZ(), SoundEvents.MINECART_RIDING, SoundSource.NEUTRAL,
-                    Math.min(1.3f, 0.15f + abs * 0.6f), 0.55f + Math.min(0.5f, abs * 0.25f), false);
+        // V6.2.0: sonidos propios de cada tren (rodadura, freno, emergencia) y chispas
+        com.example.beautifuldecor.client.TrainSounds.tick(this);
+        if (this.brakeState() == 2 && Math.abs(this.visualSpeed) > 0.05f) {
+            boolean metro = this.variant().isMetro();
+            double half = this.variant().wheelbase / 2.0;
+            for (int i = 0; i < (metro ? 1 : 3); i++) {
+                for (double z : new double[] {-half, half}) {
+                    for (double x : new double[] {-1.3, 1.3}) {
+                        double wx = this.getX() - Mth.sin(yaw) * z + Mth.cos(yaw) * x;
+                        double wz = this.getZ() + Mth.cos(yaw) * z + Mth.sin(yaw) * x;
+                        this.level().addParticle(ParticleTypes.ELECTRIC_SPARK, wx, this.getY() + 0.2, wz,
+                                (this.random.nextDouble() - 0.5) * 0.3, 0.1 + this.random.nextDouble() * 0.2, (this.random.nextDouble() - 0.5) * 0.3);
+                        if (!metro && this.random.nextInt(6) == 0) {
+                            this.level().addParticle(ParticleTypes.FLAME, wx, this.getY() + 0.2, wz, 0.0, 0.05, 0.0);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public float visualSpeed() {
+        return this.visualSpeed;
+    }
+
+    /** V6.2.0 (cliente): un sonido terminó, para poder arrancarlo de nuevo. */
+    public void soundDone(int mode) {
+        if (mode == 0) {
+            this.soundRoll = null;
+        } else if (mode == 1) {
+            this.soundBrake = null;
+        } else {
+            this.soundEmergency = null;
         }
     }
 
@@ -1136,6 +1363,7 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
         this.frontId = tag.hasUUID("Front") ? tag.getUUID("Front") : null;
         this.rearId = tag.hasUUID("Rear") ? tag.getUUID("Rear") : null;
         this.speed = tag.getDouble("Speed");
+        this.emergency = tag.getBoolean("Emergency");
         if (tag.contains("Route")) {
             this.route.load(tag.getCompound("Route"));
         }
@@ -1163,6 +1391,9 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
             tag.putUUID("Rear", this.rearId);
         }
         tag.putDouble("Speed", this.speed);
+        if (this.emergency) {
+            tag.putBoolean("Emergency", true);
+        }
         if (!this.route.stops.isEmpty() || !this.route.name.isEmpty()) {
             tag.put("Route", this.route.save());
         }

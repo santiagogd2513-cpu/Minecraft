@@ -95,175 +95,190 @@ public class TrainCarModel extends EntityModel<Entity> {
                 .texOffs(470, 321).addBox(-9f, -7f, -59f, 18f, 2f, 30f)
                 .texOffs(566, 321).addBox(3f, -7f, -58f, 1f, 4f, 28f)
                 .texOffs(566, 321).addBox(-4f, -7f, -58f, 1f, 4f, 28f)
-                .texOffs(236, 377).addBox(-7f, -10f, 80f, 2f, 3f, 3f)
-                .texOffs(236, 377).addBox(5f, -10f, 80f, 2f, 3f, 3f)
-                .texOffs(254, 377).addBox(-1f, -9f, 81f, 2f, 2f, 3f)
-                .texOffs(236, 377).addBox(-7f, -10f, -83f, 2f, 3f, 3f)
-                .texOffs(236, 377).addBox(5f, -10f, -83f, 2f, 3f, 3f)
-                .texOffs(254, 377).addBox(-1f, -9f, -84f, 2f, 2f, 3f)
+                .texOffs(310, 377).addBox(-7f, -10f, 80f, 2f, 3f, 3f)
+                .texOffs(310, 377).addBox(5f, -10f, 80f, 2f, 3f, 3f)
+                .texOffs(406, 377).addBox(-1f, -9f, 81f, 2f, 2f, 3f)
+                .texOffs(310, 377).addBox(-7f, -10f, -83f, 2f, 3f, 3f)
+                .texOffs(310, 377).addBox(5f, -10f, -83f, 2f, 3f, 3f)
+                .texOffs(406, 377).addBox(-1f, -9f, -84f, 2f, 2f, 3f)
                 .texOffs(0, 321).addBox(-8f, -6f, -26f, 16f, 4f, 52f)
                 .texOffs(360, 0).addBox(-12f, -12f, -80f, 24f, 2f, 160f)
                 .texOffs(136, 321).addBox(11f, -22f, 48f, 1f, 10f, 32f)
                 .texOffs(404, 321).addBox(11f, -36f, 48f, 1f, 3f, 32f)
-                .texOffs(940, 321).addBox(11f, -33f, 74f, 1f, 11f, 6f)
-                .texOffs(940, 321).addBox(11f, -33f, 48f, 1f, 11f, 6f)
+                .texOffs(978, 321).addBox(11f, -33f, 74f, 1f, 11f, 6f)
+                .texOffs(978, 321).addBox(11f, -33f, 48f, 1f, 11f, 6f)
                 .texOffs(0, 163).addBox(12f, -19f, -74f, 1f, 4f, 154f)
                 .texOffs(136, 321).addBox(-12f, -22f, 48f, 1f, 10f, 32f)
                 .texOffs(404, 321).addBox(-12f, -36f, 48f, 1f, 3f, 32f)
-                .texOffs(940, 321).addBox(-12f, -33f, 74f, 1f, 11f, 6f)
-                .texOffs(940, 321).addBox(-12f, -33f, 48f, 1f, 11f, 6f)
+                .texOffs(978, 321).addBox(-12f, -33f, 74f, 1f, 11f, 6f)
+                .texOffs(978, 321).addBox(-12f, -33f, 48f, 1f, 11f, 6f)
                 .texOffs(0, 163).addBox(-13f, -19f, -74f, 1f, 4f, 154f)
-                .texOffs(842, 321).addBox(-11f, -36f, 79f, 22f, 24f, 1f)
-                .texOffs(974, 321).addBox(-11f, -26f, 48f, 22f, 14f, 1f)
-                .texOffs(284, 377).addBox(-11f, -36f, 48f, 22f, 2f, 1f)
+                .texOffs(770, 321).addBox(-11f, -36f, 79f, 22f, 24f, 1f)
+                .texOffs(138, 377).addBox(-11f, -22f, 48f, 22f, 10f, 1f)
+                .texOffs(444, 377).addBox(-11f, -36f, 48f, 22f, 2f, 1f)
                 .texOffs(202, 321).addBox(-13f, -38f, 46f, 26f, 2f, 36f)
                 .texOffs(326, 321).addBox(10f, -39f, 46f, 3f, 1f, 36f)
                 .texOffs(326, 321).addBox(-13f, -39f, 46f, 3f, 1f, 36f)
-                .texOffs(892, 321).addBox(-5f, -41f, 56f, 10f, 3f, 14f)
+                .texOffs(930, 321).addBox(-5f, -41f, 56f, 10f, 3f, 14f)
                 .texOffs(624, 321).addBox(-11f, -13f, 49f, 22f, 1f, 30f)
-                .texOffs(24, 377).addBox(-9f, -20f, 50f, 18f, 7f, 4f)
-                .texOffs(68, 377).addBox(3f, -18f, 62f, 6f, 5f, 6f)
-                .texOffs(208, 377).addBox(3f, -26f, 68f, 6f, 8f, 1f)
-                .texOffs(310, 163).addBox(-10f, -28f, -60f, 20f, 16f, 108f)
-                .texOffs(778, 163).addBox(-8f, -30f, -52f, 16f, 2f, 92f)
-                .texOffs(770, 321).addBox(-11f, -24f, -74f, 22f, 12f, 14f)
-                .texOffs(142, 377).addBox(-8f, -22f, -75f, 16f, 8f, 1f)
-                .texOffs(264, 377).addBox(7f, -24f, -76f, 3f, 3f, 2f)
-                .texOffs(264, 377).addBox(-10f, -24f, -76f, 3f, 3f, 2f)
-                .texOffs(274, 377).addBox(6f, -17f, 80f, 3f, 3f, 2f)
-                .texOffs(274, 377).addBox(-9f, -17f, 80f, 3f, 3f, 2f)
-                .texOffs(0, 377).addBox(-3f, -36f, -6f, 6f, 6f, 6f)
-                .texOffs(176, 377).addBox(-4f, -37f, -7f, 8f, 1f, 8f)
-                .texOffs(0, 377).addBox(-3f, -36f, -30f, 6f, 6f, 6f)
-                .texOffs(176, 377).addBox(-4f, -37f, -31f, 8f, 1f, 8f)
-                .texOffs(92, 377).addBox(11f, -21f, 43f, 1f, 9f, 1f)
-                .texOffs(92, 377).addBox(11f, -21f, 27f, 1f, 9f, 1f)
-                .texOffs(92, 377).addBox(11f, -21f, 11f, 1f, 9f, 1f)
-                .texOffs(92, 377).addBox(11f, -21f, -5f, 1f, 9f, 1f)
-                .texOffs(92, 377).addBox(11f, -21f, -21f, 1f, 9f, 1f)
-                .texOffs(92, 377).addBox(11f, -21f, -37f, 1f, 9f, 1f)
-                .texOffs(92, 377).addBox(11f, -21f, -53f, 1f, 9f, 1f)
+                .texOffs(70, 377).addBox(-9f, -21f, 50f, 18f, 8f, 4f)
+                .texOffs(332, 377).addBox(-9f, -22f, 50f, 18f, 1f, 4f)
+                .texOffs(376, 377).addBox(-2f, -23f, 50f, 4f, 1f, 4f)
+                .texOffs(436, 377).addBox(-1f, -25f, 51f, 2f, 2f, 2f)
+                .texOffs(490, 377).addBox(-8f, -24f, 52f, 2f, 2f, 1f)
+                .texOffs(490, 377).addBox(-5f, -24f, 52f, 2f, 2f, 1f)
+                .texOffs(490, 377).addBox(4f, -24f, 52f, 2f, 2f, 1f)
+                .texOffs(490, 377).addBox(7f, -24f, 52f, 2f, 2f, 1f)
+                .texOffs(392, 377).addBox(5f, -23f, 50f, 3f, 1f, 4f)
+                .texOffs(328, 377).addBox(6f, -28f, 52f, 1f, 5f, 1f)
+                .texOffs(392, 377).addBox(-8f, -23f, 50f, 3f, 1f, 4f)
+                .texOffs(328, 377).addBox(-7f, -28f, 52f, 1f, 5f, 1f)
+                .texOffs(0, 377).addBox(3f, -22f, 62f, 6f, 9f, 6f)
+                .texOffs(282, 377).addBox(3f, -30f, 68f, 6f, 8f, 1f)
+                .texOffs(0, 377).addBox(-9f, -22f, 62f, 6f, 9f, 6f)
+                .texOffs(282, 377).addBox(-9f, -30f, 68f, 6f, 8f, 1f)
+                .texOffs(254, 377).addBox(-3f, -36f, 58f, 6f, 1f, 8f)
+                .texOffs(892, 321).addBox(-9f, -30f, 78f, 18f, 17f, 1f)
+                .texOffs(310, 163).addBox(-10f, -22f, -60f, 20f, 10f, 108f)
+                .texOffs(778, 163).addBox(-8f, -24f, -52f, 16f, 2f, 92f)
+                .texOffs(816, 321).addBox(-11f, -22f, -74f, 22f, 10f, 14f)
+                .texOffs(188, 377).addBox(-8f, -22f, -75f, 16f, 8f, 1f)
+                .texOffs(416, 377).addBox(7f, -24f, -76f, 3f, 3f, 2f)
+                .texOffs(416, 377).addBox(-10f, -24f, -76f, 3f, 3f, 2f)
+                .texOffs(426, 377).addBox(6f, -17f, 80f, 3f, 3f, 2f)
+                .texOffs(426, 377).addBox(-9f, -17f, 80f, 3f, 3f, 2f)
+                .texOffs(114, 377).addBox(-3f, -30f, -6f, 6f, 6f, 6f)
+                .texOffs(222, 377).addBox(-4f, -31f, -7f, 8f, 1f, 8f)
+                .texOffs(114, 377).addBox(-3f, -30f, -30f, 6f, 6f, 6f)
+                .texOffs(222, 377).addBox(-4f, -31f, -31f, 8f, 1f, 8f)
+                .texOffs(184, 377).addBox(11f, -21f, 43f, 1f, 9f, 1f)
+                .texOffs(184, 377).addBox(11f, -21f, 27f, 1f, 9f, 1f)
+                .texOffs(184, 377).addBox(11f, -21f, 11f, 1f, 9f, 1f)
+                .texOffs(184, 377).addBox(11f, -21f, -5f, 1f, 9f, 1f)
+                .texOffs(184, 377).addBox(11f, -21f, -21f, 1f, 9f, 1f)
+                .texOffs(184, 377).addBox(11f, -21f, -37f, 1f, 9f, 1f)
+                .texOffs(184, 377).addBox(11f, -21f, -53f, 1f, 9f, 1f)
                 .texOffs(566, 163).addBox(11f, -22f, -61f, 1f, 1f, 105f)
                 .texOffs(888, 321).addBox(13f, -30f, 75f, 1f, 18f, 1f)
                 .texOffs(888, 321).addBox(13f, -30f, 70f, 1f, 18f, 1f)
-                .texOffs(222, 377).addBox(13f, -16f, 70f, 1f, 1f, 6f)
-                .texOffs(222, 377).addBox(13f, -21f, 70f, 1f, 1f, 6f)
-                .texOffs(222, 377).addBox(13f, -26f, 70f, 1f, 1f, 6f)
-                .texOffs(92, 377).addBox(-12f, -21f, 43f, 1f, 9f, 1f)
-                .texOffs(92, 377).addBox(-12f, -21f, 27f, 1f, 9f, 1f)
-                .texOffs(92, 377).addBox(-12f, -21f, 11f, 1f, 9f, 1f)
-                .texOffs(92, 377).addBox(-12f, -21f, -5f, 1f, 9f, 1f)
-                .texOffs(92, 377).addBox(-12f, -21f, -21f, 1f, 9f, 1f)
-                .texOffs(92, 377).addBox(-12f, -21f, -37f, 1f, 9f, 1f)
-                .texOffs(92, 377).addBox(-12f, -21f, -53f, 1f, 9f, 1f)
+                .texOffs(296, 377).addBox(13f, -16f, 70f, 1f, 1f, 6f)
+                .texOffs(296, 377).addBox(13f, -21f, 70f, 1f, 1f, 6f)
+                .texOffs(296, 377).addBox(13f, -26f, 70f, 1f, 1f, 6f)
+                .texOffs(184, 377).addBox(-12f, -21f, 43f, 1f, 9f, 1f)
+                .texOffs(184, 377).addBox(-12f, -21f, 27f, 1f, 9f, 1f)
+                .texOffs(184, 377).addBox(-12f, -21f, 11f, 1f, 9f, 1f)
+                .texOffs(184, 377).addBox(-12f, -21f, -5f, 1f, 9f, 1f)
+                .texOffs(184, 377).addBox(-12f, -21f, -21f, 1f, 9f, 1f)
+                .texOffs(184, 377).addBox(-12f, -21f, -37f, 1f, 9f, 1f)
+                .texOffs(184, 377).addBox(-12f, -21f, -53f, 1f, 9f, 1f)
                 .texOffs(566, 163).addBox(-12f, -22f, -61f, 1f, 1f, 105f)
                 .texOffs(888, 321).addBox(-14f, -30f, 75f, 1f, 18f, 1f)
                 .texOffs(888, 321).addBox(-14f, -30f, 70f, 1f, 18f, 1f)
-                .texOffs(222, 377).addBox(-14f, -16f, 70f, 1f, 1f, 6f)
-                .texOffs(222, 377).addBox(-14f, -21f, 70f, 1f, 1f, 6f)
-                .texOffs(222, 377).addBox(-14f, -26f, 70f, 1f, 1f, 6f),
+                .texOffs(296, 377).addBox(-14f, -16f, 70f, 1f, 1f, 6f)
+                .texOffs(296, 377).addBox(-14f, -21f, 70f, 1f, 1f, 6f)
+                .texOffs(296, 377).addBox(-14f, -26f, 70f, 1f, 1f, 6f),
                 PartPose.offset(0f, 24f, 0f));
         PartDefinition p_w0 = p_body.addOrReplaceChild("w0",
                 CubeListBuilder.create()
-                .texOffs(246, 377).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
+                .texOffs(320, 377).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
                 PartPose.offset(2.2f, -4f, 54f));
         PartDefinition p_w0_t0 = p_w0.addOrReplaceChild("w0_t0",
                 CubeListBuilder.create()
-                .texOffs(954, 321).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
+                .texOffs(992, 321).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
                 PartPose.offset(0f, 0f, 0f));
         PartDefinition p_w0_t1 = p_w0.addOrReplaceChild("w0_t1",
                 CubeListBuilder.create()
-                .texOffs(954, 321).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
+                .texOffs(992, 321).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
                 PartPose.offsetAndRotation(0f, 0f, 0f, 0.785f, 0f, 0f));
         PartDefinition p_w1 = p_body.addOrReplaceChild("w1",
                 CubeListBuilder.create()
-                .texOffs(246, 377).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
+                .texOffs(320, 377).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
                 PartPose.offset(-2.2f, -4f, 54f));
         PartDefinition p_w1_t0 = p_w1.addOrReplaceChild("w1_t0",
                 CubeListBuilder.create()
-                .texOffs(954, 321).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
+                .texOffs(992, 321).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
                 PartPose.offset(0f, 0f, 0f));
         PartDefinition p_w1_t1 = p_w1.addOrReplaceChild("w1_t1",
                 CubeListBuilder.create()
-                .texOffs(954, 321).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
+                .texOffs(992, 321).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
                 PartPose.offsetAndRotation(0f, 0f, 0f, 0.785f, 0f, 0f));
         PartDefinition p_w2 = p_body.addOrReplaceChild("w2",
                 CubeListBuilder.create()
-                .texOffs(246, 377).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
+                .texOffs(320, 377).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
                 PartPose.offset(2.2f, -4f, 34f));
         PartDefinition p_w2_t0 = p_w2.addOrReplaceChild("w2_t0",
                 CubeListBuilder.create()
-                .texOffs(954, 321).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
+                .texOffs(992, 321).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
                 PartPose.offset(0f, 0f, 0f));
         PartDefinition p_w2_t1 = p_w2.addOrReplaceChild("w2_t1",
                 CubeListBuilder.create()
-                .texOffs(954, 321).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
+                .texOffs(992, 321).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
                 PartPose.offsetAndRotation(0f, 0f, 0f, 0.785f, 0f, 0f));
         PartDefinition p_w3 = p_body.addOrReplaceChild("w3",
                 CubeListBuilder.create()
-                .texOffs(246, 377).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
+                .texOffs(320, 377).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
                 PartPose.offset(-2.2f, -4f, 34f));
         PartDefinition p_w3_t0 = p_w3.addOrReplaceChild("w3_t0",
                 CubeListBuilder.create()
-                .texOffs(954, 321).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
+                .texOffs(992, 321).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
                 PartPose.offset(0f, 0f, 0f));
         PartDefinition p_w3_t1 = p_w3.addOrReplaceChild("w3_t1",
                 CubeListBuilder.create()
-                .texOffs(954, 321).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
+                .texOffs(992, 321).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
                 PartPose.offsetAndRotation(0f, 0f, 0f, 0.785f, 0f, 0f));
         PartDefinition p_w4 = p_body.addOrReplaceChild("w4",
                 CubeListBuilder.create()
-                .texOffs(246, 377).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
+                .texOffs(320, 377).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
                 PartPose.offset(2.2f, -4f, -34f));
         PartDefinition p_w4_t0 = p_w4.addOrReplaceChild("w4_t0",
                 CubeListBuilder.create()
-                .texOffs(954, 321).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
+                .texOffs(992, 321).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
                 PartPose.offset(0f, 0f, 0f));
         PartDefinition p_w4_t1 = p_w4.addOrReplaceChild("w4_t1",
                 CubeListBuilder.create()
-                .texOffs(954, 321).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
+                .texOffs(992, 321).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
                 PartPose.offsetAndRotation(0f, 0f, 0f, 0.785f, 0f, 0f));
         PartDefinition p_w5 = p_body.addOrReplaceChild("w5",
                 CubeListBuilder.create()
-                .texOffs(246, 377).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
+                .texOffs(320, 377).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
                 PartPose.offset(-2.2f, -4f, -34f));
         PartDefinition p_w5_t0 = p_w5.addOrReplaceChild("w5_t0",
                 CubeListBuilder.create()
-                .texOffs(954, 321).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
+                .texOffs(992, 321).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
                 PartPose.offset(0f, 0f, 0f));
         PartDefinition p_w5_t1 = p_w5.addOrReplaceChild("w5_t1",
                 CubeListBuilder.create()
-                .texOffs(954, 321).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
+                .texOffs(992, 321).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
                 PartPose.offsetAndRotation(0f, 0f, 0f, 0.785f, 0f, 0f));
         PartDefinition p_w6 = p_body.addOrReplaceChild("w6",
                 CubeListBuilder.create()
-                .texOffs(246, 377).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
+                .texOffs(320, 377).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
                 PartPose.offset(2.2f, -4f, -54f));
         PartDefinition p_w6_t0 = p_w6.addOrReplaceChild("w6_t0",
                 CubeListBuilder.create()
-                .texOffs(954, 321).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
+                .texOffs(992, 321).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
                 PartPose.offset(0f, 0f, 0f));
         PartDefinition p_w6_t1 = p_w6.addOrReplaceChild("w6_t1",
                 CubeListBuilder.create()
-                .texOffs(954, 321).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
+                .texOffs(992, 321).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
                 PartPose.offsetAndRotation(0f, 0f, 0f, 0.785f, 0f, 0f));
         PartDefinition p_w7 = p_body.addOrReplaceChild("w7",
                 CubeListBuilder.create()
-                .texOffs(246, 377).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
+                .texOffs(320, 377).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
                 PartPose.offset(-2.2f, -4f, -54f));
         PartDefinition p_w7_t0 = p_w7.addOrReplaceChild("w7_t0",
                 CubeListBuilder.create()
-                .texOffs(954, 321).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
+                .texOffs(992, 321).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
                 PartPose.offset(0f, 0f, 0f));
         PartDefinition p_w7_t1 = p_w7.addOrReplaceChild("w7_t1",
                 CubeListBuilder.create()
-                .texOffs(954, 321).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
+                .texOffs(992, 321).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
                 PartPose.offsetAndRotation(0f, 0f, 0f, 0.785f, 0f, 0f));
         PartDefinition p_glass = root.addOrReplaceChild("glass",
                 CubeListBuilder.create()
                 .texOffs(728, 321).addBox(11f, -33f, 54f, 1f, 11f, 20f)
                 .texOffs(728, 321).addBox(-12f, -33f, 54f, 1f, 11f, 20f)
-                .texOffs(96, 377).addBox(-11f, -34f, 48f, 22f, 8f, 1f),
+                .texOffs(24, 377).addBox(-11f, -34f, 48f, 22f, 12f, 1f),
                 PartPose.offset(0f, 24f, 0f));
         return LayerDefinition.create(mesh, 1024, 512);
     }
@@ -813,17 +828,23 @@ public class TrainCarModel extends EntityModel<Entity> {
                 .texOffs(766, 0).addBox(-13f, -47f, -22f, 3f, 1f, 62f)
                 .texOffs(314, 133).addBox(-11f, -13f, -19f, 22f, 1f, 54f)
                 .texOffs(366, 195).addBox(-8f, -28f, -19f, 16f, 15f, 6f)
-                .texOffs(746, 195).addBox(-2f, -31f, -18f, 4f, 3f, 4f)
-                .texOffs(656, 195).addBox(3f, -18f, 16f, 6f, 5f, 6f)
-                .texOffs(732, 195).addBox(3f, -26f, 22f, 6f, 8f, 1f)
-                .texOffs(656, 195).addBox(-9f, -18f, 16f, 6f, 5f, 6f)
-                .texOffs(732, 195).addBox(-9f, -26f, 22f, 6f, 8f, 1f)
-                .texOffs(844, 195).addBox(6f, -17f, 88f, 3f, 3f, 2f)
-                .texOffs(844, 195).addBox(-9f, -17f, 88f, 3f, 3f, 2f)
+                .texOffs(752, 195).addBox(-2f, -31f, -18f, 4f, 3f, 4f)
+                .texOffs(840, 195).addBox(-2f, -24f, -13f, 4f, 4f, 2f)
+                .texOffs(890, 195).addBox(-1f, -23f, -11f, 2f, 2f, 2f)
+                .texOffs(882, 195).addBox(-7f, -26f, -13f, 3f, 4f, 1f)
+                .texOffs(882, 195).addBox(4f, -26f, -13f, 3f, 4f, 1f)
+                .texOffs(746, 195).addBox(5f, -20f, -13f, 1f, 6f, 2f)
+                .texOffs(746, 195).addBox(-6f, -20f, -13f, 1f, 6f, 2f)
+                .texOffs(604, 195).addBox(3f, -22f, 6f, 6f, 9f, 6f)
+                .texOffs(732, 195).addBox(3f, -30f, 12f, 6f, 8f, 1f)
+                .texOffs(604, 195).addBox(-9f, -22f, 6f, 6f, 9f, 6f)
+                .texOffs(732, 195).addBox(-9f, -30f, 12f, 6f, 8f, 1f)
+                .texOffs(862, 195).addBox(6f, -17f, 88f, 3f, 3f, 2f)
+                .texOffs(862, 195).addBox(-9f, -17f, 88f, 3f, 3f, 2f)
                 .texOffs(410, 195).addBox(-3f, -47f, -76f, 6f, 14f, 6f)
                 .texOffs(680, 195).addBox(-4f, -49f, -77f, 8f, 2f, 8f)
                 .texOffs(468, 195).addBox(-4f, -43f, -44f, 8f, 10f, 8f)
-                .texOffs(604, 195).addBox(-3f, -40f, -58f, 6f, 7f, 6f)
+                .texOffs(628, 195).addBox(-3f, -40f, -58f, 6f, 7f, 6f)
                 .texOffs(712, 195).addBox(-3f, -40f, -82f, 6f, 5f, 4f)
                 .texOffs(550, 195).addBox(-8f, -30f, -85f, 16f, 15f, 1f)
                 .texOffs(228, 133).addBox(11f, -28f, 46f, 1f, 17f, 42f)
@@ -835,29 +856,29 @@ public class TrainCarModel extends EntityModel<Entity> {
                 .texOffs(664, 133).addBox(-12f, -11f, 46f, 24f, 2f, 42f)
                 .texOffs(254, 195).addBox(-11f, -34f, 46f, 22f, 23f, 1f)
                 .texOffs(504, 195).addBox(-11f, -26f, 87f, 22f, 15f, 1f)
-                .texOffs(628, 195).addBox(-2f, -11f, 36f, 4f, 2f, 10f)
+                .texOffs(652, 195).addBox(-2f, -11f, 36f, 4f, 2f, 10f)
                 .texOffs(500, 195).addBox(12f, -28f, 49f, 1f, 16f, 1f)
                 .texOffs(464, 195).addBox(13f, -30f, 33f, 1f, 18f, 1f)
                 .texOffs(464, 195).addBox(13f, -30f, 28f, 1f, 18f, 1f)
-                .texOffs(762, 195).addBox(13f, -16f, 28f, 1f, 1f, 6f)
-                .texOffs(762, 195).addBox(13f, -21f, 28f, 1f, 1f, 6f)
-                .texOffs(762, 195).addBox(13f, -26f, 28f, 1f, 1f, 6f)
+                .texOffs(768, 195).addBox(13f, -16f, 28f, 1f, 1f, 6f)
+                .texOffs(768, 195).addBox(13f, -21f, 28f, 1f, 1f, 6f)
+                .texOffs(768, 195).addBox(13f, -26f, 28f, 1f, 1f, 6f)
                 .texOffs(464, 195).addBox(-14f, -30f, 33f, 1f, 18f, 1f)
                 .texOffs(464, 195).addBox(-14f, -30f, 28f, 1f, 18f, 1f)
-                .texOffs(762, 195).addBox(-14f, -16f, 28f, 1f, 1f, 6f)
-                .texOffs(762, 195).addBox(-14f, -21f, 28f, 1f, 1f, 6f)
-                .texOffs(762, 195).addBox(-14f, -26f, 28f, 1f, 1f, 6f)
-                .texOffs(834, 195).addBox(-7f, -10f, 88f, 2f, 3f, 3f)
-                .texOffs(834, 195).addBox(5f, -10f, 88f, 2f, 3f, 3f)
-                .texOffs(854, 195).addBox(-1f, -9f, 88f, 2f, 2f, 3f)
-                .texOffs(834, 195).addBox(-7f, -10f, -89f, 2f, 3f, 3f)
-                .texOffs(834, 195).addBox(5f, -10f, -89f, 2f, 3f, 3f)
-                .texOffs(854, 195).addBox(-1f, -9f, -89f, 2f, 2f, 3f)
-                .texOffs(776, 195).addBox(-10f, -8f, -91f, 20f, 3f, 3f),
+                .texOffs(768, 195).addBox(-14f, -16f, 28f, 1f, 1f, 6f)
+                .texOffs(768, 195).addBox(-14f, -21f, 28f, 1f, 1f, 6f)
+                .texOffs(768, 195).addBox(-14f, -26f, 28f, 1f, 1f, 6f)
+                .texOffs(852, 195).addBox(-7f, -10f, 88f, 2f, 3f, 3f)
+                .texOffs(852, 195).addBox(5f, -10f, 88f, 2f, 3f, 3f)
+                .texOffs(872, 195).addBox(-1f, -9f, 88f, 2f, 2f, 3f)
+                .texOffs(852, 195).addBox(-7f, -10f, -89f, 2f, 3f, 3f)
+                .texOffs(852, 195).addBox(5f, -10f, -89f, 2f, 3f, 3f)
+                .texOffs(872, 195).addBox(-1f, -9f, -89f, 2f, 2f, 3f)
+                .texOffs(782, 195).addBox(-10f, -8f, -91f, 20f, 3f, 3f),
                 PartPose.offset(0f, 24f, 0f));
         PartDefinition p_w0 = p_body.addOrReplaceChild("w0",
                 CubeListBuilder.create()
-                .texOffs(822, 195).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
+                .texOffs(828, 195).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
                 PartPose.offset(11f, -7f, -8f));
         PartDefinition p_w0_t0 = p_w0.addOrReplaceChild("w0_t0",
                 CubeListBuilder.create()
@@ -873,7 +894,7 @@ public class TrainCarModel extends EntityModel<Entity> {
                 PartPose.offsetAndRotation(0f, 0f, 0f, 1.047f, 0f, 0f));
         PartDefinition p_w1 = p_body.addOrReplaceChild("w1",
                 CubeListBuilder.create()
-                .texOffs(822, 195).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
+                .texOffs(828, 195).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
                 PartPose.offset(-11f, -7f, -8f));
         PartDefinition p_w1_t0 = p_w1.addOrReplaceChild("w1_t0",
                 CubeListBuilder.create()
@@ -889,7 +910,7 @@ public class TrainCarModel extends EntityModel<Entity> {
                 PartPose.offsetAndRotation(0f, 0f, 0f, 1.047f, 0f, 0f));
         PartDefinition p_w2 = p_body.addOrReplaceChild("w2",
                 CubeListBuilder.create()
-                .texOffs(822, 195).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
+                .texOffs(828, 195).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
                 PartPose.offset(11f, -7f, -26f));
         PartDefinition p_w2_t0 = p_w2.addOrReplaceChild("w2_t0",
                 CubeListBuilder.create()
@@ -905,7 +926,7 @@ public class TrainCarModel extends EntityModel<Entity> {
                 PartPose.offsetAndRotation(0f, 0f, 0f, 1.047f, 0f, 0f));
         PartDefinition p_w3 = p_body.addOrReplaceChild("w3",
                 CubeListBuilder.create()
-                .texOffs(822, 195).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
+                .texOffs(828, 195).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
                 PartPose.offset(-11f, -7f, -26f));
         PartDefinition p_w3_t0 = p_w3.addOrReplaceChild("w3_t0",
                 CubeListBuilder.create()
@@ -921,7 +942,7 @@ public class TrainCarModel extends EntityModel<Entity> {
                 PartPose.offsetAndRotation(0f, 0f, 0f, 1.047f, 0f, 0f));
         PartDefinition p_w4 = p_body.addOrReplaceChild("w4",
                 CubeListBuilder.create()
-                .texOffs(822, 195).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
+                .texOffs(828, 195).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
                 PartPose.offset(11f, -7f, -44f));
         PartDefinition p_w4_t0 = p_w4.addOrReplaceChild("w4_t0",
                 CubeListBuilder.create()
@@ -937,7 +958,7 @@ public class TrainCarModel extends EntityModel<Entity> {
                 PartPose.offsetAndRotation(0f, 0f, 0f, 1.047f, 0f, 0f));
         PartDefinition p_w5 = p_body.addOrReplaceChild("w5",
                 CubeListBuilder.create()
-                .texOffs(822, 195).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
+                .texOffs(828, 195).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
                 PartPose.offset(-11f, -7f, -44f));
         PartDefinition p_w5_t0 = p_w5.addOrReplaceChild("w5_t0",
                 CubeListBuilder.create()
@@ -953,7 +974,7 @@ public class TrainCarModel extends EntityModel<Entity> {
                 PartPose.offsetAndRotation(0f, 0f, 0f, 1.047f, 0f, 0f));
         PartDefinition p_w6 = p_body.addOrReplaceChild("w6",
                 CubeListBuilder.create()
-                .texOffs(822, 195).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
+                .texOffs(828, 195).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
                 PartPose.offset(6f, -4f, -76f));
         PartDefinition p_w6_t0 = p_w6.addOrReplaceChild("w6_t0",
                 CubeListBuilder.create()
@@ -965,7 +986,7 @@ public class TrainCarModel extends EntityModel<Entity> {
                 PartPose.offsetAndRotation(0f, 0f, 0f, 0.785f, 0f, 0f));
         PartDefinition p_w7 = p_body.addOrReplaceChild("w7",
                 CubeListBuilder.create()
-                .texOffs(822, 195).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
+                .texOffs(828, 195).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
                 PartPose.offset(-6f, -4f, -76f));
         PartDefinition p_w7_t0 = p_w7.addOrReplaceChild("w7_t0",
                 CubeListBuilder.create()
@@ -977,7 +998,7 @@ public class TrainCarModel extends EntityModel<Entity> {
                 PartPose.offsetAndRotation(0f, 0f, 0f, 0.785f, 0f, 0f));
         PartDefinition p_w8 = p_body.addOrReplaceChild("w8",
                 CubeListBuilder.create()
-                .texOffs(822, 195).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
+                .texOffs(828, 195).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
                 PartPose.offset(11f, -4f, 52f));
         PartDefinition p_w8_t0 = p_w8.addOrReplaceChild("w8_t0",
                 CubeListBuilder.create()
@@ -989,7 +1010,7 @@ public class TrainCarModel extends EntityModel<Entity> {
                 PartPose.offsetAndRotation(0f, 0f, 0f, 0.785f, 0f, 0f));
         PartDefinition p_w9 = p_body.addOrReplaceChild("w9",
                 CubeListBuilder.create()
-                .texOffs(822, 195).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
+                .texOffs(828, 195).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
                 PartPose.offset(-11f, -4f, 52f));
         PartDefinition p_w9_t0 = p_w9.addOrReplaceChild("w9_t0",
                 CubeListBuilder.create()
@@ -1001,7 +1022,7 @@ public class TrainCarModel extends EntityModel<Entity> {
                 PartPose.offsetAndRotation(0f, 0f, 0f, 0.785f, 0f, 0f));
         PartDefinition p_w10 = p_body.addOrReplaceChild("w10",
                 CubeListBuilder.create()
-                .texOffs(822, 195).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
+                .texOffs(828, 195).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
                 PartPose.offset(11f, -4f, 62f));
         PartDefinition p_w10_t0 = p_w10.addOrReplaceChild("w10_t0",
                 CubeListBuilder.create()
@@ -1013,7 +1034,7 @@ public class TrainCarModel extends EntityModel<Entity> {
                 PartPose.offsetAndRotation(0f, 0f, 0f, 0.785f, 0f, 0f));
         PartDefinition p_w11 = p_body.addOrReplaceChild("w11",
                 CubeListBuilder.create()
-                .texOffs(822, 195).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
+                .texOffs(828, 195).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
                 PartPose.offset(-11f, -4f, 62f));
         PartDefinition p_w11_t0 = p_w11.addOrReplaceChild("w11_t0",
                 CubeListBuilder.create()
@@ -1025,7 +1046,7 @@ public class TrainCarModel extends EntityModel<Entity> {
                 PartPose.offsetAndRotation(0f, 0f, 0f, 0.785f, 0f, 0f));
         PartDefinition p_w12 = p_body.addOrReplaceChild("w12",
                 CubeListBuilder.create()
-                .texOffs(822, 195).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
+                .texOffs(828, 195).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
                 PartPose.offset(11f, -4f, 72f));
         PartDefinition p_w12_t0 = p_w12.addOrReplaceChild("w12_t0",
                 CubeListBuilder.create()
@@ -1037,7 +1058,7 @@ public class TrainCarModel extends EntityModel<Entity> {
                 PartPose.offsetAndRotation(0f, 0f, 0f, 0.785f, 0f, 0f));
         PartDefinition p_w13 = p_body.addOrReplaceChild("w13",
                 CubeListBuilder.create()
-                .texOffs(822, 195).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
+                .texOffs(828, 195).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
                 PartPose.offset(-11f, -4f, 72f));
         PartDefinition p_w13_t0 = p_w13.addOrReplaceChild("w13_t0",
                 CubeListBuilder.create()
@@ -1049,7 +1070,7 @@ public class TrainCarModel extends EntityModel<Entity> {
                 PartPose.offsetAndRotation(0f, 0f, 0f, 0.785f, 0f, 0f));
         PartDefinition p_w14 = p_body.addOrReplaceChild("w14",
                 CubeListBuilder.create()
-                .texOffs(822, 195).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
+                .texOffs(828, 195).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
                 PartPose.offset(11f, -4f, 82f));
         PartDefinition p_w14_t0 = p_w14.addOrReplaceChild("w14_t0",
                 CubeListBuilder.create()
@@ -1061,7 +1082,7 @@ public class TrainCarModel extends EntityModel<Entity> {
                 PartPose.offsetAndRotation(0f, 0f, 0f, 0.785f, 0f, 0f));
         PartDefinition p_w15 = p_body.addOrReplaceChild("w15",
                 CubeListBuilder.create()
-                .texOffs(822, 195).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
+                .texOffs(828, 195).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
                 PartPose.offset(-11f, -4f, 82f));
         PartDefinition p_w15_t0 = p_w15.addOrReplaceChild("w15_t0",
                 CubeListBuilder.create()
@@ -1169,13 +1190,19 @@ public class TrainCarModel extends EntityModel<Entity> {
                 .texOffs(352, 133).addBox(-13f, -47f, -22f, 3f, 1f, 62f)
                 .texOffs(796, 133).addBox(-11f, -13f, -19f, 22f, 1f, 54f)
                 .texOffs(916, 199).addBox(-8f, -28f, -19f, 16f, 15f, 6f)
-                .texOffs(220, 252).addBox(-2f, -31f, -18f, 4f, 3f, 4f)
-                .texOffs(134, 252).addBox(3f, -18f, 16f, 6f, 5f, 6f)
-                .texOffs(206, 252).addBox(3f, -26f, 22f, 6f, 8f, 1f)
-                .texOffs(134, 252).addBox(-9f, -18f, 16f, 6f, 5f, 6f)
-                .texOffs(206, 252).addBox(-9f, -26f, 22f, 6f, 8f, 1f)
-                .texOffs(334, 252).addBox(6f, -17f, 88f, 3f, 3f, 2f)
-                .texOffs(334, 252).addBox(-9f, -17f, 88f, 3f, 3f, 2f)
+                .texOffs(226, 252).addBox(-2f, -31f, -18f, 4f, 3f, 4f)
+                .texOffs(330, 252).addBox(-2f, -24f, -13f, 4f, 4f, 2f)
+                .texOffs(380, 252).addBox(-1f, -23f, -11f, 2f, 2f, 2f)
+                .texOffs(372, 252).addBox(-7f, -26f, -13f, 3f, 4f, 1f)
+                .texOffs(372, 252).addBox(4f, -26f, -13f, 3f, 4f, 1f)
+                .texOffs(220, 252).addBox(5f, -20f, -13f, 1f, 6f, 2f)
+                .texOffs(220, 252).addBox(-6f, -20f, -13f, 1f, 6f, 2f)
+                .texOffs(106, 252).addBox(3f, -22f, 6f, 6f, 9f, 6f)
+                .texOffs(206, 252).addBox(3f, -30f, 12f, 6f, 8f, 1f)
+                .texOffs(106, 252).addBox(-9f, -22f, 6f, 6f, 9f, 6f)
+                .texOffs(206, 252).addBox(-9f, -30f, 12f, 6f, 8f, 1f)
+                .texOffs(352, 252).addBox(6f, -17f, 88f, 3f, 3f, 2f)
+                .texOffs(352, 252).addBox(-9f, -17f, 88f, 3f, 3f, 2f)
                 .texOffs(604, 0).addBox(-10f, -34f, -76f, 20f, 22f, 56f)
                 .texOffs(0, 199).addBox(-7f, -37f, -70f, 14f, 3f, 50f)
                 .texOffs(800, 199).addBox(-9f, -32f, -82f, 18f, 20f, 6f)
@@ -1186,7 +1213,7 @@ public class TrainCarModel extends EntityModel<Entity> {
                 .texOffs(450, 0).addBox(12f, -22f, -80f, 1f, 4f, 76f)
                 .texOffs(450, 0).addBox(-13f, -22f, -80f, 1f, 4f, 76f)
                 .texOffs(158, 252).addBox(-3f, -39f, -64f, 6f, 2f, 8f)
-                .texOffs(296, 252).addBox(-3f, -30f, -90f, 6f, 4f, 2f)
+                .texOffs(302, 252).addBox(-3f, -30f, -90f, 6f, 4f, 2f)
                 .texOffs(710, 133).addBox(11f, -28f, 46f, 1f, 17f, 42f)
                 .texOffs(458, 199).addBox(10f, -29f, 46f, 2f, 1f, 42f)
                 .texOffs(546, 199).addBox(12f, -20f, 48f, 1f, 4f, 38f)
@@ -1196,29 +1223,29 @@ public class TrainCarModel extends EntityModel<Entity> {
                 .texOffs(326, 199).addBox(-12f, -11f, 46f, 24f, 2f, 42f)
                 .texOffs(848, 199).addBox(-11f, -34f, 46f, 22f, 23f, 1f)
                 .texOffs(40, 252).addBox(-11f, -26f, 87f, 22f, 15f, 1f)
-                .texOffs(106, 252).addBox(-2f, -11f, 36f, 4f, 2f, 10f)
+                .texOffs(130, 252).addBox(-2f, -11f, 36f, 4f, 2f, 10f)
                 .texOffs(36, 252).addBox(12f, -28f, 49f, 1f, 16f, 1f)
                 .texOffs(990, 199).addBox(13f, -30f, 33f, 1f, 18f, 1f)
                 .texOffs(990, 199).addBox(13f, -30f, 28f, 1f, 18f, 1f)
-                .texOffs(236, 252).addBox(13f, -16f, 28f, 1f, 1f, 6f)
-                .texOffs(236, 252).addBox(13f, -21f, 28f, 1f, 1f, 6f)
-                .texOffs(236, 252).addBox(13f, -26f, 28f, 1f, 1f, 6f)
+                .texOffs(242, 252).addBox(13f, -16f, 28f, 1f, 1f, 6f)
+                .texOffs(242, 252).addBox(13f, -21f, 28f, 1f, 1f, 6f)
+                .texOffs(242, 252).addBox(13f, -26f, 28f, 1f, 1f, 6f)
                 .texOffs(990, 199).addBox(-14f, -30f, 33f, 1f, 18f, 1f)
                 .texOffs(990, 199).addBox(-14f, -30f, 28f, 1f, 18f, 1f)
-                .texOffs(236, 252).addBox(-14f, -16f, 28f, 1f, 1f, 6f)
-                .texOffs(236, 252).addBox(-14f, -21f, 28f, 1f, 1f, 6f)
-                .texOffs(236, 252).addBox(-14f, -26f, 28f, 1f, 1f, 6f)
-                .texOffs(324, 252).addBox(-7f, -10f, 88f, 2f, 3f, 3f)
-                .texOffs(324, 252).addBox(5f, -10f, 88f, 2f, 3f, 3f)
-                .texOffs(344, 252).addBox(-1f, -9f, 88f, 2f, 2f, 3f)
-                .texOffs(324, 252).addBox(-7f, -10f, -89f, 2f, 3f, 3f)
-                .texOffs(324, 252).addBox(5f, -10f, -89f, 2f, 3f, 3f)
-                .texOffs(344, 252).addBox(-1f, -9f, -89f, 2f, 2f, 3f)
-                .texOffs(250, 252).addBox(-10f, -8f, -91f, 20f, 3f, 3f),
+                .texOffs(242, 252).addBox(-14f, -16f, 28f, 1f, 1f, 6f)
+                .texOffs(242, 252).addBox(-14f, -21f, 28f, 1f, 1f, 6f)
+                .texOffs(242, 252).addBox(-14f, -26f, 28f, 1f, 1f, 6f)
+                .texOffs(342, 252).addBox(-7f, -10f, 88f, 2f, 3f, 3f)
+                .texOffs(342, 252).addBox(5f, -10f, 88f, 2f, 3f, 3f)
+                .texOffs(362, 252).addBox(-1f, -9f, 88f, 2f, 2f, 3f)
+                .texOffs(342, 252).addBox(-7f, -10f, -89f, 2f, 3f, 3f)
+                .texOffs(342, 252).addBox(5f, -10f, -89f, 2f, 3f, 3f)
+                .texOffs(362, 252).addBox(-1f, -9f, -89f, 2f, 2f, 3f)
+                .texOffs(256, 252).addBox(-10f, -8f, -91f, 20f, 3f, 3f),
                 PartPose.offset(0f, 24f, 0f));
         PartDefinition p_w0 = p_body.addOrReplaceChild("w0",
                 CubeListBuilder.create()
-                .texOffs(312, 252).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
+                .texOffs(318, 252).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
                 PartPose.offset(11f, -7f, -8f));
         PartDefinition p_w0_t0 = p_w0.addOrReplaceChild("w0_t0",
                 CubeListBuilder.create()
@@ -1234,7 +1261,7 @@ public class TrainCarModel extends EntityModel<Entity> {
                 PartPose.offsetAndRotation(0f, 0f, 0f, 1.047f, 0f, 0f));
         PartDefinition p_w1 = p_body.addOrReplaceChild("w1",
                 CubeListBuilder.create()
-                .texOffs(312, 252).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
+                .texOffs(318, 252).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
                 PartPose.offset(-11f, -7f, -8f));
         PartDefinition p_w1_t0 = p_w1.addOrReplaceChild("w1_t0",
                 CubeListBuilder.create()
@@ -1250,7 +1277,7 @@ public class TrainCarModel extends EntityModel<Entity> {
                 PartPose.offsetAndRotation(0f, 0f, 0f, 1.047f, 0f, 0f));
         PartDefinition p_w2 = p_body.addOrReplaceChild("w2",
                 CubeListBuilder.create()
-                .texOffs(312, 252).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
+                .texOffs(318, 252).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
                 PartPose.offset(11f, -7f, -26f));
         PartDefinition p_w2_t0 = p_w2.addOrReplaceChild("w2_t0",
                 CubeListBuilder.create()
@@ -1266,7 +1293,7 @@ public class TrainCarModel extends EntityModel<Entity> {
                 PartPose.offsetAndRotation(0f, 0f, 0f, 1.047f, 0f, 0f));
         PartDefinition p_w3 = p_body.addOrReplaceChild("w3",
                 CubeListBuilder.create()
-                .texOffs(312, 252).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
+                .texOffs(318, 252).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
                 PartPose.offset(-11f, -7f, -26f));
         PartDefinition p_w3_t0 = p_w3.addOrReplaceChild("w3_t0",
                 CubeListBuilder.create()
@@ -1282,7 +1309,7 @@ public class TrainCarModel extends EntityModel<Entity> {
                 PartPose.offsetAndRotation(0f, 0f, 0f, 1.047f, 0f, 0f));
         PartDefinition p_w4 = p_body.addOrReplaceChild("w4",
                 CubeListBuilder.create()
-                .texOffs(312, 252).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
+                .texOffs(318, 252).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
                 PartPose.offset(11f, -7f, -44f));
         PartDefinition p_w4_t0 = p_w4.addOrReplaceChild("w4_t0",
                 CubeListBuilder.create()
@@ -1298,7 +1325,7 @@ public class TrainCarModel extends EntityModel<Entity> {
                 PartPose.offsetAndRotation(0f, 0f, 0f, 1.047f, 0f, 0f));
         PartDefinition p_w5 = p_body.addOrReplaceChild("w5",
                 CubeListBuilder.create()
-                .texOffs(312, 252).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
+                .texOffs(318, 252).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
                 PartPose.offset(-11f, -7f, -44f));
         PartDefinition p_w5_t0 = p_w5.addOrReplaceChild("w5_t0",
                 CubeListBuilder.create()
@@ -1314,7 +1341,7 @@ public class TrainCarModel extends EntityModel<Entity> {
                 PartPose.offsetAndRotation(0f, 0f, 0f, 1.047f, 0f, 0f));
         PartDefinition p_w6 = p_body.addOrReplaceChild("w6",
                 CubeListBuilder.create()
-                .texOffs(312, 252).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
+                .texOffs(318, 252).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
                 PartPose.offset(6f, -4f, -76f));
         PartDefinition p_w6_t0 = p_w6.addOrReplaceChild("w6_t0",
                 CubeListBuilder.create()
@@ -1326,7 +1353,7 @@ public class TrainCarModel extends EntityModel<Entity> {
                 PartPose.offsetAndRotation(0f, 0f, 0f, 0.785f, 0f, 0f));
         PartDefinition p_w7 = p_body.addOrReplaceChild("w7",
                 CubeListBuilder.create()
-                .texOffs(312, 252).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
+                .texOffs(318, 252).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
                 PartPose.offset(-6f, -4f, -76f));
         PartDefinition p_w7_t0 = p_w7.addOrReplaceChild("w7_t0",
                 CubeListBuilder.create()
@@ -1338,7 +1365,7 @@ public class TrainCarModel extends EntityModel<Entity> {
                 PartPose.offsetAndRotation(0f, 0f, 0f, 0.785f, 0f, 0f));
         PartDefinition p_w8 = p_body.addOrReplaceChild("w8",
                 CubeListBuilder.create()
-                .texOffs(312, 252).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
+                .texOffs(318, 252).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
                 PartPose.offset(11f, -4f, 52f));
         PartDefinition p_w8_t0 = p_w8.addOrReplaceChild("w8_t0",
                 CubeListBuilder.create()
@@ -1350,7 +1377,7 @@ public class TrainCarModel extends EntityModel<Entity> {
                 PartPose.offsetAndRotation(0f, 0f, 0f, 0.785f, 0f, 0f));
         PartDefinition p_w9 = p_body.addOrReplaceChild("w9",
                 CubeListBuilder.create()
-                .texOffs(312, 252).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
+                .texOffs(318, 252).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
                 PartPose.offset(-11f, -4f, 52f));
         PartDefinition p_w9_t0 = p_w9.addOrReplaceChild("w9_t0",
                 CubeListBuilder.create()
@@ -1362,7 +1389,7 @@ public class TrainCarModel extends EntityModel<Entity> {
                 PartPose.offsetAndRotation(0f, 0f, 0f, 0.785f, 0f, 0f));
         PartDefinition p_w10 = p_body.addOrReplaceChild("w10",
                 CubeListBuilder.create()
-                .texOffs(312, 252).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
+                .texOffs(318, 252).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
                 PartPose.offset(11f, -4f, 62f));
         PartDefinition p_w10_t0 = p_w10.addOrReplaceChild("w10_t0",
                 CubeListBuilder.create()
@@ -1374,7 +1401,7 @@ public class TrainCarModel extends EntityModel<Entity> {
                 PartPose.offsetAndRotation(0f, 0f, 0f, 0.785f, 0f, 0f));
         PartDefinition p_w11 = p_body.addOrReplaceChild("w11",
                 CubeListBuilder.create()
-                .texOffs(312, 252).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
+                .texOffs(318, 252).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
                 PartPose.offset(-11f, -4f, 62f));
         PartDefinition p_w11_t0 = p_w11.addOrReplaceChild("w11_t0",
                 CubeListBuilder.create()
@@ -1386,7 +1413,7 @@ public class TrainCarModel extends EntityModel<Entity> {
                 PartPose.offsetAndRotation(0f, 0f, 0f, 0.785f, 0f, 0f));
         PartDefinition p_w12 = p_body.addOrReplaceChild("w12",
                 CubeListBuilder.create()
-                .texOffs(312, 252).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
+                .texOffs(318, 252).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
                 PartPose.offset(11f, -4f, 72f));
         PartDefinition p_w12_t0 = p_w12.addOrReplaceChild("w12_t0",
                 CubeListBuilder.create()
@@ -1398,7 +1425,7 @@ public class TrainCarModel extends EntityModel<Entity> {
                 PartPose.offsetAndRotation(0f, 0f, 0f, 0.785f, 0f, 0f));
         PartDefinition p_w13 = p_body.addOrReplaceChild("w13",
                 CubeListBuilder.create()
-                .texOffs(312, 252).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
+                .texOffs(318, 252).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
                 PartPose.offset(-11f, -4f, 72f));
         PartDefinition p_w13_t0 = p_w13.addOrReplaceChild("w13_t0",
                 CubeListBuilder.create()
@@ -1410,7 +1437,7 @@ public class TrainCarModel extends EntityModel<Entity> {
                 PartPose.offsetAndRotation(0f, 0f, 0f, 0.785f, 0f, 0f));
         PartDefinition p_w14 = p_body.addOrReplaceChild("w14",
                 CubeListBuilder.create()
-                .texOffs(312, 252).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
+                .texOffs(318, 252).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
                 PartPose.offset(11f, -4f, 82f));
         PartDefinition p_w14_t0 = p_w14.addOrReplaceChild("w14_t0",
                 CubeListBuilder.create()
@@ -1422,7 +1449,7 @@ public class TrainCarModel extends EntityModel<Entity> {
                 PartPose.offsetAndRotation(0f, 0f, 0f, 0.785f, 0f, 0f));
         PartDefinition p_w15 = p_body.addOrReplaceChild("w15",
                 CubeListBuilder.create()
-                .texOffs(312, 252).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
+                .texOffs(318, 252).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
                 PartPose.offset(-11f, -4f, 82f));
         PartDefinition p_w15_t0 = p_w15.addOrReplaceChild("w15_t0",
                 CubeListBuilder.create()
@@ -2237,167 +2264,178 @@ public class TrainCarModel extends EntityModel<Entity> {
                 .texOffs(346, 297).addBox(-9f, -7f, -71f, 18f, 2f, 30f)
                 .texOffs(442, 297).addBox(3f, -7f, -70f, 1f, 4f, 28f)
                 .texOffs(442, 297).addBox(-4f, -7f, -70f, 1f, 4f, 28f)
-                .texOffs(606, 419).addBox(-7f, -10f, 80f, 2f, 3f, 3f)
-                .texOffs(606, 419).addBox(5f, -10f, 80f, 2f, 3f, 3f)
-                .texOffs(654, 419).addBox(-1f, -9f, 81f, 2f, 2f, 3f)
-                .texOffs(606, 419).addBox(-7f, -10f, -83f, 2f, 3f, 3f)
-                .texOffs(606, 419).addBox(5f, -10f, -83f, 2f, 3f, 3f)
-                .texOffs(654, 419).addBox(-1f, -9f, -84f, 2f, 2f, 3f)
+                .texOffs(584, 419).addBox(-7f, -10f, 80f, 2f, 3f, 3f)
+                .texOffs(584, 419).addBox(5f, -10f, 80f, 2f, 3f, 3f)
+                .texOffs(710, 419).addBox(-1f, -9f, 81f, 2f, 2f, 3f)
+                .texOffs(584, 419).addBox(-7f, -10f, -83f, 2f, 3f, 3f)
+                .texOffs(584, 419).addBox(5f, -10f, -83f, 2f, 3f, 3f)
+                .texOffs(710, 419).addBox(-1f, -9f, -84f, 2f, 2f, 3f)
                 .texOffs(626, 0).addBox(-12f, -11f, -56f, 24f, 2f, 136f)
                 .texOffs(360, 0).addBox(11f, -20f, -52f, 1f, 9f, 132f)
                 .texOffs(312, 163).addBox(11f, -36f, -52f, 1f, 2f, 132f)
                 .texOffs(676, 297).addBox(11f, -34f, 68f, 1f, 14f, 12f)
                 .texOffs(276, 297).addBox(11f, -34f, -52f, 1f, 14f, 34f)
-                .texOffs(902, 297).addBox(11f, -34f, 50f, 1f, 14f, 4f)
-                .texOffs(902, 297).addBox(11f, -34f, 32f, 1f, 14f, 4f)
-                .texOffs(902, 297).addBox(11f, -34f, 14f, 1f, 14f, 4f)
-                .texOffs(902, 297).addBox(11f, -34f, -4f, 1f, 14f, 4f)
+                .texOffs(962, 297).addBox(11f, -34f, 50f, 1f, 14f, 4f)
+                .texOffs(962, 297).addBox(11f, -34f, 32f, 1f, 14f, 4f)
+                .texOffs(962, 297).addBox(11f, -34f, 14f, 1f, 14f, 4f)
+                .texOffs(962, 297).addBox(11f, -34f, -4f, 1f, 14f, 4f)
                 .texOffs(578, 163).addBox(12f, -18f, -52f, 1f, 4f, 130f)
                 .texOffs(360, 0).addBox(-12f, -20f, -52f, 1f, 9f, 132f)
                 .texOffs(312, 163).addBox(-12f, -36f, -52f, 1f, 2f, 132f)
                 .texOffs(676, 297).addBox(-12f, -34f, 68f, 1f, 14f, 12f)
                 .texOffs(276, 297).addBox(-12f, -34f, -52f, 1f, 14f, 34f)
-                .texOffs(902, 297).addBox(-12f, -34f, 50f, 1f, 14f, 4f)
-                .texOffs(902, 297).addBox(-12f, -34f, 32f, 1f, 14f, 4f)
-                .texOffs(902, 297).addBox(-12f, -34f, 14f, 1f, 14f, 4f)
-                .texOffs(902, 297).addBox(-12f, -34f, -4f, 1f, 14f, 4f)
+                .texOffs(962, 297).addBox(-12f, -34f, 50f, 1f, 14f, 4f)
+                .texOffs(962, 297).addBox(-12f, -34f, 32f, 1f, 14f, 4f)
+                .texOffs(962, 297).addBox(-12f, -34f, 14f, 1f, 14f, 4f)
+                .texOffs(962, 297).addBox(-12f, -34f, -4f, 1f, 14f, 4f)
                 .texOffs(578, 163).addBox(-13f, -18f, -52f, 1f, 4f, 130f)
                 .texOffs(630, 297).addBox(-11f, -36f, 79f, 22f, 25f, 1f)
-                .texOffs(762, 297).addBox(-8f, -31f, 80f, 16f, 19f, 2f)
-                .texOffs(702, 297).addBox(-11f, -26f, -60f, 22f, 15f, 8f)
-                .texOffs(236, 419).addBox(-11f, -36f, -60f, 22f, 2f, 8f)
-                .texOffs(802, 297).addBox(-10f, -23f, -66f, 20f, 12f, 6f)
-                .texOffs(404, 419).addBox(-10f, -33f, -66f, 20f, 2f, 6f)
-                .texOffs(52, 419).addBox(-8f, -20f, -71f, 16f, 9f, 5f)
-                .texOffs(456, 419).addBox(-8f, -30f, -71f, 16f, 2f, 5f)
-                .texOffs(336, 419).addBox(-6f, -17f, -75f, 12f, 6f, 4f)
-                .texOffs(574, 419).addBox(-6f, -27f, -75f, 12f, 2f, 4f)
-                .texOffs(368, 419).addBox(-4f, -18f, -78f, 8f, 7f, 3f)
-                .texOffs(632, 419).addBox(-4f, -24f, -78f, 8f, 2f, 3f)
-                .texOffs(664, 419).addBox(2f, -18f, -80f, 3f, 3f, 2f)
-                .texOffs(664, 419).addBox(-5f, -18f, -80f, 3f, 3f, 2f)
-                .texOffs(684, 419).addBox(-3f, -13f, -80f, 6f, 2f, 2f)
+                .texOffs(702, 297).addBox(-8f, -31f, 80f, 16f, 19f, 2f)
+                .texOffs(802, 297).addBox(-11f, -22f, -60f, 22f, 11f, 8f)
+                .texOffs(194, 419).addBox(-11f, -36f, -60f, 22f, 2f, 8f)
+                .texOffs(76, 419).addBox(-10f, -19f, -66f, 20f, 8f, 6f)
+                .texOffs(350, 419).addBox(-10f, -33f, -66f, 20f, 2f, 6f)
+                .texOffs(254, 419).addBox(-8f, -16f, -71f, 16f, 5f, 5f)
+                .texOffs(402, 419).addBox(-8f, -30f, -71f, 16f, 2f, 5f)
+                .texOffs(498, 419).addBox(-6f, -13f, -75f, 12f, 2f, 4f)
+                .texOffs(530, 419).addBox(-6f, -27f, -75f, 12f, 2f, 4f)
+                .texOffs(562, 419).addBox(-4f, -14f, -78f, 8f, 3f, 3f)
+                .texOffs(658, 419).addBox(-4f, -24f, -78f, 8f, 2f, 3f)
+                .texOffs(720, 419).addBox(2f, -18f, -80f, 3f, 3f, 2f)
+                .texOffs(720, 419).addBox(-5f, -18f, -80f, 3f, 3f, 2f)
+                .texOffs(740, 419).addBox(-3f, -13f, -80f, 6f, 2f, 2f)
                 .texOffs(0, 163).addBox(-12f, -38f, -52f, 24f, 2f, 132f)
                 .texOffs(0, 297).addBox(-9f, -40f, -40f, 18f, 2f, 120f)
-                .texOffs(674, 419).addBox(6f, -17f, 80f, 3f, 3f, 2f)
-                .texOffs(674, 419).addBox(-9f, -17f, 80f, 3f, 3f, 2f)
+                .texOffs(730, 419).addBox(6f, -17f, 80f, 3f, 3f, 2f)
+                .texOffs(730, 419).addBox(-9f, -17f, 80f, 3f, 3f, 2f)
                 .texOffs(500, 297).addBox(-11f, -12f, -56f, 22f, 1f, 28f)
-                .texOffs(168, 419).addBox(-9f, -19f, -56f, 18f, 7f, 4f)
-                .texOffs(212, 419).addBox(3f, -17f, -40f, 6f, 5f, 6f)
-                .texOffs(390, 419).addBox(3f, -25f, -34f, 6f, 8f, 1f)
-                .texOffs(212, 419).addBox(-9f, -17f, -40f, 6f, 5f, 6f)
-                .texOffs(390, 419).addBox(-9f, -25f, -34f, 6f, 8f, 1f)
-                .texOffs(854, 297).addBox(-4f, -42f, -22f, 8f, 2f, 16f)
+                .texOffs(128, 419).addBox(-9f, -21f, -56f, 18f, 9f, 4f)
+                .texOffs(614, 419).addBox(-9f, -22f, -56f, 18f, 1f, 4f)
+                .texOffs(680, 419).addBox(-2f, -23f, -56f, 4f, 1f, 4f)
+                .texOffs(756, 419).addBox(-1f, -25f, -55f, 2f, 2f, 2f)
+                .texOffs(764, 419).addBox(-8f, -24f, -54f, 2f, 2f, 1f)
+                .texOffs(764, 419).addBox(-5f, -24f, -54f, 2f, 2f, 1f)
+                .texOffs(764, 419).addBox(4f, -24f, -54f, 2f, 2f, 1f)
+                .texOffs(764, 419).addBox(7f, -24f, -54f, 2f, 2f, 1f)
+                .texOffs(696, 419).addBox(5f, -23f, -56f, 3f, 1f, 4f)
+                .texOffs(610, 419).addBox(6f, -28f, -54f, 1f, 5f, 1f)
+                .texOffs(696, 419).addBox(-8f, -23f, -56f, 3f, 1f, 4f)
+                .texOffs(610, 419).addBox(-7f, -28f, -54f, 1f, 5f, 1f)
+                .texOffs(32, 419).addBox(3f, -22f, -40f, 6f, 10f, 6f)
+                .texOffs(336, 419).addBox(3f, -30f, -34f, 6f, 8f, 1f)
+                .texOffs(32, 419).addBox(-9f, -22f, -40f, 6f, 10f, 6f)
+                .texOffs(336, 419).addBox(-9f, -30f, -34f, 6f, 8f, 1f)
+                .texOffs(914, 297).addBox(-4f, -42f, -22f, 8f, 2f, 16f)
                 .texOffs(296, 419).addBox(-6f, -42f, 18f, 12f, 2f, 8f)
-                .texOffs(624, 419).addBox(-1f, -46f, 22f, 2f, 4f, 2f)
-                .texOffs(624, 419).addBox(-1f, -50f, 20f, 2f, 4f, 2f)
-                .texOffs(498, 419).addBox(-7f, -51f, 18f, 14f, 1f, 6f)
+                .texOffs(602, 419).addBox(-1f, -46f, 22f, 2f, 4f, 2f)
+                .texOffs(602, 419).addBox(-1f, -50f, 20f, 2f, 4f, 2f)
+                .texOffs(444, 419).addBox(-7f, -51f, 18f, 14f, 1f, 6f)
                 .texOffs(798, 297).addBox(13f, -30f, 75f, 1f, 19f, 1f)
                 .texOffs(798, 297).addBox(13f, -30f, 70f, 1f, 19f, 1f)
-                .texOffs(560, 419).addBox(13f, -15f, 70f, 1f, 1f, 6f)
-                .texOffs(560, 419).addBox(13f, -20f, 70f, 1f, 1f, 6f)
-                .texOffs(560, 419).addBox(13f, -25f, 70f, 1f, 1f, 6f)
+                .texOffs(484, 419).addBox(13f, -15f, 70f, 1f, 1f, 6f)
+                .texOffs(484, 419).addBox(13f, -20f, 70f, 1f, 1f, 6f)
+                .texOffs(484, 419).addBox(13f, -25f, 70f, 1f, 1f, 6f)
                 .texOffs(798, 297).addBox(-14f, -30f, 75f, 1f, 19f, 1f)
                 .texOffs(798, 297).addBox(-14f, -30f, 70f, 1f, 19f, 1f)
-                .texOffs(560, 419).addBox(-14f, -15f, 70f, 1f, 1f, 6f)
-                .texOffs(560, 419).addBox(-14f, -20f, 70f, 1f, 1f, 6f)
-                .texOffs(560, 419).addBox(-14f, -25f, 70f, 1f, 1f, 6f),
+                .texOffs(484, 419).addBox(-14f, -15f, 70f, 1f, 1f, 6f)
+                .texOffs(484, 419).addBox(-14f, -20f, 70f, 1f, 1f, 6f)
+                .texOffs(484, 419).addBox(-14f, -25f, 70f, 1f, 1f, 6f),
                 PartPose.offset(0f, 24f, 0f));
         PartDefinition p_w0 = p_body.addOrReplaceChild("w0",
                 CubeListBuilder.create()
-                .texOffs(616, 419).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
+                .texOffs(594, 419).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
                 PartPose.offset(2.2f, -4f, 66f));
         PartDefinition p_w0_t0 = p_w0.addOrReplaceChild("w0_t0",
                 CubeListBuilder.create()
-                .texOffs(972, 297).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
+                .texOffs(56, 419).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
                 PartPose.offset(0f, 0f, 0f));
         PartDefinition p_w0_t1 = p_w0.addOrReplaceChild("w0_t1",
                 CubeListBuilder.create()
-                .texOffs(972, 297).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
+                .texOffs(56, 419).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
                 PartPose.offsetAndRotation(0f, 0f, 0f, 0.785f, 0f, 0f));
         PartDefinition p_w1 = p_body.addOrReplaceChild("w1",
                 CubeListBuilder.create()
-                .texOffs(616, 419).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
+                .texOffs(594, 419).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
                 PartPose.offset(-2.2f, -4f, 66f));
         PartDefinition p_w1_t0 = p_w1.addOrReplaceChild("w1_t0",
                 CubeListBuilder.create()
-                .texOffs(972, 297).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
+                .texOffs(56, 419).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
                 PartPose.offset(0f, 0f, 0f));
         PartDefinition p_w1_t1 = p_w1.addOrReplaceChild("w1_t1",
                 CubeListBuilder.create()
-                .texOffs(972, 297).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
+                .texOffs(56, 419).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
                 PartPose.offsetAndRotation(0f, 0f, 0f, 0.785f, 0f, 0f));
         PartDefinition p_w2 = p_body.addOrReplaceChild("w2",
                 CubeListBuilder.create()
-                .texOffs(616, 419).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
+                .texOffs(594, 419).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
                 PartPose.offset(2.2f, -4f, 46f));
         PartDefinition p_w2_t0 = p_w2.addOrReplaceChild("w2_t0",
                 CubeListBuilder.create()
-                .texOffs(972, 297).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
+                .texOffs(56, 419).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
                 PartPose.offset(0f, 0f, 0f));
         PartDefinition p_w2_t1 = p_w2.addOrReplaceChild("w2_t1",
                 CubeListBuilder.create()
-                .texOffs(972, 297).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
+                .texOffs(56, 419).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
                 PartPose.offsetAndRotation(0f, 0f, 0f, 0.785f, 0f, 0f));
         PartDefinition p_w3 = p_body.addOrReplaceChild("w3",
                 CubeListBuilder.create()
-                .texOffs(616, 419).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
+                .texOffs(594, 419).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
                 PartPose.offset(-2.2f, -4f, 46f));
         PartDefinition p_w3_t0 = p_w3.addOrReplaceChild("w3_t0",
                 CubeListBuilder.create()
-                .texOffs(972, 297).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
+                .texOffs(56, 419).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
                 PartPose.offset(0f, 0f, 0f));
         PartDefinition p_w3_t1 = p_w3.addOrReplaceChild("w3_t1",
                 CubeListBuilder.create()
-                .texOffs(972, 297).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
+                .texOffs(56, 419).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
                 PartPose.offsetAndRotation(0f, 0f, 0f, 0.785f, 0f, 0f));
         PartDefinition p_w4 = p_body.addOrReplaceChild("w4",
                 CubeListBuilder.create()
-                .texOffs(616, 419).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
+                .texOffs(594, 419).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
                 PartPose.offset(2.2f, -4f, -46f));
         PartDefinition p_w4_t0 = p_w4.addOrReplaceChild("w4_t0",
                 CubeListBuilder.create()
-                .texOffs(972, 297).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
+                .texOffs(56, 419).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
                 PartPose.offset(0f, 0f, 0f));
         PartDefinition p_w4_t1 = p_w4.addOrReplaceChild("w4_t1",
                 CubeListBuilder.create()
-                .texOffs(972, 297).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
+                .texOffs(56, 419).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
                 PartPose.offsetAndRotation(0f, 0f, 0f, 0.785f, 0f, 0f));
         PartDefinition p_w5 = p_body.addOrReplaceChild("w5",
                 CubeListBuilder.create()
-                .texOffs(616, 419).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
+                .texOffs(594, 419).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
                 PartPose.offset(-2.2f, -4f, -46f));
         PartDefinition p_w5_t0 = p_w5.addOrReplaceChild("w5_t0",
                 CubeListBuilder.create()
-                .texOffs(972, 297).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
+                .texOffs(56, 419).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
                 PartPose.offset(0f, 0f, 0f));
         PartDefinition p_w5_t1 = p_w5.addOrReplaceChild("w5_t1",
                 CubeListBuilder.create()
-                .texOffs(972, 297).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
+                .texOffs(56, 419).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
                 PartPose.offsetAndRotation(0f, 0f, 0f, 0.785f, 0f, 0f));
         PartDefinition p_w6 = p_body.addOrReplaceChild("w6",
                 CubeListBuilder.create()
-                .texOffs(616, 419).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
+                .texOffs(594, 419).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
                 PartPose.offset(2.2f, -4f, -66f));
         PartDefinition p_w6_t0 = p_w6.addOrReplaceChild("w6_t0",
                 CubeListBuilder.create()
-                .texOffs(972, 297).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
+                .texOffs(56, 419).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
                 PartPose.offset(0f, 0f, 0f));
         PartDefinition p_w6_t1 = p_w6.addOrReplaceChild("w6_t1",
                 CubeListBuilder.create()
-                .texOffs(972, 297).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
+                .texOffs(56, 419).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
                 PartPose.offsetAndRotation(0f, 0f, 0f, 0.785f, 0f, 0f));
         PartDefinition p_w7 = p_body.addOrReplaceChild("w7",
                 CubeListBuilder.create()
-                .texOffs(616, 419).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
+                .texOffs(594, 419).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
                 PartPose.offset(-2.2f, -4f, -66f));
         PartDefinition p_w7_t0 = p_w7.addOrReplaceChild("w7_t0",
                 CubeListBuilder.create()
-                .texOffs(972, 297).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
+                .texOffs(56, 419).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
                 PartPose.offset(0f, 0f, 0f));
         PartDefinition p_w7_t1 = p_w7.addOrReplaceChild("w7_t1",
                 CubeListBuilder.create()
-                .texOffs(972, 297).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
+                .texOffs(56, 419).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
                 PartPose.offsetAndRotation(0f, 0f, 0f, 0.785f, 0f, 0f));
         PartDefinition p_glass = root.addOrReplaceChild("glass",
                 CubeListBuilder.create()
@@ -2411,11 +2449,11 @@ public class TrainCarModel extends EntityModel<Entity> {
                 .texOffs(600, 297).addBox(-12f, -34f, 18f, 1f, 14f, 14f)
                 .texOffs(600, 297).addBox(-12f, -34f, 0f, 1f, 14f, 14f)
                 .texOffs(600, 297).addBox(-12f, -34f, -18f, 1f, 14f, 14f)
-                .texOffs(912, 297).addBox(-11f, -34f, -60f, 22f, 8f, 8f)
-                .texOffs(0, 419).addBox(-10f, -31f, -66f, 20f, 8f, 6f)
-                .texOffs(94, 419).addBox(-8f, -28f, -71f, 16f, 8f, 5f)
-                .texOffs(136, 419).addBox(-6f, -25f, -75f, 12f, 8f, 4f)
-                .texOffs(538, 419).addBox(-4f, -22f, -78f, 8f, 4f, 3f),
+                .texOffs(738, 297).addBox(-11f, -34f, -60f, 22f, 12f, 8f)
+                .texOffs(862, 297).addBox(-10f, -31f, -66f, 20f, 12f, 6f)
+                .texOffs(972, 297).addBox(-8f, -28f, -71f, 16f, 12f, 5f)
+                .texOffs(0, 419).addBox(-6f, -25f, -75f, 12f, 12f, 4f)
+                .texOffs(172, 419).addBox(-4f, -22f, -78f, 8f, 8f, 3f),
                 PartPose.offset(0f, 24f, 0f));
         return LayerDefinition.create(mesh, 1024, 1024);
     }

@@ -16,6 +16,13 @@ import net.minecraft.resources.ResourceLocation;
 public class BicycleRenderer extends EntityRenderer<BicycleEntity> {
     private static final ResourceLocation TEXTURE =
             ResourceLocation.fromNamespaceAndPath(BeautifulDecor.MOD_ID, "textures/entity/bicycle.png");
+    /** V6.14.0: texturas de las skins (colores fijos): 0 = la repintable, 1 = montaña, 2 = competición, 3 = reparto, 4 = policía. */
+    private static final ResourceLocation[] SKINS = {
+            null,
+            ResourceLocation.fromNamespaceAndPath(BeautifulDecor.MOD_ID, "textures/entity/bicycle_mountain.png"),
+            ResourceLocation.fromNamespaceAndPath(BeautifulDecor.MOD_ID, "textures/entity/bicycle_racing.png"),
+            ResourceLocation.fromNamespaceAndPath(BeautifulDecor.MOD_ID, "textures/entity/bicycle_delivery.png"),
+            ResourceLocation.fromNamespaceAndPath(BeautifulDecor.MOD_ID, "textures/entity/bicycle_police.png")};
     private static final ResourceLocation GLOW =
             ResourceLocation.fromNamespaceAndPath(BeautifulDecor.MOD_ID, "textures/entity/bicycle_glow.png");
     private final BicycleModel model;
@@ -30,7 +37,9 @@ public class BicycleRenderer extends EntityRenderer<BicycleEntity> {
     public void render(BicycleEntity bike, float entityYaw, float partialTick, PoseStack poseStack,
                        MultiBufferSource bufferSource, int packedLight) {
         // V3.2.0: si el jugador lo repintó con la tecla R, se dibuja con la textura repintada.
-        ResourceLocation texture = VehiclePaintTextures.textureFor(bike, TEXTURE);
+        // V6.14.0: con una skin puesta se usa su textura (colores fijos); sin skin, la repintada de siempre.
+        int skin = bike.getSkin();
+        ResourceLocation texture = skin > 0 && skin < SKINS.length ? SKINS[skin] : VehiclePaintTextures.textureFor(bike, TEXTURE);
         poseStack.pushPose();
         poseStack.mulPose(Axis.YP.rotationDegrees(180.0f - entityYaw));
         float lean = bike.getLean(partialTick);
@@ -41,6 +50,7 @@ public class BicycleRenderer extends EntityRenderer<BicycleEntity> {
         poseStack.translate(0.0, -1.501, 0.0);
 
         this.model.pose(bike.getWheelRot(partialTick), bike.getSteer(partialTick), bike.isParked());
+        this.model.setSkin(skin);
         this.model.renderToBuffer(poseStack, bufferSource.getBuffer(RenderType.entityCutoutNoCull(texture)),
                 packedLight, OverlayTexture.NO_OVERLAY, 1.0f, 1.0f, 1.0f, 1.0f);
         if (bike.isLightOn()) {
@@ -54,6 +64,7 @@ public class BicycleRenderer extends EntityRenderer<BicycleEntity> {
 
     @Override
     public ResourceLocation getTextureLocation(BicycleEntity bike) {
-        return VehiclePaintTextures.textureFor(bike, TEXTURE);
+        int skin = bike.getSkin();
+        return skin > 0 && skin < SKINS.length ? SKINS[skin] : VehiclePaintTextures.textureFor(bike, TEXTURE);
     }
 }

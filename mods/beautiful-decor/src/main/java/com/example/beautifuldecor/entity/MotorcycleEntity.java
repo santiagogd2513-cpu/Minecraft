@@ -16,6 +16,14 @@ import net.minecraft.world.level.Level;
  * </ul>
  */
 public class MotorcycleEntity extends VehicleEntity {
+    /** V6.13.0: caja de colisión igual al modelo (ancho, largo, desfase hacia delante, alto; tools/v6130/hulls.py). */
+    private static final VehicleHull.Spec HULL = new VehicleHull.Spec(0.93, 2.08, 0.07, 1.47);
+
+    @Override
+    protected VehicleHull.Spec hull() {
+        return HULL;
+    }
+
     /** Velocidad máxima en bloques por tick (V4.4.0: 125 km/h = 34,7 bloques por segundo). Cambiar solo este número cambia el tope. */
     public static final float MAX_SPEED = 1.736f;
     public static final float REVERSE_SPEED = 0.35f;
@@ -56,6 +64,39 @@ public class MotorcycleEntity extends VehicleEntity {
     @Override
     protected SoundEvent getStartSound() {
         return ModSounds.MOTORCYCLE_START.get();
+    }
+
+    /** V6.7.0: skins: 0 = original, 1 = policía (barra de luces y sirena), 2 = repartidor (caja de reparto). */
+    @Override
+    public int skinCount() {
+        return 3;
+    }
+
+    @Override
+    public int policeSkin() {
+        return 1;
+    }
+
+    @Override
+    public String skinKey(int skin) {
+        return "skin.beautifuldecor.motorcycle." + skin;
+    }
+
+    @Override
+    public boolean hasCabButtons() {
+        return true;
+    }
+
+    /** V6.7.0: botones (medidas del modelo, tools/v200/moto_model.py): luces en el manubrio izquierdo, claxon en el derecho, radio en el tablero y sirena sobre el tanque. */
+    private static final double[][] BUTTONS = {
+            {0.1875, 1.02, 0.38, 0.09, ACTION_LIGHT},
+            {-0.1875, 1.02, 0.38, 0.09, ACTION_HORN},
+            {0.0, 1.19, 0.36, 0.08, ACTION_RADIO},
+            {0.0, 1.125, 0.03, 0.09, ACTION_SIREN}};
+
+    @Override
+    protected double[][] cabButtons() {
+        return BUTTONS;
     }
 
     @Override

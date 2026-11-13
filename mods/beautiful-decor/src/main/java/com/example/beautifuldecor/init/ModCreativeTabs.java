@@ -100,12 +100,36 @@ public final class ModCreativeTabs {
                     })
                     .build());
 
+    /**
+     * V6.3.0: cuarta pestaña "Parts": las piezas que no son vehículos (rieles, control y asignador de trenes y, más adelante, los
+     * complementos de los vehículos como la cesta de la bici o la caja de la moto).
+     */
+    public static final RegistryObject<CreativeModeTab> BEAUTIFUL_DECOR_PARTS = CREATIVE_MODE_TABS.register(
+            "beautifuldecor_parts",
+            () -> CreativeModeTab.builder()
+                    .title(Component.translatable("itemGroup.beautifuldecor_parts"))
+                    .icon(() -> iconOrFallback(ModItems.STATION_CONTROLLER, ModItems.TAB_ICON))
+                    .withSearchBar()
+                    .withTabsAfter(BEAUTIFUL_DECOR_VEHICLES.getKey())
+                    .displayItems((parameters, output) -> {
+                        for (String id : ModCreativeTabs.PARTS_IDS) {
+                            for (RegistryObject<Item> entry : ModItems.ITEMS.getEntries()) {
+                                if (entry.getId().getPath().equals(id)) {
+                                    output.accept(entry.get());
+                                }
+                            }
+                        }
+                    })
+                    .build());
+
+    /** Ítems de la pestaña Parts, en orden. Agrega aquí cada pieza o complemento nuevo. */
+    public static final List<String> PARTS_IDS = List.of("freight_rail", "passenger_rail", "metro_rail", "train_remote", "station_controller");
+
     /** Ítems de la pestaña de vehículos, en orden. Agrega aquí cada vehículo conducible nuevo. */
     public static final List<String> VEHICLE_IDS = List.of("bicycle", "motorcycle", "ford_f150", "delivery_truck", "helicopter", "bugotti_chillon", "airliner",
-            "freight_rail", "freight_loco", "coal_wagon", "food_wagon", "mineral_wagon",
-            "passenger_rail", "steam_classic", "steam_modern", "coach_low", "coach_mid", "coach_high",
-            "metro_rail", "metro_head", "metro_car",
-            "train_remote", "station_controller");
+            "freight_loco", "coal_wagon", "food_wagon", "mineral_wagon",
+            "steam_classic", "steam_modern", "coach_low", "coach_mid", "coach_high",
+            "metro_head", "metro_car");
 
     private ModCreativeTabs() {
     }
@@ -116,10 +140,10 @@ public final class ModCreativeTabs {
 
     /** Ítems de la primera pestaña (decoración / casa). */
     public static boolean isDecorTabItem(String path) {
-        if (path.equals("tab_icon")) {
-            return false;
+        if (path.equals("tab_icon") || path.equals("lottery_ticket")) {
+            return false;                                   // el boleto solo se consigue en el puesto
         }
-        return !isTechTabItem(path) && !isVehicleTabItem(path);
+        return !isTechTabItem(path) && !isVehicleTabItem(path) && !PARTS_IDS.contains(path);
     }
 
     /** Ítems de la tercera pestaña (vehículos conducibles). */
@@ -148,6 +172,8 @@ public final class ModCreativeTabs {
                 || path.equals("radio_speaker")
                 || path.startsWith("security_")             // V4.3.0: cámaras, monitor y pantalla de seguridad
                 || path.startsWith("ad_screen_")
+                || path.startsWith("ad_tv")                 // V6.11.0: televisores de anuncios de todos los tamaños
+                || path.equals("hsnews_mic")                // V6.11.0: micrófono HS News
                 || path.equals("drone")
                 || path.equals("drone_remote")
                 || path.equals("rc_car")

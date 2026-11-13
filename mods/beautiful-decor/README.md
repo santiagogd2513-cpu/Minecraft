@@ -2,6 +2,54 @@
 
 Mod de decoración para **Minecraft 1.20.1** / **Forge 47.4.5**.
 
+## V6.15.0
+- Canal de la lotería (Lotto Gordo): sorteo cada día de juego, número de 000 a 999 y clase A-H (8000 boletos posibles). Sale en HS News y en un segmento de 15 s en las pantallas de anuncios (cada 5 anuncios).
+- Premios entregados por un camión AMAZOOM que maneja solo hasta el ganador (si está bajo techo, se estaciona delante de la puerta más cercana y pita): gordo (número y clase) 3 stacks de diamantes, mediano (número) 96 lingotes de oro, pequeño (2 últimas cifras) 32 de hierro; cuanto menor el premio, más rápido llega.
+- Puesto de lotería (4 lingotes de hierro por boleto al azar, máx. 20 por sorteo), caja registradora (con un boleto en la mano dice si ganó), boleto, anuncio y cartel de Lotto Gordo.
+
+## V6.14.0
+- Skins del superdeportivo: Carreras, Policía (barra de luces y sirena con botón rojo en el tablero), Callejero (neón) y Taxi (letrero luminoso).
+- Skins de la bici: Montaña, Competición, Reparto (canasto y caja) y Policía.
+- Arreglo: el modelo del superdeportivo de la V6.12.0 pedía piezas que no existían (se habría caído al cargar); ya está corregido.
+
+## V6.13.0
+- Cajas de colisión iguales al modelo en el superdeportivo, la camioneta, el camión de reparto, la moto, la bicicleta y el helicóptero (siguen el giro del vehículo).
+- Los trenes ya son sólidos (cada coche se descompone en trozos que giran con él): no se atraviesan ni se pueden cruzar por dentro.
+
+## V6.12.0
+- Superdeportivo: interior nuevo (pedales, cuadro de instrumentos, pantalla y rejillas en el tablero, palanca con fuelle, baquets con alas laterales y cinturones, apoyabrazos y bocinas en las puertas, arco de seguridad y retrovisor interior).
+
+## V6.11.0
+- HS News: noticiero en las pantallas de anuncios (cada 3 anuncios, 20 s) con clima, obras, incendios forestales y jugadores; micrófono, cartel y anuncio de HS News.
+- Televisores de anuncios nuevos (3x2, 4x2, 6x4), bocinas de la radio y del micrófono montables en la pared, y la pestaña Tecnología reordenada.
+
+## V6.10.0
+- Marca parodia Aguacero Bomberos: anuncio, extintor, manguera y cartel con el logo; las skins de bomberos de la camioneta y el helicóptero llevan su rotulado.
+
+## V6.9.0
+- Skins del helicóptero (Normal, Policía con foco gigante, Bomberos con tanques y cañón de agua, Noticias con cámara y plato) con sirena y botón en el tablero.
+
+## V6.8.0
+- Skins de la camioneta Furd F-150 (Policía, Reparto, Construcción, Bomberos) con sirena y botón en el tablero.
+
+## V6.7.0
+- Skins de la moto (Original, Policía con sirena, Repartidor), botones en la moto y la marca Polisía Nasional (anuncio, esposas, pistola eléctrica, cartel).
+
+## V6.6.0
+- Luces propias con botón en helicóptero y avión, interiores nuevos y asientos de pilotos más altos.
+
+## V6.5.0
+- Botones en el interior del superdeportivo y palanca del tren en el avión.
+
+## V6.4.0
+- Luz real de los vehículos (faros que alumbran; helicóptero y avión con foco fuerte).
+
+## V6.3.0
+- Botones en el interior de la F-150 y el camión (claxon, luces, radio), teclas opcionales en la configuración y pestaña Parts.
+
+## V6.2.0
+- Sonidos propios por tren, freno de emergencia con botón en la cabina, cabinas mejoradas y avisos de estación por megáfono.
+
 ## Nueva colección
 - Miniaturas coleccionables Ford F-150 y Ford Mustang.
 - Consolas Nintendo Wii Family Edition negra, Xbox 360, Xbox Series S, Nintendo Switch y Xbox One, con sensor Kinect como bloque separado.

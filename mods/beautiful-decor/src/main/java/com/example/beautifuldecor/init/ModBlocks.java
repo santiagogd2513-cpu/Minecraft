@@ -198,8 +198,31 @@ public class ModBlocks {
     public static final RegistryObject<Block> PAINTING_ROJOTORO = BLOCKS.register("painting_rojotoro",
             () -> new PictureBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD)
                     .strength(0.5f).sound(SoundType.WOOD).noOcclusion()));
+    // ===== V6.7.0: Polisía Nasional (marca parodia) =====
+    public static final RegistryObject<Block> PAINTING_POLISIA = BLOCKS.register("painting_polisia",
+            () -> new PictureBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD)
+                    .strength(0.5f).sound(SoundType.WOOD).noOcclusion()));
+    // ===== V6.10.0: Aguacero Bomberos (marca parodia) =====
+    public static final RegistryObject<Block> PAINTING_AGUACERO = BLOCKS.register("painting_aguacero",
+            () -> new PictureBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD)
+                    .strength(0.5f).sound(SoundType.WOOD).noOcclusion()));
+    // ===== V6.11.0: HS News (canal de noticias de HS) =====
+    public static final RegistryObject<Block> PAINTING_HSNEWS = BLOCKS.register("painting_hsnews",
+            () -> new PictureBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD)
+                    .strength(0.5f).sound(SoundType.WOOD).noOcclusion()));
     public static final RegistryObject<Block> ROJOTORO_MINIBAR = BLOCKS.register("rojotoro_minibar",
             () -> new RojoToroMinibarBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_RED)
+                    .strength(1.5f).sound(SoundType.METAL).noOcclusion()));
+
+    // ===== V6.15.0: lotería =====
+    public static final RegistryObject<Block> PAINTING_LOTERIA = BLOCKS.register("painting_loteria",
+            () -> new PictureBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD)
+                    .strength(0.5f).sound(SoundType.WOOD).noOcclusion()));
+    public static final RegistryObject<Block> LOTTERY_BOOTH = BLOCKS.register("lottery_booth",
+            () -> new com.example.beautifuldecor.block.LotteryBoothBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GREEN)
+                    .strength(1.5f).sound(SoundType.METAL).noOcclusion()));
+    public static final RegistryObject<Block> CASH_REGISTER = BLOCKS.register("cash_register",
+            () -> new com.example.beautifuldecor.block.CashRegisterBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GRAY)
                     .strength(1.5f).sound(SoundType.METAL).noOcclusion()));
 
     // ===== V5.3.0: Burguer Reino (marca parodia) =====
@@ -1186,6 +1209,16 @@ public class ModBlocks {
         AD_SCREENS.put("ad_tv", BLOCKS.register("ad_tv",
                 () -> new AdTvBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK)
                         .strength(2.0f).sound(SoundType.METAL).noOcclusion().lightLevel(state -> 7))));
+        // V6.11.0: televisores de anuncios más grandes (solo pared): 3x2, 4x2 y 6x4
+        int[][] tvs = {{3, 2}, {4, 2}, {6, 4}};
+        for (int[] tv : tvs) {
+            final int tw = tv[0];
+            final int th = tv[1];
+            String name = "ad_tv_" + tw + "x" + th;
+            AD_SCREENS.put(name, BLOCKS.register(name,
+                    () -> new AdTvBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_BLACK)
+                            .strength(2.0f).sound(SoundType.METAL).noOcclusion().lightLevel(state -> 7), tw, th)));
+        }
     }
 
     // ===== V4.0.0: megafonía =====
@@ -1251,6 +1284,12 @@ public class ModBlocks {
             () -> new WideRailBlock(BlockBehaviour.Properties.of().mapColor(MapColor.METAL).noCollission().noOcclusion().strength(0.7f).sound(SoundType.METAL), 1));
     public static final RegistryObject<Block> WIDE_METRO_RAIL = BLOCKS.register("wide_metro_rail",
             () -> new WideRailBlock(BlockBehaviour.Properties.of().mapColor(MapColor.METAL).noCollission().noOcclusion().strength(0.7f).sound(SoundType.METAL), 2));
+
+    // ===== V6.4.0: luz real de los vehículos (invisible, se borra sola) =====
+    public static final RegistryObject<Block> VEHICLE_LIGHT = BLOCKS.register("vehicle_light",
+            () -> new com.example.beautifuldecor.block.VehicleLightBlock(BlockBehaviour.Properties.of().replaceable().noCollission().noOcclusion()
+                    .noLootTable().strength(-1.0f, 3600000.0f).pushReaction(net.minecraft.world.level.material.PushReaction.DESTROY)
+                    .lightLevel(state -> state.getValue(com.example.beautifuldecor.block.VehicleLightBlock.LEVEL))));
 
     // ===== V6.0.0: automatización de trenes =====
     /** Controlador de estación: se pone junto a la vía; el tren automático se detiene con el morro en su punto de la vía. */

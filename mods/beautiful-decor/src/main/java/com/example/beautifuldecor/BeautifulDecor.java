@@ -31,6 +31,7 @@ public class BeautifulDecor {
         ModEntities.register(modEventBus);
         ModSounds.register(modEventBus);
 
+        context.registerConfig(net.minecraftforge.fml.config.ModConfig.Type.CLIENT, com.example.beautifuldecor.config.ModClientConfig.SPEC);
         modEventBus.addListener(this::commonSetup);
         modEventBus.addListener((FMLLoadCompleteEvent event) -> event.enqueueWork(TabOrder::moveToEnd));
 

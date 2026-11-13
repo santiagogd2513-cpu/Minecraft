@@ -44,7 +44,7 @@ import javax.annotation.Nullable;
  *   <li>Cada tipo define sus números en un {@link Spec} (velocidad máxima, aceleración, giro, etc.).</li>
  * </ul>
  */
-public abstract class VehicleEntity extends Entity implements PaintableVehicle, HasVehicleStorage {
+public abstract class VehicleEntity extends Entity implements PaintableVehicle, HasVehicleStorage, SkinnableVehicle {
     /** Números de manejo y de aspecto de cada tipo de vehículo. */
     public record Spec(
             float maxSpeed,          // bloques por tick (x20 = bloques por segundo)
@@ -70,6 +70,11 @@ public abstract class VehicleEntity extends Entity implements PaintableVehicle, 
     /** V4.7.0: cantidad de objetos en el almacenamiento (sincronizada). */
     private static final EntityDataAccessor<Integer> CARGO =
             SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.INT);
+    /** V6.7.0: skin del vehículo (0 = la de siempre) y sirena encendida (solo en la skin de policía). */
+    private static final EntityDataAccessor<Integer> SKIN =
+            SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Boolean> SIREN =
+            SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Boolean> LIGHT =
             SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.BOOLEAN);
     // V3.2.0: colores que el jugador le puso con la tecla R (-1 = el de siempre).
@@ -95,8 +100,12 @@ public abstract class VehicleEntity extends Entity implements PaintableVehicle, 
     /** Velocidad a la que se limita el vehículo si el terreno de delante aún no se ha cargado. */
     private static final float UNLOADED_LIMIT = 0.9f;
 
+    /** V6.7.0: botón de la sirena del interior (solo skin de policía). */
+    public static final int ACTION_SIREN = 3;
     public static final int ACTION_LIGHT = 0;
     public static final int ACTION_HORN = 1;
+    /** V6.3.0: solo para los botones del interior (el radio se abre en el cliente). */
+    public static final int ACTION_RADIO = 2;
 
     // ---- interpolación para quienes miran el vehículo (igual que la barca)
     private int lerpSteps;
@@ -168,6 +177,7 @@ public abstract class VehicleEntity extends Entity implements PaintableVehicle, 
     /** Al recogerlo, destruirlo o matarlo, lo que lleva dentro cae al suelo. */
     @Override
     public void remove(Entity.RemovalReason reason) {
+        VehicleLights.clear(this);
         if (reason.shouldDestroy()) {
             VehicleStorage.drop(this, this.storage);
         }
@@ -185,6 +195,68 @@ public abstract class VehicleEntity extends Entity implements PaintableVehicle, 
     protected abstract SoundEvent getStartSound();
 
     protected abstract SoundEvent getHornSound();
+
+    // ---- V6.7.0: skins y sirena
+    /** Cuántas skins tiene (la 0 es la original). */
+    public int skinCount() {
+        return 1;
+    }
+
+    /** Número de la skin de policía, o -1 si no tiene. */
+    public int policeSkin() {
+        return -1;
+    }
+
+    /** Clave de idioma del nombre de cada skin. */
+    public String skinKey(int skin) {
+        return "skin.beautifuldecor.generic." + skin;
+    }
+
+    public int getSkin() {
+        return this.entityData.get(SKIN);
+    }
+
+    public void setSkin(int skin) {
+        this.entityData.set(SKIN, Math.max(0, Math.min(this.skinCount() - 1, skin)));
+        if (!this.hasSiren()) {
+            this.entityData.set(SIREN, Boolean.FALSE);
+        }
+    }
+
+    public boolean hasSiren() {
+        return this.skinHasSiren(this.getSkin());
+    }
+
+    /** V6.8.0: true si esa skin lleva sirena (por defecto, solo la de policía; la camioneta también la da a los bomberos). */
+    public boolean skinHasSiren(int skin) {
+        return this.policeSkin() >= 0 && skin == this.policeSkin();
+    }
+
+    public boolean isSirenOn() {
+        return this.hasSiren() && this.entityData.get(SIREN);
+    }
+
+    public void toggleSiren(ServerPlayer player) {
+        if (!this.hasSiren()) {
+            return;
+        }
+        boolean on = !this.isSirenOn();
+        this.entityData.set(SIREN, on);
+        this.level().playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.LEVER_CLICK, SoundSource.NEUTRAL, 0.6f, on ? 1.3f : 0.8f);
+        player.displayClientMessage(Component.translatable(on ? "hud.beautifuldecor.siren_on" : "hud.beautifuldecor.siren_off"), true);
+    }
+
+    /** V6.3.0: true si este vehículo tiene botones en su interior (claxon, luces, radio); entonces las teclas quedan apagadas salvo que se activen en la configuración. */
+    public boolean hasCabButtons() {
+        return false;
+    }
+
+    /** V6.3.0: botones del interior: {x izquierda, y arriba, z adelante, radio, acción} en metros desde el centro del vehículo; acción = ACTION_*. */
+    protected double[][] cabButtons() {
+        return NO_BUTTONS;
+    }
+
+    private static final double[][] NO_BUTTONS = new double[0][];
 
     protected float hornVolume() {
         return 1.6f;
@@ -222,6 +294,8 @@ public abstract class VehicleEntity extends Entity implements PaintableVehicle, 
     @Override
     protected void defineSynchedData() {
         this.entityData.define(LIGHT, Boolean.FALSE);
+        this.entityData.define(SKIN, 0);
+        this.entityData.define(SIREN, Boolean.FALSE);
         this.entityData.define(CARGO, 0);
         this.entityData.define(PAINT_BODY, VehiclePaint.ORIGINAL);
         this.entityData.define(PAINT_HANDLE, VehiclePaint.ORIGINAL);
@@ -330,8 +404,64 @@ public abstract class VehicleEntity extends Entity implements PaintableVehicle, 
     // Subir, bajar, recoger
     // =====================================================================================================
 
+    /** V6.3.0: quien va montado puede apretar los botones del tablero. */
+    @Override
+    public boolean canRiderInteract() {
+        return this.cabButtons().length > 0;
+    }
+
+    /** V6.3.0: acción del botón del interior al que apunta el jugador (distancia de rayo a punto menor que el radio del botón), o -1. */
+    private int buttonUnderCrosshair(Player player) {
+        double yaw = this.getYRot() * Mth.DEG_TO_RAD;
+        net.minecraft.world.phys.Vec3 eye = player.getEyePosition();
+        net.minecraft.world.phys.Vec3 look = player.getViewVector(1.0f);
+        int best = -1;
+        double bestT = 1.0e9;
+        for (double[] b : this.cabButtons()) {
+            double px = this.getX() - Mth.sin((float) yaw) * b[2] + Mth.cos((float) yaw) * b[0];
+            double py = this.getY() + b[1];
+            double pz = this.getZ() + Mth.cos((float) yaw) * b[2] + Mth.sin((float) yaw) * b[0];
+            double t = (px - eye.x) * look.x + (py - eye.y) * look.y + (pz - eye.z) * look.z;
+            if (t < 0.05 || t > 3.0) {
+                continue;
+            }
+            double cx = eye.x + look.x * t - px;
+            double cy = eye.y + look.y * t - py;
+            double cz = eye.z + look.z * t - pz;
+            if ((int) b[4] == ACTION_SIREN && !this.hasSiren()) {
+                continue;
+            }
+            if (cx * cx + cy * cy + cz * cz < b[3] * b[3] && t < bestT) {
+                bestT = t;
+                best = (int) b[4];
+            }
+        }
+        return best;
+    }
+
     @Override
     public InteractionResult interact(Player player, InteractionHand hand) {
+        if (player.getVehicle() == this && hand == InteractionHand.MAIN_HAND && !player.isSecondaryUseActive()) {
+            int action = this.buttonUnderCrosshair(player);
+            if (action < 0) {
+                return InteractionResult.PASS;
+            }
+            if (this.level().isClientSide) {
+                if (action == ACTION_RADIO) {
+                    net.minecraftforge.fml.DistExecutor.unsafeRunWhenOn(net.minecraftforge.api.distmarker.Dist.CLIENT,
+                            () -> () -> com.example.beautifuldecor.client.VehicleRadioScreen.tryOpen(net.minecraft.client.Minecraft.getInstance()));
+                }
+            } else if (player instanceof ServerPlayer sp && this.getControllingPassenger() == player) {
+                if (action == ACTION_LIGHT) {
+                    this.toggleLight(sp);
+                } else if (action == ACTION_HORN) {
+                    this.honk();
+                } else if (action == ACTION_SIREN) {
+                    this.toggleSiren(sp);
+                }
+            }
+            return InteractionResult.sidedSuccess(this.level().isClientSide);
+        }
         if (player.isSecondaryUseActive()) {
             if (!this.isVehicle()) {
                 if (!this.level().isClientSide) {
@@ -432,11 +562,37 @@ public abstract class VehicleEntity extends Entity implements PaintableVehicle, 
     // Tick
     // =====================================================================================================
 
+    /** V6.13.0: medidas del casco para la caja de colisión (null = la caja normal del tipo de entidad). Cada vehículo pone las de su modelo. */
+    protected VehicleHull.Spec hull() {
+        return null;
+    }
+
+    /** Pone la caja de colisión según la posición y el giro de ahora. */
+    protected final void refreshHull() {
+        VehicleHull.Spec h = this.hull();
+        if (h != null) {
+            VehicleHull.refresh(this, h);
+        }
+    }
+
+    @Override
+    public void move(MoverType type, Vec3 delta) {
+        VehicleHull.Spec h = this.hull();
+        if (h == null) {
+            super.move(type, delta);
+            return;
+        }
+        VehicleHull.refresh(this, h);
+        super.move(type, delta);
+        VehicleHull.fixPosition(this, h);
+    }
+
     @Override
     public void tick() {
         super.tick();
         this.syncCargo();
         this.tickLerp();
+        VehicleLights.update(this, this.isLightOn(), false);      // V6.4.0: luz real delante de los faros
 
         if (this.isControlledByLocalInstance()) {
             this.driveTick();
@@ -450,6 +606,7 @@ public abstract class VehicleEntity extends Entity implements PaintableVehicle, 
             }
         }
         this.updateVisuals();
+        this.refreshHull();
     }
 
     private void tickLerp() {
@@ -741,6 +898,8 @@ public abstract class VehicleEntity extends Entity implements PaintableVehicle, 
     @Override
     protected void readAdditionalSaveData(CompoundTag tag) {
         this.entityData.set(LIGHT, tag.getBoolean("Light"));
+        this.entityData.set(SKIN, Math.max(0, Math.min(this.skinCount() - 1, tag.getInt("Skin"))));
+        this.entityData.set(SIREN, tag.getBoolean("Siren"));
         VehiclePaint.read(this, tag);
         // V3.5.0: la radio (los vehículos guardados antes no la traen: apagada, sin emisora, volumen de fábrica)
         String url = RadioStations.cleanUrl(tag.getString("RadioUrl"));
@@ -754,6 +913,8 @@ public abstract class VehicleEntity extends Entity implements PaintableVehicle, 
     @Override
     protected void addAdditionalSaveData(CompoundTag tag) {
         tag.putBoolean("Light", this.isLightOn());
+        tag.putInt("Skin", this.getSkin());
+        tag.putBoolean("Siren", this.isSirenOn());
         VehiclePaint.write(this, tag);
         tag.putString("RadioUrl", this.getRadioUrl());
         tag.putString("RadioName", this.getRadioName());

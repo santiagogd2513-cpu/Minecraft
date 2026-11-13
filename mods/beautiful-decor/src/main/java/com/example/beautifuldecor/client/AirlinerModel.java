@@ -405,29 +405,42 @@ public class AirlinerModel extends EntityModel<AirlinerEntity> {
                 .texOffs(432, 101).addBox(-6f, -22f, 47f, 12f, 6f, 1f)
                 .texOffs(32, 110).addBox(-15f, -16f, 43f, 6f, 2f, 4f)
                 .texOffs(480, 101).addBox(-15f, -22f, 47f, 6f, 6f, 1f)
-                .texOffs(458, 101).addBox(7f, -16f, -83f, 6f, 2f, 5f)
-                .texOffs(20, 101).addBox(7f, -24f, -78f, 6f, 8f, 1f)
-                .texOffs(458, 101).addBox(-13f, -16f, -83f, 6f, 2f, 5f)
-                .texOffs(20, 101).addBox(-13f, -24f, -78f, 6f, 8f, 1f)
+                .texOffs(458, 101).addBox(7f, -19f, -83f, 6f, 2f, 5f)
+                .texOffs(20, 101).addBox(7f, -27f, -78f, 6f, 8f, 1f)
+                .texOffs(52, 110).addBox(8f, -17f, -82f, 4f, 3f, 3f)
+                .texOffs(458, 101).addBox(-13f, -19f, -83f, 6f, 2f, 5f)
+                .texOffs(20, 101).addBox(-13f, -27f, -78f, 6f, 8f, 1f)
+                .texOffs(66, 110).addBox(-12f, -17f, -82f, 4f, 3f, 3f)
                 .texOffs(246, 68).addBox(-3f, -18f, -90f, 6f, 4f, 14f)
                 .texOffs(322, 87).addBox(-15f, -21f, -95f, 30f, 4f, 5f)
+                .texOffs(232, 110).addBox(-1f, -19f, -82f, 2f, 1f, 2f)
+                .texOffs(240, 110).addBox(-1f, -20f, -82f, 2f, 1f, 2f)
+                .texOffs(248, 110).addBox(1f, -19f, -86f, 2f, 1f, 2f)
+                .texOffs(140, 110).addBox(-12f, -21f, -90f, 2f, 3f, 1f)
+                .texOffs(146, 110).addBox(-9f, -21f, -90f, 2f, 3f, 1f)
+                .texOffs(152, 110).addBox(-6f, -21f, -90f, 2f, 3f, 1f)
+                .texOffs(158, 110).addBox(6f, -21f, -90f, 2f, 3f, 1f)
+                .texOffs(164, 110).addBox(9f, -21f, -90f, 2f, 3f, 1f)
+                .texOffs(170, 110).addBox(12f, -21f, -90f, 2f, 3f, 1f)
+                .texOffs(104, 110).addBox(-3f, -22f, -88f, 1f, 4f, 2f)
+                .texOffs(110, 110).addBox(-1f, -22f, -88f, 1f, 4f, 2f)
                 .texOffs(52, 87).addBox(-6f, -27f, -90f, 12f, 3f, 10f)
                 .texOffs(370, 43).addBox(-14f, -20f, -103f, 28f, 12f, 7f)
                 .texOffs(286, 68).addBox(-12f, -19f, -110f, 24f, 10f, 7f)
                 .texOffs(448, 68).addBox(-10f, -18f, -116f, 20f, 8f, 6f)
                 .texOffs(136, 87).addBox(-7f, -17f, -121f, 14f, 6f, 5f)
                 .texOffs(42, 101).addBox(-4f, -16f, -125f, 8f, 4f, 4f)
-                .texOffs(156, 110).addBox(10f, -13f, -111f, 2f, 2f, 1f)
-                .texOffs(162, 110).addBox(-12f, -13f, -111f, 2f, 2f, 1f)
+                .texOffs(256, 110).addBox(10f, -13f, -111f, 2f, 2f, 1f)
+                .texOffs(262, 110).addBox(-12f, -13f, -111f, 2f, 2f, 1f)
                 .texOffs(290, 0).addBox(-14f, -29f, 72f, 28f, 18f, 12f)
                 .texOffs(422, 0).addBox(-11f, -28f, 84f, 22f, 14f, 12f)
                 .texOffs(192, 43).addBox(-7f, -27f, 96f, 14f, 10f, 12f)
                 .texOffs(348, 68).addBox(-4f, -26f, 108f, 8f, 6f, 10f)
-                .texOffs(52, 110).addBox(-2f, -25f, 118f, 4f, 4f, 2f)
+                .texOffs(80, 110).addBox(-2f, -25f, 118f, 4f, 4f, 2f)
                 .texOffs(0, 0).addBox(-1f, -45f, 84f, 2f, 19f, 24f)
                 .texOffs(156, 0).addBox(-1f, -59f, 90f, 2f, 14f, 18f)
                 .texOffs(244, 43).addBox(-1f, -68f, 96f, 2f, 9f, 12f)
-                .texOffs(76, 110).addBox(-1f, -70f, 100f, 2f, 2f, 2f)
+                .texOffs(116, 110).addBox(-1f, -70f, 100f, 2f, 2f, 2f)
                 .texOffs(182, 68).addBox(10f, -28f, 90f, 16f, 2f, 16f)
                 .texOffs(182, 68).addBox(-26f, -28f, 90f, 16f, 2f, 16f)
                 .texOffs(0, 87).addBox(26f, -28f, 98f, 14f, 2f, 12f)
@@ -446,24 +459,24 @@ public class AirlinerModel extends EntityModel<AirlinerEntity> {
                 .texOffs(384, 68).addBox(-116f, -13f, 28f, 20f, 2f, 12f)
                 .texOffs(272, 43).addBox(114f, -23f, 30f, 2f, 10f, 10f)
                 .texOffs(272, 43).addBox(-116f, -23f, 30f, 2f, 10f, 10f)
-                .texOffs(84, 110).addBox(116f, -13f, 35f, 2f, 2f, 2f)
-                .texOffs(92, 110).addBox(-118f, -13f, 35f, 2f, 2f, 2f)
-                .texOffs(168, 110).addBox(16f, -13f, -21f, 2f, 2f, 1f)
-                .texOffs(168, 110).addBox(-18f, -13f, -21f, 2f, 2f, 1f),
+                .texOffs(124, 110).addBox(116f, -13f, 35f, 2f, 2f, 2f)
+                .texOffs(132, 110).addBox(-118f, -13f, 35f, 2f, 2f, 2f)
+                .texOffs(268, 110).addBox(16f, -13f, -21f, 2f, 2f, 1f)
+                .texOffs(268, 110).addBox(-18f, -13f, -21f, 2f, 2f, 1f),
                 PartPose.offset(0f, 24f, 0f));
         PartDefinition p_ws_frame = p_body.addOrReplaceChild("ws_frame",
                 CubeListBuilder.create()
                 .texOffs(174, 87).addBox(13f, -9f, -1f, 2f, 9f, 2f)
                 .texOffs(182, 87).addBox(-1f, -9f, -1f, 2f, 9f, 2f)
                 .texOffs(190, 87).addBox(-15f, -9f, -1f, 2f, 9f, 2f)
-                .texOffs(100, 110).addBox(-13f, -1f, -1f, 26f, 1f, 2f),
+                .texOffs(176, 110).addBox(-13f, -1f, -1f, 26f, 1f, 2f),
                 PartPose.offsetAndRotation(0f, -20f, -97f, -0.524f, 0f, 0f));
         PartDefinition p_eng0 = p_body.addOrReplaceChild("eng0",
                 CubeListBuilder.create()
                 .texOffs(84, 43).addBox(-5f, -3.5f, 0f, 10f, 7f, 18f)
                 .texOffs(370, 0).addBox(-4f, -4.5f, 0f, 8f, 9f, 18f)
                 .texOffs(84, 101).addBox(-3f, -3f, 18f, 6f, 6f, 2f)
-                .texOffs(64, 110).addBox(-2f, -2f, 20f, 4f, 4f, 2f),
+                .texOffs(92, 110).addBox(-2f, -2f, 20f, 4f, 4f, 2f),
                 PartPose.offset(40f, -7.5f, -18f));
         PartDefinition p_fan0 = p_eng0.addOrReplaceChild("fan0",
                 CubeListBuilder.create()
@@ -474,7 +487,7 @@ public class AirlinerModel extends EntityModel<AirlinerEntity> {
                 .texOffs(84, 43).addBox(-5f, -3.5f, 0f, 10f, 7f, 18f)
                 .texOffs(370, 0).addBox(-4f, -4.5f, 0f, 8f, 9f, 18f)
                 .texOffs(84, 101).addBox(-3f, -3f, 18f, 6f, 6f, 2f)
-                .texOffs(64, 110).addBox(-2f, -2f, 20f, 4f, 4f, 2f),
+                .texOffs(92, 110).addBox(-2f, -2f, 20f, 4f, 4f, 2f),
                 PartPose.offset(68f, -7.5f, -6f));
         PartDefinition p_fan1 = p_eng1.addOrReplaceChild("fan1",
                 CubeListBuilder.create()
@@ -485,7 +498,7 @@ public class AirlinerModel extends EntityModel<AirlinerEntity> {
                 .texOffs(84, 43).addBox(-5f, -3.5f, 0f, 10f, 7f, 18f)
                 .texOffs(370, 0).addBox(-4f, -4.5f, 0f, 8f, 9f, 18f)
                 .texOffs(84, 101).addBox(-3f, -3f, 18f, 6f, 6f, 2f)
-                .texOffs(64, 110).addBox(-2f, -2f, 20f, 4f, 4f, 2f),
+                .texOffs(92, 110).addBox(-2f, -2f, 20f, 4f, 4f, 2f),
                 PartPose.offset(-40f, -7.5f, -18f));
         PartDefinition p_fan2 = p_eng2.addOrReplaceChild("fan2",
                 CubeListBuilder.create()
@@ -496,7 +509,7 @@ public class AirlinerModel extends EntityModel<AirlinerEntity> {
                 .texOffs(84, 43).addBox(-5f, -3.5f, 0f, 10f, 7f, 18f)
                 .texOffs(370, 0).addBox(-4f, -4.5f, 0f, 8f, 9f, 18f)
                 .texOffs(84, 101).addBox(-3f, -3f, 18f, 6f, 6f, 2f)
-                .texOffs(64, 110).addBox(-2f, -2f, 20f, 4f, 4f, 2f),
+                .texOffs(92, 110).addBox(-2f, -2f, 20f, 4f, 4f, 2f),
                 PartPose.offset(-68f, -7.5f, -6f));
         PartDefinition p_fan3 = p_eng3.addOrReplaceChild("fan3",
                 CubeListBuilder.create()
@@ -506,8 +519,8 @@ public class AirlinerModel extends EntityModel<AirlinerEntity> {
                 CubeListBuilder.create()
                 .texOffs(198, 87).addBox(-1f, 0f, -1f, 2f, 9f, 2f)
                 .texOffs(0, 101).addBox(-1f, 8f, -4f, 2f, 1f, 8f)
-                .texOffs(174, 110).addBox(-3f, 8f, -3.5f, 6f, 1f, 1f)
-                .texOffs(174, 110).addBox(-3f, 8f, 2.5f, 6f, 1f, 1f),
+                .texOffs(274, 110).addBox(-3f, 8f, -3.5f, 6f, 1f, 1f)
+                .texOffs(274, 110).addBox(-3f, 8f, 2.5f, 6f, 1f, 1f),
                 PartPose.offset(9f, -12f, 6f));
         PartDefinition p_w_gear_ml_00 = p_gear_ml.addOrReplaceChild("w_gear_ml_00",
                 CubeListBuilder.create(),
@@ -589,8 +602,8 @@ public class AirlinerModel extends EntityModel<AirlinerEntity> {
                 CubeListBuilder.create()
                 .texOffs(198, 87).addBox(-1f, 0f, -1f, 2f, 9f, 2f)
                 .texOffs(0, 101).addBox(-1f, 8f, -4f, 2f, 1f, 8f)
-                .texOffs(174, 110).addBox(-3f, 8f, -3.5f, 6f, 1f, 1f)
-                .texOffs(174, 110).addBox(-3f, 8f, 2.5f, 6f, 1f, 1f),
+                .texOffs(274, 110).addBox(-3f, 8f, -3.5f, 6f, 1f, 1f)
+                .texOffs(274, 110).addBox(-3f, 8f, 2.5f, 6f, 1f, 1f),
                 PartPose.offset(-9f, -12f, 6f));
         PartDefinition p_w_gear_mr_00 = p_gear_mr.addOrReplaceChild("w_gear_mr_00",
                 CubeListBuilder.create(),
@@ -671,7 +684,7 @@ public class AirlinerModel extends EntityModel<AirlinerEntity> {
         PartDefinition p_gear_nose = p_body.addOrReplaceChild("gear_nose",
                 CubeListBuilder.create()
                 .texOffs(34, 101).addBox(-1f, 0f, -1f, 2f, 7f, 2f)
-                .texOffs(174, 110).addBox(-3f, 6f, -0.5f, 6f, 1f, 1f),
+                .texOffs(274, 110).addBox(-3f, 6f, -0.5f, 6f, 1f, 1f),
                 PartPose.offset(0f, -10f, -70f));
         PartDefinition p_w_nose_0 = p_gear_nose.addOrReplaceChild("w_nose_0",
                 CubeListBuilder.create(),

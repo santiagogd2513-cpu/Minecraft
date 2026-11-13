@@ -9,7 +9,7 @@ import net.minecraftforge.network.PacketDistributor;
 import net.minecraftforge.network.simple.SimpleChannel;
 
 public class ModMessages {
-    private static final String PROTOCOL = "28";
+    private static final String PROTOCOL = "31";
     public static final SimpleChannel CHANNEL = NetworkRegistry.ChannelBuilder
             .named(ResourceLocation.fromNamespaceAndPath(BeautifulDecor.MOD_ID, "main"))
             .networkProtocolVersion(() -> PROTOCOL)
@@ -39,6 +39,21 @@ public class ModMessages {
                 .decoder(VehicleActionPacket::decode)
                 .encoder(VehicleActionPacket::encode)
                 .consumerMainThread(VehicleActionPacket::handle)
+                .add();
+        CHANNEL.messageBuilder(NewsPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(NewsPacket::encode)
+                .decoder(NewsPacket::decode)
+                .consumerMainThread(NewsPacket::handle)
+                .add();
+        CHANNEL.messageBuilder(LotteryPacket.class, id++, NetworkDirection.PLAY_TO_CLIENT)
+                .encoder(LotteryPacket::encode)
+                .decoder(LotteryPacket::decode)
+                .consumerMainThread(LotteryPacket::handle)
+                .add();
+        CHANNEL.messageBuilder(VehicleSkinPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
+                .decoder(VehicleSkinPacket::decode)
+                .encoder(VehicleSkinPacket::encode)
+                .consumerMainThread(VehicleSkinPacket::handle)
                 .add();
         CHANNEL.messageBuilder(TrainInputPacket.class, id++, NetworkDirection.PLAY_TO_SERVER)
                 .decoder(TrainInputPacket::decode)

@@ -2,7 +2,14 @@ package com.example.beautifuldecor.entity;
 
 import com.example.beautifuldecor.init.ModItems;
 import com.example.beautifuldecor.init.ModSounds;
+import com.example.beautifuldecor.lottery.PrizeTruckDriver;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.phys.Vec3;
+import java.util.UUID;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
@@ -19,6 +26,14 @@ import net.minecraft.world.level.Level;
  * el camión se ve de casi 6 bloques de largo pero choca como una caja de 2,4 x 2,4.
  */
 public class DeliveryTruckEntity extends VehicleEntity {
+    /** V6.13.0: caja de colisión igual al modelo (ancho, largo, desfase hacia delante, alto; tools/v6130/hulls.py). */
+    private static final VehicleHull.Spec HULL = new VehicleHull.Spec(2.12, 6.38, -1.25, 2.75);
+
+    @Override
+    protected VehicleHull.Spec hull() {
+        return HULL;
+    }
+
     /** Velocidad máxima en bloques por tick (V4.4.0: 55 km/h = 15,3 bloques por segundo). */
     public static final float MAX_SPEED = 0.764f;
 
@@ -46,6 +61,63 @@ public class DeliveryTruckEntity extends VehicleEntity {
         super(type, level);
     }
 
+    // ---- V6.15.0: camión de premios de la lotería (maneja solo; ver PrizeTruckDriver)
+    public int prizeTier;
+    public int prizeStage;
+    public int prizeTicks;
+    public UUID prizeOwner;
+    public Vec3 prizeTarget = Vec3.ZERO;
+    public Vec3 prizeSpawn = Vec3.ZERO;
+
+    public void startPrize(int tier, UUID owner, Vec3 target, Vec3 spawn) {
+        this.prizeTier = tier;
+        this.prizeOwner = owner;
+        this.prizeTarget = target;
+        this.prizeSpawn = spawn;
+        this.prizeStage = PrizeTruckDriver.ARRIVING;
+        this.prizeTicks = 0;
+    }
+
+    @Override
+    public void tick() {
+        if (this.prizeTier > 0 && !this.level().isClientSide) {
+            PrizeTruckDriver.drive(this);
+            if (this.isRemoved()) {
+                return;
+            }
+        }
+        super.tick();
+    }
+
+    @Override
+    public boolean canAddPassenger(Entity passenger) {
+        return this.prizeTier == 0 && super.canAddPassenger(passenger);
+    }
+
+    @Override
+    public InteractionResult interact(Player player, InteractionHand hand) {
+        return this.prizeTier > 0 ? InteractionResult.PASS : super.interact(player, hand);
+    }
+
+    @Override
+    public boolean hurt(net.minecraft.world.damagesource.DamageSource source, float amount) {
+        return this.prizeTier > 0 ? false : super.hurt(source, amount);
+    }
+
+    @Override
+    protected void readAdditionalSaveData(CompoundTag tag) {
+        super.readAdditionalSaveData(tag);
+        if (tag.getInt("PrizeTier") > 0) {
+            this.discard();                                       // un camión de premios que quedó guardado: ya no tiene a quién entregar
+        }
+    }
+
+    @Override
+    protected void addAdditionalSaveData(CompoundTag tag) {
+        super.addAdditionalSaveData(tag);
+        tag.putInt("PrizeTier", this.prizeTier);
+    }
+
     /** V3.9.0: almacenamiento de 6 fila(s) de 9 casillas. */
     @Override
     public int storageRows() {
@@ -63,6 +135,22 @@ public class DeliveryTruckEntity extends VehicleEntity {
     @Override
     protected Spec spec() {
         return SPEC;
+    }
+
+    @Override
+    public boolean hasCabButtons() {
+        return true;
+    }
+
+    /** V6.3.0: botones del tablero (medidas del modelo, tools/v300/delivery_truck.py): centro del volante = claxon, luces y radio en el tablero. */
+    private static final double[][] BUTTONS = {
+            {0.4375, 1.28, 0.91, 0.19, ACTION_HORN},
+            {0.125, 1.31, 1.03, 0.10, ACTION_LIGHT},
+            {-0.125, 1.31, 1.03, 0.10, ACTION_RADIO}};
+
+    @Override
+    protected double[][] cabButtons() {
+        return BUTTONS;
     }
 
     @Override

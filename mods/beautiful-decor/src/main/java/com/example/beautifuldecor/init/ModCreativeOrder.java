@@ -62,16 +62,22 @@ public final class ModCreativeOrder {
      * los extras (dron, carro RC, ascensores) y al final las pantallas y consolas.
      */
     private static final String[] TECH_ORDER = {
-            // ---- 1. Marca HS (computadores e impresora)
-            "hs_laptop", "hs_desktop", "hs_desktop_*", "printer", "microphone", "pa_speaker", "radio_table", "radio_speaker", "security_camera_black", "security_camera_white", "security_monitor", "security_screen", "ad_screen_small", "ad_screen_medium", "ad_screen_large", "ad_tv",
-            // ---- 2. Ventiladores
+            // ---- 1. Marca HS: computadores e impresoras (V6.11.0)
+            "hs_laptop", "hs_desktop", "hs_desktop_*", "printer",
+            // ---- 2. Sistemas de audio: la radio y su bocina, el micrófono y su bocina
+            "radio_table", "radio_speaker", "microphone", "pa_speaker",
+            // ---- 3. Pantallas de anuncios y televisores de anuncios (de menor a mayor), con el micrófono de HS News
+            "ad_screen_small", "ad_screen_medium", "ad_screen_large",
+            "ad_tv", "ad_tv_3x2", "ad_tv_4x2", "ad_tv_6x4", "hsnews_mic",
+            // ---- 4. Carro RC y dron, cada uno con su control
+            "rc_car", "rc_car_remote", "drone", "drone_remote",
+            // ---- 5. Televisores normales
+            "television", "tv_*",
+            // ---- 6. Lo demás: consolas, seguridad, ventiladores y ascensores
+            "wii_console", "nintendo_switch", "xbox_360", "xbox_one", "xbox_series_s", "kinect_sensor",
+            "security_camera_black", "security_camera_white", "security_monitor", "security_screen",
             "fan_small", "fan_medium", "fan_large", "pedestal_fan_*", "ceiling_fan_*",
-            // ---- 3. Extras
-            "drone", "drone_remote", "rc_car", "rc_car_remote",
             "elevator_controller", "elevator_display", "elevator_door",
-            // ---- 4. Pantallas y consolas
-            "television", "tv_*", "wii_console", "nintendo_switch", "xbox_360", "xbox_one", "xbox_series_s",
-            "kinect_sensor",
     };
 
     private ModCreativeOrder() {

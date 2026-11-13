@@ -71,6 +71,23 @@ public class ModSounds {
             simple("piano_do"), simple("piano_re"), simple("piano_mi"), simple("piano_fa"),
             simple("piano_sol"), simple("piano_la"), simple("piano_si"));
 
+    // ===== V6.2.0: sonidos de los trenes y avisos de estación =====
+    public static final RegistryObject<SoundEvent> TRAIN_ROLL_FREIGHT = simple("train_roll_freight");
+    public static final RegistryObject<SoundEvent> TRAIN_ROLL_PASSENGER = simple("train_roll_passenger");
+    public static final RegistryObject<SoundEvent> TRAIN_ROLL_STEAM = simple("train_roll_steam");
+    public static final RegistryObject<SoundEvent> TRAIN_ROLL_METRO = simple("train_roll_metro");
+    public static final RegistryObject<SoundEvent> TRAIN_BRAKE_SQUEAL = simple("train_brake_squeal");
+    public static final RegistryObject<SoundEvent> TRAIN_BRAKE_METRO = simple("train_brake_metro");
+    public static final RegistryObject<SoundEvent> TRAIN_EMERGENCY = simple("train_emergency");
+    public static final RegistryObject<SoundEvent> TRAIN_CHIME = simple("train_chime");
+    public static final RegistryObject<SoundEvent> VEHICLE_SIREN = simple("vehicle_siren");
+    public static final RegistryObject<SoundEvent> TASER_ZAP = simple("taser_zap");
+    public static final RegistryObject<SoundEvent> TRAIN_SAY_NEXT = simple("train_say_next");
+    public static final RegistryObject<SoundEvent> TRAIN_SAY_ARRIVED = simple("train_say_arrived");
+    public static final RegistryObject<SoundEvent> TRAIN_SAY_DEPARTING = simple("train_say_departing");
+    public static final RegistryObject<SoundEvent> TRAIN_SAY_FINAL = simple("train_say_final");
+    public static final RegistryObject<SoundEvent> TRAIN_SAY_DESTINATION = simple("train_say_destination");
+
     private static RegistryObject<SoundEvent> simple(String name) {
         return SOUND_EVENTS.register(name, () -> SoundEvent.createVariableRangeEvent(
                 ResourceLocation.fromNamespaceAndPath(BeautifulDecor.MOD_ID, name)));

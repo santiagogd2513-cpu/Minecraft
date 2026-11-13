@@ -73,6 +73,10 @@ public final class TrainRoute {
         /** Avisos para los pasajeros (null = nada). */
         public String arrived;
         public String departed;
+        /** V6.2.0: aviso por el megáfono: "next" (a 200 m), "arrived", "final", "departing" (con el destino), o null. */
+        public String say;
+        public String sayName;
+        public String sayDest;
         public boolean parked;
         public boolean stuck;
     }
@@ -93,6 +97,9 @@ public final class TrainRoute {
     private int sinceLook = 99;
     private int stuckTicks;
     private final Set<Long> pathChunks = new LinkedHashSet<>();
+    private boolean nextSaid;
+    /** A cuántos metros de la estación se avisa de que ya viene (bloques). */
+    public static final double ANNOUNCE_DIST = 200.0;
 
     public boolean active() {
         return this.on && !this.stops.isEmpty();
@@ -116,6 +123,7 @@ public final class TrainRoute {
         this.from = -1;
         this.state = State.TRAVEL;
         this.traveled = 0.0;
+        this.nextSaid = false;
         this.invalidate();
     }
 
@@ -260,11 +268,21 @@ public final class TrainRoute {
         out.brake = d < 0;
         out.hand = false;
 
+        if (haveTarget && !this.nextSaid && this.dist <= ANNOUNCE_DIST && this.idx < this.stops.size() - 1) {
+            this.nextSaid = true;
+            out.say = "next";
+            out.sayName = target.label(this.idx);
+        }
         if (haveTarget && (this.dist <= TrainAuto.ARRIVE_DIST || (this.dist < 2.0 && vTick < 0.002))) {
             out.drive = 0;
             out.brake = true;
             out.hand = true;
             out.arrived = target.label(this.idx);
+            int n = this.stops.size();
+            if (this.idx < n - 1) {
+                out.say = this.idx == n - 2 ? "final" : "arrived";
+                out.sayName = target.label(this.idx);
+            }
             this.state = State.DWELL;
             this.dwellLeft = Math.max(1, target.dwell * 20);
             return out;
@@ -289,6 +307,13 @@ public final class TrainRoute {
     private void depart(Out out) {
         Stop here = this.stops.get(this.idx);
         out.departed = here.label(this.idx);
+        int n = this.stops.size();
+        if (n >= 3 && this.idx < n - 2) {
+            out.say = "departing";
+            out.sayName = here.label(this.idx);
+            out.sayDest = this.stops.get(n - 2).label(n - 2);
+        }
+        this.nextSaid = false;
         this.from = this.idx;
         this.idx = (this.idx + 1) % this.stops.size();
         this.state = State.TRAVEL;

@@ -150,6 +150,12 @@ public class VehicleColorScreen extends Screen {
         this.hexBox.setResponder(this::onHexChanged);
         this.hexBox.visible = !this.listOpen;
         this.addRenderableWidget(this.hexBox);
+        if (this.entity instanceof com.example.beautifuldecor.entity.SkinnableVehicle skinnable && skinnable.skinCount() > 1) {
+            // V6.7.0: ficha "Skins" arriba a la derecha del menú
+            this.addRenderableWidget(net.minecraft.client.gui.components.Button.builder(Component.translatable("gui.beautifuldecor.skins.button"),
+                    b -> this.minecraft.setScreen(new VehicleSkinScreen(this.entity, skinnable, this)))
+                    .bounds(this.left + W - 96, this.top + 6, 80, 20).build());
+        }
         syncHex();
         preview();
     }

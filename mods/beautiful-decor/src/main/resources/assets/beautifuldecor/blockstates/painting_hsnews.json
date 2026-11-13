@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=north": {
+      "model": "beautifuldecor:block/painting_hsnews"
+    },
+    "facing=east": {
+      "model": "beautifuldecor:block/painting_hsnews",
+      "y": 90
+    },
+    "facing=south": {
+      "model": "beautifuldecor:block/painting_hsnews",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "beautifuldecor:block/painting_hsnews",
+      "y": 270
+    }
+  }
+}
