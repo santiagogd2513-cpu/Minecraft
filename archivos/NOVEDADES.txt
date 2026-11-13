@@ -1,3 +1,10 @@
+## 78
+🚀 Muchos archivos chiquitos, mucho más rápido
+- Hacia y desde SMB, WebDAV y el celular, los archivos chiquitos se copian varios a la vez (hasta 6). En FTP se respeta el límite de conexiones de cada servidor: con la Xbox 360 (una sola) sigue igual.
+- Los archivos chiquitos hacia carpetas de red se escriben directo, sin archivo temporal, y se verifican por tamaño. Los grandes siguen con la verificación completa de siempre.
+- En el celular, los archivos chiquitos ya no se fuerzan al disco uno por uno, sino todos juntos al terminar.
+- WebDAV ya no lista toda la carpeta por cada archivo.
+
 ## 77
 🌐 WebDAV y carpetas de red (SMB)
 - En Inicio → Nube y red → «Añadir servidor o carpeta de red» eliges entre FTP, WebDAV y carpeta de red (SMB).

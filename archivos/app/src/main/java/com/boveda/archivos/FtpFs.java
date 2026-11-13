@@ -305,6 +305,11 @@ final class FtpFs implements Fs {
     }
 
     @Override
+    public int maxParallel() {
+        return Math.max(1, server.maxConnections);
+    }
+
+    @Override
     public String key(String path) {
         return "ftp:" + server.id;
     }

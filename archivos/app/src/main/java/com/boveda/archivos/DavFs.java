@@ -41,7 +41,7 @@ final class DavFs implements Fs {
     private final NetServers.Server server;
     private final String root;
     private final File cacheDir;
-    private final OkHttpClient http;
+    private final OkHttpClient http, noRedirect;
     private final HttpUrl base;
     private final String auth;
     private final Map<String, Object[]> cache = new HashMap<>();   // carpeta → {hora, lista}
@@ -80,6 +80,7 @@ final class DavFs implements Fs {
             }
         }
         http = b.build();
+        noRedirect = http.newBuilder().followRedirects(false).followSslRedirects(false).build();
     }
 
     // ------------------------------------------------------------------ direcciones
@@ -116,6 +117,16 @@ final class DavFs implements Fs {
         }
     }
 
+    private Response execNoRedirect(Request r) throws IOException {
+        try {
+            return noRedirect.newCall(r).execute();
+        } catch (javax.net.ssl.SSLException e) {
+            throw new IOException(L.t("No se pudo hacer la conexión segura. Si el servidor es tuyo y usa un certificado propio, activa «Aceptar certificado no confiable» en sus ajustes."), e);
+        } catch (java.net.UnknownHostException e) {
+            throw new IOException(L.t("No encuentro el servidor ") + base.host(), e);
+        }
+    }
+
     private static IOException fail(Response r, String what) {
         int c = r.code();
         String m = c == 401 ? L.t("Usuario o contraseña incorrectos")
@@ -139,9 +150,27 @@ final class DavFs implements Fs {
     }
 
     private List<Item> propfind(String path, boolean dir, int depth) throws IOException {
-        Request r = req(url(path, dir)).method("PROPFIND", RequestBody.create(PROPFIND, MediaType.parse("application/xml")))
-                .header("Depth", String.valueOf(depth)).build();
-        try (Response resp = exec(r)) {
+        HttpUrl target = url(path, dir);
+        Response first = null;
+        // PROPFIND no se puede dejar en manos de OkHttp: en una redirección lo cambiaría por GET. Se sigue a mano.
+        for (int hop = 0; hop < 4; hop++) {
+            Request r = req(target).method("PROPFIND", RequestBody.create(PROPFIND, MediaType.parse("application/xml")))
+                    .header("Depth", String.valueOf(depth)).build();
+            Response rr = execNoRedirect(r);
+            int c = rr.code();
+            String loc = rr.header("Location");
+            if ((c == 301 || c == 302 || c == 307 || c == 308) && loc != null) {
+                HttpUrl next = rr.request().url().resolve(loc);
+                rr.close();
+                if (next == null) throw new IOException(L.t("El servidor mandó a una dirección que no entiendo"));
+                target = next;
+                continue;
+            }
+            first = rr;
+            break;
+        }
+        if (first == null) throw new IOException(L.t("El servidor da demasiadas vueltas al pedir esta carpeta"));
+        try (Response resp = first) {
             if (resp.code() == 404) throw new NotFound();
             if (resp.code() != 207 && resp.code() != 200) throw fail(resp, L.t("No pude leer la carpeta"));
             final List<Item> items = new ArrayList<>();
@@ -282,19 +311,18 @@ final class DavFs implements Fs {
         return list(dir);
     }
 
-    /** Se busca en la lista de la carpeta de arriba (una sola consulta, y sirve para todos los servidores). */
+    /** Una consulta directa por archivo (no se lista toda la carpeta cada vez: con miles de archivos sería eterno). */
     @Override
     public Entry stat(String path) throws IOException {
         if (path.equals(root) || segments(path).isEmpty()) return new Entry(path, server.name, true, 0, 0);
-        String parent = Paths.parent(path), name = Paths.name(path);
         try {
-            for (Entry e : cachedList(parent)) if (e.name.equals(name)) return e;
-        } catch (IOException e) {
-            String m = e.getMessage();
-            if (m != null && m.contains("ya no existe")) return null;
-            throw e;
+            List<Item> items = propfind(path, false, 0);
+            if (items.isEmpty()) return null;
+            Item it = items.get(0);
+            return new Entry(path, Paths.name(path), it.dir, it.dir ? 0 : it.size, it.time);
+        } catch (NotFound e) {
+            return null;
         }
-        return null;
     }
 
     @Override
@@ -400,6 +428,11 @@ final class DavFs implements Fs {
     @Override
     public void setModified(String path, long time) {
         // WebDAV no deja cambiar la fecha de forma estándar: se queda la que pone el servidor
+    }
+
+    @Override
+    public int maxParallel() {
+        return 6;
     }
 
     @Override

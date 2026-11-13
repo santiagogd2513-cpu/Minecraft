@@ -304,6 +304,11 @@ final class SmbFs implements Fs {
     }
 
     @Override
+    public int maxParallel() {
+        return 6;
+    }
+
+    @Override
     public String key(String path) {
         return "smb:" + server.id;
     }

@@ -65,6 +65,7 @@ final class TransferEngine {
         volatile String note;
         /** Para «Deshacer»: lo movido {antes, ahora} y lo que esta tarea creó. */
         volatile boolean noUndo;
+        volatile boolean needSync;
         final List<String[]> undoMoves = new ArrayList<>();
         final List<String> undoCreated = new ArrayList<>();
 
@@ -342,6 +343,14 @@ final class TransferEngine {
                 fs(s).delete(s);
             }
         }
+        if (j.needSync) {
+            // los archivos chiquitos no se forzaron uno por uno: se asienta todo junto una vez
+            phase(j, L.t("Guardando en la memoria (puede tardar)"));
+            try {
+                android.system.Os.sync();
+            } catch (Throwable ignored) {
+            }
+        }
     }
 
     /** Ruta final en el destino según la regla de choques de nombre; null = saltar. */
@@ -397,35 +406,114 @@ final class TransferEngine {
         Fs df = fs(dst);
         if (e.dir) {
             df.mkdir(dst);
-            j.doneItems++;
+            addItem(j);
+            int par = Math.min(sf.maxParallel(), df.maxParallel());
+            List<String[]> smalls = new ArrayList<>();   // {origen, destino} de los archivos chiquitos
+            List<Entry> smallEntries = new ArrayList<>();
+            java.util.Set<String> taken = new java.util.HashSet<>();
             for (Entry k : sf.list(src)) {
                 String kt = Paths.join(dst, k.name);
                 Entry ex = df.stat(kt);
                 if (ex != null && !(k.dir && ex.dir)) {
                     if (j.conflict == Conflict.SKIP) {
-                        j.doneBytes += k.dir ? 0 : k.size;
+                        addBytes(j, k.dir ? 0 : k.size);
                         continue;
                     }
                     if (j.conflict == Conflict.KEEP_BOTH) kt = uniqueName(df, kt);
                 }
-                copyTree(j, k.path, kt);
+                // dos de estos no pueden terminar con el mismo nombre
+                while (!taken.add(kt)) kt = uniqueName(df, kt + "_");
+                if (par > 1 && !k.dir && k.size <= SMALL) {
+                    smalls.add(new String[]{k.path, kt});
+                    smallEntries.add(k);
+                } else {
+                    copyTree(j, k.path, kt);
+                }
             }
+            if (!smalls.isEmpty()) copySmallParallel(j, sf, df, smallEntries, smalls, par);
             df.setModified(dst, e.modified);
         } else {
             copyFile(j, sf, e, df, dst);
-            j.doneItems++;
+            addItem(j);
         }
         changed(true);
+    }
+
+    /** Archivos hasta este tamaño se copian varios a la vez cuando los dos lados lo aguantan. */
+    private static final long SMALL = 2L * 1024 * 1024;
+
+    private static void addBytes(Job j, long n) {
+        synchronized (j) {
+            j.doneBytes += n;
+        }
+    }
+
+    private static void addItem(Job j) {
+        synchronized (j) {
+            j.doneItems++;
+        }
+    }
+
+    /** Copia los archivos chiquitos de una carpeta con varios hilos. Si uno falla, los demás no empiezan y se avisa del primer error. */
+    private void copySmallParallel(Job j, Fs sf, Fs df, List<Entry> entries, List<String[]> targets, int par) throws IOException {
+        java.util.concurrent.ExecutorService pool = java.util.concurrent.Executors.newFixedThreadPool(Math.min(par, entries.size()));
+        java.util.concurrent.atomic.AtomicBoolean failed = new java.util.concurrent.atomic.AtomicBoolean(false);
+        List<java.util.concurrent.Future<?>> fs = new ArrayList<>();
+        try {
+            for (int i = 0; i < entries.size(); i++) {
+                final Entry en = entries.get(i);
+                final String to = targets.get(i)[1];
+                fs.add(pool.submit(() -> {
+                    if (failed.get()) return null;
+                    try {
+                        check(j);
+                        copyFile(j, sf, en, df, to);
+                        addItem(j);
+                        changed(true);
+                    } catch (IOException | RuntimeException ex) {
+                        failed.set(true);
+                        throw ex;
+                    }
+                    return null;
+                }));
+            }
+            IOException first = null;
+            for (java.util.concurrent.Future<?> f : fs) {
+                try {
+                    f.get();
+                } catch (InterruptedException ie) {
+                    failed.set(true);
+                    if (first == null) first = new Cancelled();
+                } catch (java.util.concurrent.ExecutionException ee) {
+                    failed.set(true);
+                    Throwable c = ee.getCause();
+                    if (first == null || (c instanceof Cancelled && !(first instanceof Cancelled))) {
+                        if (c instanceof IOException io) first = (first instanceof Cancelled) ? first : io;
+                        else if (first == null) first = new IOException(String.valueOf(c));
+                    }
+                }
+            }
+            if (first != null) throw first;
+        } finally {
+            failed.set(true);
+            pool.shutdownNow();
+        }
     }
 
     private void copyFile(Job j, Fs sf, Entry src, Fs df, String dst) throws IOException {
         j.current = src.name;
         phase(j, j.kind == Kind.MOVE ? L.t("Moviendo") : L.t("Copiando"));
         String tmp = Paths.join(Paths.parent(dst), "." + Paths.name(dst) + ".boveda-parte");
-        long startBytes = j.doneBytes;
+        // carpetas de red y archivos chiquitos: se escribe directo si no existe nada con ese nombre (menos viajes por archivo)
+        if ((df instanceof SmbFs || df instanceof DavFs) && src.size <= QUICK) {
+            if (df.stat(dst) == null) {
+                copyDirect(j, sf, src, df, dst);
+                return;
+            }
+        }
         IOException last = null;
         for (int attempt = 0; attempt < 2; attempt++) {
-            j.doneBytes = startBytes;
+            long attemptBytes = 0;
             try {
                 if (df.stat(tmp) != null) df.delete(tmp);
                 CRC32 crc = new CRC32();
@@ -439,11 +527,16 @@ final class TransferEngine {
                         out.write(buf, 0, r);
                         crc.update(buf, 0, r);
                         written += r;
-                        j.doneBytes += r;
+                        attemptBytes += r;
+                        addBytes(j, r);
                     }
                     out.flush();
-                    phase(j, L.t("Guardando en la memoria (puede tardar)"));
-                    sync(out);
+                    if (src.size > FSYNC_ABOVE) {
+                        phase(j, L.t("Guardando en la memoria (puede tardar)"));
+                        sync(out);
+                    } else {
+                        j.needSync = true;   // los chiquitos se asientan juntos al final
+                    }
                 }
                 if (written != src.size && src.size > 0) throw new IOException(L.t("El tamaño no coincide al copiar ") + src.name);
                 if (prefs.verify()) {
@@ -465,7 +558,51 @@ final class TransferEngine {
                 throw c;
             } catch (IOException e) {
                 last = e;
+                addBytes(j, -attemptBytes);
                 cleanup(df, tmp);
+            }
+        }
+        throw last;
+    }
+
+    /** Hasta este tamaño, hacia SMB o WebDAV, se escribe sin archivo temporal y se verifica por tamaño. */
+    private static final long QUICK = 256L * 1024;
+    /** Por debajo de este tamaño no se fuerza el disco archivo por archivo: se hace una vez al terminar. */
+    private static final long FSYNC_ABOVE = 1024L * 1024;
+
+    /** Archivo chiquito hacia una carpeta de red: escribe directo, comprueba el tamaño y, si algo falla, borra lo que quedó a medias. */
+    private void copyDirect(Job j, Fs sf, Entry src, Fs df, String dst) throws IOException {
+        IOException last = null;
+        for (int attempt = 0; attempt < 2; attempt++) {
+            long attemptBytes = 0;
+            try {
+                long written = 0;
+                try (InputStream in = sf.in(src.path); OutputStream out = df.out(dst)) {
+                    byte[] buf = new byte[(int) Math.max(8192, Math.min(src.size + 1, 262144))];
+                    int r;
+                    while ((r = in.read(buf)) >= 0) {
+                        check(j);
+                        if (r == 0) continue;
+                        out.write(buf, 0, r);
+                        written += r;
+                        attemptBytes += r;
+                        addBytes(j, r);
+                    }
+                    out.flush();
+                }
+                if (written != src.size && src.size > 0) throw new IOException(L.t("El tamaño no coincide al copiar ") + src.name);
+                if (prefs.verify()) {
+                    Entry back = df.stat(dst);
+                    if (back == null || back.size != written) throw new IOException(L.t("La verificación falló en ") + src.name);
+                }
+                return;
+            } catch (Cancelled c) {
+                cleanup(df, dst);
+                throw c;
+            } catch (IOException e) {
+                last = e;
+                addBytes(j, -attemptBytes);
+                cleanup(df, dst);
             }
         }
         throw last;

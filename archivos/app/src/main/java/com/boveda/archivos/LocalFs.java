@@ -13,6 +13,11 @@ import java.util.List;
 
 /** Archivos normales (con el permiso de acceso a todos los archivos). */
 final class LocalFs implements Fs {
+    @Override
+    public int maxParallel() {
+        return 4;
+    }
+
     static final LocalFs I = new LocalFs();
 
     @Override

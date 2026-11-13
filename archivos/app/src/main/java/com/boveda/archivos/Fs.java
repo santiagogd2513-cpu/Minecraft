@@ -9,6 +9,11 @@ import java.util.List;
 
 /** Una forma de llegar a los archivos (normal, selector del sistema o Shizuku). Todo con rutas absolutas. */
 interface Fs {
+    /** Cuántas operaciones a la vez aguanta bien (para copiar muchos archivos chiquitos en paralelo). */
+    default int maxParallel() {
+        return 1;
+    }
+
     List<Entry> list(String dir) throws IOException;
 
     /** null si no existe. */
