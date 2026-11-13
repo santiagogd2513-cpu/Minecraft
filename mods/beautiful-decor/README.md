@@ -2,6 +2,10 @@
 
 Mod de decoración para **Minecraft 1.20.1** / **Forge 47.4.5**.
 
+## V6.16.6
+- Piloto automático: si al encender el tren ya está en una parada, cuenta como llegada (espera, abre puertas y sale hacia la siguiente). Antes se quedaba quieto y se apagaba a los 4 s con «se quedó sin vía».
+- Ya no se apaga por «sin vía» mientras vea la parada de destino.
+
 ## V6.16.5
 - Piloto automático: aviso en pantalla (cada 2 s, solo a quien sostiene el Mando de trenes vinculado a ese tren) de lo que está haciendo: en la parada (cuánto falta para salir), rumbo a la parada (metros), cargando la vía o destino lejano.
 

@@ -291,7 +291,8 @@ public final class TrainRoute {
         double decel = TrainAuto.decel(empty, total);
         double v = vTick * 20.0;
         double tv;
-        boolean haveTarget = this.hasDist && this.traveled >= MIN_TRAVEL;
+        // V6.16.6: si el tren acaba de encenderse (from < 0) y la parada ya está delante, vale como llegada aunque no haya recorrido MIN_TRAVEL
+        boolean haveTarget = this.hasDist && (this.traveled >= MIN_TRAVEL || this.from < 0);
         if (haveTarget) {
             tv = TrainAuto.targetSpeed(this.dist, cruise, decel);
         } else {
@@ -323,7 +324,7 @@ public final class TrainRoute {
             return out;
         }
         // ¿se quedó sin vía?
-        if (!haveTarget && this.known < TrainAuto.SAFE_GAP + 4.0 && vTick < 0.003 && !this.waitingChunks) {
+        if (!haveTarget && !this.hasDist && this.known < TrainAuto.SAFE_GAP + 4.0 && vTick < 0.003 && !this.waitingChunks) {
             if (++this.stuckTicks > STUCK_TICKS) {
                 this.on = false;
                 this.invalidate();

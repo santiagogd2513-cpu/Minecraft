@@ -1,3 +1,8 @@
+PARCHE V6.16.6
+==============
+- AUTOMÁTICO: si al encenderlo el tren ya está en una parada, cuenta como llegada (espera, abre puertas y sale a la siguiente). Antes se quedaba quieto y se apagaba a los 4 s con «se quedó sin vía».
+- Ya no se apaga por «sin vía» mientras vea la parada de destino.
+
 PARCHE V6.16.5
 ==============
 - AVISO DEL AUTOMÁTICO: con un tren en automático, quien sostiene el Mando de trenes vinculado a ese tren ve arriba qué hace (en parada y en cuántos segundos sale, rumbo a la parada y cuántos metros faltan, o cargando la vía).
