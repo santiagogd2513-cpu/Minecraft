@@ -801,6 +801,21 @@ final class TransferEngine {
     }
 
     private void extract(Job j) throws IOException {
+        Fs ef = fs(j.dest);
+        boolean existed = ef.stat(j.dest) != null;
+        try {
+            extractBody(j);
+        } catch (IOException | RuntimeException e) {
+            // si la carpeta la creó este trabajo y quedó vacía, no se deja de basura
+            try {
+                if (!existed && ef.stat(j.dest) != null && ef.list(j.dest).isEmpty()) ef.delete(j.dest);
+            } catch (IOException ignored) {
+            }
+            throw e;
+        }
+    }
+
+    private void extractBody(Job j) throws IOException {
         String arch = j.sources.get(0);
         Archive.Type type = Archive.type(Paths.name(arch));
         if (type == null || Archive.isRar(Paths.name(arch))) throw new IOException(L.t("Formato no soportado"));

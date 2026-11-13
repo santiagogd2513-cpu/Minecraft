@@ -1,3 +1,7 @@
+## 66
+🧹 Extraer: sin carpetas vacías sobrantes
+- Si una extracción falla (por ejemplo, contraseña mala) y la carpeta destino la creó ella misma, ahora se borra si quedó vacía.
+
 ## 65
 ♻️ Reducir peso: contraseña y avisos
 - Si el .zip tiene contraseña, al borrar duplicados te pregunta: «Cancelar», «Quitar contraseña» o «Dejar contraseña» para el archivo nuevo.
