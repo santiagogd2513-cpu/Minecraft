@@ -214,6 +214,7 @@
   "message.beautifuldecor.radiola_off": "Radiola apagada",
   "message.beautifuldecor.phones_song": "Audífonos: canción %s",
   "message.beautifuldecor.phones_off": "Audífonos apagados",
+  "message.beautifuldecor.train_max_cars": "Este tren ya tiene el máximo de %s coches",
   "itemGroup.beautifuldecor_parts": "Decoración Hermosa Parts",
   "item.beautifuldecor.wooden_table": "Mesa de Madera",
   "item.beautifuldecor.wooden_chair": "Silla de Madera",

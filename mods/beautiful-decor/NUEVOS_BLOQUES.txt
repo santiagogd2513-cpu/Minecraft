@@ -1,3 +1,8 @@
+PARCHE V7.2.1
+=============
+- ENGANCHE RÁPIDO: con un coche de tren en la mano, clic derecho en cualquier coche del tren (la cabina, por ejemplo) y el coche se pone detrás del último, sin tener que apuntar a la vía. Si el tren ya tiene vagones, va detrás del último.
+- Máximo de 500 coches por tren (también al colocar sobre la vía); al llegar al tope avisa.
+
 PARCHE V7.2.0
 =============
 - MARCA SPOTIFLY (parodia de Spotify): anuncio con video y sonido en las pantallas (un oyente aburrido, un avioncito de papel que despega de sus audífonos y una ciudad que enciende ventanas y baila), póster y Cartel Spotifly (cuadro con el logo).

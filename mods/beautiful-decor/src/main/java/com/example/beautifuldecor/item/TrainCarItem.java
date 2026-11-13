@@ -104,6 +104,9 @@ public class TrainCarItem extends Item {
             if (!fits(front, wb, lk)) {
                 return fail(player, "message.beautifuldecor.train_no_track");
             }
+            if (bestAnchor.trainLength() >= TrainCarEntity.MAX_TRAIN_CARS) {
+                return fail(player, "message.beautifuldecor.train_max_cars");
+            }
         } else {
             RailPath.Shape shape = FreightRailBlock.pathShape(level.getBlockState(pos));
             double[] t = new double[2];
@@ -128,6 +131,46 @@ public class TrainCarItem extends Item {
         if (player == null || !player.getAbilities().instabuild) {
             context.getItemInHand().shrink(1);
         }
+        return InteractionResult.CONSUME;
+    }
+
+    /** V7.2.1: clic en un coche del tren con este coche en la mano: se pone detrás del último coche del tren (máximo 500). */
+    public InteractionResult attachToTrain(Player player, TrainCarEntity clicked, net.minecraft.world.item.ItemStack stack) {
+        if (!(clicked.level() instanceof ServerLevel server) || !clicked.isPlaced()) {
+            return InteractionResult.PASS;
+        }
+        if (clicked.variant().family != this.variant.family) {
+            return fail(player, "message.beautifuldecor.train_wrong_rail");
+        }
+        if (clicked.trainLength() >= TrainCarEntity.MAX_TRAIN_CARS) {
+            if (player != null) {
+                player.displayClientMessage(Component.translatable("message.beautifuldecor.train_max_cars", TrainCarEntity.MAX_TRAIN_CARS), true);
+            }
+            return InteractionResult.FAIL;
+        }
+        TrainCarEntity car = ModEntities.TRAIN_CAR.get().create(server);
+        if (car == null) {
+            return InteractionResult.FAIL;
+        }
+        car.setVariant(this.variant);
+        if (this.variant.isSteam()) {
+            car.addCargo(new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.COAL, 128));
+        }
+        VehiclePaint.restore(car, stack);
+        RailPath.Lookup lk = car.railLookup();
+        TrainCarEntity tail = clicked.tailOfTrain();
+        RailPath.Cursor front = tail.rearCursor(lk).copy();
+        front.advance(-TrainCarEntity.stride(tail.variant(), this.variant), lk);
+        if (!fits(front, this.variant.wheelbase, lk)) {
+            return fail(player, "message.beautifuldecor.train_no_track");
+        }
+        car.placeOn(front);
+        server.addFreshEntity(car);
+        tail.coupleBehind(car);
+        if (player == null || !player.getAbilities().instabuild) {
+            stack.shrink(1);
+        }
+        server.playSound(null, car.getX(), car.getY() + 1.0, car.getZ(), net.minecraft.sounds.SoundEvents.ANVIL_PLACE, net.minecraft.sounds.SoundSource.NEUTRAL, 0.6f, 1.4f);
         return InteractionResult.CONSUME;
     }
 

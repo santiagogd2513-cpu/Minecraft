@@ -2,6 +2,10 @@
 
 Mod de decoración para **Minecraft 1.20.1** / **Forge 47.4.5**.
 
+## V7.2.1
+- ENGANCHE RÁPIDO: con un coche de tren en la mano, clic derecho en cualquier coche del tren (la cabina, por ejemplo) y el coche se pone detrás del último, sin tener que apuntar a la vía. Si el tren ya tiene vagones, va detrás del último.
+- Máximo de 500 coches por tren (también al colocar sobre la vía); al llegar al tope avisa.
+
 ## V7.2.0
 - MARCA SPOTIFLY (parodia de Spotify): anuncio con video y sonido en las pantallas (un oyente aburrido, un avioncito de papel que despega de sus audífonos y una ciudad que enciende ventanas y baila), póster y Cartel Spotifly (cuadro con el logo).
 - Radiola Spotifly: clic derecho cambia apagada → canción 1 → 2 → 3 → apagada (3 canciones de 8 bits). Suena para los jugadores cercanos y se corta al apagarla o romperla.

@@ -160,6 +160,8 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
         return ahead.inset() + COUPLING_GAP + behind.inset();
     }
     private static final int MAX_CARS = 4096;
+    /** V7.2.1: máximo de coches por tren. */
+    public static final int MAX_TRAIN_CARS = 500;
     /** Cada pasajero suma esto al peso (kg). */
     public static final double PASSENGER_KG = 80.0;
     private static final int INPUT_TIMEOUT = 10;
@@ -269,6 +271,17 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
 
     private float doorAnim;
     private float doorAnimO;
+
+    /** V7.2.1: cuántos coches tiene el tren de este coche (los que están cargados). */
+    public int trainLength() {
+        return this.wholeTrain().size();
+    }
+
+    /** V7.2.1: el último coche del tren de este coche. */
+    public TrainCarEntity tailOfTrain() {
+        List<TrainCarEntity> all = this.wholeTrain();
+        return all.get(all.size() - 1);
+    }
 
     /** Todos los coches del tren, de la cabeza a la cola. */
     private List<TrainCarEntity> wholeTrain() {
@@ -573,6 +586,10 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
         boolean client = this.level().isClientSide;
         ItemStack held = player.getItemInHand(hand);
         Variant v = this.variant();
+        // ---- V7.2.1: con un coche de tren en la mano, un clic en el tren lo engancha al final (detrás del último coche)
+        if (held.getItem() instanceof com.example.beautifuldecor.item.TrainCarItem carItem) {
+            return client ? InteractionResult.SUCCESS : carItem.attachToTrain(player, this, held);
+        }
         // ---- V6.16.0: botón de las puertas en la cabina
         double[] doorBtn = doorButton(v.id);
         if (hand == InteractionHand.MAIN_HAND && v.isLoco() && doorBtn != null
