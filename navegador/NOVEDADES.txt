@@ -1,3 +1,8 @@
+## 28
+🔗 Enlaces desde otras apps
+- Nocturna ahora también se ofrece como navegador cuando una app (Reddit, Instagram, Telegram…) abre los enlaces en una «pestaña personalizada». Antes esas apps la ignoraban aunque fuera tu navegador predeterminado.
+- Si una app todavía abre los enlaces dentro de sí misma, busca en sus ajustes «abrir enlaces en el navegador predeterminado».
+
 ## 27
 ⭐ Menú de Forja Estudios
 - Al tocar «Forja Estudios» ahora sale un menú con tres opciones: Contáctanos (muy pronto), Calificar apps (abre la página web, ya en la ficha de esta app) y Acerca del estudio.

@@ -52,6 +52,16 @@
             </intent-filter>
         </activity>
 
+        <!-- Muchas apps (Reddit, Instagram, Telegram…) no usan «abrir con…»: piden una «pestaña personalizada» al navegador
+             predeterminado, y solo lo hacen con los que declaran este servicio. Con él, Nocturna sí es una opción. -->
+        <service
+            android:name=".CustomTabsHost"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.support.customtabs.action.CustomTabsService" />
+            </intent-filter>
+        </service>
+
         <!-- el ícono de la app en el inicio: uno por temporada, solo uno prendido (Icons.java) -->
         <activity-alias
             android:name=".Inicio"

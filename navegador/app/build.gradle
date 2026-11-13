@@ -40,4 +40,6 @@ android {
 dependencies {
     implementation 'androidx.webkit:webkit:1.12.1'
     implementation 'androidx.core:core:1.13.1'
+    // para que otras apps (Reddit, Instagram…) puedan abrir los enlaces con Nocturna como «pestaña personalizada»
+    implementation 'androidx.browser:browser:1.8.0'
 }
