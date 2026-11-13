@@ -1,3 +1,6 @@
+## 10
+🔧 Verificar: el texto ya no dice que Arca «solo lee» (ahora también puede escribir en memorias USB); dice que verificar no cambia nada.
+
 ## 9
 ⬆️ Escribir en la memoria USB (prueba)
 - Nuevo botón «Importar» en el explorador: eliges un paquete del celular (una partida, un perfil…) y Arca lo guarda en la memoria en la carpeta correcta, creando sola las carpetas que falten (Content/perfil/juego/tipo).

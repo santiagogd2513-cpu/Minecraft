@@ -39,7 +39,7 @@ final class Aviso {
             return new String[]{"Formato desconocido", "Esa unidad no tiene el formato de una Xbox 360 (XTAF). Si la usaste en un computador, Arca no la puede leer."};
         }
         if (low.contains("incompleto") || low.contains("dañad") || low.contains("tabla")) {
-            return new String[]{"Archivo o tabla dañados", "Parte de los datos están corruptos. La consola tampoco podría abrirlos. Arca solo lee, así que no se empeoró nada."};
+            return new String[]{"Archivo o tabla dañados", "Parte de los datos están corruptos. La consola tampoco podría abrirlos. Verificar solo lee: no cambia nada."};
         }
         if (low.contains("permiso") || low.contains("no dejó abrir") || low.contains("otra app")) {
             return new String[]{"No pude abrir la unidad", "Android no me dio acceso o hay otra app usándola. Cierra las otras apps de archivos y vuelve a darle permiso."};
