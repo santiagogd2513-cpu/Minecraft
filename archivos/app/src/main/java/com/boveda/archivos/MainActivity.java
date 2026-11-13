@@ -3334,8 +3334,8 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         t.setEllipsize(null);
         b.addView(t, new LinearLayout.LayoutParams(-1, -2));
         // con letra grande, el texto se mide y se achica hasta que quepa entero (nunca «Compr / imir» ni «Comprimi»)
-        b.addOnLayoutChangeListener((vw, l, tp, r, bt, ol, ot, orr, ob) -> {
-            int avail = (r - l) - dp(4);
+        b.addOnLayoutChangeListener((vw, left, top, right, bottom, oldL, oldT, oldR, oldB) -> {
+            int avail = (right - left) - dp(4);
             if (avail <= 0) return;
             float size = 11f * getResources().getDisplayMetrics().scaledDensity / getResources().getDisplayMetrics().density;
             t.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, size);
