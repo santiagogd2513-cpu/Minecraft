@@ -1,3 +1,6 @@
+## 76
+🔧 «Comprimir» ya no se corta: el texto de los botones de abajo se mide y se achica hasta que quepa entero, con cualquier tamaño de letra.
+
 ## 75
 ✨ Súper animaciones: tanda 2
 - Selección: ahora el brillo viaja como una ola de una fila a la siguiente.

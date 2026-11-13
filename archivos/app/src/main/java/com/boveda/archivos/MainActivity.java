@@ -3330,9 +3330,20 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         t.setPadding(0, dp(4), 0, 0);
         t.setGravity(Gravity.CENTER);
         t.setMaxLines(1);
-        // con letra grande, la palabra se achica sola en vez de partirse («Compr / imir»)
-        t.setAutoSizeTextTypeUniformWithConfiguration(7, 11, 1, android.util.TypedValue.COMPLEX_UNIT_SP);
+        t.setSingleLine(true);
+        t.setEllipsize(null);
         b.addView(t, new LinearLayout.LayoutParams(-1, -2));
+        // con letra grande, el texto se mide y se achica hasta que quepa entero (nunca «Compr / imir» ni «Comprimi»)
+        b.addOnLayoutChangeListener((vw, l, tp, r, bt, ol, ot, orr, ob) -> {
+            int avail = (r - l) - dp(4);
+            if (avail <= 0) return;
+            float size = 11f * getResources().getDisplayMetrics().scaledDensity / getResources().getDisplayMetrics().density;
+            t.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, size);
+            while (t.getPaint().measureText(label) > avail && size > 6f) {
+                size -= 0.5f;
+                t.setTextSize(android.util.TypedValue.COMPLEX_UNIT_SP, size);
+            }
+        });
         b.setOnClickListener(v -> r.run());
         b.setLayoutParams(Ui.weight(1));
         return b;
