@@ -1,3 +1,10 @@
+## 59
+🗜️ Nuevo menú de comprimir
+- Elige nombre, formato (.zip, .7z, .tar.gz, .tar.xz) y nivel: Sin compresión, Rápida, Normal, Alta o Ultra.
+- Contraseña opcional (cifrado AES-256) en .zip y .7z, con ojito para verla y repetición para no equivocarte.
+- «Eliminar el original» empieza siempre apagado: si lo activas, Bóveda comprueba que el archivo nuevo quedó bien y manda los originales a la papelera.
+- Lo que un formato no puede hacer se ve apagado con un cartel claro: con contraseña los nombres de los archivos se siguen viendo, y «sólido» solo existe en .tar.gz y .tar.xz.
+
 ## 58
 🧩 Identificar aplicaciones
 - En la pantalla de inicio, sección «Análisis y seguridad»: «Identificar aplicaciones» lista todas las apps del celular en dos pestañas, «Usuario» (WhatsApp, Instagram, Minecraft…) y «Sistema» (Android System y demás), con ícono, nombre, paquete, peso del APK y un buscador.

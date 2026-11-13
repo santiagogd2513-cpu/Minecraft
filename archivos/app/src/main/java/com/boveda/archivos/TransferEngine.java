@@ -59,6 +59,10 @@ final class TransferEngine {
         List<MediaFire.Item> cloudItems = new ArrayList<>();
         String cloudFolder;
         String cloudFolderName = "MediaFire";
+        /** Al comprimir: formato, nivel, contraseña… (null = .zip normal de siempre). */
+        CompressOptions comp;
+        /** Un aviso al terminar (por ejemplo, que un original no se pudo mandar a la papelera). */
+        volatile String note;
 
         Job(Kind kind, List<String> sources, String dest, Conflict conflict) {
             this.kind = kind;
@@ -182,6 +186,13 @@ final class TransferEngine {
         Job j = new Job(Kind.EXTRACT, java.util.Collections.singletonList(archive), dest, Conflict.REPLACE);
         j.picks = new ArrayList<>(picks);
         j.innerBase = innerBase == null ? "" : innerBase;
+        return submit(j);
+    }
+
+    /** Comprimir con las opciones del menú nuevo. */
+    Job submitCompress(List<String> sources, String dest, CompressOptions opts) {
+        Job j = new Job(Kind.ZIP, sources, dest, Conflict.REPLACE);
+        j.comp = opts;
         return submit(j);
     }
 
@@ -482,55 +493,298 @@ final class TransferEngine {
 
     // ------------------------------------------------------------------ comprimir / extraer
 
+    /** Adonde van los archivos al comprimir: un formato = una forma de escribir carpetas y archivos. */
+    private interface Sink {
+        void dir(String name, long modified) throws IOException;
+
+        /** Abre un archivo nuevo adentro; se escribe en el OutputStream y se cierra. */
+        OutputStream file(String name, long size, long modified) throws IOException;
+    }
+
     private void zip(Job j) throws IOException {
+        CompressOptions o = j.comp == null ? new CompressOptions() : j.comp;
         for (String s : j.sources) measure(j, s);
         Fs df = fs(j.dest);
         String tmp = Paths.join(Paths.parent(j.dest), "." + Paths.name(j.dest) + ".boveda-parte");
+        java.io.File tmp7z = null;
         try {
-            try (OutputStream raw = df.out(tmp); ZipOutputStream zo = new ZipOutputStream(new java.io.BufferedOutputStream(raw, 1 << 20))) {
-                zo.setLevel(6);
-                for (String s : j.sources) addToZip(j, zo, s, Paths.name(s));
-                zo.finish();
-                zo.flush();
-                sync(raw);
+            if (o.format == CompressOptions.Format.SEVEN_Z) {
+                // el .7z necesita poder volver atrás en el archivo: se arma en la caché y luego se pasa a su sitio
+                tmp7z = java.io.File.createTempFile("boveda-7z", ".tmp", app.getCacheDir());
+                writeSevenZ(j, o, tmp7z);
+                j.phase = L.t("Guardando el archivo…");
+                try (InputStream in = new java.io.FileInputStream(tmp7z); OutputStream raw = df.out(tmp)) {
+                    byte[] buf = new byte[1 << 20];
+                    int r;
+                    while ((r = in.read(buf)) >= 0) {
+                        check(j);
+                        raw.write(buf, 0, r);
+                    }
+                    raw.flush();
+                    sync(raw);
+                }
+            } else {
+                try (OutputStream raw = df.out(tmp)) {
+                    writeStream(j, o, new java.io.BufferedOutputStream(raw, 1 << 20));
+                    sync(raw);
+                }
             }
             if (df.stat(j.dest) != null) df.delete(j.dest);
             df.rename(tmp, j.dest);
-        } catch (IOException e) {
+        } catch (IOException | RuntimeException | OutOfMemoryError e) {
             cleanup(df, tmp);
-            throw e;
+            if (e instanceof OutOfMemoryError) throw new IOException(L.t("Faltó memoria para este nivel de compresión: prueba con «Alta» o «Normal»."));
+            if (e instanceof IOException) throw (IOException) e;
+            throw new IOException(String.valueOf(e.getMessage()), e);
+        } finally {
+            if (tmp7z != null) tmp7z.delete();
+        }
+        if (o.deleteOriginal) removeOriginals(j, df);
+    }
+
+    /** .zip (con o sin contraseña), .tar.gz y .tar.xz: se escriben directo, sin pasar por un archivo intermedio. */
+    private void writeStream(Job j, CompressOptions o, OutputStream out) throws IOException {
+        switch (o.format) {
+            case ZIP -> {
+                if (o.encrypted()) {
+                    try (net.lingala.zip4j.io.outputstream.ZipOutputStream zo = new net.lingala.zip4j.io.outputstream.ZipOutputStream(out, o.password)) {
+                        net.lingala.zip4j.model.enums.CompressionLevel lv = switch (o.level) {
+                            case 1 -> net.lingala.zip4j.model.enums.CompressionLevel.FASTEST;
+                            case 3 -> net.lingala.zip4j.model.enums.CompressionLevel.MAXIMUM;
+                            case 4 -> net.lingala.zip4j.model.enums.CompressionLevel.ULTRA;
+                            default -> net.lingala.zip4j.model.enums.CompressionLevel.NORMAL;
+                        };
+                        walk(j, new Sink() {
+                            @Override
+                            public void dir(String name, long modified) throws IOException {
+                                net.lingala.zip4j.model.ZipParameters zp = zipParams(o, lv, name + "/", modified);
+                                zp.setEncryptFiles(false);
+                                zo.putNextEntry(zp);
+                                zo.closeEntry();
+                            }
+
+                            @Override
+                            public OutputStream file(String name, long size, long modified) throws IOException {
+                                zo.putNextEntry(zipParams(o, lv, name, modified));
+                                return new FilterOut(zo) {
+                                    @Override
+                                    public void close() throws IOException {
+                                        zo.closeEntry();
+                                    }
+                                };
+                            }
+                        });
+                    }
+                } else {
+                    try (ZipOutputStream zo = new ZipOutputStream(out)) {
+                        zo.setLevel(o.deflateLevel());
+                        walk(j, new Sink() {
+                            @Override
+                            public void dir(String name, long modified) throws IOException {
+                                ZipEntry ze = new ZipEntry(name + "/");
+                                ze.setTime(modified);
+                                zo.putNextEntry(ze);
+                                zo.closeEntry();
+                            }
+
+                            @Override
+                            public OutputStream file(String name, long size, long modified) throws IOException {
+                                ZipEntry ze = new ZipEntry(name);
+                                ze.setTime(modified);
+                                zo.putNextEntry(ze);
+                                return new FilterOut(zo) {
+                                    @Override
+                                    public void close() throws IOException {
+                                        zo.closeEntry();
+                                    }
+                                };
+                            }
+                        });
+                        zo.finish();
+                    }
+                }
+            }
+            default -> {
+                OutputStream comp = o.format == CompressOptions.Format.TAR_GZ
+                        ? gzip(out, o.deflateLevel())
+                        : new org.tukaani.xz.XZOutputStream(out, new org.tukaani.xz.LZMA2Options(o.lzmaPreset()));
+                try (org.apache.commons.compress.archivers.tar.TarArchiveOutputStream to = new org.apache.commons.compress.archivers.tar.TarArchiveOutputStream(comp)) {
+                    to.setLongFileMode(org.apache.commons.compress.archivers.tar.TarArchiveOutputStream.LONGFILE_POSIX);
+                    to.setBigNumberMode(org.apache.commons.compress.archivers.tar.TarArchiveOutputStream.BIGNUMBER_POSIX);
+                    walk(j, new Sink() {
+                        @Override
+                        public void dir(String name, long modified) throws IOException {
+                            org.apache.commons.compress.archivers.tar.TarArchiveEntry te = new org.apache.commons.compress.archivers.tar.TarArchiveEntry(name + "/");
+                            te.setModTime(modified);
+                            to.putArchiveEntry(te);
+                            to.closeArchiveEntry();
+                        }
+
+                        @Override
+                        public OutputStream file(String name, long size, long modified) throws IOException {
+                            org.apache.commons.compress.archivers.tar.TarArchiveEntry te = new org.apache.commons.compress.archivers.tar.TarArchiveEntry(name);
+                            te.setSize(size);
+                            te.setModTime(modified);
+                            to.putArchiveEntry(te);
+                            return new FilterOut(to) {
+                                @Override
+                                public void close() throws IOException {
+                                    to.closeArchiveEntry();
+                                }
+                            };
+                        }
+                    });
+                    to.finish();
+                }
+            }
         }
     }
 
-    private void addToZip(Job j, ZipOutputStream zo, String path, String entryName) throws IOException {
+    private static OutputStream gzip(OutputStream out, int level) throws IOException {
+        org.apache.commons.compress.compressors.gzip.GzipParameters gp = new org.apache.commons.compress.compressors.gzip.GzipParameters();
+        gp.setCompressionLevel(level);
+        return new org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream(out, gp);
+    }
+
+    private static net.lingala.zip4j.model.ZipParameters zipParams(CompressOptions o, net.lingala.zip4j.model.enums.CompressionLevel lv, String name, long modified) {
+        net.lingala.zip4j.model.ZipParameters zp = new net.lingala.zip4j.model.ZipParameters();
+        zp.setFileNameInZip(name);
+        zp.setLastModifiedFileTime(modified);
+        zp.setCompressionMethod(o.level == 0 ? net.lingala.zip4j.model.enums.CompressionMethod.STORE : net.lingala.zip4j.model.enums.CompressionMethod.DEFLATE);
+        zp.setCompressionLevel(lv);
+        zp.setEncryptFiles(true);
+        zp.setEncryptionMethod(net.lingala.zip4j.model.enums.EncryptionMethod.AES);
+        zp.setAesKeyStrength(net.lingala.zip4j.model.enums.AesKeyStrength.KEY_STRENGTH_256);
+        return zp;
+    }
+
+    /** Una salida que deja pasar los datos pero cierra solo la entrada (no todo el archivo). */
+    private abstract static class FilterOut extends OutputStream {
+        private final OutputStream target;
+
+        FilterOut(OutputStream target) {
+            this.target = target;
+        }
+
+        @Override
+        public void write(int b) throws IOException {
+            target.write(b);
+        }
+
+        @Override
+        public void write(byte[] b, int off, int len) throws IOException {
+            target.write(b, off, len);
+        }
+
+        @Override
+        public void flush() throws IOException {
+            target.flush();
+        }
+    }
+
+    private void writeSevenZ(Job j, CompressOptions o, java.io.File file) throws IOException {
+        try (org.apache.commons.compress.archivers.sevenz.SevenZOutputFile out = o.encrypted()
+                ? new org.apache.commons.compress.archivers.sevenz.SevenZOutputFile(file, o.password)
+                : new org.apache.commons.compress.archivers.sevenz.SevenZOutputFile(file)) {
+            java.util.List<org.apache.commons.compress.archivers.sevenz.SevenZMethodConfiguration> m = new ArrayList<>();
+            if (o.level == 0) {
+                m.add(new org.apache.commons.compress.archivers.sevenz.SevenZMethodConfiguration(org.apache.commons.compress.archivers.sevenz.SevenZMethod.COPY));
+            } else {
+                m.add(new org.apache.commons.compress.archivers.sevenz.SevenZMethodConfiguration(org.apache.commons.compress.archivers.sevenz.SevenZMethod.LZMA2,
+                        new org.tukaani.xz.LZMA2Options(o.lzmaPreset())));
+            }
+            out.setContentMethods(m);
+            walk(j, new Sink() {
+                @Override
+                public void dir(String name, long modified) throws IOException {
+                    org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry e = new org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry();
+                    e.setName(name + "/");
+                    e.setDirectory(true);
+                    e.setLastModifiedDate(new java.util.Date(modified));
+                    out.putArchiveEntry(e);
+                    out.closeArchiveEntry();
+                }
+
+                @Override
+                public OutputStream file(String name, long size, long modified) throws IOException {
+                    org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry e = new org.apache.commons.compress.archivers.sevenz.SevenZArchiveEntry();
+                    e.setName(name);
+                    e.setSize(size);
+                    e.setLastModifiedDate(new java.util.Date(modified));
+                    out.putArchiveEntry(e);
+                    return new OutputStream() {
+                        @Override
+                        public void write(int b) throws IOException {
+                            out.write(b);
+                        }
+
+                        @Override
+                        public void write(byte[] b, int off, int len) throws IOException {
+                            out.write(b, off, len);
+                        }
+
+                        @Override
+                        public void close() throws IOException {
+                            out.closeArchiveEntry();
+                        }
+                    };
+                }
+            });
+            out.finish();
+        }
+    }
+
+    private void walk(Job j, Sink sink) throws IOException {
+        for (String s : j.sources) addEntry(j, sink, s, Paths.name(s));
+    }
+
+    private void addEntry(Job j, Sink sink, String path, String entryName) throws IOException {
         check(j);
         Fs f = fs(path);
         Entry e = f.stat(path);
         if (e == null) return;
         if (e.dir) {
-            ZipEntry ze = new ZipEntry(entryName + "/");
-            ze.setTime(e.modified);
-            zo.putNextEntry(ze);
-            zo.closeEntry();
+            sink.dir(entryName, e.modified);
             j.doneItems++;
-            for (Entry k : f.list(path)) addToZip(j, zo, k.path, entryName + "/" + k.name);
+            for (Entry k : f.list(path)) addEntry(j, sink, k.path, entryName + "/" + k.name);
             return;
         }
         j.current = e.name;
-        ZipEntry ze = new ZipEntry(entryName);
-        ze.setTime(e.modified);
-        zo.putNextEntry(ze);
-        try (InputStream in = f.in(path)) {
+        try (OutputStream out = sink.file(entryName, e.size, e.modified); InputStream in = f.in(path)) {
             byte[] buf = new byte[1 << 20];
+            long left = e.size;
             int r;
-            while ((r = in.read(buf)) >= 0) {
+            while (left > 0 && (r = in.read(buf, 0, (int) Math.min(buf.length, left))) >= 0) {
                 check(j);
-                zo.write(buf, 0, r);
+                out.write(buf, 0, r);
+                left -= r;
                 j.doneBytes += r;
             }
+            if (left > 0) throw new IOException(L.t("«") + e.name + L.t("» cambió de tamaño mientras se comprimía"));
         }
-        zo.closeEntry();
         j.doneItems++;
+        changed(true);
+    }
+
+    /**
+     * «Eliminar original»: solo después de comprobar que el archivo nuevo se abre y tiene todo, y mandándolos a la
+     * papelera (no se borran para siempre). Si algún original no puede ir a la papelera, se deja donde está.
+     */
+    private void removeOriginals(Job j, Fs df) throws IOException {
+        Entry made = df.stat(j.dest);
+        if (made == null || made.size <= 0) throw new IOException(L.t("No borré los originales: el archivo nuevo no quedó bien."));
+        if (!j.comp.encrypted() && j.comp.format != CompressOptions.Format.TAR_XZ) {
+            // se vuelve a leer el índice del archivo nuevo y se compara con lo que se escribió
+            int found = 0;
+            for (Archive.Item it : Archive.list(app, j.dest)) found++;
+            if (found < j.totalItems) throw new IOException(L.t("No borré los originales: al revisar el archivo nuevo faltaban cosas."));
+        }
+        int kept = 0;
+        for (String s : j.sources) {
+            if (Trash.supported(s)) Trash.put(s);
+            else kept++;
+        }
+        j.note = kept == 0 ? L.t("Los originales están en la papelera.") : L.t("Algunos originales no se pudieron mandar a la papelera y se dejaron donde estaban.");
         changed(true);
     }
 

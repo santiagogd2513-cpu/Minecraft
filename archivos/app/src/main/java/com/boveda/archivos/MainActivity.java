@@ -3111,9 +3111,8 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
     private void askZip() {
         List<String> src = new ArrayList<>(selected);
         String suggested = src.size() == 1 ? stripExt(Paths.name(src.get(0))) : Paths.name(path);
-        askName(L.t("Comprimir en .zip"), suggested + ".zip", name -> {
-            String n = name.toLowerCase().endsWith(".zip") ? name : name + ".zip";
-            engine.submit(TransferEngine.Kind.ZIP, src, Paths.join(path, n), TransferEngine.Conflict.REPLACE);
+        CompressDialog.show(this, suggested, (fileName, opts) -> {
+            engine.submitCompress(src, Paths.join(path, fileName), opts);
             clearSelection();
         });
     }
