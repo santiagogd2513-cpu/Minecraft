@@ -2,6 +2,9 @@
 
 Mod de decoración para **Minecraft 1.20.1** / **Forge 47.4.5**.
 
+## V6.16.4
+- Piloto automático: aviso en pantalla (cada 2 s, a los jugadores a menos de 80 bloques) de lo que está haciendo: en la parada (cuánto falta para salir), rumbo a la parada (metros), cargando la vía o destino lejano.
+
 ## V6.16.3
 - Piloto automático: ya no lee los bloques de una estación lejana que no está cargada (antes obligaba al servidor a cargar ese chunk una y otra vez).
 

@@ -1,3 +1,7 @@
+PARCHE V6.16.4
+==============
+- AVISO DEL AUTOMÁTICO: con un tren en automático, los jugadores cercanos ven arriba qué hace (en parada y en cuántos segundos sale, rumbo a la parada y cuántos metros faltan, o cargando la vía).
+
 PARCHE V6.16.3
 ==============
 - AUTOMÁTICO CON ESTACIONES SIN CARGAR: el tren ya no obliga al servidor a cargar el chunk de la estación de destino mientras está lejos; usa la parada guardada.

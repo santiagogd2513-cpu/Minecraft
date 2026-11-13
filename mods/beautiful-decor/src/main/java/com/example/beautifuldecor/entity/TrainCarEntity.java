@@ -1115,6 +1115,14 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
             if (complete && flags == 0 && !this.emergency) {
                 auto = autoCar.route.tick(sl, this.cur.copy(), this.variant().family, this.speed, empty, total, topMs, this.variant().inset());
                 this.announce(chain, auto);
+                if (this.tickCount % 40 == 0 && this.level() instanceof ServerLevel statusLevel) {
+                    Component status = autoCar.route.status();                              // V6.16.4: aviso de lo que hace el automático
+                    for (ServerPlayer near : statusLevel.players()) {
+                        if (near.distanceToSqr(this) < 80.0 * 80.0) {
+                            near.displayClientMessage(status, true);
+                        }
+                    }
+                }
                 if (auto.doors != 0) {
                     setDoors(chain, auto.doors == 1);                       // V6.16.1: puertas por tiempo de espera (ver TrainRoute)
                 } else if (auto.departed != null || auto.arrived != null) {

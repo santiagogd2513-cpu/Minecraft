@@ -103,6 +103,29 @@ public final class TrainRoute {
     /** A cuántos metros de la estación se avisa de que ya viene (bloques). */
     public static final double ANNOUNCE_DIST = 200.0;
 
+    /** V6.16.4: qué está haciendo el piloto automático ahora (para el aviso en pantalla de los que están cerca). */
+    public net.minecraft.network.chat.Component status() {
+        if (this.stops.isEmpty() || this.idx < 0 || this.idx >= this.stops.size()) {
+            return net.minecraft.network.chat.Component.translatable("hud.beautifuldecor.train_auto.empty");
+        }
+        Stop target = this.stops.get(this.idx);
+        String stop = target.label(this.idx);
+        String who = this.name.isEmpty() ? "" : this.name + " · ";
+        if (this.state == State.DWELL) {
+            return net.minecraft.network.chat.Component.literal(who).append(net.minecraft.network.chat.Component.translatable("hud.beautifuldecor.train_auto.dwell", stop, Math.max(0, this.dwellLeft / 20)));
+        }
+        if (this.state == State.PARKED) {
+            return net.minecraft.network.chat.Component.literal(who).append(net.minecraft.network.chat.Component.translatable("hud.beautifuldecor.train_auto.parked", stop));
+        }
+        if (this.waitingChunks) {
+            return net.minecraft.network.chat.Component.literal(who).append(net.minecraft.network.chat.Component.translatable("hud.beautifuldecor.train_auto.loading", stop, (int) this.known));
+        }
+        if (this.hasDist) {
+            return net.minecraft.network.chat.Component.literal(who).append(net.minecraft.network.chat.Component.translatable("hud.beautifuldecor.train_auto.travel", stop, (int) Math.max(0.0, this.dist)));
+        }
+        return net.minecraft.network.chat.Component.literal(who).append(net.minecraft.network.chat.Component.translatable("hud.beautifuldecor.train_auto.far", stop, (int) this.known));
+    }
+
     public boolean active() {
         return this.on && !this.stops.isEmpty();
     }
