@@ -1,3 +1,11 @@
+## 89
+⏳ Máquina del tiempo y 🎁 Cápsula del tiempo
+- Máquina del tiempo (Inicio → Funciones especiales): lo que has movido, renombrado, creado o borrado, día por día (Hoy, Ayer…). Tocas una línea y puedes recuperar lo borrado, devolver algo a su sitio o devolverle su nombre. También por carpeta: selecciónala, ⋮ → «Historial de esta carpeta».
+- Empieza a llenarse desde esta versión; lo anterior no se guardó.
+- Cápsula del tiempo: selecciona una carpeta o archivo, ⋮ → «Cápsula del tiempo», elige un día. Hasta esa fecha Bóveda no lo abre, no muestra su miniatura y lo marca con 🔒. Si la renombras o la mueves, la cápsula la sigue. Para abrirla antes pide el bloqueo del teléfono.
+- Es un candado dentro de Bóveda: otras apps que lean esa carpeta sí podrían verla.
+- Sin probar en teléfono todavía.
+
 ## 88
 🤝 Modo prestado: más difícil de saltarse
 - Si apagan y prenden el teléfono rápido y se escapan de la pantalla fijada, al volver a Bóveda sigue en modo prestado y pide el bloqueo para salir. Y si la fijación se pierde, se vuelve a pedir sola.

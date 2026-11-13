@@ -80,6 +80,8 @@ final class UndoLog {
         ensure(c);
         a.time = System.currentTimeMillis();
         LOG.add(a);
+        Diario.record(c, a);
+        for (String[] pr : a.pairs) Capsules.move(c, pr[0], pr[1]);
         while (LOG.size() > MAX) LOG.remove(0);
         save(c);
         if (listener != null) listener.run();

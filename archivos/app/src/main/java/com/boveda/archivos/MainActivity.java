@@ -48,6 +48,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -61,6 +62,8 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
     private static final int REQ_TOOL_MEDIA = 45;
     private static final int REQ_TOOL_ANY = 46;
     private static final int REQ_PIXEL = 47;
+    private static final int REQ_CAPSULE = 48;
+    private String capsuleOpening;
     private String toolMode = "resize";
     private volatile String lastToolDir;
 
@@ -672,6 +675,49 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
 
     // ------------------------------------------------------------------ herramientas de imágenes
 
+    /** Cápsula del tiempo: cerrar hasta una fecha, o abrirla antes con el bloqueo del teléfono. */
+    private void capsuleMenu(Entry e) {
+        clearSelection();
+        long cap = Capsules.lockedUntil(this, e.path);
+        if (cap > 0) {
+            new AlertDialog.Builder(this).setTitle(L.t("Cápsula del tiempo"))
+                    .setMessage(L.t("Se abre el ") + Capsules.when(cap) + L.t(" (faltan ") + Capsules.remaining(cap) + L.t("). ¿Abrirla antes? Te pediré el bloqueo del teléfono."))
+                    .setPositiveButton(L.t("Abrir ahora"), (d, w) -> {
+                        android.app.KeyguardManager k = getSystemService(android.app.KeyguardManager.class);
+                        Intent i = k != null && k.isDeviceSecure() ? k.createConfirmDeviceCredentialIntent(L.t("Abrir la cápsula"), null) : null;
+                        if (i == null) {
+                            Capsules.remove(this, e.path);
+                            load(path, true);
+                            return;
+                        }
+                        capsuleOpening = e.path;
+                        try {
+                            startActivityForResult(i, REQ_CAPSULE);
+                        } catch (Exception ex) {
+                            capsuleOpening = null;
+                        }
+                    }).setNegativeButton(L.t("Dejarla cerrada"), null).show();
+            return;
+        }
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.DAY_OF_YEAR, 1);
+        android.app.DatePickerDialog dp = new android.app.DatePickerDialog(this, (view, y, m, d) -> {
+            Calendar t = Calendar.getInstance();
+            t.set(y, m, d, 0, 0, 0);
+            t.set(Calendar.MILLISECOND, 0);
+            new AlertDialog.Builder(this).setTitle(L.t("Cerrar «") + e.name + "»")
+                    .setMessage(L.t("No se podrá abrir en Bóveda hasta el ") + Capsules.when(t.getTimeInMillis()) + L.t(". Podrás abrirla antes con el bloqueo del teléfono.\n\nOjo: es un candado dentro de Bóveda; otras apps que lean esa carpeta sí podrían verla."))
+                    .setPositiveButton(L.t("Cerrar cápsula"), (dd, w) -> {
+                        Capsules.set(this, e.path, t.getTimeInMillis());
+                        if (path != null) load(path, true);
+                        Toast.makeText(this, L.t("🔒 Cápsula cerrada"), Toast.LENGTH_SHORT).show();
+                    }).setNegativeButton(L.t("Cancelar"), null).show();
+        }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH));
+        dp.getDatePicker().setMinDate(c.getTimeInMillis() - 1000);
+        dp.setTitle(L.t("¿Hasta qué día?"));
+        dp.show();
+    }
+
     /** Modo prestado: confirma y abre la pantalla limitada a esa carpeta. */
     private void startLoan(Entry dir) {
         if (!PrestadoActivity.canUse(this)) {
@@ -1082,6 +1128,12 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                     box.addView(netRow("♻️", 0xFFE5603B, 0xFFFF9A5C, L.t("Reducir peso"),
                             L.t("Busca archivos repetidos. Selecciona una carpeta o un comprimido, toca ⋮ y elige «Reducir peso»."),
                             v -> Toast.makeText(this, L.t("Selecciona una carpeta o un comprimido, toca ⋮ y elige «Reducir peso»."), Toast.LENGTH_LONG).show(), null));
+                    box.addView(netRow("⏳", 0xFF5C6BC0, 0xFF9FA8DA, L.t("Máquina del tiempo"),
+                            L.t("Mira día por día lo que moviste, renombraste, creaste o borraste, y recupéralo"),
+                            v -> TimeMachine.show(this, null, () -> { if (path != null) load(path, true); }), null));
+                    box.addView(netRow("🎁", 0xFFEC407A, 0xFFF48FB1, L.t("Cápsula del tiempo"),
+                            L.t("Cierra una carpeta o un archivo hasta una fecha. Selecciónalo, toca ⋮ y elige «Cápsula del tiempo»."),
+                            v -> Toast.makeText(this, L.t("Selecciona una carpeta o archivo, toca ⋮ y elige «Cápsula del tiempo»."), Toast.LENGTH_LONG).show(), null));
                     box.addView(section(L.t("Deshacer")));
                     List<UndoLog.Action> acts = UndoLog.recent(this);
                     if (acts.isEmpty()) box.addView(hint(L.t("Aquí aparece lo último que hagas (mover, copiar, comprimir, extraer, renombrar, crear) para poder deshacerlo.")));
@@ -3618,6 +3670,15 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             refreshGrants();
             return;
         }
+        if (req == REQ_CAPSULE) {
+            if (res == RESULT_OK && capsuleOpening != null) {
+                Capsules.remove(this, capsuleOpening);
+                Toast.makeText(this, L.t("🔓 Cápsula abierta"), Toast.LENGTH_SHORT).show();
+                if (path != null) load(path, true);
+            }
+            capsuleOpening = null;
+            return;
+        }
         if (req == REQ_PIXEL) {
             if (res == RESULT_OK && data != null && data.getStringExtra("dir") != null) {
                 lastToolDir = data.getStringExtra("dir");
@@ -3657,6 +3718,11 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
     private void onTap(Entry e) {
         if (!selected.isEmpty()) {
             toggleSelect(e);
+            return;
+        }
+        long cap = Capsules.lockedUntil(this, e.path);
+        if (cap > 0 && !picker()) {
+            Toast.makeText(this, L.t("🔒 Cápsula del tiempo: se abre el ") + Capsules.when(cap) + L.t(" (faltan ") + Capsules.remaining(cap) + ")", Toast.LENGTH_LONG).show();
             return;
         }
         if (e.dir) open(e.path);
@@ -4006,6 +4072,17 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                 acts.add(() -> {
                     clearSelection();
                     DuplicatesDialog.show(this, single.path, single.dir, () -> load(path, true));
+                });
+            }
+            if (!VaultFs.isVault(single.path)) {
+                labels.add(Capsules.lockedUntil(this, single.path) > 0 ? L.t("Cápsula del tiempo 🔒 (abrir antes)") : L.t("Cápsula del tiempo ⏳ (cerrar hasta una fecha)"));
+                acts.add(() -> capsuleMenu(single));
+            }
+            if (single.dir) {
+                labels.add(L.t("Historial de esta carpeta ⏳"));
+                acts.add(() -> {
+                    clearSelection();
+                    TimeMachine.show(this, single.path, () -> load(path, true));
                 });
             }
             if (single.dir && !VaultFs.isVault(single.path) && !Paths.restricted(single.path)) {
@@ -5732,7 +5809,8 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             // en Android/data, obb y media: el ícono y el nombre de la app dueña de cada carpeta
             AppIcons.App app = e.dir && appsFolder ? AppIcons.of(MainActivity.this, e.name) : null;
             FrameLayout.LayoutParams ilp = (FrameLayout.LayoutParams) h.icon.getLayoutParams();
-            int tk = app == null && prefs.thumbnails() ? Thumbs.kind(e) : Thumbs.NONE;
+            boolean capsule = Capsules.lockedUntil(MainActivity.this, e.path) > 0;
+            int tk = app == null && !capsule && prefs.thumbnails() ? Thumbs.kind(e) : Thumbs.NONE;
             Bitmap thumb = tk != Thumbs.NONE ? Thumbs.cached(e) : null;
             h.icon.setTag(e.path);
             h.play.setVisibility(View.GONE);
@@ -5757,7 +5835,8 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                 h.name.setText(e.name);
                 h.name.setTextColor(e.hidden() ? Ui.SUB : Ui.TEXT);
                 String n = e.dir ? countOf(e.path) : null;
-                h.info.setText(e.dir ? (appsFolder && e.name.contains(".") ? L.t("App no instalada  ·  ") : "")
+                if (capsule) h.name.setText("🔒 " + e.name);
+                h.info.setText(capsule ? L.t("Cápsula · se abre el ") + Capsules.when(Capsules.lockedUntil(MainActivity.this, e.path)) : e.dir ? (appsFolder && e.name.contains(".") ? L.t("App no instalada  ·  ") : "")
                         + (n != null && !n.isEmpty() ? n + "  ·  " : "") + Ui.date(e.modified)
                         : Ui.size(e.size) + "  ·  " + Ui.date(e.modified));
                 if (tk != Thumbs.NONE) {
