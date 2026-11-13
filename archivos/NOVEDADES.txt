@@ -1,3 +1,7 @@
+## 60
+🔧 Identificar aplicaciones
+- Las apps de fábrica que ya actualizaste (YouTube, Chrome…) ahora salen en «Usuario» y no en «Sistema».
+
 ## 59
 🗜️ Nuevo menú de comprimir
 - Elige nombre, formato (.zip, .7z, .tar.gz, .tar.xz) y nivel: Sin compresión, Rápida, Normal, Alta o Ultra.

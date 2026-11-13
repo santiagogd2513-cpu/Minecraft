@@ -198,7 +198,9 @@ final class AppsInspector {
                     AppRow r = new AppRow();
                     r.pkg = pi.packageName;
                     r.label = String.valueOf(pm.getApplicationLabel(ai));
-                    r.system = (ai.flags & ApplicationInfo.FLAG_SYSTEM) != 0;
+                    boolean preinstalled = (ai.flags & ApplicationInfo.FLAG_SYSTEM) != 0;
+                    // una app de fábrica que ya se actualizó (YouTube, Chrome…) la instaló/cambió el usuario: va en «Usuario»
+                    r.system = preinstalled && (ai.flags & ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) == 0;
                     r.sourceDir = ai.sourceDir;
                     r.dataDir = ai.dataDir;
                     r.versionName = pi.versionName == null ? "?" : pi.versionName;
