@@ -40,6 +40,9 @@ final class Prefs {
     boolean superAnim() { return p.getBoolean("super_anim", false); }
     void setSuperAnim(boolean b) { p.edit().putBoolean("super_anim", b).apply(); }
 
+    boolean homeGradients() { return p.getBoolean("home_gradients", true); }
+    void setHomeGradients(boolean b) { p.edit().putBoolean("home_gradients", b).apply(); }
+
     boolean animForce() { return p.getBoolean("anim_force", false); }
     void setAnimForce(boolean b) { p.edit().putBoolean("anim_force", b).apply(); }
 

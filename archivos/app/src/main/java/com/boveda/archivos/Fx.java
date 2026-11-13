@@ -368,4 +368,91 @@ final class Fx {
         });
         va.start();
     }
+
+    // ------------------------------------------------------------------ degradados del Inicio
+
+    /** Un degradado de tres colores que se desplaza despacio dentro de un rectángulo redondeado. */
+    static final class TileGradient extends Drawable {
+        private final Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
+        private final Paint scrim = new Paint(Paint.ANTI_ALIAS_FLAG);
+        private final Matrix m = new Matrix();
+        private final RectF r = new RectF();
+        private final int[] colors;
+        private final float radius;
+        private LinearGradient shader;
+        private int lastW;
+        private final Runnable tick = this::invalidateSelf;
+
+        TileGradient(int[] colors, float radius, int scrimColor) {
+            this.colors = colors;
+            this.radius = radius;
+            scrim.setColor(scrimColor);
+        }
+
+        @Override
+        public void draw(Canvas c) {
+            int w = getBounds().width(), h = getBounds().height();
+            if (w <= 0 || h <= 0) return;
+            if (shader == null || lastW != w) {
+                lastW = w;
+                // se repite con los colores de ida y vuelta para que el desplazamiento no tenga costura
+                int[] cs = new int[]{colors[0], colors[1], colors[2], colors[1], colors[0]};
+                shader = new LinearGradient(0, 0, w * 1.6f, h, cs, new float[]{0f, 0.25f, 0.5f, 0.75f, 1f}, Shader.TileMode.REPEAT);
+                p.setShader(shader);
+            }
+            float t = (System.currentTimeMillis() % 9000) / 9000f;
+            m.setTranslate(w * 1.6f * t, 0);
+            shader.setLocalMatrix(m);
+            r.set(getBounds());
+            c.drawRoundRect(r, radius, radius, p);
+            if (scrim.getColor() != 0) c.drawRoundRect(r, radius, radius, scrim);
+            // unos 20 cuadros por segundo bastan para un movimiento tan lento
+            if (isVisible()) scheduleSelf(tick, android.os.SystemClock.uptimeMillis() + 50);
+        }
+
+        @Override
+        public void setAlpha(int a) {
+            p.setAlpha(a);
+        }
+
+        @Override
+        public void setColorFilter(ColorFilter f) {
+            p.setColorFilter(f);
+        }
+
+        @Override
+        public int getOpacity() {
+            return PixelFormat.TRANSLUCENT;
+        }
+    }
+
+    /** Colores de cada sección del Inicio: {oscuro, claro, intermedio}. */
+    static int[] palette(String key) {
+        return switch (key) {
+            case "seguridad" -> new int[]{0xFF6A1B9A, 0xFFD62839, 0xFF8E2DA8};
+            case "favoritas" -> new int[]{0xFFD4A017, 0xFFFFE066, 0xFFF2B705};
+            case "ancladas" -> new int[]{0xFFB45F06, 0xFFFFB347, 0xFFE67E00};
+            case "interno" -> new int[]{0xFF06214F, 0xFF1E88E5, 0xFF0D47A1};
+            case "shizuku" -> new int[]{0xFF4FC3F7, 0xFFFFFFFF, 0xFF90CAF9};
+            case "papelera" -> new int[]{0xFF232B3A, 0xFF8E9AAB, 0xFF4A5670};
+            case "nube" -> new int[]{0xFF0A64D6, 0xFF1DE9B6, 0xFF29B6F6};
+            case "accesos" -> new int[]{0xFF0D47A1, 0xFF26C6DA, 0xFF1E88E5};
+            case "funciones" -> new int[]{0xFFB3261E, 0xFFFF9A5C, 0xFFE5603B};
+            default -> new int[]{0xFF2A3346, 0xFF4A5670, 0xFF3A4458};
+        };
+    }
+
+    /** Un color distinto y agradable para cada memoria externa, siempre el mismo para la misma. */
+    static int[] drivePalette(String id) {
+        int h = Math.abs(id.hashCode());
+        float hue = h % 360;
+        float hue2 = (hue + 38) % 360;
+        float[] a = {hue, 0.70f, 0.42f}, b = {hue2, 0.62f, 0.88f}, c = {(hue + 18) % 360, 0.68f, 0.62f};
+        return new int[]{Color.HSVToColor(a), Color.HSVToColor(b), Color.HSVToColor(c)};
+    }
+
+    /** Las letras oscuras sobre degradados claros (el amarillo y el blanco de Shizuku). */
+    static boolean darkText(String key) {
+        return key.equals("shizuku") || key.equals("favoritas");
+    }
 }

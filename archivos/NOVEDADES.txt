@@ -1,3 +1,9 @@
+## 79
+🎨 Degradados del Inicio (súper animaciones)
+- Con el modo súper animaciones, cada tarjeta del Inicio tiene su degradado que se mueve despacio: Seguridad y privacidad morado con rojo, Favoritas dorado con amarillo, Ancladas dorado con ámbar, Almacenamiento interno azules, Shizuku azul y blanco, Papelera grises, Nube y red celeste con turquesa, Accesos directos azul con cian y Funciones especiales naranja con rojo.
+- Cada memoria externa (SD, USB) tiene su propio color, siempre el mismo para la misma.
+- Interruptor «Degradados del Inicio» en Ajustes → Experimentales. En épocas de temporada se usan los colores de la temporada.
+
 ## 78
 🚀 Muchos archivos chiquitos, mucho más rápido
 - Hacia y desde SMB, WebDAV y el celular, los archivos chiquitos se copian varios a la vez (hasta 6). En FTP se respeta el límite de conexiones de cada servidor: con la Xbox 360 (una sola) sigue igual.

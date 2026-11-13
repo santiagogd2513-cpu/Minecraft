@@ -737,16 +737,16 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             addGrid(box, vols);
             List<View> tiles = new ArrayList<>();
             int pins = prefs.pinned().size(), favs = prefs.favorites().size();
-            tiles.add(tile("⚡", 0xFF1E88E5, 0xFF26C6DA, L.t("Accesos directos"), L.t("Descargas, Cámara, Documentos, Android/data…"), v -> openHomePage("accesos")));
-            tiles.add(tile("📌", 0xFF6C63FF, 0xFFA29BFE, L.t("Ancladas"), pins == 0 ? L.t("Ninguna todavía") : pins + (pins == 1 ? L.t(" carpeta") : L.t(" carpetas")), v -> openHomePage("ancladas")));
-            tiles.add(tile("⭐", 0xFFF2A100, 0xFFFFC14D, L.t("Favoritas"), favs == 0 ? L.t("Ninguna todavía") : favs + (favs == 1 ? L.t(" carpeta") : L.t(" carpetas")), v -> openHomePage("favoritas")));
+            tiles.add(gr("accesos", tile("⚡", 0xFF1E88E5, 0xFF26C6DA, L.t("Accesos directos"), L.t("Descargas, Cámara, Documentos, Android/data…"), v -> openHomePage("accesos"))));
+            tiles.add(gr("ancladas", tile("📌", 0xFF6C63FF, 0xFFA29BFE, L.t("Ancladas"), pins == 0 ? L.t("Ninguna todavía") : pins + (pins == 1 ? L.t(" carpeta") : L.t(" carpetas")), v -> openHomePage("ancladas"))));
+            tiles.add(gr("favoritas", tile("⭐", 0xFFF2A100, 0xFFFFC14D, L.t("Favoritas"), favs == 0 ? L.t("Ninguna todavía") : favs + (favs == 1 ? L.t(" carpeta") : L.t(" carpetas")), v -> openHomePage("favoritas"))));
             int servers = FtpServers.get(this).all().size() + NetServers.get(this).all("dav").size() + NetServers.get(this).all("smb").size();
-            tiles.add(tile("☁️", 0xFF0A64D6, 0xFF28A8EA, L.t("Nube y red"), servers > 0 ? servers + (servers == 1 ? L.t(" servidor") : L.t(" servidores")) + L.t(" y más") : L.t("Drive, OneDrive, MEGA y más"), v -> openHomePage("nube")));
-            tiles.add(tile("🛠️", 0xFFE5603B, 0xFFFF9A5C, L.t("Funciones especiales"), L.t("Reducir peso y más por venir"), v -> openHomePage("funciones")));
-            tiles.add(tile("🛡️", 0xFF7B4DFF, 0xFFB86BFF, L.t("Seguridad y privacidad"), L.t("La Bóveda, Radiografía, Apps"), v -> openHomePage("seguridad")));
-            View trash = tile("🗑️", 0xFF4A5670, 0xFF6E7A8E, L.t("Papelera"), L.t("Lo que borres se guarda 30 días"), v -> showTrash());
+            tiles.add(gr("nube", tile("☁️", 0xFF0A64D6, 0xFF28A8EA, L.t("Nube y red"), servers > 0 ? servers + (servers == 1 ? L.t(" servidor") : L.t(" servidores")) + L.t(" y más") : L.t("Drive, OneDrive, MEGA y más"), v -> openHomePage("nube"))));
+            tiles.add(gr("funciones", tile("🛠️", 0xFFE5603B, 0xFFFF9A5C, L.t("Funciones especiales"), L.t("Reducir peso y más por venir"), v -> openHomePage("funciones"))));
+            tiles.add(gr("seguridad", tile("🛡️", 0xFF7B4DFF, 0xFFB86BFF, L.t("Seguridad y privacidad"), L.t("La Bóveda, Radiografía, Apps"), v -> openHomePage("seguridad"))));
+            View trash = gr("papelera", tile("🗑️", 0xFF4A5670, 0xFF6E7A8E, L.t("Papelera"), L.t("Lo que borres se guarda 30 días"), v -> showTrash()));
             tiles.add(trash);
-            tiles.add(tile("💧", 0xFF35D08A, 0xFF1EA97C, "Shizuku", ShizukuHelper.ready() ? L.t("Conectado") : L.t("Para entrar a Android/data"), v -> openHomePage("shizuku")));
+            tiles.add(gr("shizuku", tile("💧", 0xFF35D08A, 0xFF1EA97C, "Shizuku", ShizukuHelper.ready() ? L.t("Conectado") : L.t("Para entrar a Android/data"), v -> openHomePage("shizuku"))));
             addGrid(box, tiles);
             TextView trashSub = (TextView) ((LinearLayout) trash).getChildAt(2);
             io.execute(() -> {
@@ -908,6 +908,25 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         return t;
     }
 
+    /** Con el modo súper animaciones, cada tarjeta del Inicio lleva su degradado que se mueve despacio. */
+    private View gr(String key, View tile) {
+        applyGradient(tile, key, Fx.palette(key));
+        return tile;
+    }
+
+    private void applyGradient(View card, String key, int[] pal) {
+        if (!Fx.on(this) || !prefs.homeGradients() || SeasonFx.active(this) != Season.NONE) return;
+        boolean dark = Fx.darkText(key);
+        card.setBackground(Ui.ripple(new Fx.TileGradient(pal, dp(18), dark ? 0 : 0x40000000), Ui.round(Color.WHITE, dp(18))));
+        if (dark && card instanceof LinearLayout col) {
+            // letras oscuras sobre los degradados claros (dorado, blanco)
+            for (int i = 0; i < col.getChildCount(); i++) {
+                View c = col.getChildAt(i);
+                if (c instanceof TextView tv && tv.getBackground() == null) tv.setTextColor(i == 1 ? 0xFF10243D : 0xFF2A3F5C);
+            }
+        }
+    }
+
     /** Una unidad de almacenamiento (interna, SD o USB), con su barra de uso. */
     private View volumeCard(Volume v) {
         File f = new File(v.path);
@@ -943,6 +962,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         }, "espacio").start();
         card.setOnClickListener(x -> open(v.path));
         Fx.lift(card);
+        applyGradient(card, v.removable ? "externa" : "interno", v.removable ? Fx.drivePalette(v.path) : Fx.palette("interno"));
         return card;
     }
 
@@ -4552,6 +4572,17 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         fr.addView(fsw, fsl);
         fr.setOnClickListener(v -> fsw.toggle());
         addCard(col, fr);
+        LinearLayout gr = settingsCard(L.t("Degradados del Inicio"), L.t("Cada tarjeta con su color animado · solo con el modo súper animaciones"));
+        android.widget.Switch gsw = new android.widget.Switch(this);
+        gsw.setChecked(prefs.homeGradients());
+        gsw.setThumbTintList(android.content.res.ColorStateList.valueOf(Color.WHITE));
+        gsw.setTrackTintList(new android.content.res.ColorStateList(new int[][]{{android.R.attr.state_checked}, {}}, new int[]{Ui.ACCENT, 0xFF3A4458}));
+        gsw.setOnCheckedChangeListener((b, on) -> prefs.setHomeGradients(on));
+        LinearLayout.LayoutParams gsl = new LinearLayout.LayoutParams(-2, -2);
+        gsl.setMargins(dp(10), 0, 0, 0);
+        gr.addView(gsw, gsl);
+        gr.setOnClickListener(v -> gsw.toggle());
+        addCard(col, gr);
         settingsSection(col, L.t("Apariencia"));
         LinearLayout r = settingsCard(L.t("Permitir modo claro"), L.t("Experimental · puede causar distorsiones visuales"));
         android.widget.Switch sw = new android.widget.Switch(this);
