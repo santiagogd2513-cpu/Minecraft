@@ -43,6 +43,7 @@ final class AppsInspector {
     private static final class AppRow {
         String label, pkg;
         boolean system;
+        boolean updated; // de fábrica pero ya actualizada (Play Store o parcheada)
         long apkBytes, installed, updated;
         String sourceDir, versionName, dataDir;
         long versionCode;
@@ -68,10 +69,11 @@ final class AppsInspector {
 
         LinearLayout tabs = Ui.row(a);
         tabs.setPadding(Ui.dp(a, 14), Ui.dp(a, 4), Ui.dp(a, 14), Ui.dp(a, 6));
-        TextView tUser = tab(a, L.t("Usuario"), true), tSys = tab(a, L.t("Sistema"), false);
+        TextView tUser = tab(a, L.t("Usuario"), true), tUpd = tab(a, L.t("Actualizadas"), false), tSys = tab(a, L.t("Sistema"), false);
         tabs.addView(tUser, Ui.weight(1));
-        LinearLayout.LayoutParams gap = new LinearLayout.LayoutParams(Ui.dp(a, 8), 1);
-        tabs.addView(new View(a), gap);
+        tabs.addView(new View(a), new LinearLayout.LayoutParams(Ui.dp(a, 6), 1));
+        tabs.addView(tUpd, Ui.weight(1));
+        tabs.addView(new View(a), new LinearLayout.LayoutParams(Ui.dp(a, 6), 1));
         tabs.addView(tSys, Ui.weight(1));
         root.addView(tabs);
 
@@ -102,7 +104,7 @@ final class AppsInspector {
 
         List<AppRow> all = new ArrayList<>();
         List<AppRow> shown = new ArrayList<>();
-        boolean[] userTab = {true};
+        int[] cat = {0}; // 0 usuario, 1 de fábrica actualizadas, 2 sistema
         PackageManager pm = a.getPackageManager();
         Handler main = new Handler(Looper.getMainLooper());
         BaseAdapter ad = new BaseAdapter() {
@@ -161,7 +163,7 @@ final class AppsInspector {
             String q = search.getText().toString().trim().toLowerCase(Locale.ROOT);
             shown.clear();
             for (AppRow r : all) {
-                if (r.system == userTab[0]) continue;
+                if ((r.system ? 2 : r.updated ? 1 : 0) != cat[0]) continue;
                 if (!q.isEmpty() && !r.label.toLowerCase(Locale.ROOT).contains(q) && !r.pkg.toLowerCase(Locale.ROOT).contains(q)) continue;
                 shown.add(r);
             }
@@ -171,12 +173,14 @@ final class AppsInspector {
             ad.notifyDataSetChanged();
         };
         View.OnClickListener tabClick = v -> {
-            userTab[0] = v == tUser;
-            style(a, tUser, userTab[0]);
-            style(a, tSys, !userTab[0]);
+            cat[0] = v == tUser ? 0 : v == tUpd ? 1 : 2;
+            style(a, tUser, cat[0] == 0);
+            style(a, tUpd, cat[0] == 1);
+            style(a, tSys, cat[0] == 2);
             refilter.run();
         };
         tUser.setOnClickListener(tabClick);
+        tUpd.setOnClickListener(tabClick);
         tSys.setOnClickListener(tabClick);
         search.addTextChangedListener(new TextWatcher() {
             public void beforeTextChanged(CharSequence s, int st, int c, int af) {}
@@ -200,7 +204,8 @@ final class AppsInspector {
                     r.label = String.valueOf(pm.getApplicationLabel(ai));
                     boolean preinstalled = (ai.flags & ApplicationInfo.FLAG_SYSTEM) != 0;
                     // una app de fábrica que ya se actualizó (YouTube, Chrome…) la instaló/cambió el usuario: va en «Usuario»
-                    r.system = preinstalled && (ai.flags & ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) == 0;
+                    r.updated = preinstalled && (ai.flags & ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0;
+                    r.system = preinstalled && !r.updated;
                     r.sourceDir = ai.sourceDir;
                     r.dataDir = ai.dataDir;
                     r.versionName = pi.versionName == null ? "?" : pi.versionName;
@@ -219,10 +224,12 @@ final class AppsInspector {
             found.sort((x, y) -> x.label.compareToIgnoreCase(y.label));
             main.post(() -> {
                 all.addAll(found);
-                int u = 0, s = 0;
+                int u = 0, s = 0, up = 0;
                 for (AppRow r : found) if (r.system) s++;
+                else if (r.updated) up++;
                 else u++;
                 tUser.setText(L.t("Usuario") + " · " + u);
+                tUpd.setText(L.t("Actualizadas") + " · " + up);
                 tSys.setText(L.t("Sistema") + " · " + s);
                 refilter.run();
             });
@@ -231,9 +238,9 @@ final class AppsInspector {
     }
 
     private static TextView tab(Activity a, String s, boolean on) {
-        TextView t = Ui.text(a, s, 14.5f, on ? 0xFF0A0E16 : Ui.TEXT, true);
+        TextView t = Ui.text(a, s, 13f, on ? 0xFF0A0E16 : Ui.TEXT, true);
         t.setGravity(Gravity.CENTER);
-        t.setPadding(Ui.dp(a, 10), Ui.dp(a, 11), Ui.dp(a, 10), Ui.dp(a, 11));
+        t.setPadding(Ui.dp(a, 6), Ui.dp(a, 11), Ui.dp(a, 10), Ui.dp(a, 11));
         style(a, t, on);
         return t;
     }
@@ -265,7 +272,7 @@ final class AppsInspector {
 
     private static void info(Activity a, AppRow r) {
         StringBuilder b = new StringBuilder();
-        b.append(L.t("Tipo: ")).append(r.system ? L.t("de sistema") : L.t("de usuario")).append('\n');
+        b.append(L.t("Tipo: ")).append(r.system ? L.t("de sistema") : r.updated ? L.t("de fábrica, ya actualizada") : L.t("de usuario")).append('\n');
         b.append(L.t("Versión: ")).append(r.versionName).append(" (").append(r.versionCode).append(")\n");
         b.append(L.t("Peso del APK: ")).append(Ui.size(r.apkBytes)).append("  (").append(String.format(Locale.US, "%,d", r.apkBytes)).append(" bytes)\n");
         b.append(L.t("Instalada: ")).append(Ui.date(r.installed)).append('\n');

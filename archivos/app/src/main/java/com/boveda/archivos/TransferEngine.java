@@ -38,7 +38,7 @@ final class TransferEngine {
     static final class Job {
         final Kind kind;
         final List<String> sources;
-        final String dest;          // carpeta destino (o archivo .zip al comprimir)
+        volatile String dest;       // carpeta destino (o archivo .zip al comprimir)
         final Conflict conflict;
         volatile int state;         // 0 en cola, 1 trabajando, 2 listo, 3 error, 4 cancelado
         volatile boolean cancel;
@@ -505,6 +505,14 @@ final class TransferEngine {
         CompressOptions o = j.comp == null ? new CompressOptions() : j.comp;
         for (String s : j.sources) measure(j, s);
         Fs df = fs(j.dest);
+        // el archivo nuevo nunca puede pisar a uno de lo que se comprime (ni quedar dentro de él)
+        for (String s : j.sources) {
+            if (j.dest.equals(s) || j.dest.startsWith(s + "/")) {
+                j.dest = uniqueName(df, j.dest);
+                j.note = L.t("Ya había algo con ese nombre; el archivo nuevo se llama ") + Paths.name(j.dest) + ".";
+                break;
+            }
+        }
         String tmp = Paths.join(Paths.parent(j.dest), "." + Paths.name(j.dest) + ".boveda-parte");
         java.io.File tmp7z = null;
         try {
@@ -783,10 +791,12 @@ final class TransferEngine {
         }
         int kept = 0;
         for (String s : j.sources) {
+            if (s.equals(j.dest)) continue; // jamás borrar el archivo que se acaba de crear
             if (Trash.supported(s)) Trash.put(s);
             else kept++;
         }
-        j.note = kept == 0 ? L.t("Los originales están en la papelera.") : L.t("Algunos originales no se pudieron mandar a la papelera y se dejaron donde estaban.");
+        String t = kept == 0 ? L.t("Los originales están en la papelera.") : L.t("Algunos originales no se pudieron mandar a la papelera y se dejaron donde estaban.");
+        j.note = j.note == null ? t : j.note + " " + t;
         changed(true);
     }
 

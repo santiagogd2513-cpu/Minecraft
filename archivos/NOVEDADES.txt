@@ -1,3 +1,8 @@
+## 62
+🔧 Más seguridad al comprimir y tres pestañas en aplicaciones
+- Comprimir: si el archivo nuevo se llamaría igual que lo que comprimes, Bóveda ya no lo pisa: le pone otro nombre («(1)») y lo avisa. «Eliminar el original» jamás toca el archivo recién creado.
+- Identificar aplicaciones: ahora hay tres pestañas: «Usuario», «Actualizadas» (de fábrica pero ya actualizadas: YouTube, Android Auto…) y «Sistema».
+
 ## 61
 🔧 Comprimir
 - Arreglado: un .zip con contraseña y «Sin compresión» daba error. Ahora funciona (guarda los archivos sin comprimir, cifrados).
