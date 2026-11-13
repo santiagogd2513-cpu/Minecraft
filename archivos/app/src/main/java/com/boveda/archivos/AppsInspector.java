@@ -43,7 +43,7 @@ final class AppsInspector {
     private static final class AppRow {
         String label, pkg;
         boolean system;
-        boolean updated; // de fábrica pero ya actualizada (Play Store o parcheada)
+        boolean factoryUpdated; // de fábrica pero ya actualizada (Play Store o parcheada)
         long apkBytes, installed, updated;
         String sourceDir, versionName, dataDir;
         long versionCode;
@@ -163,7 +163,7 @@ final class AppsInspector {
             String q = search.getText().toString().trim().toLowerCase(Locale.ROOT);
             shown.clear();
             for (AppRow r : all) {
-                if ((r.system ? 2 : r.updated ? 1 : 0) != cat[0]) continue;
+                if ((r.system ? 2 : r.factoryUpdated ? 1 : 0) != cat[0]) continue;
                 if (!q.isEmpty() && !r.label.toLowerCase(Locale.ROOT).contains(q) && !r.pkg.toLowerCase(Locale.ROOT).contains(q)) continue;
                 shown.add(r);
             }
@@ -204,8 +204,8 @@ final class AppsInspector {
                     r.label = String.valueOf(pm.getApplicationLabel(ai));
                     boolean preinstalled = (ai.flags & ApplicationInfo.FLAG_SYSTEM) != 0;
                     // una app de fábrica que ya se actualizó (YouTube, Chrome…) la instaló/cambió el usuario: va en «Usuario»
-                    r.updated = preinstalled && (ai.flags & ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0;
-                    r.system = preinstalled && !r.updated;
+                    r.factoryUpdated = preinstalled && (ai.flags & ApplicationInfo.FLAG_UPDATED_SYSTEM_APP) != 0;
+                    r.system = preinstalled && !r.factoryUpdated;
                     r.sourceDir = ai.sourceDir;
                     r.dataDir = ai.dataDir;
                     r.versionName = pi.versionName == null ? "?" : pi.versionName;
@@ -226,7 +226,7 @@ final class AppsInspector {
                 all.addAll(found);
                 int u = 0, s = 0, up = 0;
                 for (AppRow r : found) if (r.system) s++;
-                else if (r.updated) up++;
+                else if (r.factoryUpdated) up++;
                 else u++;
                 tUser.setText(L.t("Usuario") + " · " + u);
                 tUpd.setText(L.t("Actualizadas") + " · " + up);
@@ -272,7 +272,7 @@ final class AppsInspector {
 
     private static void info(Activity a, AppRow r) {
         StringBuilder b = new StringBuilder();
-        b.append(L.t("Tipo: ")).append(r.system ? L.t("de sistema") : r.updated ? L.t("de fábrica, ya actualizada") : L.t("de usuario")).append('\n');
+        b.append(L.t("Tipo: ")).append(r.system ? L.t("de sistema") : r.factoryUpdated ? L.t("de fábrica, ya actualizada") : L.t("de usuario")).append('\n');
         b.append(L.t("Versión: ")).append(r.versionName).append(" (").append(r.versionCode).append(")\n");
         b.append(L.t("Peso del APK: ")).append(Ui.size(r.apkBytes)).append("  (").append(String.format(Locale.US, "%,d", r.apkBytes)).append(" bytes)\n");
         b.append(L.t("Instalada: ")).append(Ui.date(r.installed)).append('\n');
