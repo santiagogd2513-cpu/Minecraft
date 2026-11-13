@@ -1,3 +1,9 @@
+## 67
+♻️ Reducir peso: carpetas enormes
+- Escanear carpetas con decenas de miles de archivos (como Android/data) ya no congela la app: compara primero un trocito de cada archivo y solo lee completos los que coinciden.
+- Ignora archivos de menos de 1 KB.
+- Si falta memoria, avisa en vez de cerrarse.
+
 ## 66
 🧹 Extraer: sin carpetas vacías sobrantes
 - Si una extracción falla (por ejemplo, contraseña mala) y la carpeta destino la creó ella misma, ahora se borra si quedó vacía.

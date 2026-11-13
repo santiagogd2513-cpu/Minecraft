@@ -52,14 +52,20 @@ final class Duplicates {
         collect(c, root, bySize, n, p, cancel);
         List<Group> out = new ArrayList<>();
         int done = 0;
+        final int candidates = countCandidates(bySize);
         for (Map.Entry<Long, List<Entry>> e : bySize.entrySet()) {
             if (cancel.get()) throw new IOException(L.t("Cancelado"));
             List<Entry> same = e.getValue();
             if (same.size() < 2) continue;
-            p.say(L.t("Comparando… ") + (++done) + "/" + countCandidates(bySize));
-            // huella completa de cada uno y, entre los que coinciden, comparación byte por byte
+            if (++done % 25 == 0 || done == candidates) p.say(L.t("Comparando… ") + done + "/" + candidates);
+            // primero un trocito del comienzo; solo si coincide, la huella completa; y al final byte por byte
+            Map<String, List<Entry>> byHead = new HashMap<>();
+            for (Entry en : same) byHead.computeIfAbsent(head(c, en.path), k -> new ArrayList<>()).add(en);
             Map<String, List<Entry>> byHash = new HashMap<>();
-            for (Entry en : same) byHash.computeIfAbsent(hash(c, en.path), k -> new ArrayList<>()).add(en);
+            for (List<Entry> hl : byHead.values()) {
+                if (hl.size() < 2) continue;
+                for (Entry en : hl) byHash.computeIfAbsent(hash(c, en.path), k -> new ArrayList<>()).add(en);
+            }
             for (List<Entry> hs : byHash.values()) {
                 if (hs.size() < 2) continue;
                 List<Entry> real = new ArrayList<>();
@@ -79,6 +85,16 @@ final class Duplicates {
         return out;
     }
 
+    /** Lo más chiquito que vale la pena buscar repetido. */
+    private static final long MIN_SIZE = 1024;
+
+    private static String head(Context c, String path) throws IOException {
+        try (InputStream in = FsRouter.get(c, path).in(path)) {
+            byte[] b = in.readNBytes(1 << 16);
+            return sha(new java.io.ByteArrayInputStream(b));
+        }
+    }
+
     private static int countCandidates(Map<Long, List<Entry>> m) {
         int k = 0;
         for (List<Entry> l : m.values()) if (l.size() > 1) k++;
@@ -90,7 +106,7 @@ final class Duplicates {
         for (Entry e : FsRouter.get(c, dir).list(dir)) {
             if (e.dir) {
                 collect(c, e.path, by, n, p, cancel);
-            } else if (e.size > 0) {
+            } else if (e.size >= MIN_SIZE) {
                 by.computeIfAbsent(e.size, k -> new ArrayList<>()).add(e);
                 if (++n[0] % 200 == 0) p.say(L.t("Mirando archivos… ") + n[0]);
             }
@@ -154,7 +170,7 @@ final class Duplicates {
         int[] n = {0};
         Archive.walk(c, archive, (it, data) -> {
             if (cancel.get()) throw new IOException(L.t("Cancelado"));
-            if (it.dir || data == null || it.size == 0) return true;
+            if (it.dir || data == null || it.size < MIN_SIZE) return true;
             p.say(L.t("Leyendo… ") + (++n[0]) + " · " + it.name);
             String key = sha(data) + ":" + it.size;
             Group g = by.computeIfAbsent(key, k -> new Group(it.size));

@@ -52,6 +52,12 @@ final class DuplicatesDialog {
             List<Duplicates.Group> groups;
             try {
                 groups = isFolder ? Duplicates.scanFolder(a, path, say, cancel) : Duplicates.scanArchive(a, path, say, cancel);
+            } catch (OutOfMemoryError oom) {
+                main.post(() -> {
+                    status.setTextColor(Ui.BAD);
+                    status.setText(L.t("Esta carpeta es demasiado grande para revisarla de una vez. Prueba con una carpeta más chica."));
+                });
+                return;
             } catch (Exception e) {
                 main.post(() -> {
                     status.setTextColor(Ui.BAD);
