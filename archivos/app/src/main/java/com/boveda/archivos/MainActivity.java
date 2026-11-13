@@ -760,6 +760,8 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                     }));
             box.addView(netRow("📊", 0xFF1E88E5, 0xFF26C6DA, L.t("Radiografía del almacenamiento"),
                     L.t("Mira qué se está comiendo la memoria y libera espacio"), v -> showAnalyzer(), null));
+            box.addView(netRow("🧩", 0xFF35D08A, 0xFF1EA97C, L.t("Identificar aplicaciones"),
+                    L.t("Todas las apps del celular, con su peso, sus rutas y sus permisos"), v -> AppsInspector.show(this), null));
             View trashRow = netRow("🗑️", 0xFF4A5670, 0xFF6E7A8E, L.t("Papelera"), L.t("Lo que borres se guarda 30 días"),
                     v -> showTrash(), null);
             box.addView(trashRow);

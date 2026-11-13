@@ -1,3 +1,9 @@
+## 58
+🧩 Identificar aplicaciones
+- En la pantalla de inicio, sección «Análisis y seguridad»: «Identificar aplicaciones» lista todas las apps del celular en dos pestañas, «Usuario» (WhatsApp, Instagram, Minecraft…) y «Sistema» (Android System y demás), con ícono, nombre, paquete, peso del APK y un buscador.
+- Al tocar una app: «Ver información» (versión, peso del APK y dónde está), «Ver rutas de almacenamiento» (APK, datos, OBB, multimedia y las carpetas donde Bóveda le dio permiso) y «Ver directorio de la app» (con «Copiar ruta» y «Abrir directorio»).
+- Todo se lee en el celular; no sale nada a internet.
+
 ## 57
 🎬 Tutoriales: ya están los seis
 - Nuevos: «Usar la papelera», «Configurar la nube» (MEGA, MediaFire, Google Drive y OneDrive), «¿Qué es Bóveda?» y «Cómo funciona La Bóveda».
