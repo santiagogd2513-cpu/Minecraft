@@ -5493,7 +5493,11 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         parent.removeView(tabStrip);
         tabStrip = Tabs.strip(this, tabViews, this::switchTab);
         parent.addView(tabStrip, at);
-        if (Tabs.current != before) showTab(Tabs.path[Tabs.current]);
+        if (Tabs.current != before) {
+            Tabs.home[before] = homePage;
+            homePage = Tabs.home[Tabs.current];
+            showTab(Tabs.path[Tabs.current]);
+        }
         updateTabs();
     }
 
@@ -5527,7 +5531,9 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         int dir = t > Tabs.current ? 1 : -1;
         if (path != null) scroll.put(path, list.getFirstVisiblePosition());
         Tabs.path[Tabs.current] = path;
+        Tabs.home[Tabs.current] = homePage;      // cada pestaña recuerda en qué sección del Inicio estaba
         Tabs.current = t;
+        homePage = Tabs.home[t];
         selected.clear();
         search.setText("");
         search.setVisibility(View.GONE);

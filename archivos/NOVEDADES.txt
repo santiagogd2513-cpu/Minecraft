@@ -1,3 +1,7 @@
+## 84
+🗂️ Pestañas: cada una recuerda su sección del Inicio
+- Si en una pestaña abrías una sección del Inicio (Favoritas, Nube y red…) y cambiabas a otra pestaña, la otra mostraba esa misma sección en vez de su Inicio. Ahora cada pestaña recuerda la suya.
+
 ## 83
 🧰 Herramientas: FLAC, convertidor general y «Abrir carpeta»
 - Convertir audio ahora también a FLAC (sin pérdida). Lo comprobé decodificándolo con un programa aparte: sale idéntico al original, en mono y estéreo.

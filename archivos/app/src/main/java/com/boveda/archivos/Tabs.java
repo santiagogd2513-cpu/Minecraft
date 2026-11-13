@@ -34,6 +34,8 @@ final class Tabs {
     static final String MEDIAFIRE = "/mediafire";
 
     static final String[] path = new String[MAX];   // null = inicio
+    /** Qué sección del Inicio tiene abierta cada pestaña (Favoritas, Nube y red…); null = el Inicio principal. */
+    static final String[] home = new String[MAX];
     static int current;
     /** Carpeta de MediaFire abierta en cada pestaña ({clave, nombre} por nivel). */
     @SuppressWarnings("unchecked")
