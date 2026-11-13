@@ -181,7 +181,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w0 = p_body.addOrReplaceChild("w0",
                 CubeListBuilder.create()
                 .texOffs(320, 377).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(2.2f, -4f, 54f));
+                PartPose.offset(5.75f, -4f, 54f));
         PartDefinition p_w0_t0 = p_w0.addOrReplaceChild("w0_t0",
                 CubeListBuilder.create()
                 .texOffs(992, 321).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -193,7 +193,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w1 = p_body.addOrReplaceChild("w1",
                 CubeListBuilder.create()
                 .texOffs(320, 377).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(-2.2f, -4f, 54f));
+                PartPose.offset(-5.75f, -4f, 54f));
         PartDefinition p_w1_t0 = p_w1.addOrReplaceChild("w1_t0",
                 CubeListBuilder.create()
                 .texOffs(992, 321).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -205,7 +205,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w2 = p_body.addOrReplaceChild("w2",
                 CubeListBuilder.create()
                 .texOffs(320, 377).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(2.2f, -4f, 34f));
+                PartPose.offset(5.75f, -4f, 34f));
         PartDefinition p_w2_t0 = p_w2.addOrReplaceChild("w2_t0",
                 CubeListBuilder.create()
                 .texOffs(992, 321).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -217,7 +217,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w3 = p_body.addOrReplaceChild("w3",
                 CubeListBuilder.create()
                 .texOffs(320, 377).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(-2.2f, -4f, 34f));
+                PartPose.offset(-5.75f, -4f, 34f));
         PartDefinition p_w3_t0 = p_w3.addOrReplaceChild("w3_t0",
                 CubeListBuilder.create()
                 .texOffs(992, 321).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -229,7 +229,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w4 = p_body.addOrReplaceChild("w4",
                 CubeListBuilder.create()
                 .texOffs(320, 377).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(2.2f, -4f, -34f));
+                PartPose.offset(5.75f, -4f, -34f));
         PartDefinition p_w4_t0 = p_w4.addOrReplaceChild("w4_t0",
                 CubeListBuilder.create()
                 .texOffs(992, 321).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -241,7 +241,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w5 = p_body.addOrReplaceChild("w5",
                 CubeListBuilder.create()
                 .texOffs(320, 377).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(-2.2f, -4f, -34f));
+                PartPose.offset(-5.75f, -4f, -34f));
         PartDefinition p_w5_t0 = p_w5.addOrReplaceChild("w5_t0",
                 CubeListBuilder.create()
                 .texOffs(992, 321).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -253,7 +253,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w6 = p_body.addOrReplaceChild("w6",
                 CubeListBuilder.create()
                 .texOffs(320, 377).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(2.2f, -4f, -54f));
+                PartPose.offset(5.75f, -4f, -54f));
         PartDefinition p_w6_t0 = p_w6.addOrReplaceChild("w6_t0",
                 CubeListBuilder.create()
                 .texOffs(992, 321).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -265,7 +265,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w7 = p_body.addOrReplaceChild("w7",
                 CubeListBuilder.create()
                 .texOffs(320, 377).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(-2.2f, -4f, -54f));
+                PartPose.offset(-5.75f, -4f, -54f));
         PartDefinition p_w7_t0 = p_w7.addOrReplaceChild("w7_t0",
                 CubeListBuilder.create()
                 .texOffs(992, 321).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -355,7 +355,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w0 = p_body.addOrReplaceChild("w0",
                 CubeListBuilder.create()
                 .texOffs(634, 128).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(2.2f, -4f, 46f));
+                PartPose.offset(5.75f, -4f, 46f));
         PartDefinition p_w0_t0 = p_w0.addOrReplaceChild("w0_t0",
                 CubeListBuilder.create()
                 .texOffs(590, 128).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -367,7 +367,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w1 = p_body.addOrReplaceChild("w1",
                 CubeListBuilder.create()
                 .texOffs(634, 128).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(-2.2f, -4f, 46f));
+                PartPose.offset(-5.75f, -4f, 46f));
         PartDefinition p_w1_t0 = p_w1.addOrReplaceChild("w1_t0",
                 CubeListBuilder.create()
                 .texOffs(590, 128).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -379,7 +379,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w2 = p_body.addOrReplaceChild("w2",
                 CubeListBuilder.create()
                 .texOffs(634, 128).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(2.2f, -4f, 26f));
+                PartPose.offset(5.75f, -4f, 26f));
         PartDefinition p_w2_t0 = p_w2.addOrReplaceChild("w2_t0",
                 CubeListBuilder.create()
                 .texOffs(590, 128).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -391,7 +391,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w3 = p_body.addOrReplaceChild("w3",
                 CubeListBuilder.create()
                 .texOffs(634, 128).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(-2.2f, -4f, 26f));
+                PartPose.offset(-5.75f, -4f, 26f));
         PartDefinition p_w3_t0 = p_w3.addOrReplaceChild("w3_t0",
                 CubeListBuilder.create()
                 .texOffs(590, 128).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -403,7 +403,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w4 = p_body.addOrReplaceChild("w4",
                 CubeListBuilder.create()
                 .texOffs(634, 128).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(2.2f, -4f, -26f));
+                PartPose.offset(5.75f, -4f, -26f));
         PartDefinition p_w4_t0 = p_w4.addOrReplaceChild("w4_t0",
                 CubeListBuilder.create()
                 .texOffs(590, 128).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -415,7 +415,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w5 = p_body.addOrReplaceChild("w5",
                 CubeListBuilder.create()
                 .texOffs(634, 128).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(-2.2f, -4f, -26f));
+                PartPose.offset(-5.75f, -4f, -26f));
         PartDefinition p_w5_t0 = p_w5.addOrReplaceChild("w5_t0",
                 CubeListBuilder.create()
                 .texOffs(590, 128).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -427,7 +427,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w6 = p_body.addOrReplaceChild("w6",
                 CubeListBuilder.create()
                 .texOffs(634, 128).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(2.2f, -4f, -46f));
+                PartPose.offset(5.75f, -4f, -46f));
         PartDefinition p_w6_t0 = p_w6.addOrReplaceChild("w6_t0",
                 CubeListBuilder.create()
                 .texOffs(590, 128).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -439,7 +439,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w7 = p_body.addOrReplaceChild("w7",
                 CubeListBuilder.create()
                 .texOffs(634, 128).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(-2.2f, -4f, -46f));
+                PartPose.offset(-5.75f, -4f, -46f));
         PartDefinition p_w7_t0 = p_w7.addOrReplaceChild("w7_t0",
                 CubeListBuilder.create()
                 .texOffs(590, 128).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -520,7 +520,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w0 = p_body.addOrReplaceChild("w0",
                 CubeListBuilder.create()
                 .texOffs(254, 115).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(2.2f, -4f, 46f));
+                PartPose.offset(5.75f, -4f, 46f));
         PartDefinition p_w0_t0 = p_w0.addOrReplaceChild("w0_t0",
                 CubeListBuilder.create()
                 .texOffs(200, 115).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -532,7 +532,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w1 = p_body.addOrReplaceChild("w1",
                 CubeListBuilder.create()
                 .texOffs(254, 115).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(-2.2f, -4f, 46f));
+                PartPose.offset(-5.75f, -4f, 46f));
         PartDefinition p_w1_t0 = p_w1.addOrReplaceChild("w1_t0",
                 CubeListBuilder.create()
                 .texOffs(200, 115).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -544,7 +544,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w2 = p_body.addOrReplaceChild("w2",
                 CubeListBuilder.create()
                 .texOffs(254, 115).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(2.2f, -4f, 26f));
+                PartPose.offset(5.75f, -4f, 26f));
         PartDefinition p_w2_t0 = p_w2.addOrReplaceChild("w2_t0",
                 CubeListBuilder.create()
                 .texOffs(200, 115).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -556,7 +556,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w3 = p_body.addOrReplaceChild("w3",
                 CubeListBuilder.create()
                 .texOffs(254, 115).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(-2.2f, -4f, 26f));
+                PartPose.offset(-5.75f, -4f, 26f));
         PartDefinition p_w3_t0 = p_w3.addOrReplaceChild("w3_t0",
                 CubeListBuilder.create()
                 .texOffs(200, 115).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -568,7 +568,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w4 = p_body.addOrReplaceChild("w4",
                 CubeListBuilder.create()
                 .texOffs(254, 115).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(2.2f, -4f, -26f));
+                PartPose.offset(5.75f, -4f, -26f));
         PartDefinition p_w4_t0 = p_w4.addOrReplaceChild("w4_t0",
                 CubeListBuilder.create()
                 .texOffs(200, 115).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -580,7 +580,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w5 = p_body.addOrReplaceChild("w5",
                 CubeListBuilder.create()
                 .texOffs(254, 115).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(-2.2f, -4f, -26f));
+                PartPose.offset(-5.75f, -4f, -26f));
         PartDefinition p_w5_t0 = p_w5.addOrReplaceChild("w5_t0",
                 CubeListBuilder.create()
                 .texOffs(200, 115).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -592,7 +592,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w6 = p_body.addOrReplaceChild("w6",
                 CubeListBuilder.create()
                 .texOffs(254, 115).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(2.2f, -4f, -46f));
+                PartPose.offset(5.75f, -4f, -46f));
         PartDefinition p_w6_t0 = p_w6.addOrReplaceChild("w6_t0",
                 CubeListBuilder.create()
                 .texOffs(200, 115).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -604,7 +604,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w7 = p_body.addOrReplaceChild("w7",
                 CubeListBuilder.create()
                 .texOffs(254, 115).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(-2.2f, -4f, -46f));
+                PartPose.offset(-5.75f, -4f, -46f));
         PartDefinition p_w7_t0 = p_w7.addOrReplaceChild("w7_t0",
                 CubeListBuilder.create()
                 .texOffs(200, 115).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -699,7 +699,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w0 = p_body.addOrReplaceChild("w0",
                 CubeListBuilder.create()
                 .texOffs(456, 132).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(2.2f, -4f, 46f));
+                PartPose.offset(5.75f, -4f, 46f));
         PartDefinition p_w0_t0 = p_w0.addOrReplaceChild("w0_t0",
                 CubeListBuilder.create()
                 .texOffs(412, 132).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -711,7 +711,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w1 = p_body.addOrReplaceChild("w1",
                 CubeListBuilder.create()
                 .texOffs(456, 132).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(-2.2f, -4f, 46f));
+                PartPose.offset(-5.75f, -4f, 46f));
         PartDefinition p_w1_t0 = p_w1.addOrReplaceChild("w1_t0",
                 CubeListBuilder.create()
                 .texOffs(412, 132).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -723,7 +723,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w2 = p_body.addOrReplaceChild("w2",
                 CubeListBuilder.create()
                 .texOffs(456, 132).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(2.2f, -4f, 26f));
+                PartPose.offset(5.75f, -4f, 26f));
         PartDefinition p_w2_t0 = p_w2.addOrReplaceChild("w2_t0",
                 CubeListBuilder.create()
                 .texOffs(412, 132).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -735,7 +735,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w3 = p_body.addOrReplaceChild("w3",
                 CubeListBuilder.create()
                 .texOffs(456, 132).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(-2.2f, -4f, 26f));
+                PartPose.offset(-5.75f, -4f, 26f));
         PartDefinition p_w3_t0 = p_w3.addOrReplaceChild("w3_t0",
                 CubeListBuilder.create()
                 .texOffs(412, 132).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -747,7 +747,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w4 = p_body.addOrReplaceChild("w4",
                 CubeListBuilder.create()
                 .texOffs(456, 132).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(2.2f, -4f, -26f));
+                PartPose.offset(5.75f, -4f, -26f));
         PartDefinition p_w4_t0 = p_w4.addOrReplaceChild("w4_t0",
                 CubeListBuilder.create()
                 .texOffs(412, 132).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -759,7 +759,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w5 = p_body.addOrReplaceChild("w5",
                 CubeListBuilder.create()
                 .texOffs(456, 132).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(-2.2f, -4f, -26f));
+                PartPose.offset(-5.75f, -4f, -26f));
         PartDefinition p_w5_t0 = p_w5.addOrReplaceChild("w5_t0",
                 CubeListBuilder.create()
                 .texOffs(412, 132).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -771,7 +771,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w6 = p_body.addOrReplaceChild("w6",
                 CubeListBuilder.create()
                 .texOffs(456, 132).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(2.2f, -4f, -46f));
+                PartPose.offset(5.75f, -4f, -46f));
         PartDefinition p_w6_t0 = p_w6.addOrReplaceChild("w6_t0",
                 CubeListBuilder.create()
                 .texOffs(412, 132).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -783,7 +783,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w7 = p_body.addOrReplaceChild("w7",
                 CubeListBuilder.create()
                 .texOffs(456, 132).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(-2.2f, -4f, -46f));
+                PartPose.offset(-5.75f, -4f, -46f));
         PartDefinition p_w7_t0 = p_w7.addOrReplaceChild("w7_t0",
                 CubeListBuilder.create()
                 .texOffs(412, 132).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -806,11 +806,11 @@ public class TrainCarModel extends EntityModel<Entity> {
                 CubeListBuilder.create()
                 .texOffs(0, 0).addBox(-10f, -11f, -86f, 20f, 3f, 130f)
                 .texOffs(540, 133).addBox(-10f, -9f, 46f, 20f, 3f, 42f)
-                .texOffs(78, 195).addBox(12f, -8f, -44f, 1f, 2f, 36f)
-                .texOffs(152, 195).addBox(13f, -8f, -60f, 1f, 2f, 34f)
+                .texOffs(78, 195).addBox(7f, -8f, -44f, 1f, 2f, 36f)
+                .texOffs(152, 195).addBox(8f, -8f, -60f, 1f, 2f, 34f)
                 .texOffs(434, 195).addBox(11f, -12f, -68f, 3f, 7f, 12f)
-                .texOffs(78, 195).addBox(-13f, -8f, -44f, 1f, 2f, 36f)
-                .texOffs(152, 195).addBox(-14f, -8f, -60f, 1f, 2f, 34f)
+                .texOffs(78, 195).addBox(-8f, -8f, -44f, 1f, 2f, 36f)
+                .texOffs(152, 195).addBox(-9f, -8f, -60f, 1f, 2f, 34f)
                 .texOffs(434, 195).addBox(-14f, -12f, -68f, 3f, 7f, 12f)
                 .texOffs(414, 0).addBox(-12f, -12f, -20f, 24f, 2f, 64f)
                 .texOffs(300, 0).addBox(11f, -26f, -20f, 1f, 14f, 56f)
@@ -879,7 +879,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w0 = p_body.addOrReplaceChild("w0",
                 CubeListBuilder.create()
                 .texOffs(828, 195).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
-                PartPose.offset(11f, -7f, -8f));
+                PartPose.offset(5.75f, -7f, -8f));
         PartDefinition p_w0_t0 = p_w0.addOrReplaceChild("w0_t0",
                 CubeListBuilder.create()
                 .texOffs(222, 195).addBox(-1f, -7f, -7f, 2f, 14f, 14f),
@@ -895,7 +895,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w1 = p_body.addOrReplaceChild("w1",
                 CubeListBuilder.create()
                 .texOffs(828, 195).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
-                PartPose.offset(-11f, -7f, -8f));
+                PartPose.offset(-5.75f, -7f, -8f));
         PartDefinition p_w1_t0 = p_w1.addOrReplaceChild("w1_t0",
                 CubeListBuilder.create()
                 .texOffs(222, 195).addBox(-1f, -7f, -7f, 2f, 14f, 14f),
@@ -911,7 +911,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w2 = p_body.addOrReplaceChild("w2",
                 CubeListBuilder.create()
                 .texOffs(828, 195).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
-                PartPose.offset(11f, -7f, -26f));
+                PartPose.offset(5.75f, -7f, -26f));
         PartDefinition p_w2_t0 = p_w2.addOrReplaceChild("w2_t0",
                 CubeListBuilder.create()
                 .texOffs(222, 195).addBox(-1f, -7f, -7f, 2f, 14f, 14f),
@@ -927,7 +927,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w3 = p_body.addOrReplaceChild("w3",
                 CubeListBuilder.create()
                 .texOffs(828, 195).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
-                PartPose.offset(-11f, -7f, -26f));
+                PartPose.offset(-5.75f, -7f, -26f));
         PartDefinition p_w3_t0 = p_w3.addOrReplaceChild("w3_t0",
                 CubeListBuilder.create()
                 .texOffs(222, 195).addBox(-1f, -7f, -7f, 2f, 14f, 14f),
@@ -943,7 +943,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w4 = p_body.addOrReplaceChild("w4",
                 CubeListBuilder.create()
                 .texOffs(828, 195).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
-                PartPose.offset(11f, -7f, -44f));
+                PartPose.offset(5.75f, -7f, -44f));
         PartDefinition p_w4_t0 = p_w4.addOrReplaceChild("w4_t0",
                 CubeListBuilder.create()
                 .texOffs(222, 195).addBox(-1f, -7f, -7f, 2f, 14f, 14f),
@@ -959,7 +959,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w5 = p_body.addOrReplaceChild("w5",
                 CubeListBuilder.create()
                 .texOffs(828, 195).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
-                PartPose.offset(-11f, -7f, -44f));
+                PartPose.offset(-5.75f, -7f, -44f));
         PartDefinition p_w5_t0 = p_w5.addOrReplaceChild("w5_t0",
                 CubeListBuilder.create()
                 .texOffs(222, 195).addBox(-1f, -7f, -7f, 2f, 14f, 14f),
@@ -975,7 +975,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w6 = p_body.addOrReplaceChild("w6",
                 CubeListBuilder.create()
                 .texOffs(828, 195).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
-                PartPose.offset(6f, -4f, -76f));
+                PartPose.offset(5.75f, -4f, -76f));
         PartDefinition p_w6_t0 = p_w6.addOrReplaceChild("w6_t0",
                 CubeListBuilder.create()
                 .texOffs(584, 195).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -987,7 +987,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w7 = p_body.addOrReplaceChild("w7",
                 CubeListBuilder.create()
                 .texOffs(828, 195).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
-                PartPose.offset(-6f, -4f, -76f));
+                PartPose.offset(-5.75f, -4f, -76f));
         PartDefinition p_w7_t0 = p_w7.addOrReplaceChild("w7_t0",
                 CubeListBuilder.create()
                 .texOffs(584, 195).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -999,7 +999,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w8 = p_body.addOrReplaceChild("w8",
                 CubeListBuilder.create()
                 .texOffs(828, 195).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
-                PartPose.offset(11f, -4f, 52f));
+                PartPose.offset(5.75f, -4f, 52f));
         PartDefinition p_w8_t0 = p_w8.addOrReplaceChild("w8_t0",
                 CubeListBuilder.create()
                 .texOffs(584, 195).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -1011,7 +1011,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w9 = p_body.addOrReplaceChild("w9",
                 CubeListBuilder.create()
                 .texOffs(828, 195).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
-                PartPose.offset(-11f, -4f, 52f));
+                PartPose.offset(-5.75f, -4f, 52f));
         PartDefinition p_w9_t0 = p_w9.addOrReplaceChild("w9_t0",
                 CubeListBuilder.create()
                 .texOffs(584, 195).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -1023,7 +1023,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w10 = p_body.addOrReplaceChild("w10",
                 CubeListBuilder.create()
                 .texOffs(828, 195).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
-                PartPose.offset(11f, -4f, 62f));
+                PartPose.offset(5.75f, -4f, 62f));
         PartDefinition p_w10_t0 = p_w10.addOrReplaceChild("w10_t0",
                 CubeListBuilder.create()
                 .texOffs(584, 195).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -1035,7 +1035,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w11 = p_body.addOrReplaceChild("w11",
                 CubeListBuilder.create()
                 .texOffs(828, 195).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
-                PartPose.offset(-11f, -4f, 62f));
+                PartPose.offset(-5.75f, -4f, 62f));
         PartDefinition p_w11_t0 = p_w11.addOrReplaceChild("w11_t0",
                 CubeListBuilder.create()
                 .texOffs(584, 195).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -1047,7 +1047,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w12 = p_body.addOrReplaceChild("w12",
                 CubeListBuilder.create()
                 .texOffs(828, 195).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
-                PartPose.offset(11f, -4f, 72f));
+                PartPose.offset(5.75f, -4f, 72f));
         PartDefinition p_w12_t0 = p_w12.addOrReplaceChild("w12_t0",
                 CubeListBuilder.create()
                 .texOffs(584, 195).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -1059,7 +1059,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w13 = p_body.addOrReplaceChild("w13",
                 CubeListBuilder.create()
                 .texOffs(828, 195).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
-                PartPose.offset(-11f, -4f, 72f));
+                PartPose.offset(-5.75f, -4f, 72f));
         PartDefinition p_w13_t0 = p_w13.addOrReplaceChild("w13_t0",
                 CubeListBuilder.create()
                 .texOffs(584, 195).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -1071,7 +1071,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w14 = p_body.addOrReplaceChild("w14",
                 CubeListBuilder.create()
                 .texOffs(828, 195).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
-                PartPose.offset(11f, -4f, 82f));
+                PartPose.offset(5.75f, -4f, 82f));
         PartDefinition p_w14_t0 = p_w14.addOrReplaceChild("w14_t0",
                 CubeListBuilder.create()
                 .texOffs(584, 195).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -1083,7 +1083,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w15 = p_body.addOrReplaceChild("w15",
                 CubeListBuilder.create()
                 .texOffs(828, 195).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
-                PartPose.offset(-11f, -4f, 82f));
+                PartPose.offset(-5.75f, -4f, 82f));
         PartDefinition p_w15_t0 = p_w15.addOrReplaceChild("w15_t0",
                 CubeListBuilder.create()
                 .texOffs(584, 195).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -1168,11 +1168,11 @@ public class TrainCarModel extends EntityModel<Entity> {
                 CubeListBuilder.create()
                 .texOffs(0, 0).addBox(-10f, -11f, -86f, 20f, 3f, 130f)
                 .texOffs(202, 199).addBox(-10f, -9f, 46f, 20f, 3f, 42f)
-                .texOffs(624, 199).addBox(12f, -8f, -44f, 1f, 2f, 36f)
-                .texOffs(698, 199).addBox(13f, -8f, -60f, 1f, 2f, 34f)
+                .texOffs(624, 199).addBox(7f, -8f, -44f, 1f, 2f, 36f)
+                .texOffs(698, 199).addBox(8f, -8f, -60f, 1f, 2f, 34f)
                 .texOffs(960, 199).addBox(11f, -12f, -68f, 3f, 7f, 12f)
-                .texOffs(624, 199).addBox(-13f, -8f, -44f, 1f, 2f, 36f)
-                .texOffs(698, 199).addBox(-14f, -8f, -60f, 1f, 2f, 34f)
+                .texOffs(624, 199).addBox(-8f, -8f, -44f, 1f, 2f, 36f)
+                .texOffs(698, 199).addBox(-9f, -8f, -60f, 1f, 2f, 34f)
                 .texOffs(960, 199).addBox(-14f, -12f, -68f, 3f, 7f, 12f)
                 .texOffs(0, 133).addBox(-12f, -12f, -20f, 24f, 2f, 64f)
                 .texOffs(756, 0).addBox(11f, -26f, -20f, 1f, 14f, 56f)
@@ -1246,7 +1246,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w0 = p_body.addOrReplaceChild("w0",
                 CubeListBuilder.create()
                 .texOffs(318, 252).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
-                PartPose.offset(11f, -7f, -8f));
+                PartPose.offset(5.75f, -7f, -8f));
         PartDefinition p_w0_t0 = p_w0.addOrReplaceChild("w0_t0",
                 CubeListBuilder.create()
                 .texOffs(768, 199).addBox(-1f, -7f, -7f, 2f, 14f, 14f),
@@ -1262,7 +1262,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w1 = p_body.addOrReplaceChild("w1",
                 CubeListBuilder.create()
                 .texOffs(318, 252).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
-                PartPose.offset(-11f, -7f, -8f));
+                PartPose.offset(-5.75f, -7f, -8f));
         PartDefinition p_w1_t0 = p_w1.addOrReplaceChild("w1_t0",
                 CubeListBuilder.create()
                 .texOffs(768, 199).addBox(-1f, -7f, -7f, 2f, 14f, 14f),
@@ -1278,7 +1278,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w2 = p_body.addOrReplaceChild("w2",
                 CubeListBuilder.create()
                 .texOffs(318, 252).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
-                PartPose.offset(11f, -7f, -26f));
+                PartPose.offset(5.75f, -7f, -26f));
         PartDefinition p_w2_t0 = p_w2.addOrReplaceChild("w2_t0",
                 CubeListBuilder.create()
                 .texOffs(768, 199).addBox(-1f, -7f, -7f, 2f, 14f, 14f),
@@ -1294,7 +1294,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w3 = p_body.addOrReplaceChild("w3",
                 CubeListBuilder.create()
                 .texOffs(318, 252).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
-                PartPose.offset(-11f, -7f, -26f));
+                PartPose.offset(-5.75f, -7f, -26f));
         PartDefinition p_w3_t0 = p_w3.addOrReplaceChild("w3_t0",
                 CubeListBuilder.create()
                 .texOffs(768, 199).addBox(-1f, -7f, -7f, 2f, 14f, 14f),
@@ -1310,7 +1310,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w4 = p_body.addOrReplaceChild("w4",
                 CubeListBuilder.create()
                 .texOffs(318, 252).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
-                PartPose.offset(11f, -7f, -44f));
+                PartPose.offset(5.75f, -7f, -44f));
         PartDefinition p_w4_t0 = p_w4.addOrReplaceChild("w4_t0",
                 CubeListBuilder.create()
                 .texOffs(768, 199).addBox(-1f, -7f, -7f, 2f, 14f, 14f),
@@ -1326,7 +1326,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w5 = p_body.addOrReplaceChild("w5",
                 CubeListBuilder.create()
                 .texOffs(318, 252).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
-                PartPose.offset(-11f, -7f, -44f));
+                PartPose.offset(-5.75f, -7f, -44f));
         PartDefinition p_w5_t0 = p_w5.addOrReplaceChild("w5_t0",
                 CubeListBuilder.create()
                 .texOffs(768, 199).addBox(-1f, -7f, -7f, 2f, 14f, 14f),
@@ -1342,7 +1342,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w6 = p_body.addOrReplaceChild("w6",
                 CubeListBuilder.create()
                 .texOffs(318, 252).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
-                PartPose.offset(6f, -4f, -76f));
+                PartPose.offset(5.75f, -4f, -76f));
         PartDefinition p_w6_t0 = p_w6.addOrReplaceChild("w6_t0",
                 CubeListBuilder.create()
                 .texOffs(86, 252).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -1354,7 +1354,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w7 = p_body.addOrReplaceChild("w7",
                 CubeListBuilder.create()
                 .texOffs(318, 252).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
-                PartPose.offset(-6f, -4f, -76f));
+                PartPose.offset(-5.75f, -4f, -76f));
         PartDefinition p_w7_t0 = p_w7.addOrReplaceChild("w7_t0",
                 CubeListBuilder.create()
                 .texOffs(86, 252).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -1366,7 +1366,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w8 = p_body.addOrReplaceChild("w8",
                 CubeListBuilder.create()
                 .texOffs(318, 252).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
-                PartPose.offset(11f, -4f, 52f));
+                PartPose.offset(5.75f, -4f, 52f));
         PartDefinition p_w8_t0 = p_w8.addOrReplaceChild("w8_t0",
                 CubeListBuilder.create()
                 .texOffs(86, 252).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -1378,7 +1378,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w9 = p_body.addOrReplaceChild("w9",
                 CubeListBuilder.create()
                 .texOffs(318, 252).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
-                PartPose.offset(-11f, -4f, 52f));
+                PartPose.offset(-5.75f, -4f, 52f));
         PartDefinition p_w9_t0 = p_w9.addOrReplaceChild("w9_t0",
                 CubeListBuilder.create()
                 .texOffs(86, 252).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -1390,7 +1390,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w10 = p_body.addOrReplaceChild("w10",
                 CubeListBuilder.create()
                 .texOffs(318, 252).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
-                PartPose.offset(11f, -4f, 62f));
+                PartPose.offset(5.75f, -4f, 62f));
         PartDefinition p_w10_t0 = p_w10.addOrReplaceChild("w10_t0",
                 CubeListBuilder.create()
                 .texOffs(86, 252).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -1402,7 +1402,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w11 = p_body.addOrReplaceChild("w11",
                 CubeListBuilder.create()
                 .texOffs(318, 252).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
-                PartPose.offset(-11f, -4f, 62f));
+                PartPose.offset(-5.75f, -4f, 62f));
         PartDefinition p_w11_t0 = p_w11.addOrReplaceChild("w11_t0",
                 CubeListBuilder.create()
                 .texOffs(86, 252).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -1414,7 +1414,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w12 = p_body.addOrReplaceChild("w12",
                 CubeListBuilder.create()
                 .texOffs(318, 252).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
-                PartPose.offset(11f, -4f, 72f));
+                PartPose.offset(5.75f, -4f, 72f));
         PartDefinition p_w12_t0 = p_w12.addOrReplaceChild("w12_t0",
                 CubeListBuilder.create()
                 .texOffs(86, 252).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -1426,7 +1426,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w13 = p_body.addOrReplaceChild("w13",
                 CubeListBuilder.create()
                 .texOffs(318, 252).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
-                PartPose.offset(-11f, -4f, 72f));
+                PartPose.offset(-5.75f, -4f, 72f));
         PartDefinition p_w13_t0 = p_w13.addOrReplaceChild("w13_t0",
                 CubeListBuilder.create()
                 .texOffs(86, 252).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -1438,7 +1438,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w14 = p_body.addOrReplaceChild("w14",
                 CubeListBuilder.create()
                 .texOffs(318, 252).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
-                PartPose.offset(11f, -4f, 82f));
+                PartPose.offset(5.75f, -4f, 82f));
         PartDefinition p_w14_t0 = p_w14.addOrReplaceChild("w14_t0",
                 CubeListBuilder.create()
                 .texOffs(86, 252).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -1450,7 +1450,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w15 = p_body.addOrReplaceChild("w15",
                 CubeListBuilder.create()
                 .texOffs(318, 252).addBox(-1.5f, -1.5f, -1.5f, 3f, 3f, 3f),
-                PartPose.offset(-11f, -4f, 82f));
+                PartPose.offset(-5.75f, -4f, 82f));
         PartDefinition p_w15_t0 = p_w15.addOrReplaceChild("w15_t0",
                 CubeListBuilder.create()
                 .texOffs(86, 252).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -1627,7 +1627,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w0 = p_body.addOrReplaceChild("w0",
                 CubeListBuilder.create()
                 .texOffs(90, 495).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(2.2f, -4f, 66f));
+                PartPose.offset(5.75f, -4f, 66f));
         PartDefinition p_w0_t0 = p_w0.addOrReplaceChild("w0_t0",
                 CubeListBuilder.create()
                 .texOffs(974, 333).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -1639,7 +1639,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w1 = p_body.addOrReplaceChild("w1",
                 CubeListBuilder.create()
                 .texOffs(90, 495).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(-2.2f, -4f, 66f));
+                PartPose.offset(-5.75f, -4f, 66f));
         PartDefinition p_w1_t0 = p_w1.addOrReplaceChild("w1_t0",
                 CubeListBuilder.create()
                 .texOffs(974, 333).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -1651,7 +1651,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w2 = p_body.addOrReplaceChild("w2",
                 CubeListBuilder.create()
                 .texOffs(90, 495).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(2.2f, -4f, 46f));
+                PartPose.offset(5.75f, -4f, 46f));
         PartDefinition p_w2_t0 = p_w2.addOrReplaceChild("w2_t0",
                 CubeListBuilder.create()
                 .texOffs(974, 333).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -1663,7 +1663,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w3 = p_body.addOrReplaceChild("w3",
                 CubeListBuilder.create()
                 .texOffs(90, 495).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(-2.2f, -4f, 46f));
+                PartPose.offset(-5.75f, -4f, 46f));
         PartDefinition p_w3_t0 = p_w3.addOrReplaceChild("w3_t0",
                 CubeListBuilder.create()
                 .texOffs(974, 333).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -1675,7 +1675,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w4 = p_body.addOrReplaceChild("w4",
                 CubeListBuilder.create()
                 .texOffs(90, 495).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(2.2f, -4f, -46f));
+                PartPose.offset(5.75f, -4f, -46f));
         PartDefinition p_w4_t0 = p_w4.addOrReplaceChild("w4_t0",
                 CubeListBuilder.create()
                 .texOffs(974, 333).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -1687,7 +1687,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w5 = p_body.addOrReplaceChild("w5",
                 CubeListBuilder.create()
                 .texOffs(90, 495).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(-2.2f, -4f, -46f));
+                PartPose.offset(-5.75f, -4f, -46f));
         PartDefinition p_w5_t0 = p_w5.addOrReplaceChild("w5_t0",
                 CubeListBuilder.create()
                 .texOffs(974, 333).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -1699,7 +1699,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w6 = p_body.addOrReplaceChild("w6",
                 CubeListBuilder.create()
                 .texOffs(90, 495).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(2.2f, -4f, -66f));
+                PartPose.offset(5.75f, -4f, -66f));
         PartDefinition p_w6_t0 = p_w6.addOrReplaceChild("w6_t0",
                 CubeListBuilder.create()
                 .texOffs(974, 333).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -1711,7 +1711,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w7 = p_body.addOrReplaceChild("w7",
                 CubeListBuilder.create()
                 .texOffs(90, 495).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(-2.2f, -4f, -66f));
+                PartPose.offset(-5.75f, -4f, -66f));
         PartDefinition p_w7_t0 = p_w7.addOrReplaceChild("w7_t0",
                 CubeListBuilder.create()
                 .texOffs(974, 333).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -1894,7 +1894,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w0 = p_body.addOrReplaceChild("w0",
                 CubeListBuilder.create()
                 .texOffs(90, 494).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(2.2f, -4f, 66f));
+                PartPose.offset(5.75f, -4f, 66f));
         PartDefinition p_w0_t0 = p_w0.addOrReplaceChild("w0_t0",
                 CubeListBuilder.create()
                 .texOffs(990, 332).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -1906,7 +1906,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w1 = p_body.addOrReplaceChild("w1",
                 CubeListBuilder.create()
                 .texOffs(90, 494).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(-2.2f, -4f, 66f));
+                PartPose.offset(-5.75f, -4f, 66f));
         PartDefinition p_w1_t0 = p_w1.addOrReplaceChild("w1_t0",
                 CubeListBuilder.create()
                 .texOffs(990, 332).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -1918,7 +1918,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w2 = p_body.addOrReplaceChild("w2",
                 CubeListBuilder.create()
                 .texOffs(90, 494).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(2.2f, -4f, 46f));
+                PartPose.offset(5.75f, -4f, 46f));
         PartDefinition p_w2_t0 = p_w2.addOrReplaceChild("w2_t0",
                 CubeListBuilder.create()
                 .texOffs(990, 332).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -1930,7 +1930,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w3 = p_body.addOrReplaceChild("w3",
                 CubeListBuilder.create()
                 .texOffs(90, 494).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(-2.2f, -4f, 46f));
+                PartPose.offset(-5.75f, -4f, 46f));
         PartDefinition p_w3_t0 = p_w3.addOrReplaceChild("w3_t0",
                 CubeListBuilder.create()
                 .texOffs(990, 332).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -1942,7 +1942,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w4 = p_body.addOrReplaceChild("w4",
                 CubeListBuilder.create()
                 .texOffs(90, 494).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(2.2f, -4f, -46f));
+                PartPose.offset(5.75f, -4f, -46f));
         PartDefinition p_w4_t0 = p_w4.addOrReplaceChild("w4_t0",
                 CubeListBuilder.create()
                 .texOffs(990, 332).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -1954,7 +1954,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w5 = p_body.addOrReplaceChild("w5",
                 CubeListBuilder.create()
                 .texOffs(90, 494).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(-2.2f, -4f, -46f));
+                PartPose.offset(-5.75f, -4f, -46f));
         PartDefinition p_w5_t0 = p_w5.addOrReplaceChild("w5_t0",
                 CubeListBuilder.create()
                 .texOffs(990, 332).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -1966,7 +1966,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w6 = p_body.addOrReplaceChild("w6",
                 CubeListBuilder.create()
                 .texOffs(90, 494).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(2.2f, -4f, -66f));
+                PartPose.offset(5.75f, -4f, -66f));
         PartDefinition p_w6_t0 = p_w6.addOrReplaceChild("w6_t0",
                 CubeListBuilder.create()
                 .texOffs(990, 332).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -1978,7 +1978,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w7 = p_body.addOrReplaceChild("w7",
                 CubeListBuilder.create()
                 .texOffs(90, 494).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(-2.2f, -4f, -66f));
+                PartPose.offset(-5.75f, -4f, -66f));
         PartDefinition p_w7_t0 = p_w7.addOrReplaceChild("w7_t0",
                 CubeListBuilder.create()
                 .texOffs(990, 332).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -2140,7 +2140,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w0 = p_body.addOrReplaceChild("w0",
                 CubeListBuilder.create()
                 .texOffs(824, 493).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(2.2f, -4f, 66f));
+                PartPose.offset(5.75f, -4f, 66f));
         PartDefinition p_w0_t0 = p_w0.addOrReplaceChild("w0_t0",
                 CubeListBuilder.create()
                 .texOffs(636, 493).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -2152,7 +2152,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w1 = p_body.addOrReplaceChild("w1",
                 CubeListBuilder.create()
                 .texOffs(824, 493).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(-2.2f, -4f, 66f));
+                PartPose.offset(-5.75f, -4f, 66f));
         PartDefinition p_w1_t0 = p_w1.addOrReplaceChild("w1_t0",
                 CubeListBuilder.create()
                 .texOffs(636, 493).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -2164,7 +2164,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w2 = p_body.addOrReplaceChild("w2",
                 CubeListBuilder.create()
                 .texOffs(824, 493).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(2.2f, -4f, 46f));
+                PartPose.offset(5.75f, -4f, 46f));
         PartDefinition p_w2_t0 = p_w2.addOrReplaceChild("w2_t0",
                 CubeListBuilder.create()
                 .texOffs(636, 493).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -2176,7 +2176,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w3 = p_body.addOrReplaceChild("w3",
                 CubeListBuilder.create()
                 .texOffs(824, 493).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(-2.2f, -4f, 46f));
+                PartPose.offset(-5.75f, -4f, 46f));
         PartDefinition p_w3_t0 = p_w3.addOrReplaceChild("w3_t0",
                 CubeListBuilder.create()
                 .texOffs(636, 493).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -2188,7 +2188,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w4 = p_body.addOrReplaceChild("w4",
                 CubeListBuilder.create()
                 .texOffs(824, 493).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(2.2f, -4f, -46f));
+                PartPose.offset(5.75f, -4f, -46f));
         PartDefinition p_w4_t0 = p_w4.addOrReplaceChild("w4_t0",
                 CubeListBuilder.create()
                 .texOffs(636, 493).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -2200,7 +2200,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w5 = p_body.addOrReplaceChild("w5",
                 CubeListBuilder.create()
                 .texOffs(824, 493).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(-2.2f, -4f, -46f));
+                PartPose.offset(-5.75f, -4f, -46f));
         PartDefinition p_w5_t0 = p_w5.addOrReplaceChild("w5_t0",
                 CubeListBuilder.create()
                 .texOffs(636, 493).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -2212,7 +2212,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w6 = p_body.addOrReplaceChild("w6",
                 CubeListBuilder.create()
                 .texOffs(824, 493).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(2.2f, -4f, -66f));
+                PartPose.offset(5.75f, -4f, -66f));
         PartDefinition p_w6_t0 = p_w6.addOrReplaceChild("w6_t0",
                 CubeListBuilder.create()
                 .texOffs(636, 493).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -2224,7 +2224,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w7 = p_body.addOrReplaceChild("w7",
                 CubeListBuilder.create()
                 .texOffs(824, 493).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(-2.2f, -4f, -66f));
+                PartPose.offset(-5.75f, -4f, -66f));
         PartDefinition p_w7_t0 = p_w7.addOrReplaceChild("w7_t0",
                 CubeListBuilder.create()
                 .texOffs(636, 493).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -2344,7 +2344,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w0 = p_body.addOrReplaceChild("w0",
                 CubeListBuilder.create()
                 .texOffs(594, 419).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(2.2f, -4f, 66f));
+                PartPose.offset(5.75f, -4f, 66f));
         PartDefinition p_w0_t0 = p_w0.addOrReplaceChild("w0_t0",
                 CubeListBuilder.create()
                 .texOffs(56, 419).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -2356,7 +2356,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w1 = p_body.addOrReplaceChild("w1",
                 CubeListBuilder.create()
                 .texOffs(594, 419).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(-2.2f, -4f, 66f));
+                PartPose.offset(-5.75f, -4f, 66f));
         PartDefinition p_w1_t0 = p_w1.addOrReplaceChild("w1_t0",
                 CubeListBuilder.create()
                 .texOffs(56, 419).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -2368,7 +2368,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w2 = p_body.addOrReplaceChild("w2",
                 CubeListBuilder.create()
                 .texOffs(594, 419).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(2.2f, -4f, 46f));
+                PartPose.offset(5.75f, -4f, 46f));
         PartDefinition p_w2_t0 = p_w2.addOrReplaceChild("w2_t0",
                 CubeListBuilder.create()
                 .texOffs(56, 419).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -2380,7 +2380,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w3 = p_body.addOrReplaceChild("w3",
                 CubeListBuilder.create()
                 .texOffs(594, 419).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(-2.2f, -4f, 46f));
+                PartPose.offset(-5.75f, -4f, 46f));
         PartDefinition p_w3_t0 = p_w3.addOrReplaceChild("w3_t0",
                 CubeListBuilder.create()
                 .texOffs(56, 419).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -2392,7 +2392,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w4 = p_body.addOrReplaceChild("w4",
                 CubeListBuilder.create()
                 .texOffs(594, 419).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(2.2f, -4f, -46f));
+                PartPose.offset(5.75f, -4f, -46f));
         PartDefinition p_w4_t0 = p_w4.addOrReplaceChild("w4_t0",
                 CubeListBuilder.create()
                 .texOffs(56, 419).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -2404,7 +2404,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w5 = p_body.addOrReplaceChild("w5",
                 CubeListBuilder.create()
                 .texOffs(594, 419).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(-2.2f, -4f, -46f));
+                PartPose.offset(-5.75f, -4f, -46f));
         PartDefinition p_w5_t0 = p_w5.addOrReplaceChild("w5_t0",
                 CubeListBuilder.create()
                 .texOffs(56, 419).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -2416,7 +2416,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w6 = p_body.addOrReplaceChild("w6",
                 CubeListBuilder.create()
                 .texOffs(594, 419).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(2.2f, -4f, -66f));
+                PartPose.offset(5.75f, -4f, -66f));
         PartDefinition p_w6_t0 = p_w6.addOrReplaceChild("w6_t0",
                 CubeListBuilder.create()
                 .texOffs(56, 419).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -2428,7 +2428,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w7 = p_body.addOrReplaceChild("w7",
                 CubeListBuilder.create()
                 .texOffs(594, 419).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(-2.2f, -4f, -66f));
+                PartPose.offset(-5.75f, -4f, -66f));
         PartDefinition p_w7_t0 = p_w7.addOrReplaceChild("w7_t0",
                 CubeListBuilder.create()
                 .texOffs(56, 419).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -2628,7 +2628,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w0 = p_body.addOrReplaceChild("w0",
                 CubeListBuilder.create()
                 .texOffs(470, 493).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(2.2f, -4f, 66f));
+                PartPose.offset(5.75f, -4f, 66f));
         PartDefinition p_w0_t0 = p_w0.addOrReplaceChild("w0_t0",
                 CubeListBuilder.create()
                 .texOffs(360, 493).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -2640,7 +2640,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w1 = p_body.addOrReplaceChild("w1",
                 CubeListBuilder.create()
                 .texOffs(470, 493).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(-2.2f, -4f, 66f));
+                PartPose.offset(-5.75f, -4f, 66f));
         PartDefinition p_w1_t0 = p_w1.addOrReplaceChild("w1_t0",
                 CubeListBuilder.create()
                 .texOffs(360, 493).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -2652,7 +2652,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w2 = p_body.addOrReplaceChild("w2",
                 CubeListBuilder.create()
                 .texOffs(470, 493).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(2.2f, -4f, 46f));
+                PartPose.offset(5.75f, -4f, 46f));
         PartDefinition p_w2_t0 = p_w2.addOrReplaceChild("w2_t0",
                 CubeListBuilder.create()
                 .texOffs(360, 493).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -2664,7 +2664,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w3 = p_body.addOrReplaceChild("w3",
                 CubeListBuilder.create()
                 .texOffs(470, 493).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(-2.2f, -4f, 46f));
+                PartPose.offset(-5.75f, -4f, 46f));
         PartDefinition p_w3_t0 = p_w3.addOrReplaceChild("w3_t0",
                 CubeListBuilder.create()
                 .texOffs(360, 493).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -2676,7 +2676,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w4 = p_body.addOrReplaceChild("w4",
                 CubeListBuilder.create()
                 .texOffs(470, 493).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(2.2f, -4f, -46f));
+                PartPose.offset(5.75f, -4f, -46f));
         PartDefinition p_w4_t0 = p_w4.addOrReplaceChild("w4_t0",
                 CubeListBuilder.create()
                 .texOffs(360, 493).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -2688,7 +2688,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w5 = p_body.addOrReplaceChild("w5",
                 CubeListBuilder.create()
                 .texOffs(470, 493).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(-2.2f, -4f, -46f));
+                PartPose.offset(-5.75f, -4f, -46f));
         PartDefinition p_w5_t0 = p_w5.addOrReplaceChild("w5_t0",
                 CubeListBuilder.create()
                 .texOffs(360, 493).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -2700,7 +2700,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w6 = p_body.addOrReplaceChild("w6",
                 CubeListBuilder.create()
                 .texOffs(470, 493).addBox(0.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(2.2f, -4f, -66f));
+                PartPose.offset(5.75f, -4f, -66f));
         PartDefinition p_w6_t0 = p_w6.addOrReplaceChild("w6_t0",
                 CubeListBuilder.create()
                 .texOffs(360, 493).addBox(-1f, -4f, -4f, 2f, 8f, 8f),
@@ -2712,7 +2712,7 @@ public class TrainCarModel extends EntityModel<Entity> {
         PartDefinition p_w7 = p_body.addOrReplaceChild("w7",
                 CubeListBuilder.create()
                 .texOffs(470, 493).addBox(-1.5f, -1.5f, -1.5f, 1f, 3f, 3f),
-                PartPose.offset(-2.2f, -4f, -66f));
+                PartPose.offset(-5.75f, -4f, -66f));
         PartDefinition p_w7_t0 = p_w7.addOrReplaceChild("w7_t0",
                 CubeListBuilder.create()
                 .texOffs(360, 493).addBox(-1f, -4f, -4f, 2f, 8f, 8f),

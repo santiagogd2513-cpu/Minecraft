@@ -607,6 +607,23 @@ public abstract class VehicleEntity extends Entity implements PaintableVehicle, 
         }
         this.updateVisuals();
         this.refreshHull();
+        if (!this.level().isClientSide) {
+            VehicleImpact.tick(this, this.impactProfile(), this.getControllingPassenger());      // V7.1.0: atropellos
+        }
+    }
+
+    /** V7.1.0: cómo golpea este vehículo (null = no golpea). */
+    protected VehicleImpact.Profile impactProfile() {
+        if (this instanceof BicycleEntity) {
+            return VehicleImpact.BICYCLE;
+        }
+        if (this instanceof MotorcycleEntity) {
+            return VehicleImpact.MOTORCYCLE;
+        }
+        if (this instanceof DeliveryTruckEntity truck) {
+            return truck.prizeTier > 0 ? null : VehicleImpact.TRUCK;
+        }
+        return VehicleImpact.CAR;
     }
 
     private void tickLerp() {

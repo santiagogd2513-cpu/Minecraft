@@ -250,6 +250,7 @@ public class DroneEntity extends Entity {
             this.clientTick();
             return;
         }
+        VehicleImpact.tick(this, VehicleImpact.DRONE, null);      // V7.1.0: atropellos
 
         if (!this.isPiloted()) {
             this.setDeltaMovement(Vec3.ZERO);

@@ -441,5 +441,32 @@
         "attenuation_distance": 24
       }
     ]
+  },
+  "spotifly_song_1": {
+    "subtitle": "subtitles.beautifuldecor.spotifly_song",
+    "sounds": [
+      {
+        "name": "beautifuldecor:spotifly_song_1",
+        "stream": true
+      }
+    ]
+  },
+  "spotifly_song_2": {
+    "subtitle": "subtitles.beautifuldecor.spotifly_song",
+    "sounds": [
+      {
+        "name": "beautifuldecor:spotifly_song_2",
+        "stream": true
+      }
+    ]
+  },
+  "spotifly_song_3": {
+    "subtitle": "subtitles.beautifuldecor.spotifly_song",
+    "sounds": [
+      {
+        "name": "beautifuldecor:spotifly_song_3",
+        "stream": true
+      }
+    ]
   }
 }

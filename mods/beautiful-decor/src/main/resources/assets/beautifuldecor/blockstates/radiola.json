@@ -1,0 +1,64 @@
+{
+  "variants": {
+    "facing=north,song=0": {
+      "model": "beautifuldecor:block/radiola"
+    },
+    "facing=north,song=1": {
+      "model": "beautifuldecor:block/radiola_on"
+    },
+    "facing=north,song=2": {
+      "model": "beautifuldecor:block/radiola_on"
+    },
+    "facing=north,song=3": {
+      "model": "beautifuldecor:block/radiola_on"
+    },
+    "facing=east,song=0": {
+      "model": "beautifuldecor:block/radiola",
+      "y": 90
+    },
+    "facing=east,song=1": {
+      "model": "beautifuldecor:block/radiola_on",
+      "y": 90
+    },
+    "facing=east,song=2": {
+      "model": "beautifuldecor:block/radiola_on",
+      "y": 90
+    },
+    "facing=east,song=3": {
+      "model": "beautifuldecor:block/radiola_on",
+      "y": 90
+    },
+    "facing=south,song=0": {
+      "model": "beautifuldecor:block/radiola",
+      "y": 180
+    },
+    "facing=south,song=1": {
+      "model": "beautifuldecor:block/radiola_on",
+      "y": 180
+    },
+    "facing=south,song=2": {
+      "model": "beautifuldecor:block/radiola_on",
+      "y": 180
+    },
+    "facing=south,song=3": {
+      "model": "beautifuldecor:block/radiola_on",
+      "y": 180
+    },
+    "facing=west,song=0": {
+      "model": "beautifuldecor:block/radiola",
+      "y": 270
+    },
+    "facing=west,song=1": {
+      "model": "beautifuldecor:block/radiola_on",
+      "y": 270
+    },
+    "facing=west,song=2": {
+      "model": "beautifuldecor:block/radiola_on",
+      "y": 270
+    },
+    "facing=west,song=3": {
+      "model": "beautifuldecor:block/radiola_on",
+      "y": 270
+    }
+  }
+}

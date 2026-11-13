@@ -1,3 +1,27 @@
+PARCHE V7.2.0
+=============
+- MARCA SPOTIFLY (parodia de Spotify): anuncio con video y sonido en las pantallas (un oyente aburrido, un avioncito de papel que despega de sus audífonos y una ciudad que enciende ventanas y baila), póster y Cartel Spotifly (cuadro con el logo).
+- Radiola Spotifly: clic derecho cambia apagada → canción 1 → 2 → 3 → apagada (3 canciones de 8 bits). Suena para los jugadores cercanos y se corta al apagarla o romperla.
+- Audífonos Spotifly: clic derecho cambia de canción y solo los oye quien los usa; agachado + clic derecho los apaga.
+
+PARCHE V7.1.0
+=============
+- ATROPELLOS: todo vehículo y tren que golpea a un ser vivo en movimiento le hace daño según la velocidad (crece con el cuadrado: el doble de rápido, cuatro veces más daño) y el vehículo. Bajo la velocidad mínima no pasa nada.
+  - Bicicleta: casi nada. Moto: daño medio y el conductor, sin protección, se lleva más de la mitad del golpe. Coche y camión: matan a velocidad alta y el conductor no siente nada.
+  - Tren: mata a casi cualquier velocidad (a 130 km/h no hay salvación) y ya no lanza al aldeano como si nada: el empuje es pequeño.
+  - Helicóptero: golpe de casco a velocidad y aspas mortales cuando giran. Avión: en despegue o aterrizaje no hay salvación. Dron y coche RC: golpes leves.
+  - No cuenta quien va montado en el vehículo ni quien está de pie encima (techo de un vagón). Mensaje de muerte propio: «fue atropellado por…».
+
+PARCHE V7.0.0
+=============
+- VÍAS DE ANCHO REAL (carga, pasajeros y metro): trocha de 1,435 m, durmientes de 2,6 m y balasto de 3 bloques de ancho. Tramos rectos y subidas se dibujan sobresaliendo del bloque (el bloque sigue ocupando 1). Curvas anchas (arcos) con la misma trocha. Los trenes tienen las ruedas a esa trocha (antes 0,5 m): locomotoras, vagones, coches y metro; en las de vapor las bielas se movieron junto a las ruedas.
+- Deja 3 bloques libres a cada lado entre dos vías paralelas (con 6 de separación entre centros queda 1 bloque de pasillo).
+- La curva de esquina de 1 bloque no cambia (es más chica que la trocha): usa las curvas anchas.
+
+PARCHE V6.17.0
+==============
+- VÍAS REALISTAS (carga, pasajeros y metro; recta, subidas y curvas): balasto con talud en dos escalones y piedras sueltas, 4 durmientes por bloque (madera con veta en carga, concreto en pasajeros y metro) y riel con pie, alma y cabeza. La altura del riel y su separación no cambian: los trenes y las vías ya puestas siguen igual.
+
 PARCHE V6.16.6
 ==============
 - AUTOMÁTICO: si al encenderlo el tren ya está en una parada, cuenta como llegada (espera, abre puertas y sale a la siguiente). Antes se quedaba quieto y se apagaba a los 4 s con «se quedó sin vía».

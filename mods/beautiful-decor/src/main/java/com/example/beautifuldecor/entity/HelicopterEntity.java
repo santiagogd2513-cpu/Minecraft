@@ -481,6 +481,10 @@ public class HelicopterEntity extends Entity implements PaintableVehicle, HasVeh
         }
         this.updateVisuals();
         VehicleHull.refresh(this, HULL);
+        if (!this.level().isClientSide) {
+            VehicleImpact.tick(this, VehicleImpact.HELICOPTER, this.getControllingPassenger());      // V7.1.0: atropellos y aspas
+            VehicleImpact.rotor(this, this.getControllingPassenger(), this.getRpm(), 4.6, 2.9);
+        }
     }
 
     private void tickLerp() {

@@ -214,6 +214,14 @@ public class ModBlocks {
             () -> new RojoToroMinibarBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_RED)
                     .strength(1.5f).sound(SoundType.METAL).noOcclusion()));
 
+    // ===== V7.2.0: Spotifly =====
+    public static final RegistryObject<Block> PAINTING_SPOTIFLY = BLOCKS.register("painting_spotifly",
+            () -> new PictureBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD)
+                    .strength(0.5f).sound(SoundType.WOOD).noOcclusion()));
+    public static final RegistryObject<Block> RADIOLA = BLOCKS.register("radiola",
+            () -> new com.example.beautifuldecor.block.RadiolaBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_PURPLE)
+                    .strength(1.5f).sound(SoundType.METAL).noOcclusion()));
+
     // ===== V6.15.0: lotería =====
     public static final RegistryObject<Block> PAINTING_LOTERIA = BLOCKS.register("painting_loteria",
             () -> new PictureBlock(BlockBehaviour.Properties.of().mapColor(MapColor.WOOD)

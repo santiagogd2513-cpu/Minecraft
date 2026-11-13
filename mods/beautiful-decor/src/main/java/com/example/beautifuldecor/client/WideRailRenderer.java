@@ -29,6 +29,9 @@ public class WideRailRenderer implements BlockEntityRenderer<WideRailBlockEntity
     public WideRailRenderer(BlockEntityRendererProvider.Context context) {
     }
 
+    /** V7.0.0: media trocha (1,435 m / 2 = 0,7175 bloques). */
+    private static final double HALF = 0.7175;
+
     private static TextureAtlasSprite sprite(String name) {
         return Minecraft.getInstance().getTextureAtlas(TextureAtlas.LOCATION_BLOCKS).apply(new ResourceLocation(BeautifulDecor.MOD_ID, "block/" + name));
     }
@@ -54,14 +57,14 @@ public class WideRailRenderer implements BlockEntityRenderer<WideRailBlockEntity
         for (int i = 0; i < n; i++) {
             double s0 = len * i / n;
             double s1 = len * (i + 1) / n;
-            ribbon(vc, m, piece, ballast, s0, s1, -7.0 / 16.0, 7.0 / 16.0, 2.0 / 16.0, light, a, b, t);
-            ribbon(vc, m, piece, steel, s0, s1, -4.25 / 16.0 - 0.75 / 16.0, -4.25 / 16.0 + 0.75 / 16.0, 4.0 / 16.0, light, a, b, t);
-            ribbon(vc, m, piece, steel, s0, s1, 4.25 / 16.0 - 0.75 / 16.0, 4.25 / 16.0 + 0.75 / 16.0, 4.0 / 16.0, light, a, b, t);
+            ribbon(vc, m, piece, ballast, s0, s1, -24.0 / 16.0, 24.0 / 16.0, 1.0 / 16.0, light, a, b, t);
+            ribbon(vc, m, piece, steel, s0, s1, -HALF - 0.85 / 16.0, -HALF + 0.85 / 16.0, 4.0 / 16.0, light, a, b, t);
+            ribbon(vc, m, piece, steel, s0, s1, HALF - 0.85 / 16.0, HALF + 0.85 / 16.0, 4.0 / 16.0, light, a, b, t);
         }
         // durmientes cada 3/16 de bloque
-        double pitch = 3.0 / 16.0;
+        double pitch = 4.0 / 16.0;
         for (double c = pitch / 2; c < len; c += pitch) {
-            ribbon(vc, m, piece, tie, Math.max(0.0, c - 1.0 / 16.0), Math.min(len, c + 1.0 / 16.0), -6.0 / 16.0, 6.0 / 16.0, 3.0 / 16.0, light, a, b, t);
+            ribbon(vc, m, piece, tie, Math.max(0.0, c - 1.0 / 16.0), Math.min(len, c + 1.0 / 16.0), -20.8 / 16.0, 20.8 / 16.0, 2.5 / 16.0, light, a, b, t);
         }
     }
 

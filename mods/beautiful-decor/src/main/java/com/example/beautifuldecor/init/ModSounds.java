@@ -88,6 +88,16 @@ public class ModSounds {
     public static final RegistryObject<SoundEvent> TRAIN_SAY_FINAL = simple("train_say_final");
     public static final RegistryObject<SoundEvent> TRAIN_SAY_DESTINATION = simple("train_say_destination");
 
+    // ===== V7.2.0: Spotifly =====
+    public static final RegistryObject<SoundEvent> SPOTIFLY_SONG_1 = simple("spotifly_song_1");
+    public static final RegistryObject<SoundEvent> SPOTIFLY_SONG_2 = simple("spotifly_song_2");
+    public static final RegistryObject<SoundEvent> SPOTIFLY_SONG_3 = simple("spotifly_song_3");
+
+    /** Canción 1 a 3 de Spotifly. */
+    public static SoundEvent song(int n) {
+        return (n == 1 ? SPOTIFLY_SONG_1 : n == 2 ? SPOTIFLY_SONG_2 : SPOTIFLY_SONG_3).get();
+    }
+
     private static RegistryObject<SoundEvent> simple(String name) {
         return SOUND_EVENTS.register(name, () -> SoundEvent.createVariableRangeEvent(
                 ResourceLocation.fromNamespaceAndPath(BeautifulDecor.MOD_ID, name)));

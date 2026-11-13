@@ -91,6 +91,11 @@ public class ModItems {
             () -> new BlockItem(ModBlocks.PAINTING_HSNEWS.get(), new Item.Properties()));
 
     // V6.15.0: lotería
+    public static final RegistryObject<Item> PAINTING_SPOTIFLY = ITEMS.register("painting_spotifly",
+            () -> new BlockItem(ModBlocks.PAINTING_SPOTIFLY.get(), new Item.Properties()));
+    public static final RegistryObject<Item> RADIOLA = ITEMS.register("radiola",
+            () -> new BlockItem(ModBlocks.RADIOLA.get(), new Item.Properties()));
+    public static final RegistryObject<Item> SPOTIFLY_HEADPHONES = ITEMS.register("spotifly_headphones", () -> new com.example.beautifuldecor.item.SpotiflyHeadphonesItem());
     public static final RegistryObject<Item> LOTTERY_TICKET = ITEMS.register("lottery_ticket", () -> new com.example.beautifuldecor.item.LotteryTicketItem());
     public static final RegistryObject<Item> PAINTING_LOTERIA = ITEMS.register("painting_loteria",
             () -> new BlockItem(ModBlocks.PAINTING_LOTERIA.get(), new Item.Properties()));

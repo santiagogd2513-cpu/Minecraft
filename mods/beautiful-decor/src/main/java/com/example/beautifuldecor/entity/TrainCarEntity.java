@@ -997,6 +997,9 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
     public void tick() {
         this.tickCore();
         this.updateHull();
+        if (!this.level().isClientSide) {
+            VehicleImpact.tick(this, VehicleImpact.TRAIN, null);      // V7.1.0: atropellos
+        }
     }
 
     private void tickCore() {

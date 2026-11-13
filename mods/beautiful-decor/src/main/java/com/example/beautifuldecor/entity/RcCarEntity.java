@@ -284,6 +284,7 @@ public class RcCarEntity extends Entity {
     }
 
     private void serverTick() {
+        VehicleImpact.tick(this, VehicleImpact.RC_CAR, null);      // V7.1.0: atropellos
         if (!this.isPiloted()) {
             this.freeTick();
             return;

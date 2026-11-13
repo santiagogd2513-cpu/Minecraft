@@ -522,6 +522,9 @@ public class AirlinerEntity extends Entity implements PaintableVehicle, HasVehic
             }
         }
         this.updateVisuals();
+        if (!this.level().isClientSide) {
+            VehicleImpact.tick(this, VehicleImpact.AIRLINER, this.getControllingPassenger());      // V7.1.0: atropellos
+        }
     }
 
     /**
