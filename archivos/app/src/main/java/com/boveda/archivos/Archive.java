@@ -46,6 +46,10 @@ final class Archive {
         else PASSWORDS.put(path, pw);
     }
 
+    static char[] passwordOf(String path) {
+        return PASSWORDS.get(path);
+    }
+
     static boolean hasPassword(String path) {
         return PASSWORDS.containsKey(path);
     }

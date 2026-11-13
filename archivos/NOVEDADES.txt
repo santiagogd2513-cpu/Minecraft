@@ -1,3 +1,9 @@
+## 65
+♻️ Reducir peso: contraseña y avisos
+- Si el .zip tiene contraseña, al borrar duplicados te pregunta: «Cancelar», «Quitar contraseña» o «Dejar contraseña» para el archivo nuevo.
+- Aviso rojo cuando la carpeta parece de un juego o de una app (versions, libraries, mods…): algunas copias las necesita el programa.
+- Textos en singular cuando es una sola copia o un solo grupo.
+
 ## 64
 ♻️ Reducir peso (buscar duplicados)
 - Selecciona una carpeta, un .zip u otro comprimido, toca ⋮ y «Reducir peso (buscar duplicados)».

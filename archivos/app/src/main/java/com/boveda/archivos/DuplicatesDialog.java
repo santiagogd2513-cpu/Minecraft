@@ -69,7 +69,7 @@ final class DuplicatesDialog {
                 int copies = 0;
                 for (Duplicates.Group g : gs) copies += g.names.size() - 1;
                 status.setTextColor(Ui.TEXT);
-                status.setText(copies + L.t(" copias repetidas en ") + gs.size() + L.t(" grupos. Se ahorrarían ") + Ui.size(Duplicates.totalSaving(gs)) + ".");
+                status.setText(copies + (copies == 1 ? L.t(" copia repetida en ") : L.t(" copias repetidas en ")) + gs.size() + (gs.size() == 1 ? L.t(" grupo. Se ahorrarían ") : L.t(" grupos. Se ahorrarían ")) + Ui.size(Duplicates.totalSaving(gs)) + ".");
                 int shown = 0;
                 for (Duplicates.Group g : gs) {
                     if (++shown > 40) {
@@ -84,6 +84,13 @@ final class DuplicatesDialog {
                     box.addView(note(a, b.toString().trim(), Ui.SUB));
                 }
                 boolean can = isFolder || Duplicates.canRewrite(path);
+                String low = path.toLowerCase(java.util.Locale.ROOT);
+                for (String w : new String[]{"/versions", "/libraries", "/mods", "/assets", "/runtimes", "/android/data", "/android/obb"}) {
+                    if (isFolder && low.contains(w + "/") || isFolder && low.endsWith(w)) {
+                        box.addView(note(a, "⚠ " + L.t("Esta parece una carpeta de un juego o de una app. Algunas copias las necesita el programa con su propio nombre: si las borras, puede dejar de abrir."), Ui.BAD));
+                        break;
+                    }
+                }
                 box.addView(note(a, "✓ " + L.t("se conserva  ·  ✗ se quita (la copia más antigua es la que queda)"), Ui.SUB));
                 if (isFolder) {
                     box.addView(note(a, "ℹ " + L.t("Las copias van a la papelera: puedes recuperarlas 30 días."), Ui.WARN));
@@ -94,6 +101,28 @@ final class DuplicatesDialog {
                 }
                 del.setEnabled(can);
                 del.setOnClickListener(v -> {
+                    if (!isFolder && Archive.hasPassword(path)) {
+                        new AlertDialog.Builder(a, R.style.Theme_Boveda_Dialog)
+                                .setTitle(L.t("Este archivo tiene contraseña"))
+                                .setMessage(L.t("¿Qué hago con la contraseña en el archivo nuevo sin duplicados?"))
+                                .setPositiveButton(L.t("Dejar contraseña"), (x, w) -> work(a, path, isFolder, gs, d, keep, del, status, io, main, say, onChanged, Archive.passwordOf(path)))
+                                .setNeutralButton(L.t("Quitar contraseña"), (x, w) -> work(a, path, isFolder, gs, d, keep, del, status, io, main, say, onChanged, null))
+                                .setNegativeButton(L.t("Cancelar"), null)
+                                .show();
+                        return;
+                    }
+                    work(a, path, isFolder, gs, d, keep, del, status, io, main, say, onChanged, null);
+                });
+            });
+        });
+    }
+
+    private static void work(Activity a, String path, boolean isFolder, List<Duplicates.Group> gs, AlertDialog d,
+                             android.widget.Button keep, android.widget.Button del, TextView status, ExecutorService io,
+                             Handler main, Duplicates.Progress say, Runnable onChanged, char[] keepPassword) {
+        {
+            {
+                {
                     del.setEnabled(false);
                     keep.setEnabled(false);
                     status.setText(L.t("Trabajando…"));
@@ -106,7 +135,7 @@ final class DuplicatesDialog {
                                 int moved = Duplicates.trashExtras(gs, kept);
                                 msg = moved + L.t(" copias a la papelera.") + (kept[0] > 0 ? " " + kept[0] + L.t(" no se pudieron mover y se dejaron.") : "");
                             } else {
-                                String dest = Duplicates.rewriteZip(a, path, gs, say);
+                                String dest = Duplicates.rewriteZip(a, path, gs, say, keepPassword);
                                 msg = L.t("Listo: «") + Paths.name(dest) + L.t("» (tu archivo original sigue igual).");
                             }
                         } catch (Exception e) {
@@ -123,9 +152,9 @@ final class DuplicatesDialog {
                             if (fo && onChanged != null) onChanged.run();
                         });
                     });
-                });
-            });
-        });
+                }
+            }
+        }
     }
 
     private static String rel(String root, String p) {

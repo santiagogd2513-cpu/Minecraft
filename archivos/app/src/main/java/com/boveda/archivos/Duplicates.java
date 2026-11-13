@@ -169,7 +169,7 @@ final class Duplicates {
     }
 
     /** Escribe un .zip nuevo, junto al original y con otro nombre, sin las copias repetidas. */
-    static String rewriteZip(Context c, String archive, List<Group> groups, Progress p) throws IOException {
+    static String rewriteZip(Context c, String archive, List<Group> groups, Progress p, char[] keepPassword) throws IOException {
         Set<String> drop = new HashSet<>();
         for (Group g : groups) for (int i = 1; i < g.names.size(); i++) drop.add(g.names.get(i));
         Fs fs = FsRouter.get(c, archive);
@@ -179,8 +179,47 @@ final class Duplicates {
         String dest = Paths.join(Paths.parent(archive), base + " (sin duplicados).zip");
         for (int i = 2; fs.stat(dest) != null; i++) dest = Paths.join(Paths.parent(archive), base + " (sin duplicados " + i + ").zip");
         String tmp = Paths.join(Paths.parent(archive), "." + Paths.name(dest) + ".boveda-parte");
-        try (OutputStream raw = fs.out(tmp);
-             java.util.zip.ZipOutputStream zo = new java.util.zip.ZipOutputStream(new java.io.BufferedOutputStream(raw, 1 << 20))) {
+        try (OutputStream raw = fs.out(tmp)) {
+            if (keepPassword != null) writeEncrypted(c, archive, drop, raw, keepPassword, p);
+            else writePlain(c, archive, drop, raw, p);
+        } catch (IOException | RuntimeException e) {
+            try {
+                fs.delete(tmp);
+            } catch (IOException ignored) {
+            }
+            throw e;
+        }
+        fs.rename(tmp, dest);
+        return dest;
+    }
+
+    private static void writeEncrypted(Context c, String archive, Set<String> drop, OutputStream raw, char[] pw, Progress p) throws IOException {
+        try (net.lingala.zip4j.io.outputstream.ZipOutputStream zo = new net.lingala.zip4j.io.outputstream.ZipOutputStream(new java.io.BufferedOutputStream(raw, 1 << 20), pw)) {
+            int[] n = {0};
+            Archive.walk(c, archive, (it, data) -> {
+                if (drop.contains(it.name)) return true;
+                p.say(L.t("Escribiendo… ") + (++n[0]) + " · " + it.name);
+                net.lingala.zip4j.model.ZipParameters zp = new net.lingala.zip4j.model.ZipParameters();
+                zp.setFileNameInZip(it.dir ? it.name + "/" : it.name);
+                if (it.time > 0) zp.setLastModifiedFileTime(it.time);
+                zp.setCompressionMethod(net.lingala.zip4j.model.enums.CompressionMethod.DEFLATE);
+                zp.setEncryptFiles(!it.dir);
+                zp.setEncryptionMethod(net.lingala.zip4j.model.enums.EncryptionMethod.AES);
+                zp.setAesKeyStrength(net.lingala.zip4j.model.enums.AesKeyStrength.KEY_STRENGTH_256);
+                zo.putNextEntry(zp);
+                if (data != null) {
+                    byte[] buf = new byte[1 << 16];
+                    int r;
+                    while ((r = data.read(buf)) >= 0) zo.write(buf, 0, r);
+                }
+                zo.closeEntry();
+                return true;
+            });
+        }
+    }
+
+    private static void writePlain(Context c, String archive, Set<String> drop, OutputStream raw, Progress p) throws IOException {
+        try (java.util.zip.ZipOutputStream zo = new java.util.zip.ZipOutputStream(new java.io.BufferedOutputStream(raw, 1 << 20))) {
             int[] n = {0};
             Archive.walk(c, archive, (it, data) -> {
                 if (drop.contains(it.name)) return true;
@@ -196,15 +235,7 @@ final class Duplicates {
                 zo.closeEntry();
                 return true;
             });
-        } catch (IOException | RuntimeException e) {
-            try {
-                fs.delete(tmp);
-            } catch (IOException ignored) {
-            }
-            throw e;
         }
-        fs.rename(tmp, dest);
-        return dest;
     }
 
     static boolean canRewrite(String archive) {
