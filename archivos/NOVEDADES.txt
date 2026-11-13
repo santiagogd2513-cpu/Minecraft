@@ -1,3 +1,7 @@
+## 90
+🎨 El selector de archivos de Bóveda estrena el diseño nuevo
+- Cuando eliges un archivo (desde las herramientas o desde otra app), el inicio ahora tiene las tarjetas nuevas: almacenamientos arriba y cuadros de Accesos directos, Ancladas y Favoritas, en vez de la lista vieja.
+
 ## 89
 ⏳ Máquina del tiempo y 🎁 Cápsula del tiempo
 - Máquina del tiempo (Inicio → Funciones especiales): lo que has movido, renombrado, creado o borrado, día por día (Hoy, Ayer…). Tocas una línea y puedes recuperar lo borrado, devolver algo a su sitio o devolverle su nombre. También por carpeta: selecciónala, ⋮ → «Historial de esta carpeta».
