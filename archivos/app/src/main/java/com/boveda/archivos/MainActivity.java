@@ -42,6 +42,7 @@ import android.widget.Toast;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -56,6 +57,8 @@ import java.util.concurrent.Executors;
 /** Explorador de archivos: inicio, carpetas, selección, copiar/mover/pegar, comprimir y acceso a Android/data. */
 public class MainActivity extends Activity implements TransferEngine.Listener {
     private static final int REQ_TREE = 21;
+    private static final int REQ_TOOL_IMG = 44;
+    private String toolMode = "resize";
 
     protected Prefs prefs;
     private TransferEngine engine;
@@ -652,6 +655,82 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         return b;
     }
 
+    // ------------------------------------------------------------------ herramientas de imágenes
+
+    /** Guarda la imagen lista en una carpeta (con otro nombre si ya hay una igual) y la anota para poder deshacer. */
+    private ImageToolDialog.Saver imageSaver(String dir) {
+        return (file, bytes) -> {
+            if (!FsRouter.hasAccess(this, dir)) throw new IOException(L.t("No tengo acceso a esa carpeta"));
+            Fs f = FsRouter.get(this, dir);
+            if (f.stat(dir) == null) new File(dir).mkdirs();
+            String name = file;
+            String target = Paths.join(dir, name);
+            for (int i = 1; f.stat(target) != null; i++) {
+                int dot = file.lastIndexOf('.');
+                name = (dot > 0 ? file.substring(0, dot) : file) + " (" + i + ")" + (dot > 0 ? file.substring(dot) : "");
+                target = Paths.join(dir, name);
+            }
+            try (java.io.OutputStream o = f.out(target)) {
+                o.write(bytes);
+            }
+            UndoLog.recordCreated(this, target, false);
+            final String fn = name;
+            main.post(() -> {
+                if (path != null && path.equals(dir)) load(path, true);
+            });
+            return L.t("Guardé «") + fn + L.t("» (") + Ui.size(bytes.length) + L.t(") en:\n") + dir.replace(Paths.ROOT, L.t("Interno"));
+        };
+    }
+
+    private void imageFromEntry(Entry e, String mode) {
+        Toast.makeText(this, L.t("Abriendo la imagen…"), Toast.LENGTH_SHORT).show();
+        String dir = Paths.parent(e.path);
+        io.execute(() -> {
+            try (InputStream in = FsRouter.get(this, e.path).in(e.path)) {
+                byte[] data = ImageTools.readAll(in, 80L << 20);
+                main.post(() -> {
+                    clearSelection();
+                    ImageToolDialog.show(this, mode, e.name, data, imageSaver(dir));
+                });
+            } catch (Throwable t) {
+                main.post(() -> Toast.makeText(this, t.getMessage() == null ? t.toString() : t.getMessage(), Toast.LENGTH_LONG).show());
+            }
+        });
+    }
+
+    private void pickToolImage(String mode) {
+        toolMode = mode;
+        Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        i.setType("*/*");
+        i.putExtra(Intent.EXTRA_MIME_TYPES, new String[]{"image/*", "application/octet-stream"});
+        i.addCategory(Intent.CATEGORY_OPENABLE);
+        try {
+            startActivityForResult(i, REQ_TOOL_IMG);
+        } catch (Exception e) {
+            Toast.makeText(this, L.t("No se pudo abrir el selector de archivos"), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void imageFromUri(Uri uri) {
+        String mode = toolMode;
+        io.execute(() -> {
+            String name = "imagen.png";
+            try (android.database.Cursor c = getContentResolver().query(uri, new String[]{android.provider.OpenableColumns.DISPLAY_NAME}, null, null, null)) {
+                if (c != null && c.moveToFirst() && c.getString(0) != null) name = c.getString(0);
+            } catch (Exception ignored) {
+            }
+            final String fname = name;
+            try (InputStream in = getContentResolver().openInputStream(uri)) {
+                if (in == null) throw new IOException(L.t("Android no dejó abrir el archivo"));
+                byte[] data = ImageTools.readAll(in, 80L << 20);
+                String outDir = Paths.ROOT + "/Pictures/Bóveda";
+                main.post(() -> ImageToolDialog.show(this, mode, fname, data, imageSaver(outDir)));
+            } catch (Throwable t) {
+                main.post(() -> Toast.makeText(this, t.getMessage() == null ? t.toString() : t.getMessage(), Toast.LENGTH_LONG).show());
+            }
+        });
+    }
+
     // ------------------------------------------------------------------ deshacer
 
     private TextView undoPill;
@@ -716,6 +795,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             case "nube" -> L.t("Nube y red");
             case "funciones" -> L.t("Funciones especiales");
             case "seguridad" -> L.t("Seguridad y privacidad");
+            case "herramientas" -> L.t("Herramientas");
             default -> "Shizuku";
         };
     }
@@ -743,6 +823,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             int servers = FtpServers.get(this).all().size() + NetServers.get(this).all("dav").size() + NetServers.get(this).all("smb").size();
             tiles.add(gr("nube", tile("☁️", 0xFF0A64D6, 0xFF28A8EA, L.t("Nube y red"), servers > 0 ? servers + (servers == 1 ? L.t(" servidor") : L.t(" servidores")) + L.t(" y más") : L.t("Drive, OneDrive, MEGA y más"), v -> openHomePage("nube"))));
             tiles.add(gr("funciones", tile("🛠️", 0xFFE5603B, 0xFFFF9A5C, L.t("Funciones especiales"), L.t("Reducir peso y más por venir"), v -> openHomePage("funciones"))));
+            tiles.add(gr("herramientas", tile("🧰", 0xFF00897B, 0xFFD81B60, L.t("Herramientas"), L.t("Imágenes: tamaño, formato y datos ocultos"), v -> openHomePage("herramientas"))));
             tiles.add(gr("seguridad", tile("🛡️", 0xFF7B4DFF, 0xFFB86BFF, L.t("Seguridad y privacidad"), L.t("La Bóveda, Radiografía, Apps"), v -> openHomePage("seguridad"))));
             View trash = gr("papelera", tile("🗑️", 0xFF4A5670, 0xFF6E7A8E, L.t("Papelera"), L.t("Lo que borres se guarda 30 días"), v -> showTrash()));
             tiles.add(trash);
@@ -836,6 +917,19 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                                 v -> confirmUndo(ua), null));
                     }
                     box.addView(hint(L.t("Lo que borres está en la Papelera (30 días).")));
+                }
+                case "herramientas" -> {
+                    box.addView(section(L.t("Imágenes")));
+                    box.addView(netRow("📐", 0xFF00897B, 0xFF4DB6AC, L.t("Cambiar tamaño o recortar"),
+                            L.t("Medidas exactas (64×64, 512×720…), estirar, ajustar o recortar, y pixelado nítido para texturas"),
+                            v -> pickToolImage("resize"), null));
+                    box.addView(netRow("🔄", 0xFF3949AB, 0xFF7986CB, L.t("Convertir formato"),
+                            L.t("PNG, JPG, WebP, BMP o ICO (y también desde TGA, TIFF, PSD, QOI…)"),
+                            v -> pickToolImage("convert"), null));
+                    box.addView(netRow("🧹", 0xFFD81B60, 0xFFF06292, L.t("Quitar datos ocultos"),
+                            L.t("Borra la ubicación y los datos de la cámara de una foto antes de compartirla"),
+                            v -> pickToolImage("exif"), null));
+                    box.addView(hint(L.t("También en cualquier imagen: mantenla presionada, toca ⋮ y elige la herramienta.")));
                 }
                 case "seguridad" -> {
                     box.addView(netRow("🔐", 0xFF7B4DFF, 0xFFB86BFF, L.t("La Bóveda"),
@@ -3334,6 +3428,10 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             refreshGrants();
             return;
         }
+        if (req == REQ_TOOL_IMG && res == RESULT_OK && data != null && data.getData() != null) {
+            imageFromUri(data.getData());
+            return;
+        }
         if (req == REQ_TREE && res == RESULT_OK && data != null && data.getData() != null) {
             Uri u = data.getData();
             try {
@@ -3721,6 +3819,14 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                 if (!VaultFs.isVault(single.path)) {
                     labels.add(L.t("Abrir con…"));
                     acts.add(() -> openWith(single, true));
+                }
+                if (Viewers.isImage(single.name) && !VaultFs.isVault(single.path)) {
+                    labels.add(L.t("Imagen: cambiar tamaño o recortar"));
+                    acts.add(() -> imageFromEntry(single, "resize"));
+                    labels.add(L.t("Imagen: convertir formato"));
+                    acts.add(() -> imageFromEntry(single, "convert"));
+                    labels.add(L.t("Imagen: quitar datos ocultos"));
+                    acts.add(() -> imageFromEntry(single, "exif"));
                 }
                 boolean plainFile = Thumbs.local(single.path) && new File(single.path).canRead();
                 if (plainFile && single.name.toLowerCase(java.util.Locale.ROOT).endsWith(".apk")) {

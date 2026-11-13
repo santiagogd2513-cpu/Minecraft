@@ -1,3 +1,12 @@
+## 80
+🧰 Herramientas: imágenes
+- Nuevo cuadro «Herramientas» en el Inicio.
+- Cambiar tamaño o recortar: medidas exactas (64×64, 512×720…), con botones de 16 a 1024, mantener proporciones, y tres modos: estirar, ajustar con bordes o recortar al centro. «Pixelado nítido» para texturas y pixel art (sin difuminar).
+- Convertir formato: a PNG, JPG, WebP, BMP o ICO. Abre también TGA, TIFF, PSD, QOI y PPM.
+- Quitar datos ocultos: borra la ubicación, la cámara y la fecha de una foto.
+- Siempre se guarda una copia nueva; la original no se toca. Se puede deshacer.
+- También en cualquier imagen: presiónala, toca ⋮ y elige la herramienta.
+
 ## 79
 🎨 Degradados del Inicio (súper animaciones)
 - Con el modo súper animaciones, cada tarjeta del Inicio tiene su degradado que se mueve despacio: Seguridad y privacidad morado con rojo, Favoritas dorado con amarillo, Ancladas dorado con ámbar, Almacenamiento interno azules, Shizuku azul y blanco, Papelera grises, Nube y red celeste con turquesa, Accesos directos azul con cian y Funciones especiales naranja con rojo.

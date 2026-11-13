@@ -438,6 +438,7 @@ final class Fx {
             case "nube" -> new int[]{0xFF0A64D6, 0xFF1DE9B6, 0xFF29B6F6};
             case "accesos" -> new int[]{0xFF0D47A1, 0xFF26C6DA, 0xFF1E88E5};
             case "funciones" -> new int[]{0xFFB3261E, 0xFFFF9A5C, 0xFFE5603B};
+            case "herramientas" -> new int[]{0xFF00695C, 0xFFD81B60, 0xFF26A69A};
             default -> new int[]{0xFF2A3346, 0xFF4A5670, 0xFF3A4458};
         };
     }
