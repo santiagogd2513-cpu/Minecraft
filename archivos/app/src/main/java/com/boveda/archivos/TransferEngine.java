@@ -347,7 +347,10 @@ final class TransferEngine {
             // los archivos chiquitos no se forzaron uno por uno: se asienta todo junto una vez
             phase(j, L.t("Guardando en la memoria (puede tardar)"));
             try {
-                android.system.Os.sync();
+                // «sync» del sistema: asienta en el disco todo lo escrito (Android no ofrece esa llamada directa)
+                Process pr = new ProcessBuilder("sync").redirectErrorStream(true).start();
+                pr.getInputStream().close();
+                if (!pr.waitFor(20, java.util.concurrent.TimeUnit.SECONDS)) pr.destroy();
             } catch (Throwable ignored) {
             }
         }
