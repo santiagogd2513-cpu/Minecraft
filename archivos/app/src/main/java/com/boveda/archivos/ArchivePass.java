@@ -31,6 +31,12 @@ final class ArchivePass {
         });
     }
 
+    /** Para «Reducir peso»: las carpetas pasan directo; los comprimidos piden contraseña si la tienen. */
+    static void ensureForRead(Activity a, String path, boolean folder, Runnable go) {
+        if (folder) go.run();
+        else ensure(a, path, go);
+    }
+
     private static void ask(Activity a, String archive, String error, Runnable go) {
         LinearLayout box = Ui.column(a);
         box.setPadding(Ui.dp(a, 20), Ui.dp(a, 8), Ui.dp(a, 20), Ui.dp(a, 4));

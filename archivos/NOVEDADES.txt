@@ -1,3 +1,10 @@
+## 64
+♻️ Reducir peso (buscar duplicados)
+- Selecciona una carpeta, un .zip u otro comprimido, toca ⋮ y «Reducir peso (buscar duplicados)».
+- Bóveda busca archivos idénticos (mismo tamaño y contenido, comprobado byte por byte en carpetas) y te muestra los grupos y cuánto espacio ahorrarías.
+- Dos botones: «Dejar como está» y «Borrar duplicados». En carpetas, las copias van a la papelera. En un .zip se crea otro .zip nuevo al lado, sin las copias, y el tuyo no se toca.
+- Funciona dentro de comprimidos; los cifrados piden la contraseña. En .7z y tar solo se puede revisar por ahora.
+
 ## 63
 🔑 Extraer archivos con contraseña
 - Antes, extraer o abrir un .zip o .7z con contraseña daba error. Ahora Bóveda te la pide, la comprueba y, si es correcta, extrae. Si te equivocas, te lo dice y vuelves a intentar.

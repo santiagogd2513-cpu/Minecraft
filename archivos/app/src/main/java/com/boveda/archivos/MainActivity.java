@@ -3136,6 +3136,13 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         if (single != null) {
             labels.add(L.t("Renombrar"));
             acts.add(() -> askRename(single));
+            if (single.dir || (Archive.supported(single.name) && !VaultFs.isVault(single.path))) {
+                labels.add(L.t("Reducir peso (buscar duplicados)"));
+                acts.add(() -> {
+                    clearSelection();
+                    DuplicatesDialog.show(this, single.path, single.dir, () -> load(path, true));
+                });
+            }
             if (single.dir) {
                 labels.add(prefs.isFavorite(single.path) ? L.t("Quitar de favoritas") : L.t("Añadir a favoritas"));
                 acts.add(() -> {
