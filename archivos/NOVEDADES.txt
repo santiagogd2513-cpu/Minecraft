@@ -1,3 +1,11 @@
+## 70
+✨ Modo súper animaciones (experimental)
+- Ajustes → Experimentales y de prueba → «Modo súper animaciones». Antes de activarlo avisa que puede gastar mucha RAM y GPU.
+- Lo seleccionado respira con un degradado suave que se mueve.
+- La barra de progreso lleva un degradado con un brillo que corre, avanza suave y, al terminar, suelta una chispa verde (bien) o roja (falló).
+- Las imágenes y vistas previas de una carpeta aparecen poco a poco.
+- Si en Android tienes las animaciones apagadas, el modo no las enciende.
+
 ## 69
 🏠 Inicio: detalles
 - El nombre del almacenamiento se achica solo para no partirse a la mitad con letra grande.

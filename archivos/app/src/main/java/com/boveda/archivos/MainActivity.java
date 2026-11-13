@@ -4100,6 +4100,41 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         LinearLayout.LayoutParams wl = new LinearLayout.LayoutParams(-1, -2);
         wl.setMargins(0, dp(8), 0, 0);
         col.addView(warn, wl);
+        settingsSection(col, L.t("Animaciones"));
+        LinearLayout ar = settingsCard(L.t("Modo súper animaciones"), L.t("Brillos, degradados y chispas · puede gastar mucha RAM y GPU"));
+        android.widget.Switch asw = new android.widget.Switch(this);
+        asw.setChecked(prefs.superAnim());
+        asw.setThumbTintList(android.content.res.ColorStateList.valueOf(Color.WHITE));
+        asw.setTrackTintList(new android.content.res.ColorStateList(new int[][]{{android.R.attr.state_checked}, {}}, new int[]{Ui.ACCENT, 0xFF3A4458}));
+        final boolean[] quiet = {false};
+        asw.setOnCheckedChangeListener((b, on) -> {
+            if (quiet[0]) return;
+            if (!on) {
+                prefs.setSuperAnim(false);
+                return;
+            }
+            // al encender: primero el aviso; solo si lo acepta queda activado
+            quiet[0] = true;
+            asw.setChecked(false);
+            quiet[0] = false;
+            new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                    .setTitle(L.t("⚠️ Modo súper animaciones"))
+                    .setMessage(L.t("Este modo agrega muchas animaciones: selecciones que brillan, barras de progreso con degradado y chispas, imágenes que aparecen poco a poco y más.\n\nPuede ocupar mucha memoria RAM y mucha GPU, hacer que la app vaya más lenta en celulares modestos y gastar más batería.\n\nEs una función experimental: cambiará mucho entre versiones. Puedes apagarla cuando quieras.\n\n¿Activarlo?"))
+                    .setNegativeButton(L.t("Cancelar"), null)
+                    .setPositiveButton(L.t("Activar"), (d, w) -> {
+                        prefs.setSuperAnim(true);
+                        quiet[0] = true;
+                        asw.setChecked(true);
+                        quiet[0] = false;
+                        Toast.makeText(this, L.t("Modo súper animaciones activado"), Toast.LENGTH_SHORT).show();
+                    })
+                    .show();
+        });
+        LinearLayout.LayoutParams asl = new LinearLayout.LayoutParams(-2, -2);
+        asl.setMargins(dp(10), 0, 0, 0);
+        ar.addView(asw, asl);
+        ar.setOnClickListener(v -> asw.toggle());
+        addCard(col, ar);
         settingsSection(col, L.t("Apariencia"));
         LinearLayout r = settingsCard(L.t("Permitir modo claro"), L.t("Experimental · puede causar distorsiones visuales"));
         android.widget.Switch sw = new android.widget.Switch(this);
@@ -4954,7 +4989,14 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                         final int kk = tk;
                         final boolean hid = e.hidden();
                         Thumbs.load(MainActivity.this, e, dp(88), bmp -> {
-                            if (p.equals(h.icon.getTag())) showThumb(h, bmp, kk, hid);
+                            if (p.equals(h.icon.getTag())) {
+                                showThumb(h, bmp, kk, hid);
+                                // con el modo de animaciones, la imagen aparece poco a poco
+                                if (prefs.superAnim() && Fx.on(MainActivity.this)) {
+                                    h.icon.setAlpha(0f);
+                                    h.icon.animate().alpha(hid ? 0.55f : 1f).setDuration(260).start();
+                                }
+                            }
                         });
                     }
                 }
@@ -4964,7 +5006,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             h.star.setVisibility(fav ? View.VISIBLE : View.GONE);
             if (fav) h.star.setImageDrawable(Ui.icon(MainActivity.this,
                     prefs.isPinned(e.path) ? R.drawable.ic_pin : R.drawable.ic_star, prefs.isPinned(e.path) ? Ui.ACCENT2 : Ui.WARN));
-            v.setBackground(sel ? Ui.round(0xFF16264A, dp(14)) : Ui.rippleRound(0x00000000, dp(14)));
+            v.setBackground(sel ? (prefs.superAnim() && Fx.on(MainActivity.this) ? new Fx.SelectGlow(dp(14)) : Ui.round(0xFF16264A, dp(14))) : Ui.rippleRound(0x00000000, dp(14)));
             return v;
         }
     }

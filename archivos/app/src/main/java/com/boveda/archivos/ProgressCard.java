@@ -24,7 +24,7 @@ final class ProgressCard implements TransferEngine.Listener {
     private final Handler main = new Handler(Looper.getMainLooper());
     private final LinearLayout card;
     private final TextView stage, title, pct, info;
-    private final ProgressBar bar;
+    private final Fx.Bar bar;
     private TransferEngine.Job job;
     private boolean hidden;          // la cerró con la X: vuelve a salir con la próxima tarea
     private long seenUntil;          // tareas terminadas antes de esto ya se mostraron
@@ -62,13 +62,12 @@ final class ProgressCard implements TransferEngine.Listener {
         }));
         card.addView(top);
 
-        bar = new ProgressBar(a, null, android.R.attr.progressBarStyleHorizontal);
+        bar = new Fx.Bar(a);
         bar.setMax(1000);
         tint(Ui.ACCENT);
-        bar.setProgressBackgroundTintList(ColorStateList.valueOf(0xFF2A3346));
-        bar.setIndeterminateTintList(ColorStateList.valueOf(Ui.ACCENT));
-        LinearLayout.LayoutParams bl = new LinearLayout.LayoutParams(-1, dp(8));
-        bl.setMargins(0, dp(6), dp(8), dp(6));
+        // el alto de más es para que la chispa del final no se corte
+        LinearLayout.LayoutParams bl = new LinearLayout.LayoutParams(-1, dp(26));
+        bl.setMargins(0, dp(-3), dp(8), dp(-3));
         card.addView(bar, bl);
 
         info = Ui.text(a, "", 12.5f, Ui.SUB, false);
@@ -86,7 +85,7 @@ final class ProgressCard implements TransferEngine.Listener {
     }
 
     private void tint(int color) {
-        bar.setProgressTintList(ColorStateList.valueOf(color));
+        bar.setTint(color);
     }
 
     void start() {
@@ -143,6 +142,7 @@ final class ProgressCard implements TransferEngine.Listener {
             bar.setIndeterminate(false);
             bar.setProgress(ok ? 1000 : bar.getProgress());
             tint(ok ? Ui.GOOD : Ui.BAD);
+            bar.spark(ok);
             long ms = Math.max(1, last.finished - last.started);
             String txt;
             if (ok) {
