@@ -34,6 +34,9 @@ final class Viewers {
         return java.util.Collections.unmodifiableSet(new java.util.HashSet<>(java.util.Arrays.asList(items)));
     }
 
+    /** Verdadero mientras está el modo prestado: los visores no dejan compartir ni mandar a otras apps. */
+    static volatile boolean loan;
+
     static String ext(String name) {
         String n = name.toLowerCase(Locale.ROOT);
         int dot = n.lastIndexOf('.');
@@ -122,6 +125,10 @@ final class Viewers {
 
     /** «Abrir con otra app» desde los visores. */
     static void openWithOther(Activity a, String path, String mime) {
+        if (loan) {
+            android.widget.Toast.makeText(a, L.t("No disponible en modo prestado"), android.widget.Toast.LENGTH_SHORT).show();
+            return;
+        }
         Intent i = new Intent(Intent.ACTION_VIEW);
         i.setDataAndType(StorageProvider.documentUri(a, path), mime);
         i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);

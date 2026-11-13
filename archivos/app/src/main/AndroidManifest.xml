@@ -187,6 +187,13 @@
             android:theme="@style/Theme.Boveda" />
 
         <activity
+            android:name=".PrestadoActivity"
+            android:exported="false"
+            android:launchMode="singleTask"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|uiMode"
+            android:theme="@style/Theme.Boveda" />
+
+        <activity
             android:name=".PdfActivity"
             android:exported="false"
             android:configChanges="orientation|screenSize|uiMode" />

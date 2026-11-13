@@ -667,6 +667,23 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
 
     // ------------------------------------------------------------------ herramientas de imágenes
 
+    /** Modo prestado: confirma y abre la pantalla limitada a esa carpeta. */
+    private void startLoan(Entry dir) {
+        if (!PrestadoActivity.canUse(this)) {
+            new AlertDialog.Builder(this).setTitle(L.t("Falta el bloqueo del teléfono"))
+                    .setMessage(L.t("El modo prestado se cierra con el PIN, el patrón o la huella del teléfono. Pon uno en Ajustes del teléfono → Seguridad y vuelve a intentar."))
+                    .setPositiveButton("OK", null).show();
+            return;
+        }
+        new AlertDialog.Builder(this).setTitle(L.t("Modo prestado"))
+                .setMessage(L.t("Quien tenga el teléfono solo podrá mirar «") + dir.name + L.t("» (fotos, videos, música y PDF). No podrá borrar, compartir ni ver nada más. Para salir hace falta el bloqueo del teléfono.\n\nAndroid te pedirá confirmar «fijar app»."))
+                .setPositiveButton(L.t("Empezar"), (d, w) -> {
+                    clearSelection();
+                    startActivity(new Intent(this, PrestadoActivity.class).putExtra("root", dir.path));
+                })
+                .setNegativeButton(L.t("Cancelar"), null).show();
+    }
+
     private void openPixelArt(String src) {
         Intent i = new Intent(this, PixelArtActivity.class);
         String dir = src != null ? Paths.parent(src) : Paths.ROOT + "/Pictures/Bóveda";
@@ -1071,6 +1088,9 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                     box.addView(netRow("🎨", 0xFFE91E63, 0xFFFF7597, L.t("Crear pixel art"),
                             L.t("Lienzo de hasta 512×512 con lápiz, cubeta, líneas, espejo, paleta y vista en mosaico; sale como PNG"),
                             v -> openPixelArt(null), null));
+                    box.addView(netRow("🤝", 0xFF6D4C41, 0xFFA1887F, L.t("Modo prestado"),
+                            L.t("Préstale el teléfono a alguien: solo ve una carpeta. Selecciona la carpeta, toca ⋮ y elige «Modo prestado»."),
+                            v -> Toast.makeText(this, L.t("Selecciona una carpeta, toca ⋮ y elige «Modo prestado»."), Toast.LENGTH_LONG).show(), null));
                     box.addView(section(L.t("Imágenes")));
                     box.addView(netRow("📐", 0xFF00897B, 0xFF4DB6AC, L.t("Cambiar tamaño o recortar"),
                             L.t("Medidas exactas (64×64, 512×720…), estirar, ajustar o recortar, y pixelado nítido para texturas"),
@@ -3976,6 +3996,10 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                     clearSelection();
                     DuplicatesDialog.show(this, single.path, single.dir, () -> load(path, true));
                 });
+            }
+            if (single.dir && !VaultFs.isVault(single.path) && !Paths.restricted(single.path)) {
+                labels.add(L.t("Modo prestado 🤝 (dejar solo esta carpeta)"));
+                acts.add(() -> startLoan(single));
             }
             if (single.dir) {
                 labels.add(prefs.isFavorite(single.path) ? L.t("Quitar de favoritas") : L.t("Añadir a favoritas"));

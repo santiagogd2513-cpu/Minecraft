@@ -294,6 +294,10 @@ public class ImageActivity extends Activity {
     }
 
     private void share() {
+        if (Viewers.loan) {
+            android.widget.Toast.makeText(this, L.t("No disponible en modo prestado"), android.widget.Toast.LENGTH_SHORT).show();
+            return;
+        }
         try {
             Intent i = new Intent(Intent.ACTION_SEND);
             i.setType("image/*");

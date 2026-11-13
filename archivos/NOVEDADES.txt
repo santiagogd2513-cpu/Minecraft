@@ -1,3 +1,11 @@
+## 86
+🤝 Modo prestado
+- Selecciona una carpeta, toca ⋮ y elige «Modo prestado». Quien tenga el teléfono solo ve esa carpeta (y sus subcarpetas): fotos, videos, música y PDF.
+- No puede borrar, mover, compartir, abrir con otra app ni ver nada fuera de la carpeta, y la Bóveda secreta queda fuera. Las capturas de pantalla están bloqueadas.
+- Fija la pantalla (como «fijar app») para que no pueda irse a otra app.
+- Para salir: candado 🔒 y el PIN, patrón o huella del teléfono. Si el teléfono no tiene bloqueo, no deja empezar.
+- Sin probar en un teléfono todavía.
+
 ## 85
 🎨 Herramientas: creador de pixel art
 - Herramientas → «Crear pixel art»: lienzo desde 1×1 hasta 512×512 (atajos 16, 32, 64, 128).
