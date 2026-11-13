@@ -266,6 +266,11 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
     @Override
     protected void onResume() {
         super.onResume();
+        // modo prestado activo: si alguien salió de la pantalla fijada y abre Bóveda, vuelve directo al bloqueo
+        if (!picker() && prefs.loanRoot() != null && new File(prefs.loanRoot()).isDirectory()) {
+            startActivity(new Intent(this, PrestadoActivity.class).putExtra("root", prefs.loanRoot()));
+            return;
+        }
         UndoLog.setListener(() -> main.post(this::showUndoPill));
         // ¿hay versión nueva? (no cuando otra app la abrió para elegir un archivo)
         if (!picker()) {
@@ -675,8 +680,14 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                     .setPositiveButton("OK", null).show();
             return;
         }
+        boolean pinLock = true;
+        try {
+            pinLock = android.provider.Settings.Secure.getInt(getContentResolver(), "lock_to_app_exit_locked", 1) != 0;
+        } catch (Throwable ignored) {
+        }
+        final String warn = pinLock ? "" : L.t("\n\n⚠️ Importante: en Ajustes del teléfono → Seguridad → Otros ajustes de seguridad → «Fijar ventana», activa «Pedir PIN antes de dejar de fijar». Si no, quien lo tenga puede quitar la fijación sin el PIN.");
         new AlertDialog.Builder(this).setTitle(L.t("Modo prestado"))
-                .setMessage(L.t("Quien tenga el teléfono solo podrá mirar «") + dir.name + L.t("» (fotos, videos, música y PDF). No podrá borrar, compartir ni ver nada más. Para salir hace falta el bloqueo del teléfono.\n\nAndroid te pedirá confirmar «fijar app»."))
+                .setMessage(L.t("Quien tenga el teléfono solo podrá mirar «") + dir.name + L.t("» (fotos, videos, música y PDF). No podrá borrar, compartir ni ver nada más. Para salir hace falta el bloqueo del teléfono.\n\nAndroid te pedirá confirmar «fijar app».") + warn)
                 .setPositiveButton(L.t("Empezar"), (d, w) -> {
                     clearSelection();
                     startActivity(new Intent(this, PrestadoActivity.class).putExtra("root", dir.path));

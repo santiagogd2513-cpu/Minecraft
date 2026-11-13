@@ -19,6 +19,10 @@ final class Prefs {
         p = c.getSharedPreferences("boveda", Context.MODE_PRIVATE);
     }
 
+    /** Carpeta del modo prestado que sigue activo (vacío = ninguno). Así, si alguien sale de la app, al volver sigue bloqueada. */
+    String loanRoot() { return p.getString("loanRoot", null); }
+    void setLoanRoot(String r) { p.edit().putString("loanRoot", r).apply(); }
+
     boolean showHidden() { return p.getBoolean("hidden", false); }
     void setShowHidden(boolean b) { p.edit().putBoolean("hidden", b).apply(); }
 

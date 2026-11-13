@@ -62,6 +62,7 @@ public class PrestadoActivity extends Activity {
         }
         cur = b != null && b.getString("cur") != null && b.getString("cur").startsWith(root) ? b.getString("cur") : root;
         Viewers.loan = true;
+        new Prefs(this).setLoanRoot(root);
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_SECURE | WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         getWindow().setStatusBarColor(Ui.BG);
         getWindow().setNavigationBarColor(Ui.BG);
@@ -158,10 +159,22 @@ public class PrestadoActivity extends Activity {
         col.addView(list, new LinearLayout.LayoutParams(-1, 0, 1f));
         setContentView(col);
         load();
+        pin();
+    }
+
+    /** Fija la pantalla; si la fijación se perdió (apagar y prender rápido, etc.) la vuelve a pedir. */
+    private void pin() {
         try {
-            startLockTask();
+            android.app.ActivityManager am = getSystemService(android.app.ActivityManager.class);
+            if (am != null && am.getLockTaskModeState() == android.app.ActivityManager.LOCK_TASK_MODE_NONE) startLockTask();
         } catch (Exception ignored) {
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (!leaving) pin();
     }
 
     @Override
@@ -237,6 +250,7 @@ public class PrestadoActivity extends Activity {
     private void finishLoan() {
         leaving = true;
         Viewers.loan = false;
+        new Prefs(this).setLoanRoot(null);
         try {
             stopLockTask();
         } catch (Exception ignored) {

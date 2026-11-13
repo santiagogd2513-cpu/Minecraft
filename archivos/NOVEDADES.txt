@@ -1,3 +1,9 @@
+## 88
+🤝 Modo prestado: más difícil de saltarse
+- Si apagan y prenden el teléfono rápido y se escapan de la pantalla fijada, al volver a Bóveda sigue en modo prestado y pide el bloqueo para salir. Y si la fijación se pierde, se vuelve a pedir sola.
+- Al empezar, si el teléfono no tiene activado «Pedir PIN antes de dejar de fijar», te lo aviso y te digo dónde se activa (es lo que de verdad cierra ese hueco).
+- Límite: sin ser un teléfono de empresa, Android no deja impedir del todo que alguien salga a la pantalla de inicio. Lo que protege tus archivos es que Bóveda no los muestra sin el bloqueo.
+
 ## 87
 🔧 Herramientas: ahora usan el selector de archivos de Bóveda
 - «Convertir cualquier archivo», las herramientas de imagen y las de audio y video abrían el selector normal de Android. Ahora abren el de Bóveda, con tus carpetas y tu forma de moverte.
