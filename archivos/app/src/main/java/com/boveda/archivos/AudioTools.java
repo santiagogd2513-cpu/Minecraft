@@ -139,15 +139,14 @@ final class AudioTools {
             int sampleRate = inFmt.containsKey(MediaFormat.KEY_SAMPLE_RATE) ? inFmt.getInteger(MediaFormat.KEY_SAMPLE_RATE) : 44100;
             int channels = inFmt.containsKey(MediaFormat.KEY_CHANNEL_COUNT) ? inFmt.getInteger(MediaFormat.KEY_CHANNEL_COUNT) : 2;
             boolean formatKnown = false;
-            ArrayDeque<byte[]> pcm = new ArrayDeque<>();
-            int pcmHead = 0;               // cuánto del primer pedazo ya se usó
-            long pcmBytes = 0;
+            ByteQueue pcm = new ByteQueue();     // lo que sale del decodificador
+            ByteQueue feedQ = new ByteQueue();   // lo que entra al codificador (ya con la frecuencia nueva, si hizo falta)
             long samplesOut = 0;           // muestras por canal entregadas al codificador
             long wavData = 0;
             int muxTrack = -1;
             Resampler rs = null;
 
-            while (!(fmt == Out.WAV ? decoderDone && pcm.isEmpty() : encoderDone)) {
+            while (!(fmt == Out.WAV ? decoderDone && pcm.size() == 0 : encoderDone)) {
                 if (prog.cancelled()) throw new IOException(L.t("Cancelado"));
                 boolean progressed = false;
 
@@ -170,7 +169,7 @@ final class AudioTools {
                 }
 
                 // 2. sacar el sonido ya decodificado
-                if (!decoderDone && pcmBytes < (1 << 21)) {
+                if (!decoderDone && pcm.size() < (1 << 21)) {
                     int oi = dec.dequeueOutputBuffer(bi, 2000);
                     if (oi >= 0) {
                         if (bi.size > 0) {
@@ -179,7 +178,6 @@ final class AudioTools {
                             ob.position(bi.offset);
                             ob.get(chunk, 0, bi.size);
                             pcm.add(chunk);
-                            pcmBytes += chunk.length;
                         }
                         dec.releaseOutputBuffer(oi, false);
                         if ((bi.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) decoderDone = true;
@@ -196,7 +194,7 @@ final class AudioTools {
                 if (channels > 2) throw new IOException(L.t("Este audio tiene más de 2 canales; por ahora solo se convierten mono y estéreo"));
 
                 // 3. crear la salida la primera vez que se sabe cómo suena
-                if (!formatKnown && (pcmBytes > 0 || decoderDone)) {
+                if (!formatKnown && (pcm.size() > 0 || decoderDone)) {
                     formatKnown = true;
                     if (fmt == Out.WAV) {
                         wav = new RandomAccessFile(out, "rw");
@@ -228,47 +226,45 @@ final class AudioTools {
 
                 // 4. entregar el sonido: a un archivo WAV o al codificador
                 if (formatKnown && fmt == Out.WAV) {
-                    while (!pcm.isEmpty()) {
-                        byte[] c = pcm.poll();
-                        int len = c.length - pcmHead;
-                        wav.write(c, pcmHead, len);
+                    while (pcm.size() > 0) {
+                        byte[] c = new byte[(int) Math.min(pcm.size(), 1 << 16)];
+                        int len = pcm.read(c, c.length);
+                        wav.write(c, 0, len);
                         wavData += len;
-                        pcmBytes -= len;
-                        pcmHead = 0;
                         progressed = true;
                     }
                 } else if (formatKnown && enc != null && !encInputEos) {
+                    // con otra frecuencia, el sonido pasa primero por el cambiador y se guarda aparte: sale más (o menos) de lo que entró
+                    ByteQueue feed = pcm;
+                    if (rs != null) {
+                        while (feedQ.size() < (1 << 17) && pcm.size() > 0) {
+                            int take = (int) Math.min(pcm.size(), 1 << 14);
+                            take -= take % (2 * channels);
+                            if (take <= 0) break;
+                            byte[] c = new byte[take];
+                            pcm.read(c, take);
+                            feedQ.add(rs.process(c));
+                        }
+                        feed = feedQ;
+                    }
                     int ei = enc.dequeueInputBuffer(2000);
                     if (ei >= 0) {
                         ByteBuffer eb = enc.getInputBuffer(ei);
                         eb.clear();
                         int want = Math.min(eb.remaining(), 1 << 16);
-                        byte[] tmp = new byte[want];
-                        int got = 0;
-                        while (got < want && !pcm.isEmpty()) {
-                            byte[] c = pcm.peek();
-                            int take = Math.min(want - got, c.length - pcmHead);
-                            System.arraycopy(c, pcmHead, tmp, got, take);
-                            got += take;
-                            pcmHead += take;
-                            pcmBytes -= take;
-                            if (pcmHead >= c.length) {
-                                pcm.poll();
-                                pcmHead = 0;
-                            }
-                        }
-                        got -= got % (2 * channels);      // muestras enteras
-                        // (lo que sobre de una muestra a medias se pierde: como mucho unos bytes)
-                        byte[] data = got == tmp.length ? tmp : java.util.Arrays.copyOf(tmp, got);
-                        if (rs != null && got > 0) data = rs.process(data);
-                        if (data.length == 0 && decoderDone && pcm.isEmpty()) {
-                            enc.queueInputBuffer(ei, 0, 0, samplesOut * 1_000_000L / (rs != null ? 48000 : sampleRate), MediaCodec.BUFFER_FLAG_END_OF_STREAM);
+                        want -= want % (2 * channels);            // muestras enteras
+                        long avail = feed.size();
+                        long rate = rs != null ? 48000 : sampleRate;
+                        boolean sourceEmpty = decoderDone && pcm.size() == 0;
+                        if (avail == 0 && sourceEmpty) {
+                            enc.queueInputBuffer(ei, 0, 0, samplesOut * 1_000_000L / rate, MediaCodec.BUFFER_FLAG_END_OF_STREAM);
                             encInputEos = true;
-                        } else if (data.length > 0) {
-                            eb.put(data, 0, Math.min(data.length, eb.remaining()));
-                            long pts = samplesOut * 1_000_000L / (rs != null ? 48000 : sampleRate);
-                            enc.queueInputBuffer(ei, 0, data.length, pts, 0);
-                            samplesOut += data.length / (2L * channels);
+                        } else if (avail > 0) {
+                            byte[] data = new byte[(int) Math.min(want, avail)];
+                            int got = feed.read(data, data.length);
+                            eb.put(data, 0, got);
+                            enc.queueInputBuffer(ei, 0, got, samplesOut * 1_000_000L / rate, 0);
+                            samplesOut += got / (2L * channels);
                         } else {
                             enc.queueInputBuffer(ei, 0, 0, 0, 0);
                         }
@@ -297,7 +293,7 @@ final class AudioTools {
                         progressed = true;
                     }
                 }
-                if (!progressed && decoderDone && fmt == Out.WAV && pcm.isEmpty()) break;
+                if (!progressed && decoderDone && fmt == Out.WAV && pcm.size() == 0) break;
             }
 
             if (fmt == Out.WAV && wav != null) {
@@ -344,6 +340,41 @@ final class AudioTools {
     }
 
     // ------------------------------------------------------------------ piezas (sin Android, se prueban aparte)
+
+    /** Una cola de bytes: se agrega por pedazos y se lee del principio, la cantidad que se pida. */
+    static final class ByteQueue {
+        private final ArrayDeque<byte[]> chunks = new ArrayDeque<>();
+        private int head;       // cuánto del primer pedazo ya se leyó
+        private long size;
+
+        void add(byte[] b) {
+            if (b.length == 0) return;
+            chunks.add(b);
+            size += b.length;
+        }
+
+        long size() {
+            return size;
+        }
+
+        /** Lee hasta {@code len} bytes; devuelve cuántos leyó. */
+        int read(byte[] dst, int len) {
+            int got = 0;
+            while (got < len && !chunks.isEmpty()) {
+                byte[] c = chunks.peek();
+                int take = Math.min(len - got, c.length - head);
+                System.arraycopy(c, head, dst, got, take);
+                got += take;
+                head += take;
+                if (head >= c.length) {
+                    chunks.poll();
+                    head = 0;
+                }
+            }
+            size -= got;
+            return got;
+        }
+    }
 
     /** Cabecera de un archivo WAV de 16 bits. dataBytes = cuánto sonido viene después. */
     static byte[] wavHeader(int rate, int channels, long dataBytes) {
