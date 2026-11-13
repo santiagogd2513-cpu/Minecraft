@@ -1,3 +1,11 @@
+## 71
+✨ Súper animaciones: más claras
+- Si Android tiene las animaciones apagadas, Ajustes → Experimentales ahora te lo avisa, y hay un interruptor para mostrarlas igual solo en Bóveda.
+- La barra de progreso tiene más contraste y el brillo corre más rápido.
+- «Comprimir» y los demás botones de abajo se achican en vez de partirse con letra grande.
+- La tarjeta de progreso ya no tapa la barra de acciones.
+- El texto de la tarjeta de progreso ya no se corta.
+
 ## 70
 ✨ Modo súper animaciones (experimental)
 - Ajustes → Experimentales y de prueba → «Modo súper animaciones». Antes de activarlo avisa que puede gastar mucha RAM y GPU.

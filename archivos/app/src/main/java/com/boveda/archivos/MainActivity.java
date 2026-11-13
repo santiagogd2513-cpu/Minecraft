@@ -431,7 +431,12 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         fab = plus;
         styleFab();
         root.addView(plus, fl);
-        if (!picker()) progressCard = new ProgressCard(this, root, 92, this::showTransfers);
+        if (!picker()) {
+            progressCard = new ProgressCard(this, root, 92, this::showTransfers);
+            // si hay barra de acciones abajo (con letra grande es más alta), la tarjeta se coloca encima
+            bottom.addOnLayoutChangeListener((vw, l, t, r, b, ol, ot, or, ob) ->
+                    progressCard.setBottomMargin(bottom.getVisibility() == View.VISIBLE ? bottom.getHeight() + dp(10) : dp(92)));
+        }
         setContentView(root);
     }
 
@@ -3232,7 +3237,11 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         b.addView(i, new LinearLayout.LayoutParams(dp(22), dp(22)));
         TextView t = Ui.text(this, label, 11, 0xFFC4CCDA, false);
         t.setPadding(0, dp(4), 0, 0);
-        b.addView(t);
+        t.setGravity(Gravity.CENTER);
+        t.setMaxLines(1);
+        // con letra grande, la palabra se achica sola en vez de partirse («Compr / imir»)
+        t.setAutoSizeTextTypeUniformWithConfiguration(7, 11, 1, android.util.TypedValue.COMPLEX_UNIT_SP);
+        b.addView(t, new LinearLayout.LayoutParams(-1, -2));
         b.setOnClickListener(v -> r.run());
         b.setLayoutParams(Ui.weight(1));
         return b;
@@ -4135,6 +4144,26 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         ar.addView(asw, asl);
         ar.setOnClickListener(v -> asw.toggle());
         addCard(col, ar);
+        if (Fx.systemOff(this)) {
+            TextView off = Ui.text(this, L.t("⚠ Tu Android tiene las animaciones apagadas (Ajustes → Accesibilidad → Quitar animaciones). Por eso el modo no se ve. Puedes desactivar eso en Android o usar el interruptor de abajo."),
+                    12.5f, Ui.WARN, false);
+            off.setPadding(dp(14), dp(10), dp(14), dp(10));
+            off.setBackground(Ui.round(0x1AFFB547, dp(14)));
+            LinearLayout.LayoutParams ol = new LinearLayout.LayoutParams(-1, -2);
+            ol.setMargins(0, dp(6), 0, 0);
+            col.addView(off, ol);
+        }
+        LinearLayout fr = settingsCard(L.t("Mostrar aunque Android las tenga apagadas"), L.t("Solo para Bóveda · si el movimiento te molesta, déjalo apagado"));
+        android.widget.Switch fsw = new android.widget.Switch(this);
+        fsw.setChecked(prefs.animForce());
+        fsw.setThumbTintList(android.content.res.ColorStateList.valueOf(Color.WHITE));
+        fsw.setTrackTintList(new android.content.res.ColorStateList(new int[][]{{android.R.attr.state_checked}, {}}, new int[]{Ui.ACCENT, 0xFF3A4458}));
+        fsw.setOnCheckedChangeListener((b, on) -> prefs.setAnimForce(on));
+        LinearLayout.LayoutParams fsl = new LinearLayout.LayoutParams(-2, -2);
+        fsl.setMargins(dp(10), 0, 0, 0);
+        fr.addView(fsw, fsl);
+        fr.setOnClickListener(v -> fsw.toggle());
+        addCard(col, fr);
         settingsSection(col, L.t("Apariencia"));
         LinearLayout r = settingsCard(L.t("Permitir modo claro"), L.t("Experimental · puede causar distorsiones visuales"));
         android.widget.Switch sw = new android.widget.Switch(this);

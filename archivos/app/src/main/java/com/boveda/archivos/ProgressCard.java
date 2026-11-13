@@ -71,13 +71,22 @@ final class ProgressCard implements TransferEngine.Listener {
         card.addView(bar, bl);
 
         info = Ui.text(a, "", 12.5f, Ui.SUB, false);
-        info.setMaxLines(2);
+        info.setMaxLines(3);
         info.setEllipsize(TextUtils.TruncateAt.MIDDLE);
         card.addView(info);
 
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(-1, -2, Gravity.BOTTOM);
         lp.setMargins(dp(12), 0, dp(12), dp(bottomDp));
         root.addView(card, lp);
+    }
+
+    /** Sube o baja la tarjeta para que no tape la barra de acciones de abajo. */
+    void setBottomMargin(int px) {
+        FrameLayout.LayoutParams lp = (FrameLayout.LayoutParams) card.getLayoutParams();
+        if (lp.bottomMargin != px) {
+            lp.bottomMargin = px;
+            card.setLayoutParams(lp);
+        }
     }
 
     private int dp(float v) {

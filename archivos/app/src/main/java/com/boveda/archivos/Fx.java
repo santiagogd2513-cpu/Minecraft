@@ -23,8 +23,19 @@ import java.util.Random;
 final class Fx {
     private Fx() {}
 
+    /** ¿Android tiene las animaciones apagadas (Accesibilidad → Quitar animaciones)? */
+    static boolean systemOff(Context c) {
+        try {
+            return Settings.Global.getFloat(c.getContentResolver(), Settings.Global.ANIMATOR_DURATION_SCALE, 1f) <= 0f;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
     static boolean on(Context c) {
-        if (!new Prefs(c).superAnim()) return false;
+        Prefs pf = new Prefs(c);
+        if (!pf.superAnim()) return false;
+        if (pf.animForce()) return true;
         try {
             // si el sistema tiene las animaciones apagadas, se respeta
             return Settings.Global.getFloat(c.getContentResolver(), Settings.Global.ANIMATOR_DURATION_SCALE, 1f) > 0f;
@@ -170,10 +181,10 @@ final class Fx {
                 float x0 = Math.max(0, left), x1 = Math.min(w, left + fillW);
                 if (x1 > x0) {
                     if (fx) {
-                        int dark = mix(color, Color.BLACK, 0.25f), light = mix(color, Color.WHITE, 0.45f);
+                        int dark = mix(color, Color.BLACK, 0.45f), light = mix(color, Color.WHITE, 0.8f);
                         LinearGradient g = new LinearGradient(0, 0, 220, 0, new int[]{dark, color, light, color, dark},
-                                new float[]{0f, 0.3f, 0.5f, 0.7f, 1f}, Shader.TileMode.REPEAT);
-                        m.setTranslate((now % 1600) / 1600f * 220f, 0);
+                                new float[]{0f, 0.35f, 0.5f, 0.65f, 1f}, Shader.TileMode.REPEAT);
+                        m.setTranslate((now % 1100) / 1100f * 220f, 0);
                         g.setLocalMatrix(m);
                         p.setShader(g);
                     } else {
