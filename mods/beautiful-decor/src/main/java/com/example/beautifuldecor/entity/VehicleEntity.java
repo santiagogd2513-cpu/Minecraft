@@ -822,7 +822,9 @@ public abstract class VehicleEntity extends Entity implements PaintableVehicle, 
         double beforeZ = this.getZ();
         double beforeY = this.getY();
         this.setDeltaMovement(dx, vy, dz);
-        this.move(MoverType.SELF, new Vec3(dx, vy + lift, dz));
+        // V7.7.0: al subir un escalón el empuje hacia arriba es solo la altura del escalón (antes se le restaba la gravedad del suelo, -0,04, y 1,02 se quedaba
+        // en 0,98: un bloque entero no se subía). Después sigue la gravedad de siempre: queda a 0,02 del bloque y cae encima.
+        this.move(MoverType.SELF, new Vec3(dx, lift > 0.0 ? lift : vy, dz));
         if (!grounded && this.onGround() && vy < -0.3) {
             // V7.4.0: aterrizaje: pierde velocidad según lo fuerte del golpe y, si fue muy fuerte, rebota un poco
             v *= (float) (1.0 - Math.min(0.45, (-vy - 0.3) * 0.8));

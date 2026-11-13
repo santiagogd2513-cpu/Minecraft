@@ -2,6 +2,9 @@
 
 Mod de decoración para **Minecraft 1.20.1** / **Forge 47.4.5**.
 
+## V7.7.0
+- SUBIR UN BLOQUE: la bici, la moto, la camioneta, el camión y el superdeportivo ahora sí suben un bloque entero (y la media losa). Era un error: al subir un escalón se le restaba la gravedad del suelo al empuje (1,02 quedaba en 0,98 y un bloque no se alcanzaba). El avión, con el tren de aterrizaje afuera y en tierra, también sube un bloque. La gravedad no se toca: después del escalón quedan a 0,02 del bloque y caen encima. Siguen sin subir dos bloques, vallas ni muros.
+
 ## V7.6.0
 - LA FÍSICA VIENE ACTIVA DESDE EL INICIO: los puentes y vías elevadas con carga ya no hay que activarlos (la gamerule `bdBridgeLoads` ahora viene en true; si algún día quieres quitarla, `/gamerule bdBridgeLoads false`).
 - Marcha atrás: un tren que va en reversa a más de ~8 km/h y llega al inicio de la vía también se sale y cae (antes se detenía). Con menos velocidad se sigue frenando como tope.

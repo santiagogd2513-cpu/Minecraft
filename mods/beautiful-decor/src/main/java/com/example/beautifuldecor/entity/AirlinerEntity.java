@@ -728,7 +728,21 @@ public class AirlinerEntity extends Entity implements PaintableVehicle, HasVehic
         // ---- movimiento (el servidor repite el mismo movimiento sin problema)
         double impact = this.velY;
         this.setDeltaMovement(hx * this.speed, this.velY, hz * this.speed);
-        this.move(MoverType.SELF, this.getDeltaMovement());
+        // V7.7.0: con el tren de aterrizaje afuera y en tierra, sube un bloque de alto como los demás vehículos
+        double lift = 0.0;
+        if (!airborne && this.onGround() && !this.isGearUp() && Math.abs(this.speed) > 0.01f) {
+            net.minecraft.world.phys.AABB swept = this.getBoundingBox().expandTowards(hx * this.speed, 0.0, hz * this.speed);
+            if (!level.noCollision(this, swept)) {
+                for (double h : new double[] {0.52, 1.02}) {
+                    if (level.noCollision(this, swept.move(0.0, h, 0.0))) {
+                        lift = h;
+                        break;
+                    }
+                }
+            }
+        }
+        Vec3 stepMove = this.getDeltaMovement();
+        this.move(MoverType.SELF, lift > 0.0 ? new Vec3(stepMove.x, lift, stepMove.z) : stepMove);
         Vec3 after = this.getDeltaMovement();                                         // move() ya anuló lo que chocó
         this.velY = after.y;
         if (this.horizontalCollision) {
