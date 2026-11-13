@@ -1,3 +1,10 @@
+## 74
+↩️ Deshacer
+- Después de mover, copiar, comprimir, extraer, renombrar o crear algo, aparece abajo un cartelito con lo que hiciste y «DESHACER» (unos 8 segundos).
+- En Inicio → Funciones especiales hay un historial con lo último que hiciste: toca una acción para deshacerla.
+- Mover y renombrar vuelven a su sitio de antes; lo que se copió, comprimió, extrajo o creó va a la papelera, por si cambias de idea.
+- Lo que borres ya está en la Papelera (30 días). Si en el sitio de antes ya hay algo, o lo que moviste ya no está, Bóveda lo dice en vez de forzar nada.
+
 ## 73
 ➕ Menú de crear nuevo
 - El botón «+» ahora abre cuatro cuadros: Carpeta, Texto, PDF y Otros.

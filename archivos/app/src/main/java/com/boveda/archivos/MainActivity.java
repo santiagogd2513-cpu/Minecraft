@@ -253,6 +253,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
     @Override
     protected void onResume() {
         super.onResume();
+        UndoLog.setListener(() -> main.post(this::showUndoPill));
         // ¿hay versión nueva? (no cuando otra app la abrió para elegir un archivo)
         if (!picker()) {
             Updater.resume(this);
@@ -281,6 +282,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
 
     @Override
     protected void onPause() {
+        UndoLog.setListener(null);
         engine.removeListener(this);
         ShizukuHelper.removeListener(shizukuListener);
         super.onPause();
@@ -431,6 +433,15 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         fab = plus;
         styleFab();
         root.addView(plus, fl);
+        undoPill = Ui.text(this, "", 14, Ui.TEXT, true);
+        undoPill.setGravity(Gravity.CENTER);
+        undoPill.setPadding(dp(18), dp(12), dp(18), dp(12));
+        undoPill.setBackground(Ui.roundStroke(0xF2182033, dp(24), dp(1), 0xFF2E3A55));
+        undoPill.setElevation(dp(10));
+        undoPill.setVisibility(View.GONE);
+        FrameLayout.LayoutParams upl = new FrameLayout.LayoutParams(-2, -2, Gravity.BOTTOM | Gravity.CENTER_HORIZONTAL);
+        upl.setMargins(dp(12), 0, dp(12), dp(96));
+        root.addView(undoPill, upl);
         if (!picker()) {
             progressCard = new ProgressCard(this, root, 92, this::showTransfers);
             // si hay barra de acciones abajo (con letra grande es más alta), la tarjeta se coloca encima
@@ -628,6 +639,55 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         return b;
     }
 
+    // ------------------------------------------------------------------ deshacer
+
+    private TextView undoPill;
+    private final Runnable hideUndoPill = () -> {
+        if (undoPill != null) undoPill.setVisibility(View.GONE);
+    };
+
+    /** Un cartelito abajo, unos segundos, con lo último que hiciste y «DESHACER». */
+    private void showUndoPill() {
+        if (undoPill == null || picker()) return;
+        UndoLog.Action a = UndoLog.last(this);
+        if (a == null) return;
+        String label = a.label.length() > 38 ? a.label.substring(0, 37) + "…" : a.label;
+        undoPill.setText(label + "   ·   " + L.t("DESHACER"));
+        undoPill.setTextColor(Ui.TEXT);
+        undoPill.setOnClickListener(v -> {
+            undoPill.setVisibility(View.GONE);
+            confirmUndo(a);
+        });
+        undoPill.setVisibility(View.VISIBLE);
+        undoPill.removeCallbacks(hideUndoPill);
+        undoPill.postDelayed(hideUndoPill, 8000);
+    }
+
+    private void confirmUndo(UndoLog.Action a) {
+        new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                .setTitle(L.t("¿Deshacer?"))
+                .setMessage(a.label + "\n\n" + (a.pairs.isEmpty() ? L.t("Lo que se creó va a la papelera, por si cambias de idea.") : L.t("Se devuelve a su sitio de antes.")))
+                .setNegativeButton(L.t("No"), null)
+                .setPositiveButton(L.t("Deshacer"), (d, w) -> io.execute(() -> {
+                    String msg;
+                    boolean ok = true;
+                    try {
+                        msg = UndoLog.undo(this, a);
+                        UndoLog.remove(this, a);
+                    } catch (IOException ex) {
+                        ok = false;
+                        msg = ex.getMessage();
+                    }
+                    String fm = msg;
+                    main.post(() -> {
+                        Toast.makeText(this, fm, Toast.LENGTH_LONG).show();
+                        if (path == null) showHome();
+                        else load(path, true);
+                    });
+                }))
+                .show();
+    }
+
     // ------------------------------------------------------------------ inicio en tarjetas
 
     /** null = inicio principal; si no, el nombre de la sección abierta (accesos, ancladas, favoritas, nube, funciones, seguridad, shizuku). */
@@ -737,7 +797,15 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                     box.addView(netRow("♻️", 0xFFE5603B, 0xFFFF9A5C, L.t("Reducir peso"),
                             L.t("Busca archivos repetidos. Selecciona una carpeta o un comprimido, toca ⋮ y elige «Reducir peso»."),
                             v -> Toast.makeText(this, L.t("Selecciona una carpeta o un comprimido, toca ⋮ y elige «Reducir peso»."), Toast.LENGTH_LONG).show(), null));
-                    box.addView(hint(L.t("Aquí irán las funciones originales de Bóveda a medida que lleguen.")));
+                    box.addView(section(L.t("Deshacer")));
+                    List<UndoLog.Action> acts = UndoLog.recent(this);
+                    if (acts.isEmpty()) box.addView(hint(L.t("Aquí aparece lo último que hagas (mover, copiar, comprimir, extraer, renombrar, crear) para poder deshacerlo.")));
+                    for (UndoLog.Action ua : acts) {
+                        box.addView(netRow("↩️", 0xFF3FB8FF, 0xFF7B2CBF, ua.label,
+                                android.text.format.DateUtils.getRelativeTimeSpanString(ua.time, System.currentTimeMillis(), android.text.format.DateUtils.MINUTE_IN_MILLIS).toString(),
+                                v -> confirmUndo(ua), null));
+                    }
+                    box.addView(hint(L.t("Lo que borres está en la Papelera (30 días).")));
                 }
                 case "seguridad" -> {
                     box.addView(netRow("🔐", 0xFF7B4DFF, 0xFFB86BFF, L.t("La Bóveda"),
@@ -3487,7 +3555,10 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             try {
                 Fs f = FsRouter.get(this, e.path);
                 if (f.stat(to) != null && !n.equalsIgnoreCase(e.name)) err = L.t("Ya existe algo con ese nombre");
-                else f.rename(e.path, to);
+                else {
+                    f.rename(e.path, to);
+                    if (!to.equals(e.path)) UndoLog.recordRename(this, e.path, to);
+                }
             } catch (IOException ex) {
                 err = ex.getMessage();
             }
@@ -3649,6 +3720,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                 else try (java.io.OutputStream o = f.out(target)) {
                         if (writer != null) writer.write(o);
                     }
+                if (err == null) UndoLog.recordCreated(this, target, !file);
             } catch (IOException ex) {
                 err = ex.getMessage();
             } catch (RuntimeException ex) {

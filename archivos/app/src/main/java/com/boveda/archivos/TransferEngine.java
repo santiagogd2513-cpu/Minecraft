@@ -63,6 +63,10 @@ final class TransferEngine {
         CompressOptions comp;
         /** Un aviso al terminar (por ejemplo, que un original no se pudo mandar a la papelera). */
         volatile String note;
+        /** Para «Deshacer»: lo movido {antes, ahora} y lo que esta tarea creó. */
+        volatile boolean noUndo;
+        final List<String[]> undoMoves = new ArrayList<>();
+        final List<String> undoCreated = new ArrayList<>();
 
         Job(Kind kind, List<String> sources, String dest, Conflict conflict) {
             this.kind = kind;
@@ -181,6 +185,13 @@ final class TransferEngine {
         return submit(new Job(kind, sources, dest, conflict));
     }
 
+    /** Igual, pero sin anotarla en el historial de «Deshacer» (para cuando es el propio deshacer). */
+    Job submitQuiet(Kind kind, List<String> sources, String dest, Conflict conflict) {
+        Job j = new Job(kind, sources, dest, conflict);
+        j.noUndo = true;
+        return submit(j);
+    }
+
     /** Extraer de un archivo comprimido: todo (picks vacío) o solo lo elegido. */
     Job submitExtract(String archive, List<String> picks, String innerBase, String dest) {
         Job j = new Job(Kind.EXTRACT, java.util.Collections.singletonList(archive), dest, Conflict.REPLACE);
@@ -238,6 +249,12 @@ final class TransferEngine {
                 case CLOUD_UP -> cloudUp(j);
             }
             j.state = j.cancel ? 4 : 2;
+            if (j.state == 2 && !j.noUndo) {
+                try {
+                    UndoLog.recordJob(app, j);
+                } catch (Throwable ignored) {
+                }
+            }
         } catch (Cancelled c) {
             j.state = 4;
         } catch (Throwable e) {
@@ -293,8 +310,10 @@ final class TransferEngine {
                 check(j);
                 String target = target(j, s);
                 if (target == null) continue; // saltar
+                boolean fresh = fs(j.dest).stat(target) == null;
                 if (fastMove(s, target)) {
                     j.doneItems++;
+                    if (fresh) j.undoMoves.add(new String[]{s, target});
                     changed(true);
                 } else {
                     pending.add(s);
@@ -310,7 +329,12 @@ final class TransferEngine {
             check(j);
             String target = target(j, s);
             if (target == null) continue;
+            boolean fresh = fs(j.dest).stat(target) == null;
             copyTree(j, s, target);
+            if (fresh) {
+                if (j.kind == Kind.MOVE) j.undoMoves.add(new String[]{s, target});
+                else j.undoCreated.add(target);
+            }
             if (j.kind == Kind.MOVE) {
                 // el original se borra solo cuando todo quedó copiado y verificado
                 phase(j, L.t("Borrando los originales"));
@@ -513,6 +537,7 @@ final class TransferEngine {
                 break;
             }
         }
+        final boolean destExisted = df.stat(j.dest) != null;
         String tmp = Paths.join(Paths.parent(j.dest), "." + Paths.name(j.dest) + ".boveda-parte");
         java.io.File tmp7z = null;
         try {
@@ -547,6 +572,7 @@ final class TransferEngine {
         } finally {
             if (tmp7z != null) tmp7z.delete();
         }
+        if (!destExisted) j.undoCreated.add(j.dest);
         if (o.deleteOriginal) removeOriginals(j, df);
     }
 
@@ -805,6 +831,7 @@ final class TransferEngine {
         boolean existed = ef.stat(j.dest) != null;
         try {
             extractBody(j);
+            if (!existed) j.undoCreated.add(j.dest);
         } catch (IOException | RuntimeException e) {
             // si la carpeta la creó este trabajo y quedó vacía, no se deja de basura
             try {
