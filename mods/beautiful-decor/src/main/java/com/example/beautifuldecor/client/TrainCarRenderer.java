@@ -26,7 +26,7 @@ public class TrainCarRenderer extends EntityRenderer<TrainCarEntity> {
             String cargo = switch (v.cargo) {
                 case COAL -> "cargo_coal";
                 case FOOD -> "cargo_food";
-                case MINERAL -> "cargo_mineral";
+                case MINERAL -> "cargo_mineral_light";
                 default -> null;
             };
             CARGO[v.ordinal()] = cargo == null ? null : ResourceLocation.fromNamespaceAndPath(BeautifulDecor.MOD_ID, "textures/entity/" + cargo + ".png");
@@ -58,6 +58,7 @@ public class TrainCarRenderer extends EntityRenderer<TrainCarEntity> {
             float fill = car.fillFraction();
             if (fill > 0.0f) {
                 float[] m = mound(variant);
+                setTint(variant, car.cargoKind());
                 poseStack.pushPose();
                 poseStack.translate(0.0, 0.0, m[0]);
                 drawCargo(poseStack, bufferSource.getBuffer(RenderType.entityCutoutNoCull(CARGO[variant.ordinal()])), packedLight, fill,
@@ -96,10 +97,10 @@ public class TrainCarRenderer extends EntityRenderer<TrainCarEntity> {
     /** Dónde y qué tan grande es el montón de carga: {centro z, medio ancho, medio largo, altura máxima} en bloques; sobresale un poco de las paredes. */
     private static float[] mound(TrainCarEntity.Variant variant) {
         return switch (variant) {
-            case COAL_WAGON -> new float[] {0.0f, 1.34f, 6.8f, 2.6f};
-            case FOOD_WAGON -> new float[] {0.0f, 1.34f, 6.8f, 1.9f};
+            case COAL_WAGON -> new float[] {0.0f, 1.34f, 6.8f, 3.1f};
+            case FOOD_WAGON -> new float[] {0.0f, 1.34f, 6.8f, 2.3f};
             case STEAM_CLASSIC, STEAM_MODERN -> new float[] {-8.375f, 1.3f, 2.45f, 2.0f};          // el carbón del ténder
-            default -> new float[] {0.0f, 1.34f, 6.8f, 3.1f};
+            default -> new float[] {0.0f, 1.34f, 6.8f, 3.6f};
         };
     }
 
@@ -148,6 +149,59 @@ public class TrainCarRenderer extends EntityRenderer<TrainCarEntity> {
         }
     }
 
+    // V7.3.0: color del montón según el ítem que más hay (los lingotes de oro se ven dorados, el hierro gris claro...)
+    private static int tintR = 255;
+    private static int tintG = 255;
+    private static int tintB = 255;
+
+    private static void setTint(TrainCarEntity.Variant variant, String kind) {
+        tintR = tintG = tintB = 255;
+        if (variant.cargo != TrainCarEntity.Cargo.MINERAL) {
+            return;
+        }
+        if (kind.isEmpty()) {
+            tintR = 140;
+            tintG = 143;
+            tintB = 150;
+            return;
+        }
+        String p = kind.substring(kind.indexOf(':') + 1);
+        int[] c = null;
+        if (p.contains("gold")) {
+            c = new int[] {255, 205, 40};
+        } else if (p.contains("copper")) {
+            c = new int[] {235, 125, 80};
+        } else if (p.contains("iron")) {
+            c = new int[] {235, 235, 235};
+        } else if (p.contains("diamond")) {
+            c = new int[] {90, 245, 235};
+        } else if (p.contains("emerald")) {
+            c = new int[] {40, 235, 110};
+        } else if (p.contains("redstone")) {
+            c = new int[] {235, 30, 30};
+        } else if (p.contains("lapis")) {
+            c = new int[] {50, 90, 235};
+        } else if (p.contains("coal")) {
+            c = new int[] {70, 70, 76};
+        } else if (p.contains("quartz")) {
+            c = new int[] {250, 245, 235};
+        } else if (p.contains("netherite")) {
+            c = new int[] {110, 85, 80};
+        } else if (p.contains("amethyst")) {
+            c = new int[] {185, 130, 245};
+        } else if (p.contains("glowstone")) {
+            c = new int[] {255, 220, 120};
+        }
+        if (c == null) {
+            c = new int[] {140, 143, 150};          // lo que no tiene color propio se ve como la piedra de antes
+        }
+        {
+            tintR = c[0];
+            tintG = c[1];
+            tintB = c[2];
+        }
+    }
+
     private static int hash(int a, int b, int c) {
         int h = a * 73856093 ^ b * 19349663 ^ c * 83492791;
         return (h ^ (h >>> 13)) & 3;
@@ -167,7 +221,7 @@ public class TrainCarRenderer extends EntityRenderer<TrainCarEntity> {
     }
 
     private static void vertex(PoseStack.Pose pose, VertexConsumer vc, int light, float x, float y, float z, float u, float v, float nx, float ny, float nz) {
-        vc.vertex(pose.pose(), x, y, z).color(255, 255, 255, 255).uv(u, v).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light)
+        vc.vertex(pose.pose(), x, y, z).color(tintR, tintG, tintB, 255).uv(u, v).overlayCoords(OverlayTexture.NO_OVERLAY).uv2(light)
                 .normal(pose.normal(), nx, ny, nz).endVertex();
     }
 }

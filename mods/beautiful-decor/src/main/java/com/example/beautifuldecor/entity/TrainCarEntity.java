@@ -63,9 +63,9 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
 
     public enum Variant {
         FREIGHT_LOCO("freight_loco", VehiclePaint.Kind.FREIGHT_LOCO, TrainPhysics.LOCO_MASS_KG, Cargo.NONE, 0, 0.0, 20.0, 11.0, 0, 130.0, TrainPhysics.LOCO_POWER_W, Drive.DIESEL, () -> ModItems.FREIGHT_LOCO.get()),
-        COAL_WAGON("coal_wagon", VehiclePaint.Kind.COAL_WAGON, 25_000.0, Cargo.COAL, 6400, 16.0, 14.0, 9.0, 0, 130.0, 0.0, Drive.NONE, () -> ModItems.COAL_WAGON.get()),
+        COAL_WAGON("coal_wagon", VehiclePaint.Kind.COAL_WAGON, 25_000.0, Cargo.COAL, 8000, 16.0, 14.0, 9.0, 0, 130.0, 0.0, Drive.NONE, () -> ModItems.COAL_WAGON.get()),
         FOOD_WAGON("food_wagon", VehiclePaint.Kind.FOOD_WAGON, 22_000.0, Cargo.FOOD, 5600, 12.0, 14.0, 9.0, 0, 130.0, 0.0, Drive.NONE, () -> ModItems.FOOD_WAGON.get()),
-        MINERAL_WAGON("mineral_wagon", VehiclePaint.Kind.MINERAL_WAGON, 27_000.0, Cargo.MINERAL, 4000, 25.0, 14.0, 9.0, 0, 130.0, 0.0, Drive.NONE, () -> ModItems.MINERAL_WAGON.get()),
+        MINERAL_WAGON("mineral_wagon", VehiclePaint.Kind.MINERAL_WAGON, 27_000.0, Cargo.MINERAL, 10000, 25.0, 14.0, 9.0, 0, 130.0, 0.0, Drive.NONE, () -> ModItems.MINERAL_WAGON.get()),
         // V5.0.0: tren de pasajeros (80 km/h, vapor de carbón). El ténder es parte de la locomotora y lleva el carbón (combustible).
         STEAM_CLASSIC("steam_classic", VehiclePaint.Kind.STEAM_CLASSIC, 105_000.0, Cargo.COAL, 1200, 16.0, 22.0, 14.0, 1, 80.0, 2_200_000.0, Drive.STEAM, () -> ModItems.STEAM_CLASSIC.get()),
         STEAM_MODERN("steam_modern", VehiclePaint.Kind.STEAM_MODERN, 112_000.0, Cargo.COAL, 1200, 16.0, 22.0, 14.0, 1, 80.0, 2_400_000.0, Drive.STEAM, () -> ModItems.STEAM_MODERN.get()),
@@ -172,6 +172,8 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
     private static final EntityDataAccessor<String> PAINT_EXTRA = SynchedEntityData.defineId(TrainCarEntity.class, EntityDataSerializers.STRING);
     private static final EntityDataAccessor<Integer> VARIANT = SynchedEntityData.defineId(TrainCarEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> FILL = SynchedEntityData.defineId(TrainCarEntity.class, EntityDataSerializers.INT);
+    /** V7.3.0: qué ítem hay más en la carga (id de registro), para dibujar el montón del color de lo que lleva. */
+    private static final EntityDataAccessor<String> KIND = SynchedEntityData.defineId(TrainCarEntity.class, EntityDataSerializers.STRING);
     /** V6.2.0: 0 = sin frenar, 1 = frenando, 2 = freno de emergencia (lo escribe la cabeza para todo el tren). */
     /** V6.16.0: puertas de los coches de pasajeros y metro (true = abiertas) y televisores instalados (bit 0 = esquina izquierda, bit 1 = derecha). */
     private static final EntityDataAccessor<Boolean> DOORS = SynchedEntityData.defineId(TrainCarEntity.class, EntityDataSerializers.BOOLEAN);
@@ -236,6 +238,7 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
         this.entityData.define(PAINT_EXTRA, PaintExtras.EMPTY);
         this.entityData.define(VARIANT, 0);
         this.entityData.define(FILL, 0);
+        this.entityData.define(KIND, "");
         this.entityData.define(BRAKE_STATE, 0);
         this.entityData.define(DOORS, Boolean.FALSE);
         this.entityData.define(TVS, 0);
@@ -399,6 +402,29 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
         return this.variant().emptyKg + this.fillUnits() * this.variant().kgPerUnit + this.getPassengers().size() * PASSENGER_KG;
     }
 
+    /** V7.3.0: el ítem principal de la carga (id de registro) o "" si va vacío. */
+    public String cargoKind() {
+        return this.entityData.get(KIND);
+    }
+
+    private void refreshKind() {
+        net.minecraft.world.item.Item best = null;
+        long bestN = 0;
+        java.util.Map<net.minecraft.world.item.Item, Long> sum = new java.util.HashMap<>();
+        for (ItemStack h : this.hold) {
+            long n = sum.merge(h.getItem(), (long) h.getCount() * unitsPer(h), Long::sum);
+            if (n > bestN) {
+                bestN = n;
+                best = h.getItem();
+            }
+        }
+        net.minecraft.resources.ResourceLocation key = best == null ? null : net.minecraftforge.registries.ForgeRegistries.ITEMS.getKey(best);
+        String id = key == null ? "" : key.toString();
+        if (!id.equals(this.entityData.get(KIND))) {
+            this.entityData.set(KIND, id);
+        }
+    }
+
     public int fillUnits() {
         return this.entityData.get(FILL);
     }
@@ -484,6 +510,7 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
         stack.shrink(n);
         this.units += n * per;
         this.entityData.set(FILL, this.units);
+        this.refreshKind();
         return n;
     }
 
@@ -499,6 +526,7 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
             this.units = 0;
         }
         this.entityData.set(FILL, this.units);
+        this.refreshKind();
         return out;
     }
 
@@ -1522,6 +1550,7 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
             }
         }
         this.entityData.set(FILL, this.units);
+        this.refreshKind();
         this.entityData.set(DOORS, tag.getBoolean("Doors"));
         this.entityData.set(TVS, tag.getInt("Tvs") & 3);
         this.frontId = tag.hasUUID("Front") ? tag.getUUID("Front") : null;

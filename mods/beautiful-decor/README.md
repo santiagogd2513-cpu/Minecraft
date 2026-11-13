@@ -2,6 +2,10 @@
 
 Mod de decoración para **Minecraft 1.20.1** / **Forge 47.4.5**.
 
+## V7.3.0
+- CARGA DE LOS VAGONES: el montón de carga ahora se ve del color de lo que lleva (lingotes de oro dorados, hierro claro, cobre, diamante, esmeralda, redstone, lapislázuli, cuarzo...) en vez de siempre una piedra gris, y sobresale más del vagón (carbón, comida y minerales).
+- Capacidades: vagón de minerales 10.000 unidades (el más difícil de llenar), de carbón 8.000, de comida 5.600 (igual). Los bloques valen 9. Un tren lleno pesa muchísimo: la locomotora arranca y frena mucho más lento.
+
 ## V7.2.1
 - ENGANCHE RÁPIDO: con un coche de tren en la mano, clic derecho en cualquier coche del tren (la cabina, por ejemplo) y el coche se pone detrás del último, sin tener que apuntar a la vía. Si el tren ya tiene vagones, va detrás del último.
 - Máximo de 500 coches por tren (también al colocar sobre la vía); al llegar al tope avisa.
