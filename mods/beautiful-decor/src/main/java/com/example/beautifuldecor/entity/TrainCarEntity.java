@@ -1117,9 +1117,13 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
                 this.announce(chain, auto);
                 if (this.tickCount % 40 == 0 && this.level() instanceof ServerLevel statusLevel) {
                     Component status = autoCar.route.status();                              // V6.16.4: aviso de lo que hace el automático
-                    for (ServerPlayer near : statusLevel.players()) {
-                        if (near.distanceToSqr(this) < 80.0 * 80.0) {
-                            near.displayClientMessage(status, true);
+                    for (ServerPlayer holder : statusLevel.players()) {
+                        // solo lo ve quien sostiene el Mando de trenes vinculado a esta locomotora
+                        for (ItemStack held : new ItemStack[] {holder.getMainHandItem(), holder.getOffhandItem()}) {
+                            if (held.getItem() instanceof TrainRemoteItem && autoCar.getUUID().equals(TrainRemoteItem.linked(held))) {
+                                holder.displayClientMessage(status, true);
+                                break;
+                            }
                         }
                     }
                 }

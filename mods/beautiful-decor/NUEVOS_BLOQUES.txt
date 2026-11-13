@@ -1,6 +1,6 @@
-PARCHE V6.16.4
+PARCHE V6.16.5
 ==============
-- AVISO DEL AUTOMÁTICO: con un tren en automático, los jugadores cercanos ven arriba qué hace (en parada y en cuántos segundos sale, rumbo a la parada y cuántos metros faltan, o cargando la vía).
+- AVISO DEL AUTOMÁTICO: con un tren en automático, quien sostiene el Mando de trenes vinculado a ese tren ve arriba qué hace (en parada y en cuántos segundos sale, rumbo a la parada y cuántos metros faltan, o cargando la vía).
 
 PARCHE V6.16.3
 ==============

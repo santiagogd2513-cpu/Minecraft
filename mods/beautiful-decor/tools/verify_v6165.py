@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Comprueba SOLO la V6.16.4 (depósito, puertas, televisores, carbón inicial)."""
+"""Comprueba SOLO la V6.16.5 (depósito, puertas, televisores, carbón inicial)."""
 import json, os, re, shutil, subprocess, sys, tempfile
 from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
@@ -14,8 +14,8 @@ def run(cmd, **kw):
     env = {k: v for k, v in os.environ.items() if k != "JAVA_TOOL_OPTIONS"}
     return subprocess.run(cmd, capture_output=True, text=True, encoding="utf-8", errors="replace", env=env, **kw)
 
-need("version = '6.16.4'" in read(ROOT / "build.gradle") and "mod_version=6.16.4" in read(ROOT / "gradle.properties"), "versión 6.16.4")
-need("V6.16.4" in read(ROOT / "README.md") and read(ROOT / "NUEVOS_BLOQUES.txt").startswith("PARCHE V6.16.4"), "docs")
+need("version = '6.16.5'" in read(ROOT / "build.gradle") and "mod_version=6.16.5" in read(ROOT / "gradle.properties"), "versión 6.16.5")
+need("V6.16.5" in read(ROOT / "README.md") and read(ROOT / "NUEVOS_BLOQUES.txt").startswith("PARCHE V6.16.5"), "docs")
 for n in ("depot_controller_front", "depot_controller_side", "depot_controller_top"):
     need((A / f"textures/block/{n}.png").exists(), n)
 m = json.loads(read(A / "models/block/depot_controller.json"))
@@ -39,6 +39,7 @@ need("auto.doors" in tc and "elapsed >= openAt" in read(J / "entity/TrainRoute.j
 need("addPending" in read(J / "block/StationControllerBlock.java") and "applyPending" in read(J / "item/TrainRemoteItem.java") and "NOTE_BLOCK_PLING" in read(J / "network/TrainMenuSavePacket.java"), "paradas pendientes y sonidos")
 need("level.isLoaded(target.rail) &&" in read(J / "entity/TrainRoute.java"), "guardia de chunk en TrainRoute")
 need("train_auto.dwell" in read(J / "entity/TrainRoute.java") and "autoCar.route.status()" in tc, "aviso del automático")
+need("TrainRemoteItem.linked(held)" in tc, "aviso solo con el mando")
 need("Items.COAL, 128" in read(J / "item/TrainCarItem.java"), "carbón inicial")
 need("depot" in read(J / "block/StationControllerBlock.java"), "regla del depósito")
 ex = read(J / "entity/VehiclePaintExtras.java")
@@ -60,7 +61,7 @@ try:
 finally:
     shutil.rmtree(work, ignore_errors=True)
 if errors:
-    print("FALLÓ la verificación V6.16.4:")
+    print("FALLÓ la verificación V6.16.5:")
     [print(" -", x) for x in errors]
     sys.exit(1)
-print("OK V6.16.4: depósito, puertas, televisores y carbón; solo se verificó esta versión.")
+print("OK V6.16.5: depósito, puertas, televisores y carbón; solo se verificó esta versión.")
