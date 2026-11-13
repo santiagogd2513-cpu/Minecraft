@@ -152,6 +152,12 @@ final class ProgressCard implements TransferEngine.Listener {
             bar.setProgress(ok ? 1000 : bar.getProgress());
             tint(ok ? Ui.GOOD : Ui.BAD);
             bar.spark(ok);
+            if (Fx.on(a)) {
+                // un rebotito al terminar: sube un poco y vuelve
+                card.animate().scaleX(1.04f).scaleY(1.04f).setDuration(130)
+                        .withEndAction(() -> card.animate().scaleX(1f).scaleY(1f).setDuration(220)
+                                .setInterpolator(new android.view.animation.OvershootInterpolator(2f)).start()).start();
+            }
             long ms = Math.max(1, last.finished - last.started);
             String txt;
             if (ok) {

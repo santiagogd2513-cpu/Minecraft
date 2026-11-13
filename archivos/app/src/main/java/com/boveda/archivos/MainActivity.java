@@ -427,7 +427,14 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         TextView plus = Ui.text(this, "+", 30, 0xFF06101F, true);
         plus.setGravity(Gravity.CENTER);
         plus.setElevation(dp(6));
-        plus.setOnClickListener(v -> showCreate());
+        plus.setOnClickListener(v -> {
+            if (Fx.on(this)) {
+                Fx.pulseFab(v);
+                main.postDelayed(this::showCreate, 150);
+            } else {
+                showCreate();
+            }
+        });
         FrameLayout.LayoutParams fl = new FrameLayout.LayoutParams(dp(58), dp(58), Gravity.BOTTOM | Gravity.END);
         fl.setMargins(0, 0, dp(18), dp(22));
         fab = plus;
@@ -658,7 +665,9 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             undoPill.setVisibility(View.GONE);
             confirmUndo(a);
         });
+        boolean wasHidden = undoPill.getVisibility() != View.VISIBLE;
         undoPill.setVisibility(View.VISIBLE);
+        if (wasHidden) Fx.slideUp(undoPill);
         undoPill.removeCallbacks(hideUndoPill);
         undoPill.postDelayed(hideUndoPill, 8000);
     }
@@ -825,6 +834,12 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             }
         }
         addExtraView(box);
+        if (Fx.on(this)) {
+            // la pantalla entra con un fundido y sube un poquito
+            box.setAlpha(0f);
+            box.setTranslationY(dp(16));
+            box.animate().alpha(1f).translationY(0).setDuration(240).start();
+        }
     }
 
     private View hint(String text) {
@@ -868,6 +883,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         sv.setEllipsize(TextUtils.TruncateAt.END);
         t.addView(sv);
         t.setOnClickListener(tap);
+        Fx.lift(t);
         return t;
     }
 
@@ -905,6 +921,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             });
         }, "espacio").start();
         card.setOnClickListener(x -> open(v.path));
+        Fx.lift(card);
         return card;
     }
 
@@ -1122,6 +1139,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         ch.setImageDrawable(Ui.icon(this, R.drawable.ic_chevron, 0xFF4A5670));
         r.addView(ch, new LinearLayout.LayoutParams(dp(20), dp(20)));
         r.setOnClickListener(v -> open(p));
+        Fx.lift(r);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, -2);
         lp.setMargins(0, 0, 0, dp(6));
         r.setLayoutParams(lp);
@@ -1146,6 +1164,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         r.addView(texts, Ui.weight(1));
         r.setOnClickListener(tap);
         if (hold != null) r.setOnLongClickListener(hold);
+        Fx.lift(r);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(-1, -2);
         lp.setMargins(0, dp(6), 0, 0);
         r.setLayoutParams(lp);
@@ -2158,7 +2177,11 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
     // ------------------------------------------------------------------ la Bóveda (carpeta secreta cifrada)
 
     private void openVault() {
-        withVault(() -> open(VaultFs.ROOT));
+        boolean was = Vault.unlocked();
+        withVault(() -> {
+            if (!was) Fx.flash(this, "🔓");
+            open(VaultFs.ROOT);
+        });
     }
 
     /** Hace lo que sigue con la Bóveda abierta: la crea si no existe o pide el PIN o la huella. */
@@ -3323,18 +3346,32 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
 
     // ------------------------------------------------------------------ copiar, mover, pegar, borrar, comprimir
 
+    /** Al copiar o mover, unos íconos viajan hacia la barra de abajo; al pegar, vuelven a la lista. */
+    private void flyIcons(boolean toBar) {
+        if (!Fx.on(this)) return;
+        int w = getResources().getDisplayMetrics().widthPixels, h = getResources().getDisplayMetrics().heightPixels;
+        int n = Math.min(3, toBar ? selected.size() : clip.size());
+        for (int i = 0; i < n; i++) {
+            float lx = w * (0.30f + 0.2f * i), ly = h * 0.30f, bx = w * 0.5f, by = h - dp(90);
+            if (toBar) Fx.fly(this, "📄", lx, ly, bx, by, 90L * i);
+            else Fx.fly(this, "📄", bx, by, lx, ly, 90L * i);
+        }
+    }
+
     private void toClip(boolean move) {
         extractArchive = null;
         cloudDownload.clear();
         clip.clear();
         clip.addAll(selected);
         clipMove = move;
+        flyIcons(true);
         clearSelection();
         Toast.makeText(this, L.t("Ve a la carpeta destino y toca «Pegar aquí»"), Toast.LENGTH_SHORT).show();
     }
 
     private void paste() {
         if (path == null || clip.isEmpty()) return;
+        flyIcons(false);
         String dest = path;
         List<String> src = new ArrayList<>(clip);
         boolean move = clipMove;
@@ -3600,6 +3637,9 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                 .setNegativeButton(L.t("Cancelar"), null)
                 .create();
         dlg[0].show();
+        // las cuatro opciones salen una tras otra, como en abanico
+        int k = 0;
+        for (View tv : tiles) Fx.popIn(tv, 60L * k++);
     }
 
     /** Tipos de archivo que Bóveda puede abrir, leer y editar como texto. */
@@ -5171,7 +5211,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             h.star.setVisibility(fav ? View.VISIBLE : View.GONE);
             if (fav) h.star.setImageDrawable(Ui.icon(MainActivity.this,
                     prefs.isPinned(e.path) ? R.drawable.ic_pin : R.drawable.ic_star, prefs.isPinned(e.path) ? Ui.ACCENT2 : Ui.WARN));
-            v.setBackground(sel ? (prefs.superAnim() && Fx.on(MainActivity.this) ? new Fx.SelectGlow(dp(14)) : Ui.round(0xFF16264A, dp(14))) : Ui.rippleRound(0x00000000, dp(14)));
+            v.setBackground(sel ? (prefs.superAnim() && Fx.on(MainActivity.this) ? new Fx.SelectGlow(dp(14), (pos % 8) * 0.11f) : Ui.round(0xFF16264A, dp(14))) : Ui.rippleRound(0x00000000, dp(14)));
             return v;
         }
     }

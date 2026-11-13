@@ -1,3 +1,13 @@
+## 75
+✨ Súper animaciones: tanda 2
+- Selección: ahora el brillo viaja como una ola de una fila a la siguiente.
+- Tarjetas y filas del Inicio se levantan un poquito al tocarlas, y las pantallas entran con un fundido.
+- El botón «+» da un latido con brillo azul y sus cuatro opciones salen una tras otra.
+- El cartel de Deshacer sube desde abajo con rebote; la tarjeta de progreso da un rebotito al terminar.
+- Al abrir la Bóveda con huella o PIN, un candado se abre con un destello.
+- Al copiar o mover, unos íconos viajan hacia la barra de abajo; al pegar, vuelven a la lista.
+- Todo esto solo con el Modo súper animaciones encendido (Ajustes → Experimentales).
+
 ## 74
 ↩️ Deshacer
 - Después de mover, copiar, comprimir, extraer, renombrar o crear algo, aparece abajo un cartelito con lo que hiciste y «DESHACER» (unos 8 segundos).
