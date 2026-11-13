@@ -147,6 +147,18 @@ final class Tutorials {
                 .row("z", L.t("Viaje.zip"), "48 MB").row("f", L.t("Notas.txt"), "2 KB");
     }
 
+    private static Frame inicio() {
+        return new Frame().title(L.t("Inicio")).row("z", "MEGA", L.t("Toca para iniciar sesión"))
+                .row("d", L.t("La Bóveda"), L.t("Carpeta secreta cifrada · toca para crearla"))
+                .row("f", L.t("Papelera"), L.t("Lo que borres se guarda 30 días"));
+    }
+
+    private static Frame inicioCerrada() {
+        return new Frame().title(L.t("Inicio")).row("z", "MEGA", "correo@ejemplo.com")
+                .row("d", L.t("La Bóveda"), L.t("Cerrada · toca para abrir con tu PIN o tu huella"))
+                .row("f", L.t("Papelera"), L.t("Lo que borres se guarda 30 días"));
+    }
+
     static List<Tutorial> all() {
         List<Tutorial> l = new ArrayList<>();
 
@@ -182,6 +194,55 @@ final class Tutorials {
         move.step(base().sel(3).dialog(L.t("Borrar"), L.t("Se envía a la papelera por 30 días."), L.t("Cancelar"), L.t("Borrar")),
                 L.t("Bóveda te pregunta antes. Lo borrado va a la papelera, así que se puede recuperar."), BTN, 1);
         l.add(move);
+
+        // ---------------------------------------------------------------- papelera
+        Tutorial trash = new Tutorial("trash", "🗑️", L.t("Usar la papelera"), L.t("Lo que borras se puede recuperar"), 0xFF8B97AB, 0xFF5D6B83);
+        trash.look(inicio(), L.t("Lo que borras en Bóveda no se pierde: se guarda 30 días en la papelera."));
+        trash.step(inicio(), L.t("Para verla, entra a «Papelera» desde la pantalla de inicio."), ROW, 2);
+        Frame tr = new Frame().title(L.t("Papelera")).row("f", L.t("Notas.txt"), L.t("Borrado hace 2 días")).row("i", L.t("Foto.jpg"), L.t("Borrado hace 9 días"))
+                .row("z", L.t("Viaje.zip"), L.t("Borrado hace 20 días")).bar(L.t("Restaurar todo"), L.t("Vaciar papelera"));
+        trash.step(tr, L.t("Aquí están, con los días que llevan. Toca uno para elegir qué hacer."), ROW, 0);
+        trash.step(new Frame().title(L.t("Papelera")).row("f", L.t("Notas.txt"), L.t("Borrado hace 2 días")).row("i", L.t("Foto.jpg"), L.t("Borrado hace 9 días"))
+                .menu(L.t("Restaurar"), L.t("Borrar para siempre")), L.t("«Restaurar» lo devuelve a su carpeta original."), MENU, 0);
+        trash.look(new Frame().title(L.t("Papelera")).row("i", L.t("Foto.jpg"), L.t("Borrado hace 9 días")).toast(L.t("Restaurado ✓")),
+                L.t("Listo: vuelve a donde estaba. Pasados los 30 días, la papelera lo borra sola."));
+        trash.look(new Frame().title(L.t("Papelera")).row("i", L.t("Foto.jpg"), L.t("Borrado hace 9 días"))
+                .menu(L.t("Restaurar"), L.t("Borrar para siempre")), L.t("«Borrar para siempre» no tiene vuelta atrás. Úsalo con cuidado."));
+        l.add(trash);
+
+        // ---------------------------------------------------------------- la nube
+        Tutorial cloud = new Tutorial("cloud", "☁️", L.t("Configurar la nube"), L.t("MEGA, MediaFire, Google Drive y OneDrive"), 0xFF28A8EA, 0xFF0A64D6);
+        cloud.look(inicio(), L.t("Bóveda se conecta a tu nube para que veas y muevas archivos como si fueran del celular."));
+        cloud.step(inicio(), L.t("Mira la sección «Nube y red». Toca «MEGA» para conectarla."), ROW, 0);
+        cloud.step(inicio().dialog(L.t("Iniciar sesión en MEGA"), L.t("Tu correo y tu contraseña de MEGA"), L.t("Cancelar"), L.t("Entrar")),
+                L.t("Escribe tu correo y tu contraseña de MEGA, y toca «Entrar»."), BTN, 1);
+        cloud.look(inicio().toast(L.t("MEGA conectado")), L.t("La contraseña no se guarda: solo queda la sesión, cifrada en tu celular."));
+        cloud.look(new Frame().title("MEGA").row("d", L.t("Mis fotos"), L.t("34 archivos")).row("d", L.t("Trabajo"), L.t("12 archivos")).row("z", L.t("Respaldo.zip"), "210 MB"),
+                L.t("Entra a MEGA y copia, mueve o descarga como con cualquier carpeta del celular."));
+        cloud.look(inicio(), L.t("MediaFire se conecta igual. Google Drive y OneDrive piden una clave propia y gratuita: Bóveda te lo explica paso a paso en su pantalla."));
+        l.add(cloud);
+
+        // ---------------------------------------------------------------- qué es Bóveda
+        Tutorial about = new Tutorial("about", "🗂️", L.t("¿Qué es Bóveda?"), L.t("Para qué sirve, en menos de un minuto"), 0xFF4C9DFF, 0xFF6FD6FF);
+        about.look(base(), L.t("Bóveda es un gestor de archivos: mira, copia, mueve, comprime y borra lo que hay en tu celular, tu memoria y tu USB."));
+        about.look(base(), L.t("Tiene tres pestañas que cambias deslizando el dedo, para tener varias carpetas abiertas a la vez."));
+        about.look(inicio(), L.t("Se conecta a la nube (MEGA, MediaFire…) y a servidores FTP, como el de una Xbox 360 o una PC."));
+        about.look(inicio(), L.t("Tiene una papelera de 30 días y una carpeta secreta cifrada, La Bóveda, que ninguna otra app puede abrir."));
+        about.look(base(), L.t("Es gratis, no tiene anuncios y no te rastrea. Solo usa internet cuando tú abres la nube."));
+        l.add(about);
+
+        // ---------------------------------------------------------------- cómo funciona La Bóveda
+        Tutorial vault = new Tutorial("vault", "🔐", L.t("Cómo funciona La Bóveda"), L.t("Tu carpeta secreta con PIN y huella"), 0xFF7B4DFF, 0xFFB86BFF);
+        vault.look(inicio(), L.t("La Bóveda es una carpeta secreta: lo que guardas ahí queda cifrado, y ninguna otra app puede verlo."));
+        vault.step(inicio(), L.t("Para crearla, toca «La Bóveda» en la pantalla de inicio."), ROW, 1);
+        vault.step(inicio().dialog(L.t("Crear tu Bóveda"), L.t("Un PIN de 4 a 12 números"), L.t("Cancelar"), L.t("Crear")),
+                L.t("Elige un PIN de 4 a 12 números y repítelo. Luego toca «Crear»."), BTN, 1);
+        vault.step(inicio().dialog(L.t("¿Abrir también con la huella?"), L.t("Así no escribes el PIN cada vez"), L.t("Solo el PIN"), L.t("Usar la huella")),
+                L.t("Puedes añadir tu huella. El PIN sigue sirviendo."), BTN, 1);
+        vault.step(base().menu(L.t("Renombrar"), L.t("Compartir"), L.t("Mover a la Bóveda 🔐")), L.t("Para guardar algo, tócalo y elige «Mover a la Bóveda»."), MENU, 2);
+        vault.look(inicioCerrada(), L.t("Cuando la cierras, nadie la ve sin tu PIN o tu huella."));
+        vault.look(inicioCerrada(), L.t("¡Ojo! Si olvidas el PIN, nadie puede recuperar lo que guardaste, ni siquiera nosotros."));
+        l.add(vault);
 
         return l;
     }
@@ -470,7 +531,7 @@ final class Tutorials {
                     c.drawRoundRect(new RectF(r.left + 1, r.top + 1, r.right - 1, r.bottom - 1), 3, 3, p);
                     tp.setTypeface(Typeface.DEFAULT_BOLD);
                     tp.setColor(Ui.TEXT);
-                    tp.setTextSize(4.6f);
+                    fit(f.bar[i], r.width() - 3f, 4.6f);
                     float tw = tp.measureText(f.bar[i]);
                     c.drawText(f.bar[i], r.centerX() - tw / 2, r.centerY() + 1.6f, tp);
                 }
@@ -518,11 +579,11 @@ final class Tutorials {
                 c.drawRoundRect(new RectF(10, 62, 90, 128), 5, 5, p);
                 tp.setTypeface(Typeface.DEFAULT_BOLD);
                 tp.setColor(Ui.TEXT);
-                tp.setTextSize(6f);
+                fit(f.dlgTitle, 68f, 6f);
                 c.drawText(f.dlgTitle, 16, 74, tp);
                 tp.setTypeface(Typeface.DEFAULT);
                 tp.setColor(Ui.SUB);
-                tp.setTextSize(5f);
+                fit(f.dlgBody == null ? "" : f.dlgBody, 68f, 5f);
                 c.drawText(f.dlgBody == null ? "" : f.dlgBody, 16, 88, tp);
                 if (f.dlgButtons != null) {
                     for (int i = 0; i < f.dlgButtons.length; i++) {
@@ -532,7 +593,7 @@ final class Tutorials {
                         c.drawRoundRect(r, 3, 3, p);
                         tp.setTypeface(Typeface.DEFAULT_BOLD);
                         tp.setColor(hot ? Ui.ACCENT2 : Ui.TEXT);
-                        tp.setTextSize(4.6f);
+                        fit(f.dlgButtons[i], r.width() - 3f, 4.6f);
                         float tw = tp.measureText(f.dlgButtons[i]);
                         c.drawText(f.dlgButtons[i], r.centerX() - tw / 2, r.centerY() + 1.6f, tp);
                     }
@@ -580,6 +641,15 @@ final class Tutorials {
                 }
             }
             c.restore();
+        }
+
+        /** Achica la letra hasta que el texto quepa en el ancho dado (unidades del celular). */
+        private void fit(String text, float maxW, float size) {
+            tp.setTextSize(size);
+            while (tp.measureText(text) > maxW && size > 2.6f) {
+                size -= 0.2f;
+                tp.setTextSize(size);
+            }
         }
 
         /** ¿Hay filas en la parte de arriba que un cartel taparía? */

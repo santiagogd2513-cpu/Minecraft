@@ -1,3 +1,8 @@
+## 57
+🎬 Tutoriales: ya están los seis
+- Nuevos: «Usar la papelera», «Configurar la nube» (MEGA, MediaFire, Google Drive y OneDrive), «¿Qué es Bóveda?» y «Cómo funciona La Bóveda».
+- Los textos de los botones dentro de los cuadros y de las barras se achican solos si no caben.
+
 ## 56
 🎬 Tutoriales y aprendizaje
 - Ajustes → «Tutoriales y aprendizaje»: películas cortas dentro de la app, sin sonido y sin internet. Un celular de mentira con Bóveda, un dedo que toca los botones y carteles flotantes que explican cada paso.
