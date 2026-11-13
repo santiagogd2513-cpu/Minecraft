@@ -3510,21 +3510,86 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
 
     private void showCreate() {
         if (path == null) return;
-        String[] opts = {L.t("Nueva carpeta"), L.t("Nuevo archivo de texto (.txt)"), L.t("Nuevo PDF")};
+        LinearLayout box = Ui.column(this);
+        box.setPadding(dp(16), dp(8), dp(16), dp(4));
+        AlertDialog[] dlg = new AlertDialog[1];
+        List<View> tiles = new ArrayList<>();
+        tiles.add(tile("📁", 0xFF1E88E5, 0xFF26C6DA, L.t("Carpeta"), L.t("Para ordenar tus cosas"),
+                v -> { dlg[0].dismiss(); askName(L.t("Nueva carpeta"), L.t("Nueva carpeta"), n -> create(n, null, false)); }));
+        tiles.add(tile("📝", 0xFF35D08A, 0xFF1EA97C, L.t("Texto"), L.t("Un archivo .txt"),
+                v -> { dlg[0].dismiss(); askDocument(".txt"); }));
+        tiles.add(tile("📄", 0xFFE5603B, 0xFFFF9A5C, "PDF", L.t("Con título y texto"),
+                v -> { dlg[0].dismiss(); askDocument(".pdf"); }));
+        tiles.add(tile("🧩", 0xFF7B4DFF, 0xFFB86BFF, L.t("Otros"), L.t(".java, .json, .html, .py y más"),
+                v -> { dlg[0].dismiss(); showOtherTypes(); }));
+        addGrid(box, tiles);
+        dlg[0] = new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                .setTitle(L.t("Crear"))
+                .setView(box)
+                .setNegativeButton(L.t("Cancelar"), null)
+                .create();
+        dlg[0].show();
+    }
+
+    /** Tipos de archivo que Bóveda puede abrir, leer y editar como texto. */
+    private static final String[][] TEXT_TYPES = {
+            {"Java", ".java"}, {"Kotlin", ".kt"}, {"Python", ".py"}, {"JavaScript", ".js"}, {"TypeScript", ".ts"},
+            {"JSON", ".json"}, {"XML", ".xml"}, {"HTML", ".html"}, {"CSS", ".css"}, {"Markdown", ".md"},
+            {"CSV", ".csv"}, {"YAML", ".yml"}, {"TOML", ".toml"}, {"INI", ".ini"}, {"Configuración", ".cfg"},
+            {"Propiedades", ".properties"}, {"Registro (log)", ".log"}, {"Shell", ".sh"}, {"Lote de Windows", ".bat"},
+            {"PowerShell", ".ps1"}, {"C", ".c"}, {"C++", ".cpp"}, {"Encabezado C/C++", ".h"}, {"C#", ".cs"},
+            {"Go", ".go"}, {"Rust", ".rs"}, {"PHP", ".php"}, {"Ruby", ".rb"}, {"Lua", ".lua"}, {"SQL", ".sql"},
+            {"Gradle", ".gradle"}, {"Subtítulos", ".srt"}, {"SVG", ".svg"}, {"Lang de Minecraft", ".lang"},
+            {"mcfunction", ".mcfunction"}, {"Otra extensión…", ""}
+    };
+
+    /** La lista de tipos: al elegir uno, el nombre del archivo nuevo termina en esa extensión. */
+    private void showOtherTypes() {
+        String[] labels = new String[TEXT_TYPES.length];
+        for (int i = 0; i < labels.length; i++) {
+            String[] t = TEXT_TYPES[i];
+            labels[i] = t[1].isEmpty() ? t[0] : t[0] + "   (" + t[1] + ")";
+        }
         new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
-                .setItems(opts, (d, w) -> {
-                    if (w == 0) askName(opts[0], L.t("Nueva carpeta"), n -> create(n, null, false));
-                    else askDocument(w == 2);
+                .setTitle(L.t("¿Qué tipo de archivo?"))
+                .setItems(labels, (d, w) -> {
+                    if (!TEXT_TYPES[w][1].isEmpty()) {
+                        askDocument(TEXT_TYPES[w][1]);
+                        return;
+                    }
+                    EditText e = input(L.t("Extensión, por ejemplo: txt, cfg, nbt"), "", android.text.InputType.TYPE_CLASS_TEXT);
+                    LinearLayout bx = Ui.column(this);
+                    bx.setPadding(dp(20), dp(8), dp(20), dp(4));
+                    bx.addView(e);
+                    AlertDialog ad = new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
+                            .setTitle(L.t("Otra extensión"))
+                            .setView(bx)
+                            .setPositiveButton(L.t("Seguir"), null)
+                            .setNegativeButton(L.t("Cancelar"), null)
+                            .create();
+                    ad.setOnShowListener(x -> ad.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+                        String ext = e.getText().toString().trim().toLowerCase(java.util.Locale.ROOT);
+                        if (ext.startsWith(".")) ext = ext.substring(1);
+                        if (ext.isEmpty() || !ext.matches("[a-z0-9_+-]{1,12}")) {
+                            e.setError(L.t("Solo letras y números, sin espacios"));
+                            return;
+                        }
+                        ad.dismiss();
+                        askDocument("." + ext);
+                    }));
+                    ad.show();
                 })
+                .setNegativeButton(L.t("Cancelar"), null)
                 .show();
     }
 
     /** Nombre y contenido de un .txt o un PDF nuevos. */
-    private void askDocument(boolean pdf) {
+    private void askDocument(String suffix) {
+        final boolean pdf = suffix.equals(".pdf");
         LinearLayout box = Ui.column(this);
         box.setPadding(dp(20), dp(8), dp(20), dp(4));
         EditText name = input(L.t("Nombre"), pdf ? L.t("Documento") : "nuevo", android.text.InputType.TYPE_CLASS_TEXT);
-        TextView ext = Ui.text(this, pdf ? ".pdf" : ".txt", 15, Ui.SUB, true);
+        TextView ext = Ui.text(this, suffix, 15, Ui.ACCENT2, true);
         ext.setPadding(dp(8), 0, 0, 0);
         LinearLayout nameRow = Ui.row(this);
         nameRow.addView(name, Ui.weight(1));
@@ -3544,15 +3609,14 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         ScrollView scroll = new ScrollView(this);
         scroll.addView(box);
         AlertDialog d = new AlertDialog.Builder(this, R.style.Theme_Boveda_Dialog)
-                .setTitle(pdf ? L.t("Nuevo PDF") : L.t("Nuevo archivo de texto"))
+                .setTitle(pdf ? L.t("Nuevo PDF") : suffix.equals(".txt") ? L.t("Nuevo archivo de texto") : L.t("Nuevo archivo ") + suffix)
                 .setView(scroll)
                 .setPositiveButton(L.t("Crear"), null)
                 .setNegativeButton(L.t("Cancelar"), null)
                 .create();
         d.setOnShowListener(x -> d.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
             String n = name.getText().toString().trim();
-            String suffix = pdf ? ".pdf" : ".txt";
-            if (n.toLowerCase().endsWith(suffix)) n = n.substring(0, n.length() - 4);
+            if (n.toLowerCase().endsWith(suffix)) n = n.substring(0, n.length() - suffix.length());
             if (!Paths.validName(n + suffix)) {
                 name.setError(L.t("Nombre no válido"));
                 return;

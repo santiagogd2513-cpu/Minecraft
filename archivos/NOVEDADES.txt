@@ -1,3 +1,9 @@
+## 73
+➕ Menú de crear nuevo
+- El botón «+» ahora abre cuatro cuadros: Carpeta, Texto, PDF y Otros.
+- «Otros» muestra una lista de tipos de archivo que Bóveda puede abrir y editar (Java, Kotlin, Python, JSON, HTML, CSS, Markdown, YAML, Shell…). Al elegir uno, el nombre termina en su extensión (por ejemplo .java) y puedes escribir el contenido.
+- «Otra extensión…» deja escribir la que quieras.
+
 ## 72
 ♻️ Reducir peso: informe más corto
 - El informe ya no es kilométrico: muestra los 10 grupos que más pesan, cada uno con solo 2 líneas (la que se queda y una que se quita) y «y N más».
