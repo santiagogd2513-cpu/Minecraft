@@ -1,3 +1,8 @@
+## 72
+♻️ Reducir peso: informe más corto
+- El informe ya no es kilométrico: muestra los 10 grupos que más pesan, cada uno con solo 2 líneas (la que se queda y una que se quita) y «y N más».
+- El resumen y los avisos quedan fijos; solo la lista se desplaza, así que los botones de abajo siempre se ven.
+
 ## 71
 ✨ Súper animaciones: más claras
 - Si Android tiene las animaciones apagadas, Ajustes → Experimentales ahora te lo avisa, y hay un interruptor para mostrarlas igual solo en Bóveda.

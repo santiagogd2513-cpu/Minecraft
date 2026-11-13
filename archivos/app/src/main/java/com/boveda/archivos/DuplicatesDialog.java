@@ -26,15 +26,23 @@ final class DuplicatesDialog {
         Handler main = new Handler(Looper.getMainLooper());
         ExecutorService io = Executors.newSingleThreadExecutor();
         AtomicBoolean cancel = new AtomicBoolean(false);
-        LinearLayout box = Ui.column(a);
-        box.setPadding(Ui.dp(a, 20), Ui.dp(a, 8), Ui.dp(a, 20), Ui.dp(a, 4));
+        // resumen fijo arriba, lista corta que se desplaza en el medio, avisos fijos abajo: los botones nunca se tapan
+        LinearLayout outer = Ui.column(a);
+        outer.setPadding(Ui.dp(a, 20), Ui.dp(a, 8), Ui.dp(a, 20), Ui.dp(a, 4));
         TextView status = Ui.text(a, L.t("Buscando…"), 14, Ui.SUB, false);
-        box.addView(status);
+        outer.addView(status);
+        LinearLayout box = Ui.column(a);
         ScrollView sv = new ScrollView(a);
         sv.addView(box);
+        int screenH = a.getResources().getDisplayMetrics().heightPixels;
+        LinearLayout.LayoutParams svl = new LinearLayout.LayoutParams(-1, -2);
+        outer.addView(sv, svl);
+        LinearLayout notes = Ui.column(a);
+        outer.addView(notes);
+        final int maxList = (int) (screenH * 0.38f);
         AlertDialog d = new AlertDialog.Builder(a, R.style.Theme_Boveda_Dialog)
                 .setTitle(L.t("Reducir peso"))
-                .setView(sv)
+                .setView(outer)
                 .setPositiveButton(L.t("Dejar como está"), null)
                 .setNegativeButton(L.t("Borrar duplicados"), null)
                 .create();
@@ -76,34 +84,43 @@ final class DuplicatesDialog {
                 for (Duplicates.Group g : gs) copies += g.names.size() - 1;
                 status.setTextColor(Ui.TEXT);
                 status.setText(copies + (copies == 1 ? L.t(" copia repetida en ") : L.t(" copias repetidas en ")) + gs.size() + (gs.size() == 1 ? L.t(" grupo. Se ahorrarían ") : L.t(" grupos. Se ahorrarían ")) + Ui.size(Duplicates.totalSaving(gs)) + ".");
+                // solo los grupos que más pesan; el resto se resume en una línea
+                final int top = 10;
                 int shown = 0;
+                long restSaving = 0;
                 for (Duplicates.Group g : gs) {
-                    if (++shown > 40) {
-                        box.addView(note(a, "… " + L.t("y más grupos"), Ui.SUB));
-                        break;
+                    if (++shown > top) {
+                        restSaving += g.saving();
+                        continue;
                     }
                     StringBuilder b = new StringBuilder();
-                    b.append(Ui.size(g.size)).append(" × ").append(g.names.size()).append('\n');
-                    for (int i = 0; i < g.names.size(); i++) {
-                        b.append(i == 0 ? "✓ " : "✗ ").append(isFolder ? rel(path, g.names.get(i)) : g.names.get(i)).append('\n');
-                    }
-                    box.addView(note(a, b.toString().trim(), Ui.SUB));
+                    b.append(Ui.size(g.size)).append(" × ").append(g.names.size())
+                            .append(L.t("  ·  ahorras ")).append(Ui.size(g.saving())).append('\n');
+                    b.append("✓ ").append(shortName(g.names.get(0))).append('\n');
+                    b.append("✗ ").append(shortName(g.names.get(1)));
+                    if (g.names.size() > 2) b.append(L.t("   y ")).append(g.names.size() - 2).append(L.t(" más"));
+                    box.addView(note(a, b.toString(), Ui.SUB));
                 }
+                if (gs.size() > top) {
+                    box.addView(note(a, "… " + L.t("y ") + (gs.size() - top) + L.t(" grupos más pequeños (ahorrarían ") + Ui.size(restSaving) + ")", Ui.SUB));
+                }
+                svl.height = gs.size() > 3 ? maxList : -2;
+                sv.setLayoutParams(svl);
                 boolean can = isFolder || Duplicates.canRewrite(path);
                 String low = path.toLowerCase(java.util.Locale.ROOT);
                 for (String w : new String[]{"/versions", "/libraries", "/mods", "/assets", "/runtimes", "/android/data", "/android/obb"}) {
                     if (isFolder && low.contains(w + "/") || isFolder && low.endsWith(w)) {
-                        box.addView(note(a, "⚠ " + L.t("Esta parece una carpeta de un juego o de una app. Algunas copias las necesita el programa con su propio nombre: si las borras, puede dejar de abrir."), Ui.BAD));
+                        notes.addView(note(a, "⚠ " + L.t("Esta parece una carpeta de un juego o de una app. Algunas copias las necesita el programa con su propio nombre: si las borras, puede dejar de abrir."), Ui.BAD));
                         break;
                     }
                 }
-                box.addView(note(a, "✓ " + L.t("se conserva  ·  ✗ se quita (la copia más antigua es la que queda)"), Ui.SUB));
+                notes.addView(note(a, "✓ " + L.t("se conserva  ·  ✗ se quita (queda la copia más antigua)"), Ui.SUB));
                 if (isFolder) {
-                    box.addView(note(a, "ℹ " + L.t("Las copias van a la papelera: puedes recuperarlas 30 días."), Ui.WARN));
+                    notes.addView(note(a, "ℹ " + L.t("Las copias van a la papelera: puedes recuperarlas 30 días."), Ui.WARN));
                 } else if (can) {
-                    box.addView(note(a, "ℹ " + L.t("Tu archivo no se toca: se crea otro .zip nuevo, al lado, sin las copias."), Ui.WARN));
+                    notes.addView(note(a, "ℹ " + L.t("Tu archivo no se toca: se crea otro .zip nuevo, al lado, sin las copias."), Ui.WARN));
                 } else {
-                    box.addView(note(a, "⚠ " + L.t("Por ahora solo se puede crear la versión sin duplicados de un .zip. Este formato solo se puede revisar."), Ui.BAD));
+                    notes.addView(note(a, "⚠ " + L.t("Por ahora solo se puede crear la versión sin duplicados de un .zip. Este formato solo se puede revisar."), Ui.BAD));
                 }
                 del.setEnabled(can);
                 del.setOnClickListener(v -> {
@@ -161,6 +178,14 @@ final class DuplicatesDialog {
                 }
             }
         }
+    }
+
+    /** Lo último de la ruta (dos tramos), para que quepa en pantalla. */
+    private static String shortName(String p) {
+        String[] parts = p.split("/");
+        int n = parts.length;
+        if (n >= 2) return "…/" + parts[n - 2] + "/" + parts[n - 1];
+        return p;
     }
 
     private static String rel(String root, String p) {
