@@ -1,3 +1,9 @@
+## 68
+🏠 Inicio nuevo, en tarjetas
+- Arriba, tu almacenamiento interno y la tarjeta SD (o USB) lado a lado, con su barra de uso.
+- Debajo, cuadros con ícono: Accesos directos, Ancladas, Favoritas, Nube y red, Funciones especiales, Seguridad y privacidad, Papelera y Shizuku. Cada uno abre su sección; la Papelera abre directo.
+- El Inicio ya no crece hacia abajo cuando se añaden funciones: lo nuevo vive dentro de su sección. Con el botón atrás vuelves al Inicio.
+
 ## 67
 ♻️ Reducir peso: carpetas enormes
 - Escanear carpetas con decenas de miles de archivos (como Android/data) ya no congela la app: compara primero un trocito de cada archivo y solo lee completos los que coinciden.

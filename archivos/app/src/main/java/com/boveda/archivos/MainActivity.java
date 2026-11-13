@@ -623,6 +623,215 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         return b;
     }
 
+    // ------------------------------------------------------------------ inicio en tarjetas
+
+    /** null = inicio principal; si no, el nombre de la sección abierta (accesos, ancladas, favoritas, nube, funciones, seguridad, shizuku). */
+    private String homePage;
+
+    private String homeTitle(String page) {
+        return switch (page) {
+            case "accesos" -> L.t("Accesos directos");
+            case "ancladas" -> L.t("Ancladas");
+            case "favoritas" -> L.t("Favoritas");
+            case "nube" -> L.t("Nube y red");
+            case "funciones" -> L.t("Funciones especiales");
+            case "seguridad" -> L.t("Seguridad y privacidad");
+            default -> "Shizuku";
+        };
+    }
+
+    private void openHomePage(String page) {
+        homePage = page;
+        showHome();
+    }
+
+    private void buildCardsHome() {
+        boolean sub = homePage != null;
+        title.setText(sub ? homeTitle(homePage) : "Bóveda");
+        backBtn.setVisibility(sub ? View.VISIBLE : View.GONE);
+        LinearLayout box = Ui.column(this);
+        box.setPadding(dp(14), dp(6), dp(14), dp(40));
+        if (!sub) {
+            List<View> vols = new ArrayList<>();
+            for (Volume v : volumes()) vols.add(volumeCard(v));
+            addGrid(box, vols);
+            List<View> tiles = new ArrayList<>();
+            int pins = prefs.pinned().size(), favs = prefs.favorites().size();
+            tiles.add(tile("⚡", 0xFF1E88E5, 0xFF26C6DA, L.t("Accesos directos"), L.t("Descargas, Cámara, Documentos, Android/data…"), v -> openHomePage("accesos")));
+            tiles.add(tile("📌", 0xFF6C63FF, 0xFFA29BFE, L.t("Ancladas"), pins == 0 ? L.t("Ninguna todavía") : pins + (pins == 1 ? L.t(" carpeta") : L.t(" carpetas")), v -> openHomePage("ancladas")));
+            tiles.add(tile("⭐", 0xFFF2A100, 0xFFFFC14D, L.t("Favoritas"), favs == 0 ? L.t("Ninguna todavía") : favs + (favs == 1 ? L.t(" carpeta") : L.t(" carpetas")), v -> openHomePage("favoritas")));
+            int servers = FtpServers.get(this).all().size();
+            tiles.add(tile("☁️", 0xFF0A64D6, 0xFF28A8EA, L.t("Nube y red"), L.t("Drive, OneDrive, MEGA, MediaFire") + (servers > 0 ? " · " + servers + L.t(" servidores") : ""), v -> openHomePage("nube")));
+            tiles.add(tile("🛠️", 0xFFE5603B, 0xFFFF9A5C, L.t("Funciones especiales"), L.t("Reducir peso y más por venir"), v -> openHomePage("funciones")));
+            tiles.add(tile("🛡️", 0xFF7B4DFF, 0xFFB86BFF, L.t("Seguridad y privacidad"), L.t("La Bóveda, Radiografía, Apps"), v -> openHomePage("seguridad")));
+            View trash = tile("🗑️", 0xFF4A5670, 0xFF6E7A8E, L.t("Papelera"), L.t("Lo que borres se guarda 30 días"), v -> showTrash());
+            tiles.add(trash);
+            tiles.add(tile("💧", 0xFF35D08A, 0xFF1EA97C, "Shizuku", ShizukuHelper.ready() ? L.t("Conectado") : L.t("Para entrar a Android/data"), v -> openHomePage("shizuku")));
+            addGrid(box, tiles);
+            TextView trashSub = (TextView) ((LinearLayout) trash).getChildAt(2);
+            io.execute(() -> {
+                String sx = trashSubtitle();
+                main.post(() -> trashSub.setText(sx));
+            });
+        } else {
+            switch (homePage) {
+                case "accesos" -> {
+                    String r0 = Paths.ROOT;
+                    box.addView(shortcut(R.drawable.ic_download, 0xFF6FD6FF, L.t("Descargas"), r0 + "/Download", null));
+                    box.addView(shortcut(R.drawable.ic_camera, 0xFFFF8A5C, L.t("Cámara (DCIM)"), r0 + "/DCIM", null));
+                    box.addView(shortcut(R.drawable.ic_doc, 0xFFFFC14D, L.t("Documentos"), r0 + "/Documents", null));
+                    box.addView(shortcut(R.drawable.ic_music, 0xFFB58CFF, L.t("Música"), r0 + "/Music", null));
+                    boolean dataOk = FsRouter.hasAccess(this, Paths.DATA), obbOk = FsRouter.hasAccess(this, Paths.OBB);
+                    box.addView(shortcut(R.drawable.ic_android, 0xFF35D08A, "Android/data", Paths.DATA, dataOk ? L.t("Con acceso") : L.t("Toca para dar acceso")));
+                    box.addView(shortcut(R.drawable.ic_android, 0xFF35D08A, "Android/obb", Paths.OBB, obbOk ? L.t("Con acceso") : L.t("Toca para dar acceso")));
+                }
+                case "ancladas" -> {
+                    List<String> pins = prefs.pinned();
+                    if (pins.isEmpty()) box.addView(hint(L.t("Mantén presionada una carpeta, toca ⋮ y elige «Anclar arriba» para tenerla aquí.")));
+                    for (String p : pins) box.addView(shortcut(R.drawable.ic_pin, Ui.ACCENT2, label(p), p, p));
+                }
+                case "favoritas" -> {
+                    List<String> favs = prefs.favorites();
+                    if (favs.isEmpty()) box.addView(hint(L.t("Mantén presionada una carpeta y elige «Favorita» para tenerla aquí.")));
+                    for (String p : favs) box.addView(shortcut(R.drawable.ic_star, Ui.WARN, Paths.name(p), p, p));
+                }
+                case "nube" -> {
+                    MediaFire mf = MediaFire.get(this);
+                    box.addView(cloudCard(mf.loggedIn() ? mf.email() : L.t("Toca para iniciar sesión")));
+                    Drive gd = Drive.get(this);
+                    box.addView(netRow("GD", 0xFF34A853, 0xFF4285F4, "Google Drive",
+                            gd.connected() ? (gd.email().isEmpty() ? L.t("Conectado") : gd.email()) : L.t("Toca para conectar"),
+                            v -> openDrive(), v -> {
+                                driveMenu();
+                                return true;
+                            }));
+                    OneDrive od = OneDrive.get(this);
+                    box.addView(netRow("OD", 0xFF0A64D6, 0xFF28A8EA, "OneDrive",
+                            od.connected() ? (od.email().isEmpty() ? L.t("Conectado") : od.email()) : L.t("Toca para conectar"),
+                            v -> openOneDrive(), v -> {
+                                oneDriveMenu();
+                                return true;
+                            }));
+                    Mega mg = Mega.get(this);
+                    box.addView(netRow("M", 0xFFD9272E, 0xFFF0545A, "MEGA",
+                            mg.loggedIn() ? mg.email() : L.t("Toca para iniciar sesión"),
+                            v -> openMega(), v -> {
+                                megaMenu();
+                                return true;
+                            }));
+                    for (FtpServers.Server sv : FtpServers.get(this).all()) {
+                        box.addView(netRow("FTP", 0xFFFFB547, 0xFFF07C2C, sv.name, sv.user + "@" + sv.host + ":" + sv.port,
+                                v -> open(sv.root()), v -> {
+                                    ftpMenu(sv);
+                                    return true;
+                                }));
+                    }
+                    box.addView(netRow("+", 0xFF2A3346, 0xFF2A3346, L.t("Añadir servidor FTP"), L.t("Xbox 360, PC, NAS, otro celular…"), v -> editFtp(null), null));
+                }
+                case "funciones" -> {
+                    box.addView(netRow("♻️", 0xFFE5603B, 0xFFFF9A5C, L.t("Reducir peso"),
+                            L.t("Busca archivos repetidos. Selecciona una carpeta o un comprimido, toca ⋮ y elige «Reducir peso»."),
+                            v -> Toast.makeText(this, L.t("Selecciona una carpeta o un comprimido, toca ⋮ y elige «Reducir peso»."), Toast.LENGTH_LONG).show(), null));
+                    box.addView(hint(L.t("Aquí irán las funciones originales de Bóveda a medida que lleguen.")));
+                }
+                case "seguridad" -> {
+                    box.addView(netRow("🔐", 0xFF7B4DFF, 0xFFB86BFF, L.t("La Bóveda"),
+                            !Vault.exists() ? L.t("Carpeta secreta cifrada · toca para crearla")
+                                    : Vault.unlocked() ? L.t("Abierta · mantén presionado para opciones")
+                                    : L.t("Cerrada · toca para abrir con tu PIN o tu huella"),
+                            v -> openVault(), v -> {
+                                vaultMenu();
+                                return true;
+                            }));
+                    box.addView(netRow("📊", 0xFF1E88E5, 0xFF26C6DA, L.t("Radiografía del almacenamiento"),
+                            L.t("Mira qué se está comiendo la memoria y libera espacio"), v -> showAnalyzer(), null));
+                    box.addView(netRow("🧩", 0xFF35D08A, 0xFF1EA97C, L.t("Identificar aplicaciones"),
+                            L.t("Todas las apps del celular, con su peso, sus rutas y sus permisos"), v -> AppsInspector.show(this), null));
+                }
+                default -> box.addView(shizukuCard());
+            }
+        }
+        addExtraView(box);
+    }
+
+    private View hint(String text) {
+        TextView t = Ui.text(this, text, 13, Ui.SUB, false);
+        t.setPadding(dp(6), dp(10), dp(6), dp(6));
+        return t;
+    }
+
+    /** Pone las vistas de dos en dos, mismo ancho. */
+    private void addGrid(LinearLayout box, List<View> views) {
+        for (int i = 0; i < views.size(); i += 2) {
+            LinearLayout row = Ui.row(this);
+            row.setBaselineAligned(false);
+            for (int k = 0; k < 2; k++) {
+                LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(0, -1, 1);
+                lp.setMargins(k == 0 ? 0 : dp(5), 0, k == 0 ? dp(5) : 0, 0);
+                if (i + k < views.size()) row.addView(views.get(i + k), lp);
+                else row.addView(new View(this), lp);
+            }
+            LinearLayout.LayoutParams rl = new LinearLayout.LayoutParams(-1, -2);
+            rl.setMargins(0, 0, 0, dp(10));
+            box.addView(row, rl);
+        }
+    }
+
+    /** Un cuadro del inicio: ícono arriba, nombre completo y un dato chiquito. */
+    private View tile(String badge, int c1, int c2, String name, String sub, View.OnClickListener tap) {
+        LinearLayout t = Ui.column(this);
+        t.setPadding(dp(14), dp(14), dp(14), dp(14));
+        t.setBackground(Ui.rippleRound(Ui.SURFACE, dp(18)));
+        TextView logo = Ui.text(this, badge, 22, Color.WHITE, true);
+        logo.setGravity(Gravity.CENTER);
+        logo.setBackground(Ui.gradient(dp(14), c1, c2));
+        t.addView(logo, new LinearLayout.LayoutParams(dp(48), dp(48)));
+        TextView n = Ui.text(this, name, 15, Ui.TEXT, true);
+        n.setPadding(0, dp(10), 0, 0);
+        t.addView(n);
+        TextView sv = Ui.text(this, sub, 12, Ui.SUB, false);
+        sv.setPadding(0, dp(3), 0, 0);
+        sv.setMaxLines(3);
+        sv.setEllipsize(TextUtils.TruncateAt.END);
+        t.addView(sv);
+        t.setOnClickListener(tap);
+        return t;
+    }
+
+    /** Una unidad de almacenamiento (interna, SD o USB), con su barra de uso. */
+    private View volumeCard(Volume v) {
+        File f = new File(v.path);
+        LinearLayout card = Ui.column(this);
+        card.setPadding(dp(14), dp(14), dp(14), dp(14));
+        int[] cc = SeasonFx.cardColors(this, 0xFF14284F, 0xFF101A30);
+        card.setBackground(Ui.ripple(Ui.gradient(dp(20), cc[0], cc[1]), Ui.round(Color.WHITE, dp(20))));
+        SeasonFx.decorate(card, dp(20));
+        ImageView ic = new ImageView(this);
+        ic.setImageDrawable(Ui.icon(this, v.removable ? R.drawable.ic_sd : R.drawable.ic_phone, Ui.ACCENT2));
+        card.addView(ic, new LinearLayout.LayoutParams(dp(28), dp(28)));
+        TextView n = Ui.text(this, v.name, 15.5f, Ui.TEXT, true);
+        n.setPadding(0, dp(8), 0, 0);
+        card.addView(n);
+        FrameLayout barBox = new FrameLayout(this);
+        barBox.addView(new UsageBar(this, 0));
+        LinearLayout.LayoutParams bl = new LinearLayout.LayoutParams(-1, dp(8));
+        bl.setMargins(0, dp(10), 0, 0);
+        card.addView(barBox, bl);
+        TextView space = Ui.text(this, "…", 12.5f, Ui.SUB, false);
+        space.setPadding(0, dp(6), 0, 0);
+        card.addView(space);
+        new Thread(() -> {
+            long total = f.getTotalSpace(), free = f.getUsableSpace();
+            main.post(() -> {
+                space.setText(Ui.size(total - free) + " / " + Ui.size(total));
+                barBox.removeAllViews();
+                barBox.addView(new UsageBar(this, total > 0 ? (total - free) / (float) total : 0));
+            });
+        }, "espacio").start();
+        card.setOnClickListener(x -> open(v.path));
+        return card;
+    }
+
     // ------------------------------------------------------------------ pantalla de inicio
 
     private void showHome() {
@@ -645,6 +854,10 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                 : pickMode() == PICK_CREATE ? L.t("¿Dónde guardarlo?") : L.t("Elige un archivo"));
         crumbs.removeAllViews();
         buildChips();
+        if (!picker()) {
+            buildCardsHome();
+            return;
+        }
 
         LinearLayout box = Ui.column(this);
         box.setPadding(dp(14), dp(6), dp(14), dp(40));
@@ -4605,6 +4818,11 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         }
         if (search.getVisibility() == View.VISIBLE) {
             toggleSearch();
+            return;
+        }
+        if (path == null && homePage != null && !picker()) {
+            homePage = null;
+            showHome();
             return;
         }
         if (path == null) {
