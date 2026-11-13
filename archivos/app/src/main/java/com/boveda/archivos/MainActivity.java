@@ -58,6 +58,7 @@ import java.util.concurrent.Executors;
 public class MainActivity extends Activity implements TransferEngine.Listener {
     private static final int REQ_TREE = 21;
     private static final int REQ_TOOL_IMG = 44;
+    private static final int REQ_TOOL_MEDIA = 45;
     private String toolMode = "resize";
 
     protected Prefs prefs;
@@ -731,6 +732,95 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         });
     }
 
+    // ------------------------------------------------------------------ herramientas de audio y video
+
+    /** Pasa el archivo ya listo (en la memoria temporal) a una carpeta, sin pisar nada, y lo anota para poder deshacer. */
+    private AudioToolDialog.Saver audioSaver(String dir) {
+        return (file, produced) -> {
+            if (!FsRouter.hasAccess(this, dir)) throw new IOException(L.t("No tengo acceso a esa carpeta"));
+            Fs f = FsRouter.get(this, dir);
+            if (f.stat(dir) == null) new File(dir).mkdirs();
+            String name = file;
+            String target = Paths.join(dir, name);
+            for (int i = 1; f.stat(target) != null; i++) {
+                int dot = file.lastIndexOf('.');
+                name = (dot > 0 ? file.substring(0, dot) : file) + " (" + i + ")" + (dot > 0 ? file.substring(dot) : "");
+                target = Paths.join(dir, name);
+            }
+            try (InputStream in = new java.io.FileInputStream(produced); java.io.OutputStream o = f.out(target)) {
+                byte[] buf = new byte[1 << 20];
+                int r;
+                while ((r = in.read(buf)) >= 0) o.write(buf, 0, r);
+            }
+            UndoLog.recordCreated(this, target, false);
+            final String fn = name;
+            final long size = produced.length();
+            main.post(() -> {
+                if (path != null && path.equals(dir)) load(path, true);
+            });
+            return L.t("Guardé «") + fn + L.t("» (") + Ui.size(size) + L.t(") en:\n") + dir.replace(Paths.ROOT, L.t("Interno"));
+        };
+    }
+
+    private void mediaFromEntry(Entry e, String mode) {
+        Toast.makeText(this, L.t("Preparando el archivo…"), Toast.LENGTH_SHORT).show();
+        String dir = Paths.parent(e.path);
+        io.execute(() -> {
+            File tmp = new File(getCacheDir(), "tool_in_" + System.nanoTime() + "_" + e.name.replaceAll("[^A-Za-z0-9._-]", "_"));
+            try (InputStream in = FsRouter.get(this, e.path).in(e.path); java.io.OutputStream o = new java.io.FileOutputStream(tmp)) {
+                byte[] buf = new byte[1 << 20];
+                int r;
+                while ((r = in.read(buf)) >= 0) o.write(buf, 0, r);
+                main.post(() -> {
+                    clearSelection();
+                    AudioToolDialog.show(this, mode, tmp, e.name, audioSaver(dir));
+                });
+            } catch (Throwable t) {
+                //noinspection ResultOfMethodCallIgnored
+                tmp.delete();
+                main.post(() -> Toast.makeText(this, t.getMessage() == null ? t.toString() : t.getMessage(), Toast.LENGTH_LONG).show());
+            }
+        });
+    }
+
+    private void pickToolMedia(String mode) {
+        toolMode = mode;
+        Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        i.setType("*/*");
+        i.putExtra(Intent.EXTRA_MIME_TYPES, mode.equals("extract") ? new String[]{"video/*"} : new String[]{"audio/*", "application/ogg"});
+        i.addCategory(Intent.CATEGORY_OPENABLE);
+        try {
+            startActivityForResult(i, REQ_TOOL_MEDIA);
+        } catch (Exception e) {
+            Toast.makeText(this, L.t("No se pudo abrir el selector de archivos"), Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void mediaFromUri(Uri uri) {
+        String mode = toolMode;
+        io.execute(() -> {
+            String name = mode.equals("extract") ? "video.mp4" : "audio.mp3";
+            try (android.database.Cursor c = getContentResolver().query(uri, new String[]{android.provider.OpenableColumns.DISPLAY_NAME}, null, null, null)) {
+                if (c != null && c.moveToFirst() && c.getString(0) != null) name = c.getString(0);
+            } catch (Exception ignored) {
+            }
+            final String fname = name;
+            File tmp = new File(getCacheDir(), "tool_in_" + System.nanoTime() + "_" + name.replaceAll("[^A-Za-z0-9._-]", "_"));
+            try (InputStream in = getContentResolver().openInputStream(uri); java.io.OutputStream o = new java.io.FileOutputStream(tmp)) {
+                if (in == null) throw new IOException(L.t("Android no dejó abrir el archivo"));
+                byte[] buf = new byte[1 << 20];
+                int r;
+                while ((r = in.read(buf)) >= 0) o.write(buf, 0, r);
+                String outDir = Paths.ROOT + (mode.equals("extract") ? "/Music/Bóveda" : "/Music/Bóveda");
+                main.post(() -> AudioToolDialog.show(this, mode, tmp, fname, audioSaver(outDir)));
+            } catch (Throwable t) {
+                //noinspection ResultOfMethodCallIgnored
+                tmp.delete();
+                main.post(() -> Toast.makeText(this, t.getMessage() == null ? t.toString() : t.getMessage(), Toast.LENGTH_LONG).show());
+            }
+        });
+    }
+
     // ------------------------------------------------------------------ deshacer
 
     private TextView undoPill;
@@ -929,7 +1019,14 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                     box.addView(netRow("🧹", 0xFFD81B60, 0xFFF06292, L.t("Quitar datos ocultos"),
                             L.t("Borra la ubicación y los datos de la cámara de una foto antes de compartirla"),
                             v -> pickToolImage("exif"), null));
-                    box.addView(hint(L.t("También en cualquier imagen: mantenla presionada, toca ⋮ y elige la herramienta.")));
+                    box.addView(section(L.t("Audio y video")));
+                    box.addView(netRow("🎵", 0xFFF57C00, 0xFFFFB74D, L.t("Convertir audio"),
+                            L.t("De MP3, OGG, FLAC, WAV, M4A… a M4A (AAC), WAV u OGG (Opus)"),
+                            v -> pickToolMedia("convert"), null));
+                    box.addView(netRow("🎬", 0xFF5E35B1, 0xFF9575CD, L.t("Extraer audio de un video"),
+                            L.t("Saca solo el sonido de un video: una canción, una voz…"),
+                            v -> pickToolMedia("extract"), null));
+                    box.addView(hint(L.t("También en cualquier imagen, audio o video: mantenlo presionado, toca ⋮ y elige la herramienta.")));
                 }
                 case "seguridad" -> {
                     box.addView(netRow("🔐", 0xFF7B4DFF, 0xFFB86BFF, L.t("La Bóveda"),
@@ -3428,6 +3525,10 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             refreshGrants();
             return;
         }
+        if (req == REQ_TOOL_MEDIA && res == RESULT_OK && data != null && data.getData() != null) {
+            mediaFromUri(data.getData());
+            return;
+        }
         if (req == REQ_TOOL_IMG && res == RESULT_OK && data != null && data.getData() != null) {
             imageFromUri(data.getData());
             return;
@@ -3819,6 +3920,14 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                 if (!VaultFs.isVault(single.path)) {
                     labels.add(L.t("Abrir con…"));
                     acts.add(() -> openWith(single, true));
+                }
+                if (Viewers.isAudio(single.name) && !VaultFs.isVault(single.path)) {
+                    labels.add(L.t("Audio: convertir formato"));
+                    acts.add(() -> mediaFromEntry(single, "convert"));
+                }
+                if (Viewers.isVideo(single.name) && !VaultFs.isVault(single.path)) {
+                    labels.add(L.t("Video: extraer el audio"));
+                    acts.add(() -> mediaFromEntry(single, "extract"));
                 }
                 if (Viewers.isImage(single.name) && !VaultFs.isVault(single.path)) {
                     labels.add(L.t("Imagen: cambiar tamaño o recortar"));

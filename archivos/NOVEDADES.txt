@@ -1,3 +1,10 @@
+## 81
+🎵 Herramientas: audio y video
+- Convertir audio: de MP3, OGG, FLAC, WAV, M4A… a M4A (AAC), WAV u OGG (Opus), con calidad elegible. Usa los códecs del propio Android, sin librerías nuevas.
+- Extraer audio de un video: saca solo el sonido. Si ya es AAC, se copia sin recomprimir (rápido y sin perder calidad).
+- Se encuentran en Inicio → Herramientas, y también en cualquier audio o video: presiónalo, toca ⋮ y elige la herramienta. Siempre se guarda una copia nueva y se puede deshacer.
+- Android no trae codificador de MP3 ni de OGG Vorbis, así que esos dos no se pueden crear por ahora.
+
 ## 80
 🧰 Herramientas: imágenes
 - Nuevo cuadro «Herramientas» en el Inicio.
