@@ -1,3 +1,14 @@
+PARCHE V6.16.1
+==============
+- PUERTAS AUTOMÁTICAS POR TIEMPO: en el piloto automático las puertas se abren 2 s después de llegar y se cierran 2 s antes de salir (espera de 4 s o menos: al 25 % y al 75 %). En el depósito se quedan abiertas.
+
+PARCHE V6.16.0
+==============
+- DEPÓSITO DE TRENES (nuevo bloque, pestaña de piezas): se usa con el Mando de trenes como cualquier estación, pero siempre es la última parada.
+- PUERTAS: botón en la cabina (dos lucecitas junto al panel; vapor y metro). Abre o cierra las puertas de todos los coches. Cerradas no se puede subir.
+- TELEVISORES: con el televisor chico en la mano, clic derecho en un coche de pasajeros o de metro.
+- Locomotoras de vapor: salen con carbón.
+
 PARCHE V6.15.0
 ==============
 CANAL DE LA LOTERÍA (Lotto Gordo): un sorteo por día de juego; sale un número de 000 a 999 y una clase de A a H.

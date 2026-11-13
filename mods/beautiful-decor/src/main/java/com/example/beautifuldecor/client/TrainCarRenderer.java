@@ -65,6 +65,7 @@ public class TrainCarRenderer extends EntityRenderer<TrainCarEntity> {
                 poseStack.popPose();
             }
         }
+        TrainExtras.draw(car, variant, poseStack, bufferSource, packedLight, partialTick);
         poseStack.scale(-1.0f, -1.0f, 1.0f);
         poseStack.scale(TrainCarModel.SCALE, TrainCarModel.SCALE, TrainCarModel.SCALE);
         poseStack.translate(0.0, -1.501, 0.0);

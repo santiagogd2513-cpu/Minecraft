@@ -42,8 +42,16 @@ import javax.annotation.Nullable;
 public class StationControllerBlock extends BaseEntityBlock {
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
 
+    private final boolean depot;
+
     public StationControllerBlock(BlockBehaviour.Properties properties) {
+        this(properties, false);
+    }
+
+    /** V6.16.0: {@code depot} = es el depósito: solo puede ser la última parada de la ruta. */
+    public StationControllerBlock(BlockBehaviour.Properties properties, boolean depot) {
         super(properties);
+        this.depot = depot;
         registerDefaultState(stateDefinition.any().setValue(FACING, Direction.NORTH));
     }
 
@@ -110,6 +118,14 @@ public class StationControllerBlock extends BaseEntityBlock {
                     sp.displayClientMessage(Component.translatable("message.beautifuldecor.station.no_rail"), true);
                     return InteractionResult.CONSUME;
                 }
+                if (!route.stops.isEmpty() && sl.getBlockState(route.stops.get(route.stops.size() - 1).ctrl).getBlock() instanceof StationControllerBlock last && last.depot) {
+                    sp.displayClientMessage(Component.translatable("message.beautifuldecor.station.after_depot"), true);
+                    return InteractionResult.CONSUME;
+                }
+                if (this.depot && route.stops.isEmpty()) {
+                    sp.displayClientMessage(Component.translatable("message.beautifuldecor.station.depot_not_first"), true);
+                    return InteractionResult.CONSUME;
+                }
                 TrainRoute.Stop stop = new TrainRoute.Stop(pos, rail);
                 stop.name = be.getStationName();
                 stop.dwell = be.getDwellSec();
@@ -120,7 +136,8 @@ public class StationControllerBlock extends BaseEntityBlock {
                 route.stops.add(stop);
                 route.invalidate();
                 sl.playSound(null, pos, SoundEvents.AMETHYST_BLOCK_CHIME, SoundSource.BLOCKS, 0.8f, 1.5f);
-                sp.displayClientMessage(Component.translatable("message.beautifuldecor.station.added", route.stops.size(), stop.label(route.stops.size() - 1)), true);
+                sp.displayClientMessage(Component.translatable(this.depot ? "message.beautifuldecor.station.depot_added" : "message.beautifuldecor.station.added",
+                        this.depot ? stop.label(route.stops.size() - 1) : route.stops.size(), stop.label(route.stops.size() - 1)), true);
                 return InteractionResult.CONSUME;
             }
         }

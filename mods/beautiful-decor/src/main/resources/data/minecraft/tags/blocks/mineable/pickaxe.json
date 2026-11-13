@@ -22,6 +22,7 @@
     "beautifuldecor:burguer_counter",
     "beautifuldecor:burguer_crown",
     "beautifuldecor:lottery_booth",
-    "beautifuldecor:cash_register"
+    "beautifuldecor:cash_register",
+    "beautifuldecor:depot_controller"
   ]
 }

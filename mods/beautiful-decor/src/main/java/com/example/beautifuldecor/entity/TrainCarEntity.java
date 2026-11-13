@@ -171,6 +171,9 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
     private static final EntityDataAccessor<Integer> VARIANT = SynchedEntityData.defineId(TrainCarEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> FILL = SynchedEntityData.defineId(TrainCarEntity.class, EntityDataSerializers.INT);
     /** V6.2.0: 0 = sin frenar, 1 = frenando, 2 = freno de emergencia (lo escribe la cabeza para todo el tren). */
+    /** V6.16.0: puertas de los coches de pasajeros y metro (true = abiertas) y televisores instalados (bit 0 = esquina izquierda, bit 1 = derecha). */
+    private static final EntityDataAccessor<Boolean> DOORS = SynchedEntityData.defineId(TrainCarEntity.class, EntityDataSerializers.BOOLEAN);
+    private static final EntityDataAccessor<Integer> TVS = SynchedEntityData.defineId(TrainCarEntity.class, EntityDataSerializers.INT);
     private static final EntityDataAccessor<Integer> BRAKE_STATE = SynchedEntityData.defineId(TrainCarEntity.class, EntityDataSerializers.INT);
 
     // ---- vía y cadena (servidor)
@@ -232,6 +235,94 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
         this.entityData.define(VARIANT, 0);
         this.entityData.define(FILL, 0);
         this.entityData.define(BRAKE_STATE, 0);
+        this.entityData.define(DOORS, Boolean.FALSE);
+        this.entityData.define(TVS, 0);
+    }
+
+    // ---- V6.16.0: puertas y televisores
+    /** Dónde está el botón de las puertas en la cabina: {lado, alto, adelante} en bloques desde el centro del coche (null = este coche no lo tiene). */
+    public static double[] doorButton(String id) {
+        return switch (id) {
+            case "steam_classic", "steam_modern" -> new double[] {-0.75, 2.75, 1.25};
+            case "metro_head" -> new double[] {-0.75, 3.0, 6.75};
+            default -> null;
+        };
+    }
+
+    public boolean doorsOpen() {
+        return this.entityData.get(DOORS);
+    }
+
+    /** Puertas de este coche: solo las tienen los vagones de pasajeros y los del metro. */
+    public boolean hasDoors() {
+        return this.variant().isCoach();
+    }
+
+    public int tvMask() {
+        return this.entityData.get(TVS);
+    }
+
+    /** Progreso (0 cerrada, 1 abierta) para dibujar la puerta; el cliente lo acerca poco a poco. */
+    public float doorProgress(float partialTick) {
+        return Mth.lerp(partialTick, this.doorAnimO, this.doorAnim);
+    }
+
+    private float doorAnim;
+    private float doorAnimO;
+
+    /** Todos los coches del tren, de la cabeza a la cola. */
+    private List<TrainCarEntity> wholeTrain() {
+        TrainCarEntity head = this;
+        for (int guard = 0; guard < MAX_CARS && head.frontId != null; guard++) {
+            TrainCarEntity next = head.carById(head.frontId);
+            if (next == null) {
+                break;
+            }
+            head = next;
+        }
+        List<TrainCarEntity> out = new ArrayList<>();
+        Set<UUID> seen = new HashSet<>();
+        out.add(head);
+        seen.add(head.getUUID());
+        TrainCarEntity c = head;
+        for (int i = 0; i < MAX_CARS && c.rearId != null; i++) {
+            TrainCarEntity next = c.carById(c.rearId);
+            if (next == null || !seen.add(next.getUUID())) {
+                break;
+            }
+            out.add(next);
+            c = next;
+        }
+        return out;
+    }
+
+    private static void setDoors(List<TrainCarEntity> cars, boolean open) {
+        for (TrainCarEntity car : cars) {
+            if (car.doorsOpen() != open) {
+                car.entityData.set(DOORS, open);
+            }
+        }
+    }
+
+    /** El botón de la cabina: abre o cierra las puertas de todos los coches del tren. */
+    private void toggleTrainDoors(ServerPlayer player) {
+        List<TrainCarEntity> cars = this.wholeTrain();
+        boolean open = !this.doorsOpen();
+        setDoors(cars, open);
+        this.level().playSound(null, this.getX(), this.getY() + 2.5, this.getZ(), open ? SoundEvents.IRON_DOOR_OPEN : SoundEvents.IRON_DOOR_CLOSE,
+                SoundSource.NEUTRAL, 1.0f, 1.1f);
+        player.displayClientMessage(Component.translatable(open ? "hud.beautifuldecor.train_doors_open" : "hud.beautifuldecor.train_doors_closed"), true);
+    }
+
+    /** Pone un televisor en una esquina de adelante, al azar entre las libres. Devuelve false si ya están las dos. */
+    private boolean installTv() {
+        int mask = this.tvMask();
+        if (mask == 3) {
+            return false;
+        }
+        int pick = mask == 0 ? 1 + this.random.nextInt(2) : (mask == 1 ? 2 : 1);
+        this.entityData.set(TVS, mask | pick);
+        return true;
     }
 
     /** V6.2.0: 0 = sin frenar, 1 = frenando, 2 = emergencia. */
@@ -482,6 +573,30 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
         boolean client = this.level().isClientSide;
         ItemStack held = player.getItemInHand(hand);
         Variant v = this.variant();
+        // ---- V6.16.0: botón de las puertas en la cabina
+        double[] doorBtn = doorButton(v.id);
+        if (hand == InteractionHand.MAIN_HAND && v.isLoco() && doorBtn != null
+                && (this.lookingAt(player, doorBtn) || this.lookingAt(player, new double[] {-doorBtn[0], doorBtn[1], doorBtn[2]}))) {
+            if (!client && player instanceof ServerPlayer sp) {
+                this.toggleTrainDoors(sp);
+            }
+            return InteractionResult.sidedSuccess(client);
+        }
+        // ---- V6.16.0: televisor chico (ad_tv) sobre un coche de pasajeros o de metro: se instala en una esquina de adelante
+        if (v.isCoach() && !held.isEmpty() && held.getItem() == net.minecraftforge.registries.ForgeRegistries.ITEMS.getValue(
+                net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(com.example.beautifuldecor.BeautifulDecor.MOD_ID, "ad_tv"))) {
+            if (!client) {
+                if (this.installTv()) {
+                    if (!player.getAbilities().instabuild) {
+                        held.shrink(1);
+                    }
+                    this.level().playSound(null, this.getX(), this.getY() + 2.0, this.getZ(), SoundEvents.ITEM_FRAME_ADD_ITEM, SoundSource.NEUTRAL, 1.0f, 1.0f);
+                } else if (player instanceof ServerPlayer sp) {
+                    sp.displayClientMessage(Component.translatable("message.beautifuldecor.train_tv_full"), true);
+                }
+            }
+            return InteractionResult.sidedSuccess(client);
+        }
         // ---- V6.2.0: botón del freno de emergencia en el panel de la cabina
         if (hand == InteractionHand.MAIN_HAND && v.isLoco() && this.lookingAtButton(player)) {
             if (!client) {
@@ -535,7 +650,13 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
             this.tellCargo(player);
             return InteractionResult.CONSUME;
         }
-        // ---- locomotora o vagón de pasajeros: subirse
+        // ---- locomotora o vagón de pasajeros: subirse (V6.16.0: los coches con las puertas cerradas no se pueden abordar)
+        if (v.isCoach() && !this.doorsOpen() && !player.isSecondaryUseActive()) {
+            if (!client && player instanceof ServerPlayer sp) {
+                sp.displayClientMessage(Component.translatable("message.beautifuldecor.train_doors_closed_board"), true);
+            }
+            return InteractionResult.sidedSuccess(client);
+        }
         if (v.isLoco() || v.isCoach()) {
             if (player.isSecondaryUseActive()) {
                 if (!this.isVehicle()) {
@@ -994,6 +1115,11 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
             if (complete && flags == 0 && !this.emergency) {
                 auto = autoCar.route.tick(sl, this.cur.copy(), this.variant().family, this.speed, empty, total, topMs, this.variant().inset());
                 this.announce(chain, auto);
+                if (auto.doors != 0) {
+                    setDoors(chain, auto.doors == 1);                       // V6.16.1: puertas por tiempo de espera (ver TrainRoute)
+                } else if (auto.departed != null || auto.arrived != null) {
+                    setDoors(chain, false);                                 // llegando o saliendo: cerradas
+                }
             } else {
                 autoCar.route.invalidate();
             }
@@ -1103,9 +1229,10 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
     /** V6.2.0: ¿está el jugador apuntando al botón de emergencia del panel (a menos de 3 m)? */
     private boolean lookingAtButton(Player player) {
         double[] b = TrainSeats.button(this.variant().id);
-        if (b == null) {
-            return false;
-        }
+        return b != null && this.lookingAt(player, b);
+    }
+
+    private boolean lookingAt(Player player, double[] b) {
         float yaw = this.getYRot() * Mth.DEG_TO_RAD;
         double theta = -this.getXRot() * Mth.DEG_TO_RAD;
         double up = b[1] * Math.cos(theta) + b[2] * Math.sin(theta);
@@ -1248,6 +1375,9 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
 
     private void clientTick() {
         this.tickLerp();
+        this.doorAnimO = this.doorAnim;
+        float goal = this.doorsOpen() ? 1.0f : 0.0f;
+        this.doorAnim += Mth.clamp(goal - this.doorAnim, -0.07f, 0.07f);
         double dx = this.getX() - this.xo;
         double dz = this.getZ() - this.zo;
         float yaw = this.getYRot() * Mth.DEG_TO_RAD;
@@ -1360,6 +1490,8 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
             }
         }
         this.entityData.set(FILL, this.units);
+        this.entityData.set(DOORS, tag.getBoolean("Doors"));
+        this.entityData.set(TVS, tag.getInt("Tvs") & 3);
         this.frontId = tag.hasUUID("Front") ? tag.getUUID("Front") : null;
         this.rearId = tag.hasUUID("Rear") ? tag.getUUID("Rear") : null;
         this.speed = tag.getDouble("Speed");
@@ -1379,6 +1511,8 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
     protected void addAdditionalSaveData(CompoundTag tag) {
         VehiclePaint.write(this, tag);
         tag.putInt("Variant", this.entityData.get(VARIANT));
+        tag.putBoolean("Doors", this.doorsOpen());
+        tag.putInt("Tvs", this.tvMask());
         ListTag list = new ListTag();
         for (ItemStack stack : this.hold) {
             list.add(stack.save(new CompoundTag()));

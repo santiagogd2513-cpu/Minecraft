@@ -54,6 +54,9 @@ public class TrainCarItem extends Item {
             return InteractionResult.FAIL;
         }
         car.setVariant(this.variant);
+        if (this.variant.isSteam()) {
+            car.addCargo(new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.COAL, 128));   // V6.16.0: sale con carbón para poder arrancar
+        }
         VehiclePaint.restore(car, context.getItemInHand());
         RailPath.Lookup lk = car.railLookup();
         double wb = this.variant.wheelbase;

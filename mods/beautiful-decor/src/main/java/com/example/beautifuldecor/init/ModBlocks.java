@@ -1293,6 +1293,10 @@ public class ModBlocks {
 
     // ===== V6.0.0: automatización de trenes =====
     /** Controlador de estación: se pone junto a la vía; el tren automático se detiene con el morro en su punto de la vía. */
+    /** V6.16.0: depósito de trenes (la última parada de la ruta). */
+    public static final RegistryObject<Block> DEPOT_CONTROLLER = BLOCKS.register("depot_controller",
+            () -> new StationControllerBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_ORANGE)
+                    .strength(2.0f, 6.0f).sound(SoundType.METAL), true));
     public static final RegistryObject<Block> STATION_CONTROLLER = BLOCKS.register("station_controller",
             () -> new StationControllerBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GRAY)
                     .strength(2.0f, 6.0f).sound(SoundType.METAL)));

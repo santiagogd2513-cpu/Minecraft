@@ -99,7 +99,7 @@ public class ModBlockEntities {
     public static final RegistryObject<BlockEntityType<StationControllerBlockEntity>> STATION_CONTROLLER =
             BLOCK_ENTITIES.register("station_controller",
                     () -> BlockEntityType.Builder.of(StationControllerBlockEntity::new,
-                            ModBlocks.STATION_CONTROLLER.get()).build(null));
+                            ModBlocks.STATION_CONTROLLER.get(), ModBlocks.DEPOT_CONTROLLER.get()).build(null));
 
     // ===== V6.1.0: curvas anchas =====
     public static final RegistryObject<BlockEntityType<WideRailBlockEntity>> WIDE_RAIL =

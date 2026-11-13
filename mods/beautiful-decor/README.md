@@ -2,6 +2,15 @@
 
 Mod de decoración para **Minecraft 1.20.1** / **Forge 47.4.5**.
 
+## V6.16.1
+- Puertas automáticas por tiempo: al llegar a una estación se abren a los 2 s y se cierran 2 s antes de salir (espera de 4 s o menos: al 25 % y al 75 %). En el depósito quedan abiertas.
+
+## V6.16.0
+- Tren de pasajeros: las locomotoras de vapor ahora salen con 128 de carbón al colocarlas (sin carbón no arrancan).
+- Nuevo bloque Depósito de trenes: es siempre la última parada de la ruta (después de él no se agregan más).
+- Botón de puertas en la cabina (vapor y metro): abre o cierra las puertas de todos los coches del tren. Los coches con puertas cerradas no se pueden abordar. En el piloto automático se abren al llegar a la estación y se cierran al salir.
+- Televisor chico (ad_tv): clic en un coche de pasajeros o de metro lo instala en una esquina de adelante (al azar, máximo dos) y pasa los anuncios.
+
 ## V6.15.0
 - Canal de la lotería (Lotto Gordo): sorteo cada día de juego, número de 000 a 999 y clase A-H (8000 boletos posibles). Sale en HS News y en un segmento de 15 s en las pantallas de anuncios (cada 5 anuncios).
 - Premios entregados por un camión AMAZOOM que maneja solo hasta el ganador (si está bajo techo, se estaciona delante de la puerta más cercana y pita): gordo (número y clase) 3 stacks de diamantes, mediano (número) 96 lingotes de oro, pequeño (2 últimas cifras) 32 de hierro; cuanto menor el premio, más rápido llega.

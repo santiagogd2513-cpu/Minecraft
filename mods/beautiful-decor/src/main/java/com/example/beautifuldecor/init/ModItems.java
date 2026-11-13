@@ -533,6 +533,8 @@ public class ModItems {
             () -> new BlockItem(ModBlocks.SECURITY_SCREEN.get(), new Item.Properties()));
 
     // ===== V6.0.0: automatización de trenes =====
+    public static final RegistryObject<Item> DEPOT_CONTROLLER = ITEMS.register("depot_controller",
+            () -> new BlockItem(ModBlocks.DEPOT_CONTROLLER.get(), new Item.Properties()));
     public static final RegistryObject<Item> STATION_CONTROLLER = ITEMS.register("station_controller",
             () -> new BlockItem(ModBlocks.STATION_CONTROLLER.get(), new Item.Properties()));
     public static final RegistryObject<Item> TRAIN_REMOTE = ITEMS.register("train_remote",

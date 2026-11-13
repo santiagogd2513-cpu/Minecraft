@@ -79,6 +79,8 @@ public final class TrainRoute {
         public String sayDest;
         public boolean parked;
         public boolean stuck;
+        /** V6.16.1: puertas que pide el horario de la estación: 0 = no cambia, 1 = abiertas, 2 = cerradas. */
+        public int doors;
     }
 
     public String name = "";
@@ -214,10 +216,19 @@ public final class TrainRoute {
                 } else {
                     this.depart(out);
                 }
+            } else {
+                // V6.16.1: puertas por tiempo: se abren 2 s después de llegar y se cierran 2 s antes de salir (si la espera es de 4 s o menos: al 25 % y al 75 %)
+                int span = Math.max(1, target.dwell * 20);
+                int elapsed = span - this.dwellLeft;
+                int openAt = span > 80 ? 40 : span / 4;
+                int closeAt = span > 80 ? span - 40 : span * 3 / 4;
+                boolean last = this.idx == this.stops.size() - 1;
+                out.doors = elapsed >= openAt && (last || elapsed < closeAt) ? 1 : 2;
             }
             return out;
         }
         if (this.state == State.PARKED) {
+            out.doors = 1;
             if (target.refresh(level) && TrainAuto.isOpen(hour, target.open, target.close)) {
                 this.depart(out);
             }
