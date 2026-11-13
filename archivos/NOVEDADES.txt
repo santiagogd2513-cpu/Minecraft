@@ -1,3 +1,7 @@
+## 61
+🔧 Comprimir
+- Arreglado: un .zip con contraseña y «Sin compresión» daba error. Ahora funciona (guarda los archivos sin comprimir, cifrados).
+
 ## 60
 🔧 Identificar aplicaciones
 - Las apps de fábrica que ya actualizaste (YouTube, Chrome…) ahora salen en «Usuario» y no en «Sistema».

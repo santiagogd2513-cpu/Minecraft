@@ -549,6 +549,7 @@ final class TransferEngine {
                 if (o.encrypted()) {
                     try (net.lingala.zip4j.io.outputstream.ZipOutputStream zo = new net.lingala.zip4j.io.outputstream.ZipOutputStream(out, o.password)) {
                         net.lingala.zip4j.model.enums.CompressionLevel lv = switch (o.level) {
+                            case 0 -> net.lingala.zip4j.model.enums.CompressionLevel.NO_COMPRESSION;
                             case 1 -> net.lingala.zip4j.model.enums.CompressionLevel.FASTEST;
                             case 3 -> net.lingala.zip4j.model.enums.CompressionLevel.MAXIMUM;
                             case 4 -> net.lingala.zip4j.model.enums.CompressionLevel.ULTRA;
@@ -650,7 +651,8 @@ final class TransferEngine {
         net.lingala.zip4j.model.ZipParameters zp = new net.lingala.zip4j.model.ZipParameters();
         zp.setFileNameInZip(name);
         zp.setLastModifiedFileTime(modified);
-        zp.setCompressionMethod(o.level == 0 ? net.lingala.zip4j.model.enums.CompressionMethod.STORE : net.lingala.zip4j.model.enums.CompressionMethod.DEFLATE);
+        // con contraseña, STORE de zip4j falla (pide tamaños) y además salió corrupto en pruebas: «Sin compresión» = DEFLATE sin comprimir
+        zp.setCompressionMethod(net.lingala.zip4j.model.enums.CompressionMethod.DEFLATE);
         zp.setCompressionLevel(lv);
         zp.setEncryptFiles(true);
         zp.setEncryptionMethod(net.lingala.zip4j.model.enums.EncryptionMethod.AES);
