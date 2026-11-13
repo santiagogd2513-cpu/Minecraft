@@ -78,6 +78,7 @@ public class MainActivity extends Activity {
     private String phoneName;                // si el paquete abierto viene del celular
     private Saf.FileSource phoneFile;
     private static final int REQ_PHONE_PKG = 25;
+    private static final int REQ_IMPORT = 26;
     private int pkgParent = -1;
     private List<Idx> index;
     private Runnable afterDest;
@@ -344,6 +345,8 @@ public class MainActivity extends Activity {
 
     private void closeSession() {
         generation++;
+        writeUnlocked = false;
+        curStick = false;
         if (usb != null) {
             usb.close();
             usb = null;
@@ -393,6 +396,10 @@ public class MainActivity extends Activity {
         super.onActivityResult(req, res, data);
         if (req == REQ_PHONE_PKG && res == RESULT_OK && data != null && data.getData() != null) {
             openPhonePackage(data.getData());
+            return;
+        }
+        if (req == REQ_IMPORT && res == RESULT_OK && data != null && data.getData() != null) {
+            prepareImport(data.getData());
             return;
         }
         if ((req == REQ_SLOT_A || req == REQ_SLOT_B) && res == RESULT_OK && data != null && data.getData() != null) {
@@ -590,6 +597,7 @@ public class MainActivity extends Activity {
                 x.listRoot();   // si la tabla está mal, falla aquí y no más adelante
                 fs = x;
                 partName = parts.get(i).name;
+                curStick = parts.get(i).stick;
                 path = "";
                 infos.clear();
                 scanGames();
@@ -794,6 +802,7 @@ public class MainActivity extends Activity {
         tools.addView(chip("✅  Verificar", this::verifyAllMenu));
         tools.addView(chip("💾  Copias", this::backupMenu));
         tools.addView(chip("✏️  Editor", this::showEditor));
+        tools.addView(chip("⬆️  Importar", this::importMenu));
         android.widget.HorizontalScrollView hs = new android.widget.HorizontalScrollView(this);
         hs.setHorizontalScrollBarEnabled(false);
         hs.addView(tools);
@@ -1963,6 +1972,157 @@ public class MainActivity extends Activity {
                         .show());
             } catch (Throwable t) {
                 ui.post(() -> fail(t));
+            }
+        });
+    }
+
+    // ------------------------------------------------------------------ escribir en la memoria (importar)
+
+    /** La partición abierta es de una memoria USB de la consola. */
+    private boolean curStick;
+    /** El usuario ya confirmó (escribiendo ESCRIBIR) que quiere escribir en esta unidad durante esta sesión. */
+    private boolean writeUnlocked;
+
+    private void importMenu() {
+        if (fs == null) return;
+        if (!curStick) {
+            new AlertDialog.Builder(this, R.style.Theme_Arca_Dialog)
+                    .setTitle("Solo en memorias USB")
+                    .setMessage("Por seguridad, por ahora Arca solo escribe en memorias USB de la consola.\n\nEn el disco duro todavía no: una prueba mal hecha ahí podría dañar tus perfiles y tus partidas.")
+                    .setPositiveButton("Entendido", null)
+                    .show();
+            return;
+        }
+        if (!fs.canWrite()) {
+            Toast.makeText(this, "Esta unidad está abierta solo para leer", Toast.LENGTH_LONG).show();
+            return;
+        }
+        if (writeUnlocked) {
+            pickImportFile();
+            return;
+        }
+        android.widget.EditText e = new android.widget.EditText(this);
+        e.setHint("Escribe ESCRIBIR");
+        e.setSingleLine(true);
+        e.setTextColor(Ui.TEXT);
+        LinearLayout box = Ui.column(this);
+        box.setPadding(dp(20), dp(8), dp(20), dp(4));
+        box.addView(e);
+        AlertDialog d = new AlertDialog.Builder(this, R.style.Theme_Arca_Dialog)
+                .setTitle("⚠️ Vas a escribir en la memoria")
+                .setMessage("Esta es una función de prueba. Si algo sale mal, la memoria puede quedar dañada y tendrías que volver a formatearla.\n\nÚsala solo con una memoria de prueba, nunca con la única copia de algo importante.\n\nPara seguir, escribe ESCRIBIR.")
+                .setView(box)
+                .setNegativeButton("Cancelar", null)
+                .setPositiveButton("Seguir", null)
+                .create();
+        d.setOnShowListener(x -> d.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+            if (!e.getText().toString().trim().equals("ESCRIBIR")) {
+                e.setError("Escribe la palabra ESCRIBIR, en mayúsculas");
+                return;
+            }
+            writeUnlocked = true;
+            d.dismiss();
+            pickImportFile();
+        }));
+        d.show();
+    }
+
+    private void pickImportFile() {
+        Intent i = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        i.setType("*/*");
+        i.addCategory(Intent.CATEGORY_OPENABLE);
+        try {
+            startActivityForResult(i, REQ_IMPORT);
+        } catch (Exception e) {
+            Aviso.show(this, root, e);
+        }
+    }
+
+    /** Lee el paquete del celular, calcula dónde lo espera la consola y pide confirmar. */
+    private void prepareImport(Uri uri) {
+        if (fs == null || !writeUnlocked) return;
+        showOverlay("Leyendo el paquete…");
+        exec.execute(() -> {
+            try (Saf.FileSource f = new Saf.FileSource(getContentResolver(), uri)) {
+                Stfs s = Stfs.parse(f.read(0, (int) Math.min(f.length(), Stfs.HEADER)));
+                if (s == null) throw new java.io.IOException("Ese archivo no es un paquete de Xbox 360 (partida, perfil o descarga).");
+                String raw = uri.getLastPathSegment() == null ? "paquete" : uri.getLastPathSegment().replaceAll(".*[/:]", "");
+                String name = raw.replaceAll("[\\\\/:*?\"<>|]", "_");
+                if (name.length() > 42) name = name.substring(0, 42);
+                final String fname = name;
+                final String dir = "Content/" + String.format(java.util.Locale.US, "%016X", s.profileId) + "/" + Stfs.hex8(s.titleId) + "/" + Stfs.hex8(s.contentType);
+                final long size = f.length();
+                final String title = s.bestTitle().isEmpty() ? "(sin nombre)" : s.bestTitle();
+                final String kind = Stfs.typeName(s.contentType);
+                ui.post(() -> {
+                    hideOverlay();
+                    confirmImport(uri, dir, fname, size, title, kind);
+                });
+            } catch (Throwable t) {
+                ui.post(() -> {
+                    hideOverlay();
+                    Aviso.show(this, root, t);
+                });
+            }
+        });
+    }
+
+    private void confirmImport(Uri uri, String dir, String name, long size, String title, String kind) {
+        android.widget.EditText e = new android.widget.EditText(this);
+        e.setText(name);
+        e.setSingleLine(true);
+        e.setTextColor(Ui.TEXT);
+        LinearLayout box = Ui.column(this);
+        box.setPadding(dp(20), dp(8), dp(20), dp(4));
+        TextView info = Ui.text(this, title + "  ·  " + kind + "\n" + Ui.size(size) + "\n\nSe guardará en:\n" + dir.replace("/", "  ›  ") + "\n\nNombre del archivo:", 13.5f, Ui.SUB, false);
+        box.addView(info);
+        box.addView(e);
+        AlertDialog d = new AlertDialog.Builder(this, R.style.Theme_Arca_Dialog)
+                .setTitle("Importar a la memoria")
+                .setView(box)
+                .setNegativeButton("Cancelar", null)
+                .setPositiveButton("Importar", null)
+                .create();
+        d.setOnShowListener(x -> d.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(v -> {
+            String n = e.getText().toString().trim();
+            try {
+                Xtaf.checkName(n);
+            } catch (java.io.IOException ex) {
+                e.setError(ex.getMessage());
+                return;
+            }
+            d.dismiss();
+            runImport(uri, dir, n, size);
+        }));
+        d.show();
+    }
+
+    private void runImport(Uri uri, String dir, String name, long size) {
+        Xtaf x = fs;
+        showOverlay("");
+        setOverlayText("Escribiendo en la memoria…", name + "\nNo desconectes la unidad.", "Cancelar");
+        exec.execute(() -> {
+            try (java.io.InputStream in = getContentResolver().openInputStream(uri)) {
+                if (in == null) throw new java.io.IOException("Android no dejó abrir el archivo");
+                int cluster = x.ensureDirs(dir);
+                x.createFile(cluster, name, in, size, done -> ui.post(() -> setOverlayDetail(name + "\n" + Ui.size(done) + " de " + Ui.size(size) + "\nNo desconectes la unidad.")));
+                ui.post(() -> {
+                    hideOverlay();
+                    new AlertDialog.Builder(this, R.style.Theme_Arca_Dialog)
+                            .setTitle("Listo ✅")
+                            .setMessage("Guardé «" + name + "» en:\n" + dir.replace("/", "  ›  ") + "\n\nLo volví a leer y coincide con el original.")
+                            .setPositiveButton("Entendido", null)
+                            .show();
+                    infos.clear();
+                    exec.execute(this::scanGames);
+                    browse(path);
+                });
+            } catch (Throwable t) {
+                ui.post(() -> {
+                    hideOverlay();
+                    Aviso.show(this, root, t);
+                    browse(path);
+                });
             }
         });
     }

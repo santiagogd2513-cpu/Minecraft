@@ -18,10 +18,17 @@ final class XboxDisk {
     static final class Part {
         final String name;
         final ByteSource source;
+        /** Es una memoria USB de la consola (la única donde Arca deja escribir por ahora). */
+        final boolean stick;
 
         Part(String name, ByteSource source) {
+            this(name, source, false);
+        }
+
+        Part(String name, ByteSource source, boolean stick) {
             this.name = name;
             this.source = source;
+            this.stick = stick;
         }
     }
 
@@ -75,7 +82,7 @@ final class XboxDisk {
                 for (Xtaf.Entry e : new Xtaf(part).listRoot()) if (e.dir && e.name.equalsIgnoreCase("Content")) content = true;
             } catch (IOException ignored) {
             }
-            Part p = new Part(content ? "Datos (juegos, partidas y perfiles)" : "Otra partición de la memoria", part);
+            Part p = new Part(content ? "Datos (juegos, partidas y perfiles)" : "Otra partición de la memoria", part, true);
             if (content) out.add(0, p);
             else out.add(p);
         }

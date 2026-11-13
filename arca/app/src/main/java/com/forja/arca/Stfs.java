@@ -14,6 +14,8 @@ final class Stfs {
     String magic = "";
     int contentType;
     long titleId;
+    /** Dueño de la partida (el perfil, 16 dígitos hex); 0 en paquetes compartidos. Solo los «CON » lo traen. */
+    long profileId;
     String displayName = "", titleName = "";
     byte[] thumbnail = new byte[0], titleThumbnail = new byte[0];
 
@@ -26,6 +28,7 @@ final class Stfs {
         s.magic = m.trim();
         s.contentType = be32(h, 0x344);
         s.titleId = be32(h, 0x360) & 0xFFFFFFFFL;
+        if (m.equals("CON ") && h.length >= 0x379) s.profileId = ((be32(h, 0x371) & 0xFFFFFFFFL) << 32) | (be32(h, 0x375) & 0xFFFFFFFFL);
         s.displayName = utf16(h, 0x411, 0x80);
         s.titleName = utf16(h, 0x1691, 0x80);
         int t1 = be32(h, 0x1712), t2 = be32(h, 0x1716);

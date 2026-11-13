@@ -5,7 +5,8 @@ set -euo pipefail
 H=$(cd "$(dirname "$0")" && pwd)
 W=$(mktemp -d)
 J=$H/../app/src/main/java/com/forja/arca
-javac -encoding UTF-8 -d $W/out $J/ByteSource.java $J/Xtaf.java $J/Stfs.java $J/StfsPackage.java $J/StfsEditor.java $J/Firma.java $J/XboxDisk.java $J/Fat32.java $H/ArcaTest.java
+javac -encoding UTF-8 -d $W/out $J/ByteSource.java $J/Xtaf.java $J/Stfs.java $J/StfsPackage.java $J/StfsEditor.java $J/Firma.java $J/XboxDisk.java $J/Fat32.java $H/ArcaTest.java $H/XtafWriteTest.java
 python3 $H/hacer_imagenes.py $W/img
 java -cp $W/out com.forja.arca.ArcaTest $W/img
+java -cp $W/out com.forja.arca.XtafWriteTest $W/img-escritura
 rm -rf $W

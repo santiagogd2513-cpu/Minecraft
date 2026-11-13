@@ -215,6 +215,39 @@ final class Fat32 {
                     i++;
                 }
             }
+
+            @Override
+            public boolean writable() {
+                return disk.writable();
+            }
+
+            @Override
+            public void write(long off, byte[] buf, int boff, int len) throws IOException {
+                // se escribe dentro de un archivo que ya existe: no cambia la tabla de FAT32, solo sus datos
+                if (off < 0 || off + len > size) throw new IOException("Escritura fuera del archivo");
+                int lo = 0, hi = runs.size() - 1;
+                while (lo < hi) {
+                    int mid = (lo + hi + 1) >>> 1;
+                    if (runs.get(mid)[0] <= off) lo = mid;
+                    else hi = mid - 1;
+                }
+                int i = lo;
+                while (len > 0) {
+                    long[] r = runs.get(i);
+                    long inRun = off - r[0];
+                    int n = (int) Math.min(len, r[2] - inRun);
+                    disk.write(r[1] + inRun, buf, boff, n);
+                    off += n;
+                    boff += n;
+                    len -= n;
+                    i++;
+                }
+            }
+
+            @Override
+            public void flush() throws IOException {
+                disk.flush();
+            }
         };
     }
 

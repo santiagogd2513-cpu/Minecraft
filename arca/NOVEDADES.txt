@@ -1,3 +1,11 @@
+## 9
+⬆️ Escribir en la memoria USB (prueba)
+- Nuevo botón «Importar» en el explorador: eliges un paquete del celular (una partida, un perfil…) y Arca lo guarda en la memoria en la carpeta correcta, creando sola las carpetas que falten (Content/perfil/juego/tipo).
+- Solo funciona en memorias USB de la consola, nunca en el disco duro, y antes pide escribir ESCRIBIR para confirmar.
+- Después de escribir, Arca vuelve a leer el archivo y comprueba que coincide con el original; si no, lo deshace.
+- Por dentro ya sabe crear carpetas, crear archivos, renombrar y borrar en XTAF. Es una función de prueba: úsala con una memoria que se pueda formatear.
+
+
 ## 8
 📂 Arca: abrir paquetes que tienes en el celular
 - En la pantalla de inicio, «Abrir un paquete del celular»: elige una partida, un perfil o un contenido guardado en tu celular y míralo por dentro, verifícalo y mira su 🔏 firma, sin necesitar la consola.
