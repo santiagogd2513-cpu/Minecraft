@@ -1,3 +1,8 @@
+## 11
+⬆️ Importar: la carpeta del perfil, a la vista
+- Antes de importar, Arca muestra de qué perfil es el paquete y si su carpeta ya existe en la memoria o se va a crear (con el mismo nombre que trae el paquete: Arca no se inventa nada).
+- Si una partida guardada llega sin perfil (en ceros), avisa en naranja que iría a la carpeta compartida.
+
 ## 10
 🔧 Verificar: el texto ya no dice que Arca «solo lee» (ahora también puede escribir en memorias USB); dice que verificar no cambia nada.
 

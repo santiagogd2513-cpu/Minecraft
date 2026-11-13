@@ -2054,9 +2054,18 @@ public class MainActivity extends Activity {
                 final long size = f.length();
                 final String title = s.bestTitle().isEmpty() ? "(sin nombre)" : s.bestTitle();
                 final String kind = Stfs.typeName(s.contentType);
+                // ¿la carpeta del perfil ya existe en esta memoria, o se va a crear?
+                String profileDir = "Content/" + String.format(java.util.Locale.US, "%016X", s.profileId);
+                boolean profileExists = false;
+                try {
+                    profileExists = fs.find(profileDir) != null;
+                } catch (java.io.IOException ignored) {
+                }
+                final boolean pExists = profileExists;
+                final boolean noOwner = s.profileId == 0 && s.contentType == 0x1;   // una partida guardada sin dueño
                 ui.post(() -> {
                     hideOverlay();
-                    confirmImport(uri, dir, fname, size, title, kind);
+                    confirmImport(uri, dir, fname, size, title, kind, pExists, noOwner);
                 });
             } catch (Throwable t) {
                 ui.post(() -> {
@@ -2067,7 +2076,7 @@ public class MainActivity extends Activity {
         });
     }
 
-    private void confirmImport(Uri uri, String dir, String name, long size, String title, String kind) {
+    private void confirmImport(Uri uri, String dir, String name, long size, String title, String kind, boolean profileExists, boolean noOwner) {
         android.widget.EditText e = new android.widget.EditText(this);
         e.setText(name);
         e.setSingleLine(true);
@@ -2076,6 +2085,14 @@ public class MainActivity extends Activity {
         box.setPadding(dp(20), dp(8), dp(20), dp(4));
         TextView info = Ui.text(this, title + "  ·  " + kind + "\n" + Ui.size(size) + "\n\nSe guardará en:\n" + dir.replace("/", "  ›  ") + "\n\nNombre del archivo:", 13.5f, Ui.SUB, false);
         box.addView(info);
+        String prof = dir.split("/")[1];
+        TextView who = Ui.text(this, noOwner
+                        ? "⚠ Este paquete no dice de qué perfil es (el perfil viene en ceros). Se guardaría en la carpeta compartida «" + prof + "», y una partida de un perfil probablemente no se vea en la consola."
+                        : (profileExists ? "✓ La carpeta del perfil «" + prof + "» ya existe en esta memoria."
+                        : "ℹ La carpeta del perfil «" + prof + "» no existe en esta memoria: se va a crear, con ese mismo nombre, tomado del paquete."),
+                12.5f, noOwner ? Ui.WARN : Ui.SUB, false);
+        who.setPadding(0, dp(10), 0, dp(10));
+        box.addView(who);
         box.addView(e);
         AlertDialog d = new AlertDialog.Builder(this, R.style.Theme_Arca_Dialog)
                 .setTitle("Importar a la memoria")
