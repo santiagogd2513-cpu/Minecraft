@@ -661,7 +661,7 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
             tiles.add(tile("📌", 0xFF6C63FF, 0xFFA29BFE, L.t("Ancladas"), pins == 0 ? L.t("Ninguna todavía") : pins + (pins == 1 ? L.t(" carpeta") : L.t(" carpetas")), v -> openHomePage("ancladas")));
             tiles.add(tile("⭐", 0xFFF2A100, 0xFFFFC14D, L.t("Favoritas"), favs == 0 ? L.t("Ninguna todavía") : favs + (favs == 1 ? L.t(" carpeta") : L.t(" carpetas")), v -> openHomePage("favoritas")));
             int servers = FtpServers.get(this).all().size();
-            tiles.add(tile("☁️", 0xFF0A64D6, 0xFF28A8EA, L.t("Nube y red"), L.t("Drive, OneDrive, MEGA, MediaFire") + (servers > 0 ? " · " + servers + L.t(" servidores") : ""), v -> openHomePage("nube")));
+            tiles.add(tile("☁️", 0xFF0A64D6, 0xFF28A8EA, L.t("Nube y red"), servers > 0 ? servers + (servers == 1 ? L.t(" servidor") : L.t(" servidores")) + L.t(" y más") : L.t("Drive, OneDrive, MEGA y más"), v -> openHomePage("nube")));
             tiles.add(tile("🛠️", 0xFFE5603B, 0xFFFF9A5C, L.t("Funciones especiales"), L.t("Reducir peso y más por venir"), v -> openHomePage("funciones")));
             tiles.add(tile("🛡️", 0xFF7B4DFF, 0xFFB86BFF, L.t("Seguridad y privacidad"), L.t("La Bóveda, Radiografía, Apps"), v -> openHomePage("seguridad")));
             View trash = tile("🗑️", 0xFF4A5670, 0xFF6E7A8E, L.t("Papelera"), L.t("Lo que borres se guarda 30 días"), v -> showTrash());
@@ -811,7 +811,10 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
         card.addView(ic, new LinearLayout.LayoutParams(dp(28), dp(28)));
         TextView n = Ui.text(this, v.name, 15.5f, Ui.TEXT, true);
         n.setPadding(0, dp(8), 0, 0);
-        card.addView(n);
+        n.setMaxLines(2);
+        // la palabra larga («Almacenamiento») se achica sola para no partirse a la mitad
+        n.setAutoSizeTextTypeUniformWithConfiguration(10, 16, 1, android.util.TypedValue.COMPLEX_UNIT_SP);
+        card.addView(n, new LinearLayout.LayoutParams(-1, dp(48)));
         FrameLayout barBox = new FrameLayout(this);
         barBox.addView(new UsageBar(this, 0));
         LinearLayout.LayoutParams bl = new LinearLayout.LayoutParams(-1, dp(8));

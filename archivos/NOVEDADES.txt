@@ -1,3 +1,8 @@
+## 69
+🏠 Inicio: detalles
+- El nombre del almacenamiento se achica solo para no partirse a la mitad con letra grande.
+- «Nube y red» muestra un texto más corto.
+
 ## 68
 🏠 Inicio nuevo, en tarjetas
 - Arriba, tu almacenamiento interno y la tarjeta SD (o USB) lado a lado, con su barra de uso.
