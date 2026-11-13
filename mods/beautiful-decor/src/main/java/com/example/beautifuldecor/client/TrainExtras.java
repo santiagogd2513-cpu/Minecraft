@@ -43,6 +43,12 @@ final class TrainExtras {
                 drawTvs(car, tvs, pose, buffers, light);
             }
         }
+        double[] lb = TrainCarEntity.lightButton(v.id);              // V7.5.0: botoncito de las luces (se enciende en amarillo)
+        if (lb != null) {
+            boolean on = car.lightsOn();
+            box(pose, buffers.getBuffer(RenderType.entityCutoutNoCull(WHITE)), on ? FULL_BRIGHT : light, (float) lb[0] - 0.07f, (float) lb[1] - 0.07f, (float) lb[2] - 0.07f,
+                    (float) lb[0] + 0.07f, (float) lb[1] + 0.07f, (float) lb[2] + 0.07f, on ? 255 : 120, on ? 236 : 104, on ? 120 : 40);
+        }
         double[] btn = TrainCarEntity.doorButton(v.id);
         if (btn != null) {
             VertexConsumer vc = buffers.getBuffer(RenderType.entityCutoutNoCull(WHITE));

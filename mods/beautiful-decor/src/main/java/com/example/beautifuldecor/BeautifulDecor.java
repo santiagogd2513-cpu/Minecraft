@@ -30,6 +30,7 @@ public class BeautifulDecor {
         ModBlockEntities.register(modEventBus);
         ModEntities.register(modEventBus);
         ModSounds.register(modEventBus);
+        com.example.beautifuldecor.entity.BridgeLoads.init();          // V7.5.0: registra la gamerule bdBridgeLoads
 
         context.registerConfig(net.minecraftforge.fml.config.ModConfig.Type.CLIENT, com.example.beautifuldecor.config.ModClientConfig.SPEC);
         modEventBus.addListener(this::commonSetup);

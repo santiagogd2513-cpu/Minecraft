@@ -42,6 +42,10 @@ public class SupercarRenderer extends EntityRenderer<SupercarEntity> {
         ResourceLocation texture = skin > 0 && skin < SKINS.length ? SKINS[skin] : VehiclePaintTextures.textureFor(car, TEXTURE);
         poseStack.pushPose();
         poseStack.mulPose(Axis.YP.rotationDegrees(180.0f - entityYaw));
+        float airPitch = car.getAirPitch(partialTick);                     // V7.4.0: el morro sigue la parábola en el aire
+        if (Math.abs(airPitch) > 0.05f) {
+            poseStack.mulPose(Axis.XP.rotationDegrees(airPitch));
+        }
         float roll = car.getLean(partialTick);
         if (roll != 0.0f) {
             poseStack.mulPose(Axis.ZP.rotationDegrees(roll));

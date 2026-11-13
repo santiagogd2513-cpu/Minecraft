@@ -33,6 +33,10 @@ public class DeliveryTruckRenderer extends EntityRenderer<DeliveryTruckEntity> {
         ResourceLocation texture = VehiclePaintTextures.textureFor(truck, TEXTURE);
         poseStack.pushPose();
         poseStack.mulPose(Axis.YP.rotationDegrees(180.0f - entityYaw));
+        float airPitch = truck.getAirPitch(partialTick);                     // V7.4.0: el morro sigue la parábola en el aire
+        if (Math.abs(airPitch) > 0.05f) {
+            poseStack.mulPose(Axis.XP.rotationDegrees(airPitch));
+        }
         float roll = truck.getLean(partialTick);
         if (roll != 0.0f) {
             poseStack.mulPose(Axis.ZP.rotationDegrees(roll));

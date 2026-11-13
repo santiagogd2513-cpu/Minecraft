@@ -88,6 +88,52 @@ public final class VehicleLights {
         }
     }
 
+    /** V7.5.0: luz de los trenes: un cono más largo que el de los coches que arranca en la nariz de la locomotora ({@code lead} bloques delante del centro). */
+    public static void updateAhead(Entity e, boolean on, double lead) {
+        Level level = e.level();
+        if (level.isClientSide) {
+            return;
+        }
+        if (!on) {
+            if (OWN.containsKey(e)) {
+                clear(e);
+            }
+            return;
+        }
+        if (e.tickCount % 3 != 0) {
+            return;
+        }
+        float yaw = e.getYRot() * Mth.DEG_TO_RAD;
+        double fx = -Mth.sin(yaw);
+        double fz = Mth.cos(yaw);
+        List<BlockPos> want = new ArrayList<>();
+        List<Integer> levels = new ArrayList<>();
+        double[][] cone = {{1.5, 15}, {7.0, 14}, {14.0, 12}, {22.0, 10}};
+        for (double[] c : cone) {
+            add(want, levels, BlockPos.containing(e.getX() + fx * (lead + c[0]), e.getY() + 1.0, e.getZ() + fz * (lead + c[0])), (int) c[1]);
+        }
+        List<BlockPos> placed = new ArrayList<>();
+        Set<Long> active = ACTIVE.computeIfAbsent(level, k -> new HashSet<>());
+        for (int i = 0; i < want.size(); i++) {
+            BlockPos p = place(level, want.get(i), levels.get(i));
+            if (p == null) {
+                p = place(level, want.get(i).above(), levels.get(i));
+            }
+            if (p != null) {
+                placed.add(p);
+                active.add(p.asLong());
+            }
+        }
+        List<BlockPos> old = OWN.put(e, placed);
+        if (old != null) {
+            for (BlockPos p : old) {
+                if (!placed.contains(p)) {
+                    release(level, p);
+                }
+            }
+        }
+    }
+
     /** Quita las luces de este vehículo (se apagó, se bajó o desapareció). */
     public static void clear(Entity e) {
         List<BlockPos> old = OWN.remove(e);

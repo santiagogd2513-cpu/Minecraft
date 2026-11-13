@@ -12,6 +12,7 @@ import net.minecraft.network.syncher.EntityDataSerializers;
 import net.minecraft.network.syncher.SynchedEntityData;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundEvent;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Mth;
@@ -141,6 +142,14 @@ public abstract class VehicleEntity extends Entity implements PaintableVehicle, 
     // ---- servidor
     private Vec3 lastRiddenVelocity = Vec3.ZERO;
     private boolean wasRidden;
+    /** V7.4.0: gravedad de los vehículos: 15 m/s² (0,0375 bloques/tick²); la de Minecraft es de unos 32 m/s². */
+    public static final double GRAVITY = 0.0375;
+    /** V7.4.0: cabeceo en el aire (grados, positivo = morro arriba): el morro sigue la parábola. */
+    private float airPitch;
+    private float airPitchO;
+    /** V7.4.0: rebote pendiente tras caer fuerte (lo usa el conductor) y la caída más rápida vista por el servidor. */
+    private double bounceVy;
+    private double fallPeak;
     private long lastHonkTick = -100L;
 
     protected VehicleEntity(EntityType<? extends VehicleEntity> type, Level level) {
@@ -608,6 +617,7 @@ public abstract class VehicleEntity extends Entity implements PaintableVehicle, 
         this.updateVisuals();
         this.refreshHull();
         if (!this.level().isClientSide) {
+            this.fallCheck();                                          // V7.4.0: aterrizajes
             VehicleImpact.tick(this, this.impactProfile(), this.getControllingPassenger());      // V7.1.0: atropellos
         }
     }
@@ -671,7 +681,7 @@ public abstract class VehicleEntity extends Entity implements PaintableVehicle, 
         if (Math.abs(vz) < 0.004) {
             vz = 0.0;
         }
-        double vy = grounded ? -0.04 : (motion.y - 0.08) * 0.98;
+        double vy = grounded ? -0.04 : (motion.y - GRAVITY) * 0.99;
         this.setDeltaMovement(vx, vy, vz);
         if (vx != 0.0 || vz != 0.0 || !grounded) {
             this.move(MoverType.SELF, this.getDeltaMovement());
@@ -724,6 +734,11 @@ public abstract class VehicleEntity extends Entity implements PaintableVehicle, 
         float reverseSpeed = spec.reverseSpeed();
         Level level = this.level();
         boolean grounded = this.onGround();
+        double bounce = this.bounceVy;
+        if (bounce > 0.0) {
+            this.bounceVy = 0.0;
+            grounded = false;                                          // V7.4.0: rebota tras una caída fuerte
+        }
         float v = this.speed;
 
         // ---- V4.6.0: física real (ver VehiclePhysics): el motor empuja con F = P / v, el aire y las ruedas frenan, los frenos tienen una fuerza máxima
@@ -770,7 +785,7 @@ public abstract class VehicleEntity extends Entity implements PaintableVehicle, 
         float steerInput = (this.inRight ? 1.0f : 0.0f) - (this.inLeft ? 1.0f : 0.0f);
         float turn = 0.0f;
         float absV = Math.abs(v);
-        if (steerInput != 0.0f && absV > 0.02f) {
+        if (steerInput != 0.0f && absV > 0.02f && grounded) {              // V7.4.0: en el aire el volante no hace nada
             float byGrip = (float) Math.toDegrees(spec.lateralGrip() / Math.max(absV, 0.05f));
             turn = Math.min(spec.maxTurn(), byGrip) * Math.min(1.0f, absV / 0.35f);
             if (this.inBrake) {
@@ -787,7 +802,7 @@ public abstract class VehicleEntity extends Entity implements PaintableVehicle, 
         hz = Mth.cos(yawRad);
         double dx = hx * v;
         double dz = hz * v;
-        double vy = grounded ? -0.04 : (this.getDeltaMovement().y - 0.08) * 0.98;
+        double vy = grounded ? -0.04 : (bounce > 0.0 ? bounce : (this.getDeltaMovement().y - GRAVITY) * 0.99);
 
         // sube solo los escalones que le caben (el servidor repite el mismo movimiento sin problema)
         double lift = 0.0;
@@ -808,6 +823,14 @@ public abstract class VehicleEntity extends Entity implements PaintableVehicle, 
         double beforeY = this.getY();
         this.setDeltaMovement(dx, vy, dz);
         this.move(MoverType.SELF, new Vec3(dx, vy + lift, dz));
+        if (!grounded && this.onGround() && vy < -0.3) {
+            // V7.4.0: aterrizaje: pierde velocidad según lo fuerte del golpe y, si fue muy fuerte, rebota un poco
+            v *= (float) (1.0 - Math.min(0.45, (-vy - 0.3) * 0.8));
+            if (vy < -0.55) {
+                this.bounceVy = Math.min(0.28, -vy * 0.22);
+            }
+            absV = Math.abs(v);
+        }
         // pendiente que va recorriendo (suavizada: los escalones y saltos no la disparan)
         double flat = Math.sqrt((this.getX() - beforeX) * (this.getX() - beforeX) + (this.getZ() - beforeZ) * (this.getZ() - beforeZ));
         if (grounded && flat > 0.03) {
@@ -847,6 +870,18 @@ public abstract class VehicleEntity extends Entity implements PaintableVehicle, 
         this.wheelRotO = this.wheelRot;
         this.wheelRot += Mth.clamp(signed / spec.wheelRadius(), -2.2f, 2.2f);
 
+        // V7.4.0: en el aire el morro sigue la parábola (sube al saltar, baja al caer); en el suelo se endereza
+        this.airPitchO = this.airPitch;
+        double rise = this.getY() - this.yo;
+        double flat = Math.sqrt(dx * dx + dz * dz);
+        float pitchGoal = 0.0f;
+        boolean inAir = !this.onGround() && (flat > 0.03 || Math.abs(rise) > 0.12);
+        if (inAir) {
+            float angle = (float) Math.toDegrees(Math.atan2(rise, Math.max(flat, 0.05)));
+            pitchGoal = Mth.clamp(signed >= 0.0f ? angle : -angle, -50.0f, 50.0f);
+        }
+        this.airPitch += (pitchGoal - this.airPitch) * (inAir ? 0.12f : 0.3f);
+
         this.leanO = this.lean;
         float target;
         if (this.isVehicle()) {
@@ -876,6 +911,48 @@ public abstract class VehicleEntity extends Entity implements PaintableVehicle, 
 
     public float getWheelRot(float partialTick) {
         return Mth.lerp(partialTick, this.wheelRotO, this.wheelRot);
+    }
+
+    /** V7.4.0: cabeceo en el aire en grados (positivo = morro arriba), para dibujar el vehículo inclinado. */
+    public float getAirPitch(float partialTick) {
+        return Mth.lerp(partialTick, this.airPitchO, this.airPitch);
+    }
+
+    /** V7.4.0 (servidor): si venía cayendo deprisa y de golpe se detiene, es un aterrizaje: daño a los que van a bordo, ruido y humo. */
+    private void fallCheck() {
+        double dy = this.getY() - this.yo;
+        if (dy < this.fallPeak) {
+            this.fallPeak = dy;
+        }
+        if (dy > -0.03) {
+            double impact = -this.fallPeak;
+            this.fallPeak = 0.0;
+            if (impact > 0.4) {
+                this.landed(impact);
+            }
+        }
+    }
+
+    private void landed(double impact) {
+        if (!(this.level() instanceof ServerLevel sl)) {
+            return;
+        }
+        double metersPerSecond = impact * 20.0;
+        double fallHeight = metersPerSecond * metersPerSecond / (2.0 * 15.0);        // desde qué altura equivale, con la gravedad de aquí
+        boolean twoWheels = this instanceof MotorcycleEntity || this instanceof BicycleEntity;
+        // en un coche la carrocería amortigua; en moto o bici el que va montado se lleva todo el golpe
+        float damage = (float) (twoWheels ? fallHeight - 3.0 : (fallHeight - 4.0) * 0.6);
+        if (damage >= 1.0f) {
+            for (Entity p : this.getPassengers()) {
+                if (p instanceof LivingEntity living) {
+                    living.hurt(this.damageSources().fall(), damage);
+                }
+            }
+        }
+        sl.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ANVIL_LAND, SoundSource.NEUTRAL,
+                (float) Math.min(1.2, 0.3 + impact * 0.8), 0.7f);
+        sl.sendParticles(net.minecraft.core.particles.ParticleTypes.POOF, this.getX(), this.getY() + 0.2, this.getZ(),
+                (int) Math.min(30.0, metersPerSecond * 1.5), 0.8, 0.2, 0.8, 0.04);
     }
 
     public float getLean(float partialTick) {

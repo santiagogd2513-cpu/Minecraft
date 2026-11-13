@@ -1,3 +1,27 @@
+PARCHE V7.6.0
+=============
+- LA FÍSICA VIENE ACTIVA DESDE EL INICIO: los puentes y vías elevadas con carga ya no hay que activarlos (la gamerule `bdBridgeLoads` ahora viene en true; si algún día quieres quitarla, `/gamerule bdBridgeLoads false`).
+- Marcha atrás: un tren que va en reversa a más de ~8 km/h y llega al inicio de la vía también se sale y cae (antes se detenía). Con menos velocidad se sigue frenando como tope.
+
+PARCHE V7.5.0
+=============
+- PUENTES Y VÍAS ELEVADAS CON CARGA (activo desde la V7.6.0): se apaga con `/gamerule bdBridgeLoads false`. Cada medio segundo se mira el peso que hay sobre los tableros sin apoyo debajo (trenes y vehículos). Un tramo es el tablero conectado entre pilares/suelo (4 bloques sólidos hacia abajo cuentan como apoyo). Capacidad (toneladas) = 3 x resistencia del material x grosor x ancho / largo. Más largo = más débil; más ancho, grueso y duro (hierro, obsidiana...) = más fuerte; la madera vale menos y un riel solo es muy débil.
+  - Al llegar al 70 % de la capacidad el puente cruje (sonido y polvo) y avisa; si pasa del 100 % durante ~1,5 s (o del 180 % de golpe) cede por donde está la carga: el tablero cae como bloques y se llevan los rieles. Los trenes caen con la física de la V7.4.0.
+  - Ejemplo: tablero de 1 de ancho y 50 de largo de piedra aguanta unas 40 t (una locomotora ya lo rompe); uno de hierro, 3 de ancho y 2 de grueso, unas 600 t. Un pilar que no cruza todo el ancho no divide el tablero. Los tableros enormes (más de 1500 bloques) se consideran plaza y no ceden.
+- LUCES EN LOS TRENES: la locomotora de carga, las dos de vapor (pasajeros) y la cabeza del metro tienen un botoncito de luces en la cabina (a la derecha del botón rojo, en el pupitre). Clic derecho enciende o apaga las luces de todas las locomotoras del tren: los faros brillan y hay luz real delante de la nariz.
+- ARREGLO DE CABINAS: en el metro el pupitre estaba metido dentro de la pared de la nariz y las caras coincidían (parpadeaba); ahora está delante de la pared (el botón rojo y el de las puertas se movieron con él). En todos los modelos de tren se separaron las caras que coincidían en el mismo plano (por ejemplo las rayas laterales de la locomotora de vapor moderna).
+
+PARCHE V7.4.0
+=============
+- CAÍDAS REALISTAS (trenes): cada bogie comprueba si tiene riel. El que se queda sin riel (final de vía a más de ~8 km/h, o riel roto bajo el tren) cae por gravedad mientras el otro sigue en la vía y el coche cabecea con el morro hacia abajo.
+  - Pasado el punto de vuelco (o con el bogie ya en el suelo, o sin riel en los dos) el coche se suelta de la vía: cuerpo libre que conserva su velocidad horizontal, parábola con el morro siguiendo la trayectoria. Un tren que sube una rampa y se acaba la vía sale volando.
+  - Al tocar el suelo el golpe depende de la velocidad vertical: desliza, se acomoda a la pendiente del terreno y queda como siniestro (se recoge con un golpe). Quienes van a bordo reciben daño de caída si fue alta.
+  - El enganche se rompe al soltarse el coche: los de atrás siguen rodando por inercia (sin frenar) y caen uno por uno por el mismo hueco; los de adelante siguen con su conductor.
+  - Menos de ~8 km/h el tren sigue frenándose en el final de la vía como antes. Marcha atrás sigue frenándose en el final.
+- CAÍDAS (coche, camioneta, camión, superdeportivo, moto y bici): en el aire conservan la velocidad horizontal que llevaban (sin acelerar, frenar ni girar el volante) y el morro sigue la parábola: sube al saltar y baja al caer.
+  - Aterrizaje: pierden velocidad según la fuerza del golpe y, si fue fuerte, rebotan un poco. Caídas altas hacen daño a los ocupantes (en coche la carrocería amortigua; en moto y bici el que va montado se lleva todo el golpe). Los vehículos no tienen vida: no se rompen.
+- GRAVEDAD MÁS BAJA para vehículos y trenes: 15 m/s² (la de Minecraft es de unos 32 m/s²). El avión no cambia (ya tiene su propio vuelo y aterrizaje).
+
 PARCHE V7.3.0
 =============
 - CARGA DE LOS VAGONES: el montón de carga ahora se ve del color de lo que lleva (lingotes de oro dorados, hierro claro, cobre, diamante, esmeralda, redstone, lapislázuli, cuarzo...) en vez de siempre una piedra gris, y sobresale más del vagón (carbón, comida y minerales).
@@ -25,7 +49,7 @@ PARCHE V7.1.0
 PARCHE V7.0.0
 =============
 - VÍAS DE ANCHO REAL (carga, pasajeros y metro): trocha de 1,435 m, durmientes de 2,6 m y balasto de 3 bloques de ancho. Tramos rectos y subidas se dibujan sobresaliendo del bloque (el bloque sigue ocupando 1). Curvas anchas (arcos) con la misma trocha. Los trenes tienen las ruedas a esa trocha (antes 0,5 m): locomotoras, vagones, coches y metro; en las de vapor las bielas se movieron junto a las ruedas.
-- Deja 3 bloques libres a cada lado entre dos vías paralelas (con 6 de separación entre centros queda 1 bloque de pasillo).
+- Deja 3 bloques libres a cada lado entre dos vías paralelas (con 6 de separación entre centros quedan 3 bloques libres de pasillo).
 - La curva de esquina de 1 bloque no cambia (es más chica que la trocha): usa las curvas anchas.
 
 PARCHE V6.17.0

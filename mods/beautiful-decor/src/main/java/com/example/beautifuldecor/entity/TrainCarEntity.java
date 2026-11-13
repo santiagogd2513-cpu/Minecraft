@@ -3,6 +3,7 @@ package com.example.beautifuldecor.entity;
 import com.example.beautifuldecor.block.FreightRailBlock;
 import com.example.beautifuldecor.init.ModItems;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -35,6 +36,7 @@ import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.Vec3;
+import net.minecraft.world.phys.shapes.VoxelShape;
 import net.minecraftforge.common.Tags;
 
 import javax.annotation.Nullable;
@@ -178,6 +180,8 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
     /** V6.16.0: puertas de los coches de pasajeros y metro (true = abiertas) y televisores instalados (bit 0 = esquina izquierda, bit 1 = derecha). */
     private static final EntityDataAccessor<Boolean> DOORS = SynchedEntityData.defineId(TrainCarEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Integer> TVS = SynchedEntityData.defineId(TrainCarEntity.class, EntityDataSerializers.INT);
+    /** V7.5.0: luces de la locomotora encendidas (faros que brillan y luz real delante). */
+    private static final EntityDataAccessor<Boolean> LIGHTS = SynchedEntityData.defineId(TrainCarEntity.class, EntityDataSerializers.BOOLEAN);
     private static final EntityDataAccessor<Integer> BRAKE_STATE = SynchedEntityData.defineId(TrainCarEntity.class, EntityDataSerializers.INT);
 
     // ---- vía y cadena (servidor)
@@ -191,6 +195,28 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
     private int missingFront;
     private double speed;                       // bloques por tick; positivo = hacia donde mira
     private double fuelAcc;                     // carbón quemado que aún no llega a una unidad entera
+
+    // ---- V7.4.0: caídas (servidor)
+    /** Gravedad de los trenes: 15 m/s² (0,0375 bloques/tick²); la de Minecraft es de unos 32 m/s². */
+    public static final double FALL_GRAVITY = 0.0375;
+    /** Por debajo de esta velocidad (bloques/tick, ~8 km/h) el tren se frena en el final de la vía como un tope; por encima se sale. */
+    private static final double RUN_OFF_SPEED = 0.12;
+    /** Cuánto se ha pasado el bogie delantero del final de la vía (bloques). */
+    private double overhang;
+    /** Cuánto ha bajado cada bogie por debajo del riel y a qué velocidad va cayendo (bloques; bloques/tick). */
+    private double dropF;
+    private double dropR;
+    private double vyF;
+    private double vyR;
+    /** El coche ya no está en la vía: va como un cuerpo libre con esta velocidad (bloques/tick). */
+    private boolean free;
+    /** Ya cayó al suelo y se queda como siniestro. */
+    private boolean wreck;
+    private double fvx;
+    private double fvy;
+    private double fvz;
+    /** El de adelante se soltó: este tramo sigue rodando por inercia y no frena hasta pararse. */
+    private boolean runaway;
     private float slope;                        // pendiente del tramo donde está (seno, en el sentido de marcha)
     private int inputFlags;
     private long inputTime = Long.MIN_VALUE;
@@ -242,6 +268,7 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
         this.entityData.define(BRAKE_STATE, 0);
         this.entityData.define(DOORS, Boolean.FALSE);
         this.entityData.define(TVS, 0);
+        this.entityData.define(LIGHTS, Boolean.FALSE);
     }
 
     // ---- V6.16.0: puertas y televisores
@@ -249,9 +276,38 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
     public static double[] doorButton(String id) {
         return switch (id) {
             case "steam_classic", "steam_modern" -> new double[] {-0.75, 2.75, 1.25};
-            case "metro_head" -> new double[] {-0.75, 3.0, 6.75};
+            case "metro_head" -> new double[] {-0.75, 3.0, 6.25};
             default -> null;
         };
+    }
+
+    /** V7.5.0: dónde está el botoncito de las luces en la cabina: {lado, alto, adelante} en bloques desde el centro del coche (null = sin botón). */
+    public static double[] lightButton(String id) {
+        return switch (id) {
+            case "freight_loco" -> new double[] {0.42, 2.84, -6.5};
+            case "steam_classic", "steam_modern" -> new double[] {0.42, 2.75, 1.25};
+            case "metro_head" -> new double[] {0.42, 2.84, 6.25};
+            default -> null;
+        };
+    }
+
+    public boolean lightsOn() {
+        return this.entityData.get(LIGHTS);
+    }
+
+    /** El botón de la cabina: enciende o apaga las luces de todas las locomotoras del tren. */
+    private void toggleTrainLights(ServerPlayer player) {
+        boolean on = !this.lightsOn();
+        for (TrainCarEntity car : this.wholeTrain()) {
+            if (car.variant().isLoco() && car.lightsOn() != on) {
+                car.entityData.set(LIGHTS, on);
+            }
+        }
+        if (this.lightsOn() != on) {
+            this.entityData.set(LIGHTS, on);
+        }
+        this.level().playSound(null, this.getX(), this.getY() + 2.5, this.getZ(), SoundEvents.LEVER_CLICK, SoundSource.NEUTRAL, 0.8f, on ? 1.2f : 0.9f);
+        player.displayClientMessage(Component.translatable(on ? "hud.beautifuldecor.train_lights_on" : "hud.beautifuldecor.train_lights_off"), true);
     }
 
     public boolean doorsOpen() {
@@ -618,6 +674,14 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
         if (held.getItem() instanceof com.example.beautifuldecor.item.TrainCarItem carItem) {
             return client ? InteractionResult.SUCCESS : carItem.attachToTrain(player, this, held);
         }
+        // ---- V7.5.0: botoncito de las luces en la cabina
+        double[] lightBtn = lightButton(v.id);
+        if (hand == InteractionHand.MAIN_HAND && v.isLoco() && lightBtn != null && this.lookingAt(player, lightBtn, 0.17)) {
+            if (!client && player instanceof ServerPlayer sp) {
+                this.toggleTrainLights(sp);
+            }
+            return InteractionResult.sidedSuccess(client);
+        }
         // ---- V6.16.0: botón de las puertas en la cabina
         double[] doorBtn = doorButton(v.id);
         if (hand == InteractionHand.MAIN_HAND && v.isLoco() && doorBtn != null
@@ -784,6 +848,9 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
 
     @Override
     public void remove(Entity.RemovalReason reason) {
+        if (!this.level().isClientSide) {
+            VehicleLights.clear(this);
+        }
         if (!this.level().isClientSide && reason.shouldDestroy()) {
             for (ItemStack stack : this.hold) {
                 this.spawnAtLocation(stack);
@@ -831,6 +898,11 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
 
     public boolean isPlaced() {
         return this.placed;
+    }
+
+    /** V7.5.0: sigue sobre la vía (no se soltó ni quedó de siniestro): cuenta para el peso de los puentes. */
+    public boolean onRails() {
+        return this.placed && this.cur != null && !this.free && !this.wreck;
     }
 
     /** Pone el bogie delantero en ese punto de la vía (lo usa el ítem al colocar el coche). */
@@ -887,26 +959,293 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
         }
     }
 
-    /** Pone cada coche en el sitio que le toca según su cursor: posición, giro y pendiente. */
+    /** Pone cada coche en el sitio que le toca según su cursor: posición, giro y pendiente (V7.4.0: con los bogies que cuelgan o caen). */
     private void updatePose(RailPath.Lookup lookup) {
         if (this.cur == null) {
             return;
         }
-        RailPath.Cursor rc = this.rearCursor(lookup);
+        RailPath.Cursor rc = this.rcCache != null ? this.rcCache : this.rearBogie(lookup);
+        this.rcCache = null;
         double[] f = new double[3];
         double[] r = new double[3];
-        this.cur.worldPoint(f);
+        this.frontPoint(f);
         rc.worldPoint(r);
         double dx = f[0] - r[0];
-        double dy = f[1] - r[1];
         double dz = f[2] - r[2];
+        double h0 = Math.hypot(dx, dz);
+        if (this.gapR > 0.05 && h0 > 1.0e-4) {
+            r[0] -= dx / h0 * this.gapR;                           // el bogie trasero ya está fuera del final de la vía
+            r[2] -= dz / h0 * this.gapR;
+        }
+        f[1] -= this.dropF;
+        r[1] -= this.dropR;
+        dx = f[0] - r[0];
+        double dy = f[1] - r[1];
+        dz = f[2] - r[2];
         double h = Math.hypot(dx, dz);
         float yaw = h > 1.0e-4 ? RailPath.yawOf(dx, dz) : this.getYRot();
         float pitch = h > 1.0e-4 ? (float) -Math.toDegrees(Math.atan2(dy, h)) : 0.0f;
+        pitch = Mth.clamp(pitch, -80.0f, 80.0f);
         this.slope = (float) ((this.cur.slope() + rc.slope()) * 0.5);
         this.setPos((f[0] + r[0]) / 2.0, (f[1] + r[1]) / 2.0, (f[2] + r[2]) / 2.0);
         this.setRot(yaw, pitch);
         this.updateHull();
+    }
+
+    // =====================================================================================================
+    // V7.4.0: caídas
+    // =====================================================================================================
+
+    @Nullable
+    private RailPath.Cursor rcCache;
+    private double gapR;
+    private boolean frontLost;
+    private boolean rearLost;
+    private boolean touchdown;
+
+    /** Punto del bogie trasero sobre la vía (se queda en el final de la vía si ya no hay más); calcula {@code gapR}, lo que le falta de vía. */
+    private RailPath.Cursor rearBogie(RailPath.Lookup lookup) {
+        double need = Math.max(0.5, this.variant().wheelbase - this.overhang);
+        RailPath.Cursor rc = this.cur.copy();
+        double mv = rc.advance(-need, lookup);
+        this.gapR = Math.max(0.0, need - Math.abs(mv));
+        return rc;
+    }
+
+    /** Punto del bogie delantero: el de la vía más lo que se ha salido de ella siguiendo la tangente. */
+    private void frontPoint(double[] f) {
+        this.cur.worldPoint(f);
+        if (this.overhang > 0.0) {
+            double[] t = new double[2];
+            this.cur.shape.tangent(this.cur.s, t);
+            double len = Math.hypot(t[0], t[1]);
+            if (len > 1.0e-6) {
+                f[0] += t[0] / len * this.cur.dir * this.overhang;
+                f[2] += t[1] / len * this.cur.dir * this.overhang;
+            }
+            f[1] += this.cur.slope() * this.overhang;
+        }
+    }
+
+    /** Mueve el coche a lo largo de la vía; yendo deprisa lo que no cabe en la vía se queda fuera (colgando). */
+    private void moveAlong(double step, RailPath.Lookup lk, boolean runOff) {
+        double s = step;
+        if (s < 0.0 && this.overhang > 0.0) {
+            double back = Math.min(this.overhang, -s);
+            this.overhang -= back;
+            s += back;
+        }
+        if (s == 0.0) {
+            return;
+        }
+        double got = this.cur.advance(s, lk);
+        if (runOff && s > 0.0 && got < s - 1.0e-6) {
+            this.overhang += s - got;
+        }
+    }
+
+    /** ¿Tiene riel cada bogie? El que no lo tiene cae por gravedad mientras el otro sigue sobre la vía. */
+    private void checkBogies(RailPath.Lookup lk) {
+        this.rcCache = this.rearBogie(lk);
+        this.frontLost = lk.shapeAt(this.cur.x, this.cur.y, this.cur.z) == null;
+        this.rearLost = this.gapR > 0.05 || lk.shapeAt(this.rcCache.x, this.rcCache.y, this.rcCache.z) == null;
+        boolean fallF = this.frontLost || this.overhang > 0.05;
+        if (fallF) {
+            this.vyF = Math.max(this.vyF - FALL_GRAVITY, -3.0);
+            this.dropF -= this.vyF;
+        } else if (this.dropF > 0.0) {
+            this.dropF = 0.0;                                         // volvió el riel
+            this.vyF = 0.0;
+        }
+        if (this.rearLost) {
+            this.vyR = Math.max(this.vyR - FALL_GRAVITY, -3.0);
+            this.dropR -= this.vyR;
+        } else if (this.dropR > 0.0) {
+            this.dropR = 0.0;
+            this.vyR = 0.0;
+        }
+        this.touchdown = false;
+        if (this.dropF > 0.0) {
+            double[] f = new double[3];
+            this.frontPoint(f);
+            double g = groundTop(this.level(), f[0], f[2], f[1] + 0.5);
+            if (g > f[1] - this.dropF) {
+                this.touchdown |= this.dropF > 0.3;
+                this.dropF = Math.max(0.0, f[1] - g);
+                this.vyF = 0.0;
+            }
+        }
+        if (this.dropR > 0.0) {
+            double[] r = new double[3];
+            this.rcCache.worldPoint(r);
+            double g = groundTop(this.level(), r[0], r[2], r[1] + 0.5);
+            if (g > r[1] - this.dropR) {
+                this.touchdown |= this.dropR > 0.3;
+                this.dropR = Math.max(0.0, r[1] - g);
+                this.vyR = 0.0;
+            }
+        }
+    }
+
+    /** ¿Se acabó la vía para este coche? Pasado el punto de vuelco, o con un bogie ya en el suelo, o sin vía en los dos. */
+    private boolean shouldGoFree() {
+        double half = this.variant().wheelbase * 0.5;
+        return this.overhang >= half || this.dropF > half || this.dropR > half || this.touchdown
+                || (this.frontLost && this.rearLost && (this.dropF > 0.6 || this.dropR > 0.6));
+    }
+
+    /** El coche deja la vía: sigue con la velocidad que llevaba (parábola) y se suelta de los vecinos. */
+    private void goFree(double v) {
+        float yaw = this.getYRot() * Mth.DEG_TO_RAD;
+        this.fvx = -Mth.sin(yaw) * v;
+        this.fvz = Mth.cos(yaw) * v;
+        this.fvy = (this.vyF + this.vyR) * 0.5 + v * this.slope;
+        TrainCarEntity rear = this.carById(this.rearId);
+        if (rear != null) {
+            rear.runaway = true;                                     // los de atrás siguen rodando y cayendo uno por uno
+        }
+        this.unlinkNeighbours();
+        this.free = true;
+        this.wreck = false;
+        this.speed = 0.0;
+        this.runaway = false;
+        this.level().playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ANVIL_LAND, SoundSource.NEUTRAL, 1.2f, 0.5f);
+    }
+
+    /** Lo más alto que toca el suelo bajo ese punto, mirando hacia abajo desde fromY (-1e9 si no hay nada). */
+    private static double groundTop(Level lv, double x, double z, double fromY) {
+        int bx = Mth.floor(x);
+        int bz = Mth.floor(z);
+        int y0 = Mth.floor(fromY);
+        BlockPos.MutableBlockPos mp = new BlockPos.MutableBlockPos();
+        for (int y = y0; y >= Math.max(lv.getMinBuildHeight(), y0 - 14); y--) {
+            mp.set(bx, y, bz);
+            if (!lv.hasChunkAt(mp)) {
+                return -1.0e9;
+            }
+            BlockState st = lv.getBlockState(mp);
+            if (st.isAir()) {
+                continue;
+            }
+            VoxelShape shape = st.getCollisionShape(lv, mp);
+            if (!shape.isEmpty()) {
+                return y + shape.max(Direction.Axis.Y);
+            }
+        }
+        return -1.0e9;
+    }
+
+    /** Cuerpo libre: vuela con la velocidad que llevaba y el morro siguiendo la parábola; al tocar suelo se queda de siniestro. */
+    private void tickFree() {
+        double half = this.variant().wheelbase * 0.5;
+        float yaw = this.getYRot() * Mth.DEG_TO_RAD;
+        if (this.getY() < this.level().getMinBuildHeight() - 64) {
+            this.discard();
+            return;
+        }
+        if (this.wreck) {
+            this.wreckTick(half, yaw);
+            return;
+        }
+        double oldY = this.getY();
+        float oldPitch = this.getXRot();
+        this.fvy = Math.max(this.fvy - FALL_GRAVITY, -3.0);
+        double nx = this.getX() + this.fvx;
+        double ny = oldY + this.fvy;
+        double nz = this.getZ() + this.fvz;
+        double along = this.fvx * -Mth.sin(yaw) + this.fvz * Mth.cos(yaw);
+        double hv = Math.hypot(this.fvx, this.fvz) * (along >= 0.0 ? 1.0 : -1.0);
+        float target = Mth.clamp((float) -Math.toDegrees(Math.atan2(this.fvy, hv)), -75.0f, 75.0f);
+        float pitch = oldPitch + (target - oldPitch) * 0.06f;
+        double sin = Math.sin(Math.toRadians(pitch));
+        double sinOld = Math.sin(Math.toRadians(oldPitch));
+        double worst = 0.0;
+        for (double k : new double[] {-half, 0.0, half}) {
+            double sx = nx - Mth.sin(yaw) * k;
+            double sz = nz + Mth.cos(yaw) * k;
+            double sy = ny - k * sin;
+            double syOld = oldY - k * sinOld;
+            double g = groundTop(this.level(), sx, sz, Math.max(sy, syOld) + 1.0);
+            worst = Math.max(worst, g - sy);
+        }
+        if (worst > 0.0) {
+            double impact = Math.abs(this.fvy);
+            ny += Math.min(worst, 2.5);
+            if (worst > 1.5) {
+                this.fvx = 0.0;                                      // chocó de lado contra una pared
+                this.fvz = 0.0;
+            }
+            this.land(impact);
+            this.fvx *= 0.7;
+            this.fvz *= 0.7;
+            this.fvy = 0.0;
+            this.wreck = true;
+        }
+        this.setPos(nx, ny, nz);
+        this.setRot(this.getYRot(), pitch);
+        this.updateHull();
+    }
+
+    /** Quedó en el suelo: desliza hasta pararse y se acomoda a la pendiente del terreno. */
+    private void wreckTick(double half, float yaw) {
+        this.fvx *= 0.88;
+        this.fvz *= 0.88;
+        if (Math.hypot(this.fvx, this.fvz) < 0.01) {
+            this.fvx = 0.0;
+            this.fvz = 0.0;
+        }
+        double nx = this.getX() + this.fvx;
+        double nz = this.getZ() + this.fvz;
+        if (this.fvx != 0.0 || this.fvz != 0.0) {
+            BlockPos ahead = BlockPos.containing(nx + this.fvx * 6.0, this.getY() + 1.0, nz + this.fvz * 6.0);
+            if (this.level().hasChunkAt(ahead) && !this.level().getBlockState(ahead).getCollisionShape(this.level(), ahead).isEmpty()) {
+                this.fvx = 0.0;                                      // una pared: no la atraviesa
+                this.fvz = 0.0;
+                nx = this.getX();
+                nz = this.getZ();
+            }
+        }
+        double gF = groundTop(this.level(), nx - Mth.sin(yaw) * half, nz + Mth.cos(yaw) * half, this.getY() + 2.0);
+        double gR = groundTop(this.level(), nx + Mth.sin(yaw) * half, nz - Mth.cos(yaw) * half, this.getY() + 2.0);
+        float pitch = this.getXRot();
+        double ny = this.getY();
+        if (gF > -1.0e8 && gR > -1.0e8) {
+            float goal = Mth.clamp((float) -Math.toDegrees(Math.atan2(gF - gR, 2.0 * half)), -45.0f, 45.0f);
+            pitch += (goal - pitch) * 0.12f;
+            double sin = Math.sin(Math.toRadians(pitch));
+            double rest = Math.max(gF + half * sin, gR - half * sin);
+            if (rest < ny - 0.6) {
+                this.wreck = false;                                  // se salió de un borde: vuelve a caer
+                this.fvy = 0.0;
+            } else {
+                ny = ny + (rest - ny) * 0.5;
+            }
+        }
+        this.setPos(nx, ny, nz);
+        this.setRot(this.getYRot(), pitch);
+        this.updateHull();
+    }
+
+    /** Golpe contra el suelo: daño a los que van a bordo según la velocidad vertical, ruido y polvo. */
+    private void land(double impact) {
+        double metersPerSecond = impact * 20.0;
+        if (metersPerSecond < 5.0 || !(this.level() instanceof ServerLevel sl)) {
+            return;
+        }
+        double fallHeight = metersPerSecond * metersPerSecond / (2.0 * 15.0);     // desde qué altura equivale, con la gravedad de aquí
+        float damage = (float) ((fallHeight - 4.0) * 0.6);                         // el coche amortigua un poco
+        if (damage >= 1.0f) {
+            for (Entity p : this.getPassengers()) {
+                if (p instanceof LivingEntity living) {
+                    living.hurt(this.damageSources().fall(), damage);
+                }
+            }
+        }
+        sl.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.ANVIL_LAND, SoundSource.NEUTRAL, 1.5f, 0.45f);
+        if (metersPerSecond > 14.0) {
+            sl.playSound(null, this.getX(), this.getY(), this.getZ(), SoundEvents.GENERIC_EXPLODE, SoundSource.NEUTRAL, 1.0f, 0.8f);
+        }
+        sl.sendParticles(ParticleTypes.POOF, this.getX(), this.getY() + 0.5, this.getZ(), (int) Math.min(40.0, metersPerSecond), 2.0, 0.4, 2.0, 0.05);
     }
 
     // =====================================================================================================
@@ -1044,6 +1383,8 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
         this.updateHull();
         if (!this.level().isClientSide) {
             VehicleImpact.tick(this, VehicleImpact.TRAIN, null);      // V7.1.0: atropellos
+            // V7.5.0: luz real delante de la locomotora con las luces encendidas
+            VehicleLights.updateAhead(this, this.variant().isLoco() && this.lightsOn(), this.variant().length / 2.0);
         }
     }
 
@@ -1051,6 +1392,10 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
         super.tick();
         if (this.level().isClientSide) {
             this.clientTick();
+            return;
+        }
+        if (this.free || this.wreck) {
+            this.tickFree();                                             // V7.4.0: ya no está en la vía
             return;
         }
         if (!this.placed || this.cur == null) {
@@ -1215,6 +1560,15 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
         } else {
             hand = true;                                                   // sin conductor, el tren se queda con el freno puesto
         }
+        if (this.runaway) {
+            // V7.4.0: se soltó el coche de adelante: este tramo rueda por inercia hasta que se pare solo
+            drive = 0;
+            brake = false;
+            hand = false;
+            if (Math.abs(v) < 0.006) {
+                this.runaway = false;
+            }
+        }
         if (!complete) {
             v = 0.0;
         } else if (hand && Math.abs(v) < 0.004) {
@@ -1241,10 +1595,12 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
         for (TrainCarEntity car : chain) {
             car.revalidate(lk);
         }
+        // V7.4.0: yendo deprisa el tren no se detiene en el final de la vía: se sale de ella y cae
+        boolean runOff = Math.abs(v) > RUN_OFF_SPEED;                 // V7.6.0: también marcha atrás
         if (v != 0.0) {
             RailPath.Cursor lead = v > 0.0 ? this.cur.copy() : chain.get(chain.size() - 1).rearCursor(lk);
             double moved = lead.advance(v, lk);
-            if (Math.abs(moved) < Math.abs(v) - 1.0e-6) {
+            if (Math.abs(moved) < Math.abs(v) - 1.0e-6 && !runOff) {
                 blocked = true;
                 if (Math.abs(v) > 0.4 && driver instanceof ServerPlayer sp) {
                     sp.displayClientMessage(Component.translatable("hud.beautifuldecor.train_end_of_track"), true);
@@ -1252,15 +1608,24 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
                 }
                 v = 0.0;
             }
-            if (moved != 0.0) {
+            double step = runOff ? v : moved;
+            if (step != 0.0) {
                 for (TrainCarEntity car : chain) {
-                    car.cur.advance(moved, lk);
+                    car.moveAlong(step, lk, runOff);
                 }
             }
         }
+        List<TrainCarEntity> toFree = new ArrayList<>();
         for (TrainCarEntity car : chain) {
             car.speed = v;
+            car.checkBogies(lk);
             car.updatePose(lk);
+            if (car.shouldGoFree()) {
+                toFree.add(car);
+            }
+        }
+        for (TrainCarEntity car : toFree) {
+            car.goFree(v);
         }
 
         if (driver instanceof ServerPlayer sp && this.tickCount % 4 == 0) {
@@ -1293,6 +1658,10 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
     }
 
     private boolean lookingAt(Player player, double[] b) {
+        return this.lookingAt(player, b, 0.30);
+    }
+
+    private boolean lookingAt(Player player, double[] b, double radius) {
         float yaw = this.getYRot() * Mth.DEG_TO_RAD;
         double theta = -this.getXRot() * Mth.DEG_TO_RAD;
         double up = b[1] * Math.cos(theta) + b[2] * Math.sin(theta);
@@ -1309,7 +1678,7 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
         double cx = eye.x + look.x * t - px;
         double cy = eye.y + look.y * t - py;
         double cz = eye.z + look.z * t - pz;
-        return cx * cx + cy * cy + cz * cz < 0.30 * 0.30;
+        return cx * cx + cy * cy + cz * cz < radius * radius;
     }
 
     /** V6.2.0: aviso de estación por el megáfono: timbre + frase (a quienes van a bordo) y el nombre en grande en pantalla. */
@@ -1553,6 +1922,7 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
         this.refreshKind();
         this.entityData.set(DOORS, tag.getBoolean("Doors"));
         this.entityData.set(TVS, tag.getInt("Tvs") & 3);
+        this.entityData.set(LIGHTS, tag.getBoolean("Lights"));
         this.frontId = tag.hasUUID("Front") ? tag.getUUID("Front") : null;
         this.rearId = tag.hasUUID("Rear") ? tag.getUUID("Rear") : null;
         this.speed = tag.getDouble("Speed");
@@ -1560,6 +1930,11 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
         if (tag.contains("Route")) {
             this.route.load(tag.getCompound("Route"));
         }
+        this.wreck = tag.getBoolean("Wreck");
+        this.free = this.wreck || tag.getBoolean("Free");
+        this.fvx = tag.getDouble("Fvx");
+        this.fvy = tag.getDouble("Fvy");
+        this.fvz = tag.getDouble("Fvz");
         if (tag.getBoolean("Placed")) {
             // la forma del riel se vuelve a leer en el primer tick; mientras tanto se toma la forma recta
             this.cur = new RailPath.Cursor(tag.getInt("CurX"), tag.getInt("CurY"), tag.getInt("CurZ"), RailPath.Shape.NORTH_SOUTH,
@@ -1574,6 +1949,9 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
         tag.putInt("Variant", this.entityData.get(VARIANT));
         tag.putBoolean("Doors", this.doorsOpen());
         tag.putInt("Tvs", this.tvMask());
+        if (this.lightsOn()) {
+            tag.putBoolean("Lights", true);
+        }
         ListTag list = new ListTag();
         for (ItemStack stack : this.hold) {
             list.add(stack.save(new CompoundTag()));
@@ -1591,6 +1969,12 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
         }
         if (!this.route.stops.isEmpty() || !this.route.name.isEmpty()) {
             tag.put("Route", this.route.save());
+        }
+        if (this.free || this.wreck) {
+            tag.putBoolean(this.wreck ? "Wreck" : "Free", true);
+            tag.putDouble("Fvx", this.fvx);
+            tag.putDouble("Fvy", this.fvy);
+            tag.putDouble("Fvz", this.fvz);
         }
         if (this.placed && this.cur != null) {
             tag.putBoolean("Placed", true);

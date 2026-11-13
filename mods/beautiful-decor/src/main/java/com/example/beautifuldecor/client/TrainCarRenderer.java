@@ -5,6 +5,7 @@ import com.example.beautifuldecor.entity.TrainCarEntity;
 import com.mojang.blaze3d.vertex.PoseStack;
 import com.mojang.blaze3d.vertex.VertexConsumer;
 import com.mojang.math.Axis;
+import net.minecraft.client.renderer.LightTexture;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.client.renderer.entity.EntityRenderer;
@@ -30,6 +31,17 @@ public class TrainCarRenderer extends EntityRenderer<TrainCarEntity> {
                 default -> null;
             };
             CARGO[v.ordinal()] = cargo == null ? null : ResourceLocation.fromNamespaceAndPath(BeautifulDecor.MOD_ID, "textures/entity/" + cargo + ".png");
+        }
+    }
+
+    /** V7.5.0: faros encendidos de las locomotoras (solo los píxeles de las cajas de faro; se dibujan a pleno brillo). */
+    private static final ResourceLocation[] GLOW = new ResourceLocation[TrainCarEntity.Variant.values().length];
+
+    static {
+        for (TrainCarEntity.Variant v : TrainCarEntity.Variant.values()) {
+            if (TrainCarEntity.lightButton(v.id) != null) {
+                GLOW[v.ordinal()] = ResourceLocation.fromNamespaceAndPath(BeautifulDecor.MOD_ID, "textures/entity/" + v.id + "_glow.png");
+            }
         }
     }
 
@@ -78,6 +90,11 @@ public class TrainCarRenderer extends EntityRenderer<TrainCarEntity> {
             model.showGlass(true);
             model.renderToBuffer(poseStack, bufferSource.getBuffer(RenderType.entityTranslucentCull(texture)), packedLight, OverlayTexture.NO_OVERLAY,
                     1.0f, 1.0f, 1.0f, VehicleGlass.ALPHA);
+        }
+        if (car.lightsOn() && GLOW[variant.ordinal()] != null) {
+            model.showGlass(false);
+            model.renderToBuffer(poseStack, bufferSource.getBuffer(RenderType.eyes(GLOW[variant.ordinal()])), LightTexture.FULL_BRIGHT, OverlayTexture.NO_OVERLAY,
+                    1.0f, 1.0f, 1.0f, 1.0f);
         }
         poseStack.popPose();
         super.render(car, entityYaw, partialTick, poseStack, bufferSource, packedLight);

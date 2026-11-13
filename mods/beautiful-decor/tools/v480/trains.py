@@ -502,7 +502,7 @@ def metro_head(b):
     sym(b, body, "taillight", 6, 9, 14, 17, -82, -80, "taillight", kind="light")
     # cabina
     box(b, body, "cab_floor", -11, 11, 11, 12, 28, 56, "interior", kind="floor")
-    cab_desk(b, body, 52, 56, 12, "metro_head")
+    cab_desk(b, body, 48, 52, 12, "metro_head")
     for nm, (a, c) in (("seat", (3, 9)), ("seat2", (-9, -3))):
         box(b, body, nm, a, c, 12, 22, 34, 40, "interior", kind="seat")
         box(b, body, nm + "_back", a, c, 22, 30, 33, 34, "interior", kind="seat")

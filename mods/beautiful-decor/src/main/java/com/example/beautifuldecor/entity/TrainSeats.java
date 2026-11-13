@@ -22,7 +22,7 @@ public final class TrainSeats {
         SEATS.put("steam_classic", new double[][] {{0.600, 2.150, -1.000}, {-0.600, 2.150, -1.000}});
         SEATS.put("steam_modern", new double[][] {{0.600, 2.150, -1.000}, {-0.600, 2.150, -1.000}});
         BUTTONS.put("freight_loco", new double[] {0.000, 3.000, -6.500});
-        BUTTONS.put("metro_head", new double[] {0.000, 3.000, 6.750});
+        BUTTONS.put("metro_head", new double[] {0.000, 3.000, 6.250});
         BUTTONS.put("steam_classic", new double[] {0.000, 2.750, 1.250});
         BUTTONS.put("steam_modern", new double[] {0.000, 2.750, 1.250});
     }

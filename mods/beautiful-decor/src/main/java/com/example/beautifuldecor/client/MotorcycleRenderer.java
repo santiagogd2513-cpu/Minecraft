@@ -38,6 +38,10 @@ public class MotorcycleRenderer extends EntityRenderer<MotorcycleEntity> {
         ResourceLocation texture = skin > 0 && skin < SKINS.length ? SKINS[skin] : VehiclePaintTextures.textureFor(moto, TEXTURE);
         poseStack.pushPose();
         poseStack.mulPose(Axis.YP.rotationDegrees(180.0f - entityYaw));
+        float airPitch = moto.getAirPitch(partialTick);                     // V7.4.0: el morro sigue la parábola en el aire
+        if (Math.abs(airPitch) > 0.05f) {
+            poseStack.mulPose(Axis.XP.rotationDegrees(airPitch));
+        }
         // Inclinación en las curvas (o apoyada en la pata de cabra si está parada), alrededor de la línea del suelo.
         float lean = moto.getLean(partialTick);
         if (lean != 0.0f) {
