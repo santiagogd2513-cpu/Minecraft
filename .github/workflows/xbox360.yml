@@ -1,0 +1,50 @@
+name: Xbox 360 plugin
+
+on:
+  push:
+    branches: [ "**" ]
+    paths: [ "xbox360/**", ".github/workflows/xbox360.yml" ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: xbox360-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Compilar el plugin y empaquetar el XEX
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Compilador PowerPC
+        run: sudo apt-get update -q && sudo apt-get install -y -q gcc-powerpc-linux-gnu binutils-powerpc-linux-gnu
+
+      - name: Compilar y comprobar
+        working-directory: xbox360
+        run: |
+          mkdir -p ../dist
+          # variante DLL (la normal para Dashlaunch) y variante "titulo", por si la consola rechaza la primera
+          FLAGS=0x8 ./build.sh plugin/hola.c ../dist/hola-dll.xex
+          python3 tools/xexcheck.py ../dist/hola-dll.xex
+          FLAGS=0x1 ./build.sh plugin/hola.c ../dist/hola-titulo.xex
+          python3 tools/xexcheck.py ../dist/hola-titulo.xex
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: xbox360-xex
+          path: dist/*.xex
+
+      - name: Publicar
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: xbox360-${{ github.run_number }}
+          name: "Plugin Xbox 360 de prueba #${{ github.run_number }}"
+          target_commitish: ${{ github.sha }}
+          make_latest: false
+          body: |
+            Plugin de prueba (sin firmar) hecho con el empaquetador casero. Se carga con Dashlaunch; no lo pongas en el arranque automático hasta comprobar que no congela la consola.
+          files: dist/*.xex

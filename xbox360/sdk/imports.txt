@@ -1,0 +1,10 @@
+# nombre  libreria  ordinal   (ordinales tomados de la tabla de exportaciones de xboxkrnl.exe y xam.xex)
+DbgPrint                xboxkrnl.exe 0x003
+ExCreateThread          xboxkrnl.exe 0x00D
+ExTerminateThread       xboxkrnl.exe 0x019
+KeDelayExecutionThread  xboxkrnl.exe 0x05A
+NtClose                 xboxkrnl.exe 0x0CF
+XexGetModuleHandle      xboxkrnl.exe 0x195
+XamInputGetState        xam.xex      0x191
+XamGetCurrentTitleId    xam.xex      0x1CF
+XNotifyQueueUI          xam.xex      0x290
