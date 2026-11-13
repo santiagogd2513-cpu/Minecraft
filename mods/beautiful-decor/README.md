@@ -2,6 +2,9 @@
 
 Mod de decoración para **Minecraft 1.20.1** / **Forge 47.4.5**.
 
+## V6.16.3
+- Piloto automático: ya no lee los bloques de una estación lejana que no está cargada (antes obligaba al servidor a cargar ese chunk una y otra vez).
+
 ## V6.16.2
 - Mando de trenes: si el tren vinculado no está cargado (estás lejos), las paradas se guardan en el mando y pasan a la ruta cuando el tren se cargue (al acercarte o al abrir su menú). Antes no se agregaba nada.
 - Sonidos: al guardar el nombre del tren, al agregar una parada y al dejarla pendiente.

@@ -5,7 +5,7 @@ plugins {
     id 'net.minecraftforge.gradle' version '[6.0,6.2)'
 }
 
-version = '6.16.2'
+version = '6.16.3'
 group = 'com.example.beautifuldecor'
 archivesBaseName = 'beautifuldecor'
 

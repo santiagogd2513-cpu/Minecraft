@@ -252,7 +252,8 @@ public final class TrainRoute {
                 }
                 return out;
             }
-            if (target.rail == null || !(level.getBlockState(target.rail).getBlock() instanceof FreightRailBlock)) {
+            // V6.16.3: con el controlador o su vía sin cargar (estación lejana) NO se lee el bloque: leerlo obligaba al servidor a cargar ese chunk a cada rato
+            if (target.rail == null || (level.isLoaded(target.rail) && !(level.getBlockState(target.rail).getBlock() instanceof FreightRailBlock))) {
                 BlockPos r = findRail(level, target.ctrl);
                 if (r != null) {
                     target.rail = r;

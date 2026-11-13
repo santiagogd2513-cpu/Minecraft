@@ -1,3 +1,7 @@
+PARCHE V6.16.3
+==============
+- AUTOMÁTICO CON ESTACIONES SIN CARGAR: el tren ya no obliga al servidor a cargar el chunk de la estación de destino mientras está lejos; usa la parada guardada.
+
 PARCHE V6.16.2
 ==============
 - PARADAS PENDIENTES: con el mando vinculado, clic en una estación con el tren descargado la guarda en el mando (campanita). Cuando el tren se carga, o abres el menú del tren, las paradas pasan a su ruta. Cambiar de tren vinculado borra las pendientes.
