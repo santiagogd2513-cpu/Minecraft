@@ -30,6 +30,8 @@ final class SpaceView extends View implements Choreographer.FrameCallback {
         void onStatus(String text);
 
         void onPlaced();
+
+        void onView();
     }
 
     /** Lo que se está colocando con el menú «Objetos». */
@@ -64,6 +66,17 @@ final class SpaceView extends View implements Choreographer.FrameCallback {
     private final ExecutorService artPool = Executors.newSingleThreadExecutor();
     private final Paint pSprite = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG | Paint.DITHER_FLAG), pRing = new Paint(Paint.ANTI_ALIAS_FLAG);
     private final RectF rect = new RectF();
+
+    // esfera «viva» del cuerpo fijado: se vuelve a pintar según la cámara, la luz y el giro del planeta
+    private final Map<String, int[]> maps = new ConcurrentHashMap<>();
+    private final java.util.Set<String> mapping = java.util.Collections.newSetFromMap(new ConcurrentHashMap<>());
+    private volatile Bitmap sphereBmp;
+    private volatile String sphereKey = "";
+    private volatile boolean sphereBusy;
+    private double sYaw = 9e9, sPhi = 9e9, sSun = 9e9, sSpin = 9e9;
+    private double spinAcc;
+    private static final int MAP_W = 384, MAP_H = 192;
+
 
     // cámara
     private double camX, camY, scale = 40;        // UA y píxeles por UA
@@ -142,18 +155,22 @@ final class SpaceView extends View implements Choreographer.FrameCallback {
 
     private void zoomAt(double f, float fx, float fy) {
         double ns = Math.max(1.0, Math.min(2.0e6, scale * f));
-        f = ns / scale;
-        // el punto bajo los dedos se queda donde está
-        double wx = camX + (fx - getWidth() / 2.0) / scale, wy = camY + (fy - getHeight() / 2.0) / scale;
+        double[] before = unproject(fx, fy);
         scale = ns;
-        camX = wx - (fx - getWidth() / 2.0) / scale;
-        camY = wy - (fy - getHeight() / 2.0) / scale;
+        if (follow < 0) {
+            // el punto bajo los dedos se queda donde está
+            double[] after = unproject(fx, fy);
+            camX += before[0] - after[0];
+            camY += before[1] - after[1];
+        }
         invalidate();
     }
 
     void resetView() {
         camX = 0;
         camY = 0;
+        yaw = 0;
+        phi = 0;
         scale = 38;   // se ve hasta más allá de Marte
         follow = -1;
         followName = null;
@@ -183,20 +200,39 @@ final class SpaceView extends View implements Choreographer.FrameCallback {
         trailNames.clear();
     }
 
-    private double wx(float sx) {
-        return camX + (sx - getWidth() / 2.0) / scale;
+    // cámara en 3D: yaw gira alrededor del eje vertical; phi es el ángulo desde arriba (0 = vista de arriba, 90° = de canto, 180° = desde abajo)
+    double yaw, phi;
+    private double cosY = 1, sinY = 0, cph = 1;
+
+    private void updateProj() {
+        cosY = Math.cos(yaw);
+        sinY = Math.sin(yaw);
+        double c = Math.cos(phi);
+        cph = Math.abs(c) < 0.07 ? (c < 0 ? -0.07 : 0.07) : c;
     }
 
-    private double wy(float sy) {
-        return camY + (sy - getHeight() / 2.0) / scale;
+    private float sxp(double x, double y) {
+        double dx = x - camX, dy = y - camY;
+        return (float) ((dx * cosY - dy * sinY) * scale + getWidth() / 2.0);
     }
 
-    private float sx(double x) {
-        return (float) ((x - camX) * scale + getWidth() / 2.0);
+    private float syp(double x, double y) {
+        double dx = x - camX, dy = y - camY;
+        return (float) ((dx * sinY + dy * cosY) * cph * scale + getHeight() / 2.0);
     }
 
-    private float sy(double y) {
-        return (float) ((y - camY) * scale + getHeight() / 2.0);
+    /** De un punto de la pantalla al punto del plano del sistema que está debajo. */
+    private double[] unproject(float sx, float sy) {
+        double rx = (sx - getWidth() / 2.0) / scale, ry = (sy - getHeight() / 2.0) / (scale * cph);
+        return new double[]{camX + rx * cosY + ry * sinY, camY - rx * sinY + ry * cosY};
+    }
+
+    private double wx(float sx, float sy) {
+        return unproject(sx, sy)[0];
+    }
+
+    private double wy(float sx, float sy) {
+        return unproject(sx, sy)[1];
     }
 
     // ------------------------------------------------------------------ bucle
@@ -220,6 +256,7 @@ final class SpaceView extends View implements Choreographer.FrameCallback {
         lastNs = frameTimeNanos;
         if (!paused) step(realDt);
         updateCamera();
+        updateProj();
         if (aiming) predictPath();
         invalidate();
         long now = SystemClock.uptimeMillis();
@@ -246,6 +283,13 @@ final class SpaceView extends View implements Choreographer.FrameCallback {
         }
         slowed = done < target * 0.98;
         simYears += done;
+        if (follow >= 0 && follow < sim.n) {
+            // el planeta gira sobre sí mismo, pero no tan rápido que se vea como un borrón
+            double days = done * 365.25, perDay = 1.0 / spinDays(sim.name[follow]);
+            double daysPerSec = yearsPerSecond * 365.25;
+            double k = Math.min(1.0, 0.35 / Math.max(1e-9, daysPerSec * Math.abs(perDay)));
+            spinAcc += days * perDay * k * 2 * Math.PI;
+        }
         sinceTrail += done;
         // un punto de estela cada cierto tiempo simulado (más espaciado cuanto más rápido)
         double every = Math.max(yearsPerSecond / 60.0, 1e-5) * 2;
@@ -312,6 +356,7 @@ final class SpaceView extends View implements Choreographer.FrameCallback {
     @Override
     protected void onDraw(Canvas c) {
         int w = getWidth(), h = getHeight();
+        updateProj();
         c.drawColor(0xFF03050D);
         // estrellas de fondo (fijas en la pantalla, con un movimiento muy leve)
         float px = (float) (camX * 0.5), py = (float) (camY * 0.5);
@@ -336,7 +381,7 @@ final class SpaceView extends View implements Choreographer.FrameCallback {
             float lx = 0, ly = 0;
             for (int j = 0; j < cnt; j++) {
                 int at = ((inf[1] - cnt + j) % TRAIL + TRAIL) % TRAIL;
-                float X = sx(t[at * 2] + ox), Y = sy(t[at * 2 + 1] + oy);
+                float X = sxp(t[at * 2] + ox, t[at * 2 + 1] + oy), Y = syp(t[at * 2] + ox, t[at * 2 + 1] + oy);
                 if (j > 0) {
                     pLine.setColor(col);
                     pLine.setAlpha((int) (25 + 150.0 * j / cnt));
@@ -347,7 +392,7 @@ final class SpaceView extends View implements Choreographer.FrameCallback {
             }
             // cerrar hasta el cuerpo
             pLine.setAlpha(170);
-            c.drawLine(lx, ly, sx(sim.x[idx]), sy(sim.y[idx]), pLine);
+            c.drawLine(lx, ly, sxp(sim.x[idx], sim.y[idx]), syp(sim.x[idx], sim.y[idx]), pLine);
         }
 
         // partículas (asteroides y escombros)
@@ -357,7 +402,7 @@ final class SpaceView extends View implements Choreographer.FrameCallback {
             ptsDebris = new float[sim.np * 2 + 512];
         }
         for (int i = 0; i < sim.np; i++) {
-            float X = sx(sim.px[i]), Y = sy(sim.py[i]);
+            float X = sxp(sim.px[i], sim.py[i]), Y = syp(sim.px[i], sim.py[i]);
             if (X < -4 || Y < -4 || X > w + 4 || Y > h + 4) continue;
             if (sim.pkind[i] == 0) {
                 pts[na++] = X;
@@ -374,7 +419,7 @@ final class SpaceView extends View implements Choreographer.FrameCallback {
 
         // cuerpos
         for (int i = 0; i < sim.n; i++) {
-            float X = sx(sim.x[i]), Y = sy(sim.y[i]);
+            float X = sxp(sim.x[i], sim.y[i]), Y = syp(sim.x[i], sim.y[i]);
             float rpx = (float) (sim.collisionRadius(i) * scale);
             float minPx = density * (float) Math.max(2.0, Math.min(18.0, 4.0 + 4.5 * Math.log10(Math.max(sim.r[i], 1e-7) / 1e-5)));   // más grande el cuerpo, más grande el punto (para verse sin acercar)
             float draw = Math.max(rpx, minPx);
@@ -387,6 +432,14 @@ final class SpaceView extends View implements Choreographer.FrameCallback {
             }
             Bitmap spr = draw >= density * 3.5f ? sprite(i) : null;
             boolean saturn = "Saturno".equals(sim.name[i]);
+            boolean live = false;
+            if (spr != null && i == follow && draw >= density * 34) {
+                Bitmap sb = liveSphere(i, draw);
+                if (sb != null) {
+                    spr = sb;
+                    live = true;
+                }
+            }
             if (spr == null) {
                 pBody.setColor(sim.color[i]);
                 c.drawCircle(X, Y, draw, pBody);
@@ -394,7 +447,7 @@ final class SpaceView extends View implements Choreographer.FrameCallback {
                 if (saturn) drawRings(c, X, Y, draw, false);
                 c.save();
                 c.translate(X, Y);
-                if (sim.kind[i] != Sim.STAR) c.rotate((float) Math.toDegrees(lightAngle(i)));
+                if (sim.kind[i] != Sim.STAR && !live) c.rotate((float) Math.toDegrees(lightAngle(i)));
                 rect.set(-draw, -draw, draw, draw);
                 c.drawBitmap(spr, null, rect, pSprite);
                 c.restore();
@@ -420,10 +473,10 @@ final class SpaceView extends View implements Choreographer.FrameCallback {
             pFlash.setColor(0xFFFFD27A);
             pFlash.setAlpha((int) (255 * (1 - a)));
             pFlash.setStrokeWidth(density * (3 - 2 * a));
-            c.drawCircle(sx(f.x), sy(f.y), rr, pFlash);
+            c.drawCircle(sxp(f.x, f.y), syp(f.x, f.y), rr, pFlash);
             pFlash.setAlpha((int) (140 * (1 - a)));
             pFlash.setColor(0xFFFFFFFF);
-            c.drawCircle(sx(f.x), sy(f.y), rr * 0.55f, pFlash);
+            c.drawCircle(sxp(f.x, f.y), syp(f.x, f.y), rr * 0.55f, pFlash);
         }
 
         // lanzamiento: flecha y camino previsto
@@ -434,9 +487,9 @@ final class SpaceView extends View implements Choreographer.FrameCallback {
             c.drawCircle(aimPx, aimPy, density * 4, pSel);
             if (predCount > 1) {
                 pLine.setAlpha(150);
-                float lx = sx(pred[0]), ly = sy(pred[1]);
+                float lx = sxp(pred[0], pred[1]), ly = syp(pred[0], pred[1]);
                 for (int i = 1; i < predCount; i++) {
-                    float X = sx(pred[i * 2]), Y = sy(pred[i * 2 + 1]);
+                    float X = sxp(pred[i * 2], pred[i * 2 + 1]), Y = syp(pred[i * 2], pred[i * 2 + 1]);
                     if ((i & 1) == 0) c.drawLine(lx, ly, X, Y, pLine);
                     lx = X;
                     ly = Y;
@@ -459,7 +512,7 @@ final class SpaceView extends View implements Choreographer.FrameCallback {
         }
         if (best < 0) return 0;
         // la luz está dibujada viniendo desde la izquierda (ángulo π)
-        return Math.atan2(sim.y[best] - sim.y[i], sim.x[best] - sim.x[i]) - Math.PI;
+        return Math.atan2(syp(sim.x[best], sim.y[best]) - syp(sim.x[i], sim.y[i]), sxp(sim.x[best], sim.y[best]) - sxp(sim.x[i], sim.y[i])) - Math.PI;
     }
 
     private String artType(int i) {
@@ -490,31 +543,116 @@ final class SpaceView extends View implements Choreographer.FrameCallback {
         return null;
     }
 
-    /** Los anillos de Saturno, inclinados. «front» dibuja solo la mitad de abajo (la que pasa por delante del planeta). */
+    /** Los anillos de Saturno, en el plano del sistema: se ven como círculos desde arriba y como una línea de canto. «front» dibuja la mitad que pasa por delante del planeta. */
     private void drawRings(Canvas c, float X, float Y, float R, boolean front) {
         c.save();
         c.translate(X, Y);
-        c.rotate(-18f);
+        float ratio = (float) Math.abs(cph);
         float[] radii = {1.35f, 1.6f, 1.85f, 2.1f, 2.3f};
         int[] cols = {0x66B8A27A, 0x99D8C294, 0xCCE8D8B0, 0x88C9B58A, 0x55A99870};
         float w = R * 0.26f;
+        boolean fromAbove = Math.cos(phi) >= 0;
         for (int k = 0; k < radii.length; k++) {
             float rr = R * radii[k];
-            rect.set(-rr, -rr * 0.34f, rr, rr * 0.34f);
+            rect.set(-rr, -rr * ratio, rr, rr * ratio);
             pRing.setStyle(Paint.Style.STROKE);
             pRing.setStrokeWidth(k == 1 ? w * 0.5f : w);
             pRing.setColor(cols[k]);
-            if (front) c.drawArc(rect, 0, 180, false, pRing);
-            else c.drawArc(rect, 180, 180, false, pRing);
+            // desde arriba, el lado de abajo de la pantalla es el más cercano; desde abajo, el de arriba
+            boolean lower = front == fromAbove;
+            if (ratio > 0.95f) {
+                if (!front) c.drawOval(rect, pRing);      // desde arriba son círculos completos y no pasan por delante del planeta
+            } else c.drawArc(rect, lower ? 0 : 180, 180, false, pRing);
         }
         c.restore();
     }
 
+    private static double spinDays(String name) {
+        return switch (name) {
+            case "Mercurio" -> 58.6;
+            case "Venus" -> -243;
+            case "Tierra" -> 1.0;
+            case "Luna" -> 27.3;
+            case "Marte" -> 1.03;
+            case "Júpiter" -> 0.41;
+            case "Saturno" -> 0.44;
+            case "Urano" -> -0.72;
+            case "Neptuno" -> 0.67;
+            case "Sol" -> 25.4;
+            default -> 1.0;
+        };
+    }
+
+    /** La esfera del cuerpo fijado, vista desde donde está la cámara (con su luz). Devuelve null mientras se prepara. */
+    private Bitmap liveSphere(int i, float drawPx) {
+        String type = artType(i);
+        int seed = Math.abs(sim.name[i].hashCode() % 1000);
+        int col = sim.kind[i] == Sim.STAR ? sim.color[i] : 0;
+        String mapKey = type + "#" + seed + "#" + (col & 0xFFFFFF);
+        int[] map = maps.get(mapKey);
+        if (map == null) {
+            if (mapping.add(mapKey)) artPool.execute(() -> {
+                maps.put(mapKey, PlanetArt.map(type, seed, col, MAP_W, MAP_H));
+                mapping.remove(mapKey);
+            });
+            return null;
+        }
+        // dirección del Sol (la estrella más cercana y grande), en el plano del sistema
+        double sdx = 1, sdy = 0;
+        int best = -1;
+        double bd = Double.MAX_VALUE;
+        for (int j = 0; j < sim.n; j++) {
+            if (j == i || sim.kind[j] != Sim.STAR) continue;
+            double d = Math.hypot(sim.x[j] - sim.x[i], sim.y[j] - sim.y[i]) / Math.sqrt(sim.m[j]);
+            if (d < bd) {
+                bd = d;
+                best = j;
+            }
+        }
+        if (best >= 0) {
+            double l = Math.hypot(sim.x[best] - sim.x[i], sim.y[best] - sim.y[i]);
+            if (l > 0) {
+                sdx = (sim.x[best] - sim.x[i]) / l;
+                sdy = (sim.y[best] - sim.y[i]) / l;
+            }
+        }
+        double sunAng = Math.atan2(sdy, sdx);
+        boolean star = sim.kind[i] == Sim.STAR;
+        boolean changed = !mapKey.equals(sphereKey) || Math.abs(yaw - sYaw) > 0.004 || Math.abs(phi - sPhi) > 0.004
+                || Math.abs(sunAng - sSun) > 0.004 || Math.abs(spinAcc - sSpin) > 0.01;
+        if (changed && !sphereBusy) {
+            sphereBusy = true;
+            final double fyaw = yaw, fphi = phi, fspin = spinAcc;
+            final double fsx = sdx, fsy = sdy;
+            final int n = Math.max(96, Math.min(192, ((int) (drawPx * 2) / 16) * 16));
+            artPool.execute(() -> {
+                try {
+                    double[] R = {Math.cos(fyaw), -Math.sin(fyaw), 0};
+                    double[] D = {Math.sin(fyaw) * Math.cos(fphi), Math.cos(fyaw) * Math.cos(fphi), Math.sin(fphi)};
+                    double[] U = {-D[0], -D[1], -D[2]};
+                    double[] V = {R[1] * U[2] - R[2] * U[1], R[2] * U[0] - R[0] * U[2], R[0] * U[1] - R[1] * U[0]};
+                    int[] px = new int[n * n];
+                    PlanetArt.render(px, n, map, MAP_W, MAP_H, type, star, R, U, V, new double[]{fsx, fsy, 0}, fspin);
+                    sphereBmp = Bitmap.createBitmap(px, n, n, Bitmap.Config.ARGB_8888);
+                    sphereKey = mapKey;
+                    sYaw = fyaw;
+                    sPhi = fphi;
+                    sSun = Math.atan2(fsy, fsx);
+                    sSpin = fspin;
+                } finally {
+                    sphereBusy = false;
+                    postInvalidate();
+                }
+            });
+        }
+        return mapKey.equals(sphereKey) ? sphereBmp : null;
+    }
+
     private boolean labelFits(int i) {
-        float X = sx(sim.x[i]), Y = sy(sim.y[i]);
+        float X = sxp(sim.x[i], sim.y[i]), Y = syp(sim.x[i], sim.y[i]);
         for (int j = 0; j < sim.n; j++) {
             if (j == i || sim.m[j] <= sim.m[i]) continue;
-            float d = (float) Math.hypot(X - sx(sim.x[j]), Y - sy(sim.y[j]));
+            float d = (float) Math.hypot(X - sxp(sim.x[j], sim.y[j]), Y - syp(sim.x[j], sim.y[j]));
             if (d < density * 34) return false;
         }
         return true;
@@ -546,8 +684,8 @@ final class SpaceView extends View implements Choreographer.FrameCallback {
                     aiming = true;
                     aimPx = curPx = x;
                     aimPy = curPy = y;
-                    aimX = curX = wx(x);
-                    aimY = curY = wy(y);
+                    aimX = curX = wx(x, y);
+                    aimY = curY = wy(x, y);
                 }
             }
             case MotionEvent.ACTION_MOVE -> {
@@ -555,12 +693,19 @@ final class SpaceView extends View implements Choreographer.FrameCallback {
                 if (aiming) {
                     curPx = x;
                     curPy = y;
-                    curX = wx(x);
-                    curY = wy(y);
+                    curX = wx(x, y);
+                    curY = wy(x, y);
                 } else if (!scaler.isInProgress()) {
                     if (follow < 0) {
-                        camX -= (x - lastTx) / scale;
-                        camY -= (y - lastTy) / scale;
+                        // mover la cámara: el desplazamiento de la pantalla se pasa al plano del sistema
+                        double[] a0 = unproject(lastTx, lastTy), a1 = unproject(x, y);
+                        camX -= a1[0] - a0[0];
+                        camY -= a1[1] - a0[1];
+                    } else {
+                        // con un cuerpo fijado, un dedo gira la cámara alrededor de él
+                        yaw += (x - lastTx) * 0.008;
+                        phi = Math.max(0, Math.min(Math.PI, phi - (y - lastTy) * 0.006));
+                        if (listener != null) listener.onView();
                     }
                     lastTx = x;
                     lastTy = y;
@@ -585,11 +730,21 @@ final class SpaceView extends View implements Choreographer.FrameCallback {
 
     private float lastTx, lastTy;
 
+    private long lastTap;
+
     private void tap(float x, float y) {
+        long nowTap = SystemClock.uptimeMillis();
+        boolean dbl = nowTap - lastTap < 350;
+        lastTap = nowTap;
+        if (dbl) {
+            yaw = 0;
+            phi = 0;
+            return;
+        }
         int best = -1;
         float bd = density * 28;
         for (int i = 0; i < sim.n; i++) {
-            float d = (float) Math.hypot(x - sx(sim.x[i]), y - sy(sim.y[i]));
+            float d = (float) Math.hypot(x - sxp(sim.x[i], sim.y[i]), y - syp(sim.x[i], sim.y[i]));
             if (d < bd) {
                 bd = d;
                 best = i;
@@ -610,7 +765,7 @@ final class SpaceView extends View implements Choreographer.FrameCallback {
         double v = Math.hypot(sim.vx[i], sim.vy[i]) * 4.74047;    // UA/año → km/s
         double mEarth = sim.m[i] / 3.003e-6;
         String mass = mEarth > 1000 ? String.format("%.3f masas solares", sim.m[i]) : mEarth >= 0.01 ? String.format("%.2f masas terrestres", mEarth) : String.format("%.4f masas terrestres", mEarth);
-        return sim.name[i] + "\n" + mass + "\n" + String.format("%.1f km/s  ·  %.3f UA del centro", v, d);
+        return sim.name[i] + "\n" + mass + "\n" + String.format("%.1f km/s  ·  %.3f UA del centro", v, d) + "\n↻ Arrastra para girar la cámara\n2 toques: vista de arriba";
     }
 
     // ------------------------------------------------------------------ lanzar objetos

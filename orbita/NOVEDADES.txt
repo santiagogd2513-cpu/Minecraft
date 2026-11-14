@@ -1,3 +1,13 @@
+## Beta 4
+🎥 Cámara que gira alrededor del cuerpo fijado
+- Toca un planeta (o cualquier cuerpo) para fijarlo y arrastra con un dedo: la cámara gira alrededor de él. Puedes verlo por delante, por detrás, de arriba (desde el polo), de canto y desde abajo. Aunque en el espacio no haya arriba ni abajo, así se ve el sistema inclinado.
+- Dos toques seguidos: vuelve a la vista de arriba de siempre.
+- Cuando el planeta está grande en pantalla, se dibuja como una esfera de verdad, con sus continentes, bandas o cráteres girando, y con la luz del Sol siempre del lado correcto: puedes ver su noche, su polo norte y su polo sur.
+- Los planetas giran sobre sí mismos (si el tiempo va muy rápido, el giro se frena para no verse como un borrón).
+- Los anillos de Saturno se ven como círculos desde arriba y como una línea de canto.
+- Todo lo demás (órbitas, estelas, asteroides, lanzamientos) también se inclina con la cámara.
+- Probado en el computador: la esfera se dibuja bien desde arriba, de canto y desde abajo (Tierra y Júpiter). Cómo se siente al arrastrar en el celular solo lo ves tú.
+
 ## Beta 3
 💥 Fase 2: choques de verdad y límite de Roche
 - Cuando dos planetas chocan ya no se funden en silencio: se funden, pero una parte del más pequeño (de un 3 % a un 40 %, más cuanto más rápido el golpe) sale como miles de escombros. Los lentos giran alrededor del planeta formando una serpiente o un anillo y, tarde o temprano, caen; los rápidos se van.

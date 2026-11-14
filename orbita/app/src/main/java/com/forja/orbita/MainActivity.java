@@ -104,6 +104,10 @@ public class MainActivity extends Activity {
             @Override
             public void onPlaced() {
             }
+
+            @Override
+            public void onView() {
+            }
         };
         setContentView(root);
         setSpeed(speed);
