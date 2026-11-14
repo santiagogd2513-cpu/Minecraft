@@ -80,6 +80,26 @@ public class SimTest {
             for (int i = 0; i < 500 && s.shatters == 0; i++) s.step(1e-6);
             check(s.shatters == 1 && s.np > 50, "un choque a gran velocidad se rompe en escombros: " + s.np + " pedazos");
         }
+        // 6a) Dos estrellas: se funden, con gas expulsado, más masa, más radio y otro color
+        {
+            Sim s = Sim.solarSystem();
+            int sol = s.find("Sol");
+            double msol = s.m[sol];
+            s.addBody("Enana roja", Sim.STAR, 0.3, 0.0016, 0.05, 0, -80, 0, 0xFFFF6B4A);
+            double[] p0 = s.momentum();
+            int cuerpos = s.n;
+            for (int i = 0; i < 4000 && s.n == cuerpos; i++) s.step(1.0 / 50000);
+            sol = s.find("Sol");
+            check(s.n == cuerpos - 1 && s.merges >= 1, "una enana roja que cae al Sol se funde con él");
+            check(Math.abs(s.m[sol] - (msol + 0.3 - 0.03 * 0.3)) < 1e-12, "la estrella nueva tiene la masa de las dos menos el gas expulsado: " + s.m[sol]);
+            check(s.r[sol] >= 0.00465 && s.color[sol] != 0xFFFFC857, "la estrella nueva cambia de color y no se encoge");
+            check(s.np >= 900, "sale gas de la fusión (" + s.np + " partículas)");
+            check(Math.hypot(s.momentum()[0] - p0[0], s.momentum()[1] - p0[1]) < 0.05 * 0.3 * 80 + 1e-9, "el momento casi se conserva (solo se va el del gas)");
+            // lo que pasa después: los planetas se alteran pero el sistema sigue ahí
+            for (int i = 0; i < 20000; i++) s.step(1.0 / 2000);
+            check(s.n >= 8, "10 años después siguen " + s.n + " cuerpos en el sistema");
+        }
+        check(Sim.starColor(0.3) != Sim.starColor(1.0) && Sim.starColor(3) != Sim.starColor(1.0), "el color de la estrella depende de su masa");
         // 6b) La predicción coincide con lo que de verdad pasa
         {
             Sim s = Sim.solarSystem();

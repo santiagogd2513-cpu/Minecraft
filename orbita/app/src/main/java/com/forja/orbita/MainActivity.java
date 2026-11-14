@@ -220,6 +220,12 @@ public class MainActivity extends Activity {
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        space.destroy();
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
         space.stop();

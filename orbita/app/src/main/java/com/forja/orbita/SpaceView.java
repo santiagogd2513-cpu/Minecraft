@@ -1,10 +1,12 @@
 package com.forja.orbita;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.RadialGradient;
+import android.graphics.RectF;
 import android.graphics.Shader;
 import android.os.SystemClock;
 import android.view.Choreographer;
@@ -14,6 +16,10 @@ import android.view.View;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.Random;
 
 /** La pantalla del espacio: dibuja el sistema, mueve la cámara con los dedos y deja lanzar objetos. */
@@ -51,6 +57,13 @@ final class SpaceView extends View implements Choreographer.FrameCallback {
     Kind placing;
     int follow = -1;
     String followName;
+
+    // texturas de los planetas (se hacen en segundo plano; mientras tanto se ve un círculo de color)
+    private final Map<String, Bitmap> sprites = new ConcurrentHashMap<>();
+    private final java.util.Set<String> making = java.util.Collections.newSetFromMap(new ConcurrentHashMap<>());
+    private final ExecutorService artPool = Executors.newSingleThreadExecutor();
+    private final Paint pSprite = new Paint(Paint.ANTI_ALIAS_FLAG | Paint.FILTER_BITMAP_FLAG | Paint.DITHER_FLAG), pRing = new Paint(Paint.ANTI_ALIAS_FLAG);
+    private final RectF rect = new RectF();
 
     // cámara
     private double camX, camY, scale = 40;        // UA y píxeles por UA
@@ -195,6 +208,10 @@ final class SpaceView extends View implements Choreographer.FrameCallback {
 
     void stop() {
         Choreographer.getInstance().removeFrameCallback(this);
+    }
+
+    void destroy() {
+        artPool.shutdownNow();
     }
 
     @Override
@@ -359,7 +376,7 @@ final class SpaceView extends View implements Choreographer.FrameCallback {
         for (int i = 0; i < sim.n; i++) {
             float X = sx(sim.x[i]), Y = sy(sim.y[i]);
             float rpx = (float) (sim.collisionRadius(i) * scale);
-            float minPx = sim.kind[i] == Sim.STAR ? density * 7 : sim.kind[i] == Sim.MOON ? density * 2.2f : sim.kind[i] == Sim.ROCK ? density * 2 : density * 3.2f;
+            float minPx = density * (float) Math.max(2.0, Math.min(18.0, 4.0 + 4.5 * Math.log10(Math.max(sim.r[i], 1e-7) / 1e-5)));   // más grande el cuerpo, más grande el punto (para verse sin acercar)
             float draw = Math.max(rpx, minPx);
             if (X < -draw - 40 || Y < -draw - 40 || X > w + draw + 40 || Y > h + draw + 40) continue;
             if (sim.kind[i] == Sim.STAR) {
@@ -368,13 +385,20 @@ final class SpaceView extends View implements Choreographer.FrameCallback {
                 c.drawCircle(X, Y, g, pBody);
                 pBody.setShader(null);
             }
-            pBody.setColor(sim.color[i]);
-            c.drawCircle(X, Y, draw, pBody);
-            if (sim.kind[i] == Sim.PLANET && draw > density * 6) {
-                // un poco de sombra para que parezca esfera
-                pBody.setShader(new RadialGradient(X - draw * 0.3f, Y - draw * 0.3f, draw * 1.4f, 0x00000000, 0x99000000, Shader.TileMode.CLAMP));
+            Bitmap spr = draw >= density * 3.5f ? sprite(i) : null;
+            boolean saturn = "Saturno".equals(sim.name[i]);
+            if (spr == null) {
+                pBody.setColor(sim.color[i]);
                 c.drawCircle(X, Y, draw, pBody);
-                pBody.setShader(null);
+            } else {
+                if (saturn) drawRings(c, X, Y, draw, false);
+                c.save();
+                c.translate(X, Y);
+                if (sim.kind[i] != Sim.STAR) c.rotate((float) Math.toDegrees(lightAngle(i)));
+                rect.set(-draw, -draw, draw, draw);
+                c.drawBitmap(spr, null, rect, pSprite);
+                c.restore();
+                if (saturn) drawRings(c, X, Y, draw, true);
             }
             if (i == follow) {
                 c.drawCircle(X, Y, draw + density * 5, pSel);
@@ -419,6 +443,71 @@ final class SpaceView extends View implements Choreographer.FrameCallback {
                 }
             }
         }
+    }
+
+    /** Ángulo (giro del dibujo) para que la luz de la esfera mire hacia la estrella más cercana y grande. */
+    private double lightAngle(int i) {
+        int best = -1;
+        double bd = Double.MAX_VALUE;
+        for (int j = 0; j < sim.n; j++) {
+            if (j == i || sim.kind[j] != Sim.STAR) continue;
+            double d = Math.hypot(sim.x[j] - sim.x[i], sim.y[j] - sim.y[i]) / Math.sqrt(sim.m[j]);
+            if (d < bd) {
+                bd = d;
+                best = j;
+            }
+        }
+        if (best < 0) return 0;
+        // la luz está dibujada viniendo desde la izquierda (ángulo π)
+        return Math.atan2(sim.y[best] - sim.y[i], sim.x[best] - sim.x[i]) - Math.PI;
+    }
+
+    private String artType(int i) {
+        String t = PlanetArt.typeFor(sim.name[i]);
+        if (t != null) return t;
+        return switch (sim.kind[i]) {
+            case Sim.STAR -> "estrella";
+            case Sim.ROCK -> "roca";
+            default -> sim.name[i].startsWith("Gigante") ? "gaseoso" : "rocoso";
+        };
+    }
+
+    private Bitmap sprite(int i) {
+        String type = artType(i);
+        int seed = Math.abs(sim.name[i].hashCode() % 1000);
+        int col = sim.kind[i] == Sim.STAR ? sim.color[i] : 0;
+        String key = type + "#" + seed + "#" + (col & 0xFFFFFF);
+        Bitmap b = sprites.get(key);
+        if (b != null) return b;
+        if (making.add(key)) {
+            final String ft = type;
+            artPool.execute(() -> {
+                int[] px = PlanetArt.make(ft, seed, col);
+                sprites.put(key, Bitmap.createBitmap(px, PlanetArt.SIZE, PlanetArt.SIZE, Bitmap.Config.ARGB_8888));
+                making.remove(key);
+            });
+        }
+        return null;
+    }
+
+    /** Los anillos de Saturno, inclinados. «front» dibuja solo la mitad de abajo (la que pasa por delante del planeta). */
+    private void drawRings(Canvas c, float X, float Y, float R, boolean front) {
+        c.save();
+        c.translate(X, Y);
+        c.rotate(-18f);
+        float[] radii = {1.35f, 1.6f, 1.85f, 2.1f, 2.3f};
+        int[] cols = {0x66B8A27A, 0x99D8C294, 0xCCE8D8B0, 0x88C9B58A, 0x55A99870};
+        float w = R * 0.26f;
+        for (int k = 0; k < radii.length; k++) {
+            float rr = R * radii[k];
+            rect.set(-rr, -rr * 0.34f, rr, rr * 0.34f);
+            pRing.setStyle(Paint.Style.STROKE);
+            pRing.setStrokeWidth(k == 1 ? w * 0.5f : w);
+            pRing.setColor(cols[k]);
+            if (front) c.drawArc(rect, 0, 180, false, pRing);
+            else c.drawArc(rect, 180, 180, false, pRing);
+        }
+        c.restore();
     }
 
     private boolean labelFits(int i) {

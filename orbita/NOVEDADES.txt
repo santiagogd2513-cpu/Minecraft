@@ -1,3 +1,12 @@
+## Beta 2
+🎨 Planetas con aspecto de verdad, y estrellas que chocan mejor
+- Cada planeta tiene ahora su propia textura, hecha por código: la Tierra con continentes, océanos, hielo en los polos y nubes; Júpiter con bandas y la Gran Mancha Roja; Saturno con sus anillos; Venus con nubes cremosas; Marte rojizo con casquetes; Mercurio y la Luna con cráteres (la Luna con mares oscuros); Urano y Neptuno azulados con bandas. El Sol tiene granulación y manchas.
+- La luz de cada planeta mira siempre hacia el Sol (o hacia la estrella más cercana), con su lado oscuro.
+- Los puntos de los planetas son más grandes cuanto más grande es el planeta, para verlos sin acercar tanto.
+- Planetas, gigantes gaseosos y rocas que lanzas también estrenan textura (distinta para cada uno).
+- Cuando dos estrellas chocan, se funden: la nueva tiene la masa de las dos (menos un 3 % de la menor que sale como gas a unos 200 km/s, como en las fusiones reales), más tamaño y otro color según su masa (rojas las chicas, blancas y azules las grandes). Gran destello y 900 chorros de gas. Los planetas se alteran por el cambio de masa de forma realista.
+- Probado en el computador: la fusión conserva la masa y casi todo el momento, y el sistema sigue ahí diez años después. La apariencia solo la puedes juzgar tú en el celular.
+
 ## Beta 1
 🪐 Órbita: primera versión
 - El sistema solar de verdad: el Sol, los ocho planetas y la Luna, con gravedad real. Las órbitas se mantienen estables (probado en el computador: 100 años sin que la Tierra se salga de su órbita).

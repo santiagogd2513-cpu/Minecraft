@@ -216,6 +216,10 @@ final class Sim {
         double vrel = Math.hypot(vx[big] - vx[small], vy[big] - vy[small]);
         double rsum = collisionRadius(big) + collisionRadius(small);
         double vesc = Math.sqrt(2 * G * (mb + ms) / rsum);
+        if (kind[big] == STAR && kind[small] == STAR) {
+            starMerger(big, small);
+            return;
+        }
         flashes.add(new Flash(x[small], y[small], 1.0, flashId++));
         if (vrel > 2.5 * vesc && ms > 1e-3 * mb) {
             shatters++;
@@ -247,6 +251,50 @@ final class Sim {
             x[big] = nx; y[big] = ny; vx[big] = nvx; vy[big] = nvy; m[big] = newM;
             removeBody(small);
         }
+        accValid = false;
+    }
+
+    /** Radio de una estrella de la secuencia principal (UA), aproximado: R ∝ M^0.8. */
+    static double starRadius(double mass) {
+        return 0.00465 * Math.pow(mass, 0.8);
+    }
+
+    /** Color de una estrella según su masa (temperatura): rojas las chicas, amarillas como el Sol, blancas y azules las grandes. */
+    static int starColor(double mass) {
+        double[][] t = {{0.08, 255, 90, 50}, {0.3, 255, 120, 70}, {0.6, 255, 175, 95}, {1.0, 255, 200, 87}, {1.5, 255, 235, 190}, {2.5, 215, 228, 255}, {6, 160, 190, 255}};
+        if (mass <= t[0][0]) return 0xFF000000 | (int) t[0][1] << 16 | (int) t[0][2] << 8 | (int) t[0][3];
+        for (int i = 1; i < t.length; i++) {
+            if (mass <= t[i][0]) {
+                double f = (mass - t[i - 1][0]) / (t[i][0] - t[i - 1][0]);
+                int r = (int) (t[i - 1][1] + (t[i][1] - t[i - 1][1]) * f), g = (int) (t[i - 1][2] + (t[i][2] - t[i - 1][2]) * f), b = (int) (t[i - 1][3] + (t[i][3] - t[i - 1][3]) * f);
+                return 0xFF000000 | r << 16 | g << 8 | b;
+            }
+        }
+        return 0xFFA0BEFF;
+    }
+
+    /**
+     * Dos estrellas que chocan: se funden en una sola. Se pierde un 3 % de la masa de la menor como gas que sale a unos 200 km/s
+     * (en las fusiones reales de estrellas el gas expulsado es del orden de unos pocos por ciento de la menor y mucho más lento que
+     * la velocidad de escape de la estrella). La estrella nueva tiene más masa, más radio y otro color.
+     */
+    private void starMerger(int big, int small) {
+        merges++;
+        double mb = m[big], ms = m[small];
+        double M = mb + ms, lost = 0.03 * ms;
+        double cx = (x[big] * mb + x[small] * ms) / M, cy = (y[big] * mb + y[small] * ms) / M;
+        double cvx = (vx[big] * mb + vx[small] * ms) / M, cvy = (vy[big] * mb + vy[small] * ms) / M;
+        flashes.add(new Flash(cx, cy, 3.0, flashId++));
+        x[big] = cx; y[big] = cy; vx[big] = cvx; vy[big] = cvy;
+        m[big] = M - lost;
+        r[big] = Math.max(starRadius(m[big]), r[big]);
+        color[big] = starColor(m[big]);
+        double vej = 200 / 4.74047;            // 200 km/s en UA por año
+        for (int k = 0; k < 900; k++) {
+            double a = rnd.nextDouble() * 2 * Math.PI, sp = vej * (0.25 + rnd.nextDouble());
+            addParticle(cx + Math.cos(a) * r[big], cy + Math.sin(a) * r[big], cvx + Math.cos(a) * sp, cvy + Math.sin(a) * sp, 1);
+        }
+        removeBody(small);
         accValid = false;
     }
 
