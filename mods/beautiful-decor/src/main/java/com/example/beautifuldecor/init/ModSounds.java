@@ -31,6 +31,8 @@ public class ModSounds {
     public static final RegistryObject<SoundEvent> MOTORCYCLE_HORN = simple("motorcycle_horn");
     public static final RegistryObject<SoundEvent> MOTORCYCLE_START = simple("motorcycle_start");
     public static final RegistryObject<SoundEvent> GARAGE_DOOR = simple("garage_door");
+    /** V7.8.0: el tin del semáforo del cruce. */
+    public static final RegistryObject<SoundEvent> CROSSING_BELL = simple("crossing_bell");
 
     // ===== v2.1.0: bicicleta y camioneta =====
     public static final RegistryObject<SoundEvent> BICYCLE_BELL = simple("bicycle_bell");

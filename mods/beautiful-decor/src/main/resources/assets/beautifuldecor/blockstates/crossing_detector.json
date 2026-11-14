@@ -1,0 +1,10 @@
+{
+ "variants": {
+  "powered=false": {
+   "model": "beautifuldecor:block/crossing_detector_off"
+  },
+  "powered=true": {
+   "model": "beautifuldecor:block/crossing_detector_on"
+  }
+ }
+}

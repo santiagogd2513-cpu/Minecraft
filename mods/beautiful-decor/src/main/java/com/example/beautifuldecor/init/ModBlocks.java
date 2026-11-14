@@ -1309,6 +1309,27 @@ public class ModBlocks {
             () -> new StationControllerBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GRAY)
                     .strength(2.0f, 6.0f).sound(SoundType.METAL)));
 
+    // ===== V7.8.0: cruces de tren (detector, sostenedor, mecanismo, semáforo y barrera) =====
+    public static final RegistryObject<Block> CROSSING_DETECTOR = BLOCKS.register("crossing_detector",
+            () -> new com.example.beautifuldecor.block.CrossingDetectorBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_YELLOW)
+                    .strength(2.0f, 6.0f).sound(SoundType.METAL).noOcclusion()
+                    .lightLevel(state -> state.getValue(com.example.beautifuldecor.block.CrossingDetectorBlock.POWERED) ? 4 : 0)));
+    public static final RegistryObject<Block> CROSSING_POST = BLOCKS.register("crossing_post",
+            () -> new com.example.beautifuldecor.block.CrossingPostBlock(BlockBehaviour.Properties.of().mapColor(MapColor.METAL)
+                    .strength(2.0f, 6.0f).sound(SoundType.METAL).noOcclusion()));
+    public static final RegistryObject<Block> CROSSING_MECHANISM = BLOCKS.register("crossing_mechanism",
+            () -> new com.example.beautifuldecor.block.CrossingMechanismBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GRAY)
+                    .strength(2.0f, 6.0f).sound(SoundType.METAL).noOcclusion()));
+    public static final RegistryObject<Block> CROSSING_LIGHT = BLOCKS.register("crossing_light",
+            () -> new com.example.beautifuldecor.block.CrossingLightBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_RED)
+                    .strength(2.0f, 6.0f).sound(SoundType.METAL).noOcclusion()
+                    .lightLevel(state -> state.getValue(com.example.beautifuldecor.block.CrossingLightBlock.LAMP) > 0 ? 7 : 0)));
+    public static final RegistryObject<Block> CROSSING_BARRIER = BLOCKS.register("crossing_barrier",
+            () -> new com.example.beautifuldecor.block.CrossingBarrierBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_RED)
+                    .strength(1.5f, 6.0f).sound(SoundType.METAL).noOcclusion().noLootTable()
+                    .lightLevel(state -> state.getValue(com.example.beautifuldecor.block.CrossingBarrierBlock.PART) == 2
+                            && state.getValue(com.example.beautifuldecor.block.CrossingBarrierBlock.ARM) >= 2 ? 5 : 0)));
+
     /** Pantalla de pisos: se pega en cualquier cara y se vincula a un controlador. */
     public static final RegistryObject<Block> ELEVATOR_DISPLAY = BLOCKS.register("elevator_display",
             () -> new ElevatorDisplayBlock(BlockBehaviour.Properties.of().mapColor(MapColor.COLOR_GRAY)

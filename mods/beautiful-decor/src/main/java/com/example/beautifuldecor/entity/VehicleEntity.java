@@ -71,6 +71,13 @@ public abstract class VehicleEntity extends Entity implements PaintableVehicle, 
     /** V4.7.0: cantidad de objetos en el almacenamiento (sincronizada). */
     private static final EntityDataAccessor<Integer> CARGO =
             SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.INT);
+    /** V7.10.0: auto subido a una niñera: id del remolque (-1 = no, -2 = esperando a que cargue el remolque tras abrir el mundo), casilla (0 a 5) y avance por la rampa (bloques). */
+    private static final EntityDataAccessor<Integer> CARRIER =
+            SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> CARRY_SLOT =
+            SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Float> CARRY_PROG =
+            SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.FLOAT);
     /** V6.7.0: skin del vehículo (0 = la de siempre) y sirena encendida (solo en la skin de policía). */
     private static final EntityDataAccessor<Integer> SKIN =
             SynchedEntityData.defineId(VehicleEntity.class, EntityDataSerializers.INT);
@@ -306,6 +313,9 @@ public abstract class VehicleEntity extends Entity implements PaintableVehicle, 
         this.entityData.define(SKIN, 0);
         this.entityData.define(SIREN, Boolean.FALSE);
         this.entityData.define(CARGO, 0);
+        this.entityData.define(CARRIER, -1);
+        this.entityData.define(CARRY_SLOT, 0);
+        this.entityData.define(CARRY_PROG, 0.0f);
         this.entityData.define(PAINT_BODY, VehiclePaint.ORIGINAL);
         this.entityData.define(PAINT_HANDLE, VehiclePaint.ORIGINAL);
         this.entityData.define(PAINT_RIM, VehiclePaint.ORIGINAL);
@@ -419,6 +429,10 @@ public abstract class VehicleEntity extends Entity implements PaintableVehicle, 
         return this.cabButtons().length > 0;
     }
 
+    /** V7.9.0: botones del tablero propios de un vehículo (el enganche de la tractomula). Servidor, solo el conductor. */
+    protected void cabAction(ServerPlayer player, int action) {
+    }
+
     /** V6.3.0: acción del botón del interior al que apunta el jugador (distancia de rayo a punto menor que el radio del botón), o -1. */
     private int buttonUnderCrosshair(Player player) {
         double yaw = this.getYRot() * Mth.DEG_TO_RAD;
@@ -467,6 +481,8 @@ public abstract class VehicleEntity extends Entity implements PaintableVehicle, 
                     this.honk();
                 } else if (action == ACTION_SIREN) {
                     this.toggleSiren(sp);
+                } else {
+                    this.cabAction(sp, action);
                 }
             }
             return InteractionResult.sidedSuccess(this.level().isClientSide);
@@ -600,6 +616,10 @@ public abstract class VehicleEntity extends Entity implements PaintableVehicle, 
     public void tick() {
         super.tick();
         this.syncCargo();
+        if (this.isCarried()) {                                                // V7.10.0: sobre una niñera lo coloca el remolque
+            this.carriedTick();
+            return;
+        }
         this.tickLerp();
         VehicleLights.update(this, this.isLightOn(), false);      // V6.4.0: luz real delante de los faros
 
@@ -656,12 +676,93 @@ public abstract class VehicleEntity extends Entity implements PaintableVehicle, 
 
     @Override
     public void lerpTo(double x, double y, double z, float yRot, float xRot, int steps, boolean teleport) {
+        if (this.isCarried()) {
+            return;                                                          // V7.10.0: la posición la calcula el remolque
+        }
         this.lerpX = x;
         this.lerpY = y;
         this.lerpZ = z;
         this.lerpYRot = (double) yRot;
         this.lerpXRot = (double) xRot;
         this.lerpSteps = 10;
+    }
+
+    // =====================================================================================================
+    // V7.10.0: subido a una niñera
+    // =====================================================================================================
+
+    /** Servidor: cuánto va a esperar a que cargue el remolque tras abrir el mundo antes de bajarse solo. */
+    private int carryWait;
+    /** Servidor: UUID del remolque (para volver a engancharse al abrir el mundo). */
+    @Nullable
+    private java.util.UUID carrierUuid;
+    /** Servidor: +1 subiendo por la rampa, -1 bajando, 0 quieto. */
+    public int carryDir;
+
+    public boolean isCarried() {
+        return this.entityData.get(CARRIER) != -1;
+    }
+
+    public int getCarrierId() {
+        return this.entityData.get(CARRIER);
+    }
+
+    public int getCarrySlot() {
+        return this.entityData.get(CARRY_SLOT);
+    }
+
+    public float getCarryProg() {
+        return this.entityData.get(CARRY_PROG);
+    }
+
+    public void setCarryProg(float prog) {
+        this.entityData.set(CARRY_PROG, prog);
+    }
+
+    /** Servidor: lo sube a la casilla de la niñera; prog = por dónde va en el camino (bloques). */
+    public void attachTo(TrailerEntity trailer, int slot, float prog) {
+        this.entityData.set(CARRIER, trailer.getId());
+        this.entityData.set(CARRY_SLOT, slot);
+        this.entityData.set(CARRY_PROG, prog);
+        this.carrierUuid = trailer.getUUID();
+        this.carryDir = 1;
+        this.carryWait = 0;
+        this.setDeltaMovement(Vec3.ZERO);
+        this.speed = 0.0f;
+    }
+
+    /** Servidor: lo suelta (al bajar de la rampa o si el remolque desaparece). */
+    public void detach() {
+        this.entityData.set(CARRIER, -1);
+        this.carrierUuid = null;
+        this.carryDir = 0;
+        this.setDeltaMovement(Vec3.ZERO);
+        this.speed = 0.0f;
+    }
+
+    private void carriedTick() {
+        int id = this.entityData.get(CARRIER);
+        if (id >= 0) {
+            Entity e = this.level().getEntity(id);
+            if (e instanceof TrailerEntity t && !t.isRemoved()) {
+                t.registerCarried(this);
+            } else if (!this.level().isClientSide) {
+                this.detach();                                              // el remolque ya no está
+                return;
+            }
+        } else if (!this.level().isClientSide && this.level() instanceof ServerLevel sl) {
+            // recién abierto el mundo: busca su remolque (puede tardar en cargar)
+            Entity e = this.carrierUuid == null ? null : sl.getEntity(this.carrierUuid);
+            if (e instanceof TrailerEntity t && !t.isRemoved()) {
+                this.entityData.set(CARRIER, t.getId());
+                this.carryDir = 0;
+            } else if (++this.carryWait > 600) {
+                this.detach();
+            }
+        }
+        this.updateVisuals();
+        this.refreshHull();
+        VehicleLights.update(this, this.isLightOn(), false);
     }
 
     /** Servidor, sin conductor: gravedad y fricción (y sigue deslizando un poco si el conductor se bajó a toda velocidad). */
@@ -1004,6 +1105,13 @@ public abstract class VehicleEntity extends Entity implements PaintableVehicle, 
         this.entityData.set(RADIO_ON, url != null && tag.getBoolean("RadioOn"));
         this.entityData.set(RADIO_VOLUME, tag.contains("RadioVolume") ? RadioStations.clampVolume(tag.getInt("RadioVolume")) : RadioStations.DEFAULT_VOLUME);
         VehicleStorage.load(this.storage, tag);
+        if (tag.hasUUID("CarrierUuid")) {                                       // V7.10.0: seguía sobre una niñera
+            this.carrierUuid = tag.getUUID("CarrierUuid");
+            this.entityData.set(CARRIER, -2);
+            this.entityData.set(CARRY_SLOT, tag.getInt("CarrySlot"));
+            this.entityData.set(CARRY_PROG, tag.getFloat("CarryProg"));
+            this.carryWait = 0;
+        }
     }
 
     @Override
@@ -1017,6 +1125,11 @@ public abstract class VehicleEntity extends Entity implements PaintableVehicle, 
         tag.putBoolean("RadioOn", this.isRadioOn());
         tag.putInt("RadioVolume", this.getRadioVolume());
         VehicleStorage.save(this.storage, tag);
+        if (this.isCarried() && this.carrierUuid != null) {
+            tag.putUUID("CarrierUuid", this.carrierUuid);
+            tag.putInt("CarrySlot", this.getCarrySlot());
+            tag.putFloat("CarryProg", this.getCarryProg());
+        }
     }
 
     @Override

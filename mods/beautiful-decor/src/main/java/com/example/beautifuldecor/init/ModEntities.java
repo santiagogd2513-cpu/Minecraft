@@ -13,6 +13,8 @@ import com.example.beautifuldecor.entity.PickupEntity;
 import com.example.beautifuldecor.entity.SupercarEntity;
 import com.example.beautifuldecor.entity.RcCarEntity;
 import com.example.beautifuldecor.entity.SeatEntity;
+import com.example.beautifuldecor.entity.SemiTruckEntity;
+import com.example.beautifuldecor.entity.TrailerEntity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -81,6 +83,22 @@ public class ModEntities {
                     .updateInterval(1)
                     .fireImmune()
                     .build("beautifuldecor:delivery_truck"));
+
+    /** V7.9.0: tractomula KENWORT K880 (con quinta rueda) y sus remolques (un solo tipo de entidad: furgón, troncos o cisterna). */
+    public static final RegistryObject<EntityType<SemiTruckEntity>> SEMI_TRUCK = ENTITIES.register("semi_truck",
+            () -> EntityType.Builder.<SemiTruckEntity>of(SemiTruckEntity::new, MobCategory.MISC)
+                    .sized(2.8f, 3.5f)
+                    .clientTrackingRange(16)
+                    .updateInterval(1)
+                    .fireImmune()
+                    .build("beautifuldecor:semi_truck"));
+    public static final RegistryObject<EntityType<TrailerEntity>> TRAILER = ENTITIES.register("trailer",
+            () -> EntityType.Builder.<TrailerEntity>of(TrailerEntity::new, MobCategory.MISC)
+                    .sized(2.6f, 3.0f)
+                    .clientTrackingRange(16)
+                    .updateInterval(1)
+                    .fireImmune()
+                    .build("beautifuldecor:trailer"));
 
     /** V3.7.0: superdeportivo Bugotti Chillón (250 bloques por segundo, 2 asientos). La caja no gira: 2,1 x 1,3. */
     public static final RegistryObject<EntityType<SupercarEntity>> BUGOTTI_CHILLON = ENTITIES.register("bugotti_chillon",

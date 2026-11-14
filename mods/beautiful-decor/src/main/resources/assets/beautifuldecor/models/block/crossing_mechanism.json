@@ -1,0 +1,176 @@
+{
+ "parent": "block/block",
+ "textures": {
+  "metal": "beautifuldecor:block/metal",
+  "dark": "beautifuldecor:block/crossing_dark",
+  "yellow": "beautifuldecor:block/crossing_yellow",
+  "red": "beautifuldecor:block/crossing_red",
+  "white": "beautifuldecor:block/crossing_white",
+  "on": "beautifuldecor:block/signal_red_on",
+  "off": "beautifuldecor:block/signal_red_off",
+  "green": "beautifuldecor:block/signal_green_on",
+  "particle": "beautifuldecor:block/metal"
+ },
+ "elements": [
+  {
+   "from": [
+    3,
+    0,
+    3
+   ],
+   "to": [
+    13,
+    14,
+    13
+   ],
+   "faces": {
+    "north": {
+     "texture": "#dark"
+    },
+    "east": {
+     "texture": "#dark"
+    },
+    "south": {
+     "texture": "#dark"
+    },
+    "west": {
+     "texture": "#dark"
+    },
+    "up": {
+     "texture": "#dark"
+    },
+    "down": {
+     "texture": "#dark"
+    }
+   }
+  },
+  {
+   "from": [
+    2,
+    14,
+    2
+   ],
+   "to": [
+    14,
+    15,
+    14
+   ],
+   "faces": {
+    "north": {
+     "texture": "#metal"
+    },
+    "east": {
+     "texture": "#metal"
+    },
+    "south": {
+     "texture": "#metal"
+    },
+    "west": {
+     "texture": "#metal"
+    },
+    "up": {
+     "texture": "#metal"
+    },
+    "down": {
+     "texture": "#metal"
+    }
+   }
+  },
+  {
+   "from": [
+    13,
+    5,
+    6
+   ],
+   "to": [
+    16,
+    11,
+    10
+   ],
+   "faces": {
+    "north": {
+     "texture": "#metal"
+    },
+    "east": {
+     "texture": "#metal"
+    },
+    "south": {
+     "texture": "#metal"
+    },
+    "west": {
+     "texture": "#metal"
+    },
+    "up": {
+     "texture": "#metal"
+    },
+    "down": {
+     "texture": "#metal"
+    }
+   }
+  },
+  {
+   "from": [
+    3.5,
+    4,
+    2.5
+   ],
+   "to": [
+    12.5,
+    10,
+    3
+   ],
+   "faces": {
+    "north": {
+     "texture": "#yellow"
+    },
+    "east": {
+     "texture": "#yellow"
+    },
+    "south": {
+     "texture": "#yellow"
+    },
+    "west": {
+     "texture": "#yellow"
+    },
+    "up": {
+     "texture": "#yellow"
+    },
+    "down": {
+     "texture": "#yellow"
+    }
+   }
+  },
+  {
+   "from": [
+    3.5,
+    4,
+    13
+   ],
+   "to": [
+    12.5,
+    10,
+    13.5
+   ],
+   "faces": {
+    "north": {
+     "texture": "#yellow"
+    },
+    "east": {
+     "texture": "#yellow"
+    },
+    "south": {
+     "texture": "#yellow"
+    },
+    "west": {
+     "texture": "#yellow"
+    },
+    "up": {
+     "texture": "#yellow"
+    },
+    "down": {
+     "texture": "#yellow"
+    }
+   }
+  }
+ ]
+}

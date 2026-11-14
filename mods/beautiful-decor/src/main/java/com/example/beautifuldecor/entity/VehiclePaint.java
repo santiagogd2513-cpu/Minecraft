@@ -46,6 +46,8 @@ public final class VehiclePaint {
         COAL_WAGON("coal_wagon",     0x3A3E46, 0xE8C020, 0x8A8E98),
         FOOD_WAGON("food_wagon",     0x3F8038, 0xE8C020, 0x8A8E98),
         MINERAL_WAGON("mineral_wagon", 0xA5562B, 0xE8C020, 0x8A8E98),
+        // V7.9.0: tractomula
+        SEMI_TRUCK("semi_truck",     0xB5121B, 0xB0B6C2, 0xCED2DA),
         // V5.0.0: tren de pasajeros
         STEAM_CLASSIC("steam_classic", 0x24583E, 0xE8C020, 0x8A8E98),
         STEAM_MODERN("steam_modern", 0x223E76, 0xE8C020, 0x8A8E98),

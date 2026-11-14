@@ -1,0 +1,184 @@
+{
+ "variants": {
+  "facing=east,part=0,arm=0": {
+   "model": "beautifuldecor:block/crossing_arm_0_0"
+  },
+  "facing=east,part=1,arm=0": {
+   "model": "beautifuldecor:block/crossing_arm_empty"
+  },
+  "facing=east,part=2,arm=0": {
+   "model": "beautifuldecor:block/crossing_arm_empty"
+  },
+  "facing=east,part=0,arm=1": {
+   "model": "beautifuldecor:block/crossing_arm_1_0"
+  },
+  "facing=east,part=1,arm=1": {
+   "model": "beautifuldecor:block/crossing_arm_empty"
+  },
+  "facing=east,part=2,arm=1": {
+   "model": "beautifuldecor:block/crossing_arm_empty"
+  },
+  "facing=east,part=0,arm=2": {
+   "model": "beautifuldecor:block/crossing_arm_2_0"
+  },
+  "facing=east,part=1,arm=2": {
+   "model": "beautifuldecor:block/crossing_arm_2_1"
+  },
+  "facing=east,part=2,arm=2": {
+   "model": "beautifuldecor:block/crossing_arm_2_2"
+  },
+  "facing=east,part=0,arm=3": {
+   "model": "beautifuldecor:block/crossing_arm_3_0"
+  },
+  "facing=east,part=1,arm=3": {
+   "model": "beautifuldecor:block/crossing_arm_3_0"
+  },
+  "facing=east,part=2,arm=3": {
+   "model": "beautifuldecor:block/crossing_arm_3_2"
+  },
+  "facing=south,part=0,arm=0": {
+   "model": "beautifuldecor:block/crossing_arm_0_0",
+   "y": 90
+  },
+  "facing=south,part=1,arm=0": {
+   "model": "beautifuldecor:block/crossing_arm_empty",
+   "y": 90
+  },
+  "facing=south,part=2,arm=0": {
+   "model": "beautifuldecor:block/crossing_arm_empty",
+   "y": 90
+  },
+  "facing=south,part=0,arm=1": {
+   "model": "beautifuldecor:block/crossing_arm_1_0",
+   "y": 90
+  },
+  "facing=south,part=1,arm=1": {
+   "model": "beautifuldecor:block/crossing_arm_empty",
+   "y": 90
+  },
+  "facing=south,part=2,arm=1": {
+   "model": "beautifuldecor:block/crossing_arm_empty",
+   "y": 90
+  },
+  "facing=south,part=0,arm=2": {
+   "model": "beautifuldecor:block/crossing_arm_2_0",
+   "y": 90
+  },
+  "facing=south,part=1,arm=2": {
+   "model": "beautifuldecor:block/crossing_arm_2_1",
+   "y": 90
+  },
+  "facing=south,part=2,arm=2": {
+   "model": "beautifuldecor:block/crossing_arm_2_2",
+   "y": 90
+  },
+  "facing=south,part=0,arm=3": {
+   "model": "beautifuldecor:block/crossing_arm_3_0",
+   "y": 90
+  },
+  "facing=south,part=1,arm=3": {
+   "model": "beautifuldecor:block/crossing_arm_3_0",
+   "y": 90
+  },
+  "facing=south,part=2,arm=3": {
+   "model": "beautifuldecor:block/crossing_arm_3_2",
+   "y": 90
+  },
+  "facing=west,part=0,arm=0": {
+   "model": "beautifuldecor:block/crossing_arm_0_0",
+   "y": 180
+  },
+  "facing=west,part=1,arm=0": {
+   "model": "beautifuldecor:block/crossing_arm_empty",
+   "y": 180
+  },
+  "facing=west,part=2,arm=0": {
+   "model": "beautifuldecor:block/crossing_arm_empty",
+   "y": 180
+  },
+  "facing=west,part=0,arm=1": {
+   "model": "beautifuldecor:block/crossing_arm_1_0",
+   "y": 180
+  },
+  "facing=west,part=1,arm=1": {
+   "model": "beautifuldecor:block/crossing_arm_empty",
+   "y": 180
+  },
+  "facing=west,part=2,arm=1": {
+   "model": "beautifuldecor:block/crossing_arm_empty",
+   "y": 180
+  },
+  "facing=west,part=0,arm=2": {
+   "model": "beautifuldecor:block/crossing_arm_2_0",
+   "y": 180
+  },
+  "facing=west,part=1,arm=2": {
+   "model": "beautifuldecor:block/crossing_arm_2_1",
+   "y": 180
+  },
+  "facing=west,part=2,arm=2": {
+   "model": "beautifuldecor:block/crossing_arm_2_2",
+   "y": 180
+  },
+  "facing=west,part=0,arm=3": {
+   "model": "beautifuldecor:block/crossing_arm_3_0",
+   "y": 180
+  },
+  "facing=west,part=1,arm=3": {
+   "model": "beautifuldecor:block/crossing_arm_3_0",
+   "y": 180
+  },
+  "facing=west,part=2,arm=3": {
+   "model": "beautifuldecor:block/crossing_arm_3_2",
+   "y": 180
+  },
+  "facing=north,part=0,arm=0": {
+   "model": "beautifuldecor:block/crossing_arm_0_0",
+   "y": 270
+  },
+  "facing=north,part=1,arm=0": {
+   "model": "beautifuldecor:block/crossing_arm_empty",
+   "y": 270
+  },
+  "facing=north,part=2,arm=0": {
+   "model": "beautifuldecor:block/crossing_arm_empty",
+   "y": 270
+  },
+  "facing=north,part=0,arm=1": {
+   "model": "beautifuldecor:block/crossing_arm_1_0",
+   "y": 270
+  },
+  "facing=north,part=1,arm=1": {
+   "model": "beautifuldecor:block/crossing_arm_empty",
+   "y": 270
+  },
+  "facing=north,part=2,arm=1": {
+   "model": "beautifuldecor:block/crossing_arm_empty",
+   "y": 270
+  },
+  "facing=north,part=0,arm=2": {
+   "model": "beautifuldecor:block/crossing_arm_2_0",
+   "y": 270
+  },
+  "facing=north,part=1,arm=2": {
+   "model": "beautifuldecor:block/crossing_arm_2_1",
+   "y": 270
+  },
+  "facing=north,part=2,arm=2": {
+   "model": "beautifuldecor:block/crossing_arm_2_2",
+   "y": 270
+  },
+  "facing=north,part=0,arm=3": {
+   "model": "beautifuldecor:block/crossing_arm_3_0",
+   "y": 270
+  },
+  "facing=north,part=1,arm=3": {
+   "model": "beautifuldecor:block/crossing_arm_3_0",
+   "y": 270
+  },
+  "facing=north,part=2,arm=3": {
+   "model": "beautifuldecor:block/crossing_arm_3_2",
+   "y": 270
+  }
+ }
+}

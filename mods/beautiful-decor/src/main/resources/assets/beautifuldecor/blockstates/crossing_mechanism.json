@@ -1,0 +1,20 @@
+{
+ "variants": {
+  "facing=east": {
+   "model": "beautifuldecor:block/crossing_mechanism",
+   "y": 0
+  },
+  "facing=south": {
+   "model": "beautifuldecor:block/crossing_mechanism",
+   "y": 90
+  },
+  "facing=west": {
+   "model": "beautifuldecor:block/crossing_mechanism",
+   "y": 180
+  },
+  "facing=north": {
+   "model": "beautifuldecor:block/crossing_mechanism",
+   "y": 270
+  }
+ }
+}

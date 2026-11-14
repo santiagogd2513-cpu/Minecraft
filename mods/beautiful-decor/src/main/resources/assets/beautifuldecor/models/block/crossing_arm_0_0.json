@@ -1,0 +1,144 @@
+{
+ "parent": "block/block",
+ "textures": {
+  "metal": "beautifuldecor:block/metal",
+  "dark": "beautifuldecor:block/crossing_dark",
+  "yellow": "beautifuldecor:block/crossing_yellow",
+  "red": "beautifuldecor:block/crossing_red",
+  "white": "beautifuldecor:block/crossing_white",
+  "on": "beautifuldecor:block/signal_red_on",
+  "off": "beautifuldecor:block/signal_red_off",
+  "green": "beautifuldecor:block/signal_green_on",
+  "particle": "beautifuldecor:block/metal"
+ },
+ "elements": [
+  {
+   "from": [
+    0,
+    0,
+    7
+   ],
+   "to": [
+    2.4,
+    4,
+    9
+   ],
+   "faces": {
+    "north": {
+     "texture": "#red"
+    },
+    "east": {
+     "texture": "#red"
+    },
+    "south": {
+     "texture": "#red"
+    },
+    "west": {
+     "texture": "#red"
+    },
+    "up": {
+     "texture": "#red"
+    },
+    "down": {
+     "texture": "#red"
+    }
+   }
+  },
+  {
+   "from": [
+    0,
+    4,
+    7
+   ],
+   "to": [
+    2.4,
+    8,
+    9
+   ],
+   "faces": {
+    "north": {
+     "texture": "#white"
+    },
+    "east": {
+     "texture": "#white"
+    },
+    "south": {
+     "texture": "#white"
+    },
+    "west": {
+     "texture": "#white"
+    },
+    "up": {
+     "texture": "#white"
+    },
+    "down": {
+     "texture": "#white"
+    }
+   }
+  },
+  {
+   "from": [
+    0,
+    8,
+    7
+   ],
+   "to": [
+    2.4,
+    12,
+    9
+   ],
+   "faces": {
+    "north": {
+     "texture": "#red"
+    },
+    "east": {
+     "texture": "#red"
+    },
+    "south": {
+     "texture": "#red"
+    },
+    "west": {
+     "texture": "#red"
+    },
+    "up": {
+     "texture": "#red"
+    },
+    "down": {
+     "texture": "#red"
+    }
+   }
+  },
+  {
+   "from": [
+    0,
+    12,
+    7
+   ],
+   "to": [
+    2.4,
+    16,
+    9
+   ],
+   "faces": {
+    "north": {
+     "texture": "#white"
+    },
+    "east": {
+     "texture": "#white"
+    },
+    "south": {
+     "texture": "#white"
+    },
+    "west": {
+     "texture": "#white"
+    },
+    "up": {
+     "texture": "#white"
+    },
+    "down": {
+     "texture": "#white"
+    }
+   }
+  }
+ ]
+}

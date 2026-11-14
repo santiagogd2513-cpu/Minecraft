@@ -101,6 +101,20 @@ public class ModBlockEntities {
                     () -> BlockEntityType.Builder.of(StationControllerBlockEntity::new,
                             ModBlocks.STATION_CONTROLLER.get(), ModBlocks.DEPOT_CONTROLLER.get()).build(null));
 
+    // ===== V7.8.0: cruces de tren =====
+    public static final RegistryObject<BlockEntityType<com.example.beautifuldecor.block.entity.CrossingDetectorBlockEntity>> CROSSING_DETECTOR =
+            BLOCK_ENTITIES.register("crossing_detector",
+                    () -> BlockEntityType.Builder.of(com.example.beautifuldecor.block.entity.CrossingDetectorBlockEntity::new,
+                            ModBlocks.CROSSING_DETECTOR.get()).build(null));
+    public static final RegistryObject<BlockEntityType<com.example.beautifuldecor.block.entity.CrossingMechanismBlockEntity>> CROSSING_MECHANISM =
+            BLOCK_ENTITIES.register("crossing_mechanism",
+                    () -> BlockEntityType.Builder.of(com.example.beautifuldecor.block.entity.CrossingMechanismBlockEntity::new,
+                            ModBlocks.CROSSING_MECHANISM.get()).build(null));
+    public static final RegistryObject<BlockEntityType<com.example.beautifuldecor.block.entity.CrossingLightBlockEntity>> CROSSING_LIGHT =
+            BLOCK_ENTITIES.register("crossing_light",
+                    () -> BlockEntityType.Builder.of(com.example.beautifuldecor.block.entity.CrossingLightBlockEntity::new,
+                            ModBlocks.CROSSING_LIGHT.get()).build(null));
+
     // ===== V6.1.0: curvas anchas =====
     public static final RegistryObject<BlockEntityType<WideRailBlockEntity>> WIDE_RAIL =
             BLOCK_ENTITIES.register("wide_rail",

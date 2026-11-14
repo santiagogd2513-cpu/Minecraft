@@ -1,0 +1,52 @@
+{
+ "variants": {
+  "facing=north,lamp=0": {
+   "model": "beautifuldecor:block/crossing_light_0",
+   "y": 0
+  },
+  "facing=north,lamp=1": {
+   "model": "beautifuldecor:block/crossing_light_1",
+   "y": 0
+  },
+  "facing=north,lamp=2": {
+   "model": "beautifuldecor:block/crossing_light_2",
+   "y": 0
+  },
+  "facing=east,lamp=0": {
+   "model": "beautifuldecor:block/crossing_light_0",
+   "y": 90
+  },
+  "facing=east,lamp=1": {
+   "model": "beautifuldecor:block/crossing_light_1",
+   "y": 90
+  },
+  "facing=east,lamp=2": {
+   "model": "beautifuldecor:block/crossing_light_2",
+   "y": 90
+  },
+  "facing=south,lamp=0": {
+   "model": "beautifuldecor:block/crossing_light_0",
+   "y": 180
+  },
+  "facing=south,lamp=1": {
+   "model": "beautifuldecor:block/crossing_light_1",
+   "y": 180
+  },
+  "facing=south,lamp=2": {
+   "model": "beautifuldecor:block/crossing_light_2",
+   "y": 180
+  },
+  "facing=west,lamp=0": {
+   "model": "beautifuldecor:block/crossing_light_0",
+   "y": 270
+  },
+  "facing=west,lamp=1": {
+   "model": "beautifuldecor:block/crossing_light_1",
+   "y": 270
+  },
+  "facing=west,lamp=2": {
+   "model": "beautifuldecor:block/crossing_light_2",
+   "y": 270
+  }
+ }
+}

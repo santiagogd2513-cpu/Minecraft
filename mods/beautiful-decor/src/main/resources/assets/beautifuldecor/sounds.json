@@ -468,5 +468,14 @@
         "stream": true
       }
     ]
+  },
+  "crossing_bell": {
+    "subtitle": "subtitles.beautifuldecor.crossing_bell",
+    "sounds": [
+      {
+        "name": "beautifuldecor:crossing_bell",
+        "volume": 1.0
+      }
+    ]
   }
 }

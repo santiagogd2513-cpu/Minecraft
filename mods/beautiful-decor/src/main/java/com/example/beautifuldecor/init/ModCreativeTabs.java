@@ -123,10 +123,11 @@ public final class ModCreativeTabs {
                     .build());
 
     /** Ítems de la pestaña Parts, en orden. Agrega aquí cada pieza o complemento nuevo. */
-    public static final List<String> PARTS_IDS = List.of("freight_rail", "passenger_rail", "metro_rail", "train_remote", "station_controller", "depot_controller");
+    public static final List<String> PARTS_IDS = List.of("freight_rail", "passenger_rail", "metro_rail", "train_remote", "station_controller", "depot_controller",
+            "crossing_detector", "crossing_post", "crossing_mechanism", "crossing_light", "crossing_barrier");
 
     /** Ítems de la pestaña de vehículos, en orden. Agrega aquí cada vehículo conducible nuevo. */
-    public static final List<String> VEHICLE_IDS = List.of("bicycle", "motorcycle", "ford_f150", "delivery_truck", "helicopter", "bugotti_chillon", "airliner",
+    public static final List<String> VEHICLE_IDS = List.of("bicycle", "motorcycle", "ford_f150", "delivery_truck", "semi_truck", "trailer_cargo", "trailer_logs", "trailer_tank", "trailer_carrier", "helicopter", "bugotti_chillon", "airliner",
             "freight_loco", "coal_wagon", "food_wagon", "mineral_wagon",
             "steam_classic", "steam_modern", "coach_low", "coach_mid", "coach_high",
             "metro_head", "metro_car");

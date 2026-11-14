@@ -32,6 +32,8 @@ public class ClientEvents {
             EntityRenderers.register(ModEntities.BICYCLE.get(), BicycleRenderer::new);
             EntityRenderers.register(ModEntities.FORD_F150.get(), PickupRenderer::new);
             EntityRenderers.register(ModEntities.DELIVERY_TRUCK.get(), DeliveryTruckRenderer::new);
+            EntityRenderers.register(ModEntities.SEMI_TRUCK.get(), SemiTruckRenderer::new);          // V7.9.0
+            EntityRenderers.register(ModEntities.TRAILER.get(), TrailerRenderer::new);
             EntityRenderers.register(ModEntities.BUGOTTI_CHILLON.get(), SupercarRenderer::new);
             EntityRenderers.register(ModEntities.HELICOPTER.get(), HelicopterRenderer::new);
             EntityRenderers.register(ModEntities.AIRLINER.get(), AirlinerRenderer::new);
@@ -53,6 +55,11 @@ public class ClientEvents {
         event.registerLayerDefinition(BicycleModel.LAYER, BicycleModel::createBodyLayer);
         event.registerLayerDefinition(PickupModel.LAYER, PickupModel::createBodyLayer);
         event.registerLayerDefinition(DeliveryTruckModel.LAYER, DeliveryTruckModel::createBodyLayer);
+        event.registerLayerDefinition(SemiTruckModel.LAYER, SemiTruckModel::createBodyLayer);         // V7.9.0
+        event.registerLayerDefinition(TrailerCargoModel.LAYER, TrailerCargoModel::createBodyLayer);
+        event.registerLayerDefinition(TrailerLogsModel.LAYER, TrailerLogsModel::createBodyLayer);
+        event.registerLayerDefinition(TrailerTankModel.LAYER, TrailerTankModel::createBodyLayer);
+        event.registerLayerDefinition(TrailerCarrierModel.LAYER, TrailerCarrierModel::createBodyLayer);       // V7.10.0
         event.registerLayerDefinition(SupercarModel.LAYER, SupercarModel::createBodyLayer);
         event.registerLayerDefinition(HelicopterModel.LAYER, HelicopterModel::createBodyLayer);
         event.registerLayerDefinition(AirlinerModel.LAYER, AirlinerModel::createBodyLayer);

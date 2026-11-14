@@ -50,6 +50,9 @@ public final class VehicleCameraZoom {
         if (vehicle instanceof HelicopterEntity) {
             return 14.0;
         }
+        if (vehicle instanceof com.example.beautifuldecor.entity.SemiTruckEntity) {
+            return 16.0;                    // V7.9.0: tractomula (con el remolque detrás)
+        }
         if (vehicle instanceof DeliveryTruckEntity) {
             return 10.5;
         }

@@ -10,6 +10,7 @@ import com.example.beautifuldecor.item.AirlinerItem;
 import com.example.beautifuldecor.item.TrainCarItem;
 import com.example.beautifuldecor.item.PaSpeakerItem;
 import com.example.beautifuldecor.item.HelicopterItem;
+import com.example.beautifuldecor.item.TrailerItem;
 import com.example.beautifuldecor.item.VehicleItem;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.level.block.Block;
@@ -394,6 +395,17 @@ public class ModItems {
     /** V3.0.0: camión de reparto y helicóptero. */
     public static final RegistryObject<Item> DELIVERY_TRUCK = ITEMS.register("delivery_truck",
             () -> new VehicleItem(ModEntities.DELIVERY_TRUCK::get, new Item.Properties().stacksTo(1)));
+    /** V7.9.0: tractomula KENWORT K880 y sus remolques. */
+    public static final RegistryObject<Item> SEMI_TRUCK = ITEMS.register("semi_truck",
+            () -> new VehicleItem(ModEntities.SEMI_TRUCK::get, new Item.Properties().stacksTo(1)));
+    public static final RegistryObject<Item> TRAILER_CARGO = ITEMS.register("trailer_cargo",
+            () -> new TrailerItem(com.example.beautifuldecor.entity.TrailerEntity.CARGO, new Item.Properties().stacksTo(1)));
+    public static final RegistryObject<Item> TRAILER_LOGS = ITEMS.register("trailer_logs",
+            () -> new TrailerItem(com.example.beautifuldecor.entity.TrailerEntity.LOGS, new Item.Properties().stacksTo(1)));
+    public static final RegistryObject<Item> TRAILER_CARRIER = ITEMS.register("trailer_carrier",
+            () -> new TrailerItem(com.example.beautifuldecor.entity.TrailerEntity.CARRIER, new Item.Properties().stacksTo(1)));
+    public static final RegistryObject<Item> TRAILER_TANK = ITEMS.register("trailer_tank",
+            () -> new TrailerItem(com.example.beautifuldecor.entity.TrailerEntity.TANK, new Item.Properties().stacksTo(1)));
     public static final RegistryObject<Item> HELICOPTER = ITEMS.register("helicopter",
             () -> new HelicopterItem(ModEntities.HELICOPTER::get, new Item.Properties().stacksTo(1)));
     /** V3.7.0: superdeportivo Bugotti Chillón. */
@@ -544,6 +556,18 @@ public class ModItems {
             () -> new BlockItem(ModBlocks.STATION_CONTROLLER.get(), new Item.Properties()));
     public static final RegistryObject<Item> TRAIN_REMOTE = ITEMS.register("train_remote",
             () -> new com.example.beautifuldecor.item.TrainRemoteItem());
+
+    // V7.8.0: cruces de tren
+    public static final RegistryObject<Item> CROSSING_DETECTOR = ITEMS.register("crossing_detector",
+            () -> new BlockItem(ModBlocks.CROSSING_DETECTOR.get(), new Item.Properties()));
+    public static final RegistryObject<Item> CROSSING_POST = ITEMS.register("crossing_post",
+            () -> new BlockItem(ModBlocks.CROSSING_POST.get(), new Item.Properties()));
+    public static final RegistryObject<Item> CROSSING_MECHANISM = ITEMS.register("crossing_mechanism",
+            () -> new BlockItem(ModBlocks.CROSSING_MECHANISM.get(), new Item.Properties()));
+    public static final RegistryObject<Item> CROSSING_LIGHT = ITEMS.register("crossing_light",
+            () -> new BlockItem(ModBlocks.CROSSING_LIGHT.get(), new Item.Properties()));
+    public static final RegistryObject<Item> CROSSING_BARRIER = ITEMS.register("crossing_barrier",
+            () -> new com.example.beautifuldecor.item.CrossingBarrierItem(new Item.Properties()));
 
     public static final RegistryObject<Item> ELEVATOR_CONTROLLER = ITEMS.register("elevator_controller",
             () -> new BlockItem(ModBlocks.ELEVATOR_CONTROLLER.get(), new Item.Properties()));

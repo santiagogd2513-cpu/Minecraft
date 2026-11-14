@@ -1,3 +1,34 @@
+PARCHE V7.10.0
+==============
+- REMOLQUE NIÑERA DE DOS PISOS (pestaña de vehículos): 3 autos abajo y 3 autos arriba (camioneta y superdeportivo). Se engancha igual que los demás remolques.
+  - Botón azul del tablero de la tractomula (el que está entre el naranja y el de la radio) o clic derecho en la niñera: cambia la rampa en este orden: cerradas, rampa baja abierta (piso de abajo), rampa alta abierta (piso de arriba), cerradas. Las rampas bajan y suben despacio.
+  - Subir un auto: abre la rampa del piso que quieras, maneja el auto despacio y derecho hacia la rampa (con la tecla de avance apretada) y a unos 3 bloques del borde de la rampa se sube solo: sube por la rampa y se acomoda en la primera casilla libre del piso (se llenan de adelante hacia atrás). Puedes quedarte sentado dentro.
+  - Bajar un auto: con la rampa de su piso abierta, estando sentado en el auto aprieta avance o retroceso: baja por la rampa y queda en el suelo listo para manejar. Solo baja el auto más cercano a la rampa de ese piso (los de adelante esperan).
+  - El peso de los autos suma a la física del tractor. No se puede recoger la niñera con autos encima ni cambiar la rampa mientras un auto sube o baja.
+  - Las motos, bicis y camiones no se suben. Los autos no se inclinan con la cuesta (la niñera sí).
+  - El tractor ahora tiene un botón azul más en el tablero (la tractomula se volvió a generar: la pintura sigue igual).
+
+PARCHE V7.9.0
+=============
+- TRACTOMULA KENWORT K880 (parodia de la marca famosa) y 3 REMOLQUES (pestaña de vehículos). La tractomula se maneja como los demás vehículos, tiene 2 asientos, 3 filas de almacenamiento, radio, luces y se puede repintar con la tecla R (carrocería, manijas y rines). Con remolque pesa más y arranca y frena más despacio (la masa y la carga del remolque entran a la física).
+  - Enganche: retrocede con el tractor por debajo de un remolque suelto (a baja velocidad y bien alineado) y se engancha solo; o aprieta el botón naranja del tablero (a la izquierda de la radio): engancha el remolque suelto que esté cerca de la quinta rueda y, si ya lleva uno, lo suelta. Suelto, el remolque baja sus patas de apoyo.
+  - El remolque sigue al tractor con un modelo de barra rígida (el eje trasero va por donde iba el perno), así que en las curvas cierra por dentro como uno de verdad; si se dobla demasiado al retroceder se detiene a unos 82 grados. Se inclina para seguir las cuestas.
+  - Remolque de carga: furgón con 6 filas de almacenamiento (clic derecho).
+  - Remolque maderero: clic derecho con un tronco lo sube a la pila (agachado: todo lo que lleves en la mano); con la mano vacía baja el último tronco (agachado: una pila). Caben 440 troncos, se ven en la plataforma y pesan en la física.
+  - Remolque cisterna: 32 cubos. Clic derecho con un cubo de agua, lava o leche lo llena; con un cubo vacío saca un cubo de lo que lleve. También funcionan los recipientes de líquidos de otros mods. No mezcla líquidos.
+  - Recoger un remolque suelto: un golpe (la cisterna tiene que estar vacía; lo demás cae al suelo).
+  - Todavía no: el remolque niñera con rampa para subir autos (viene en la siguiente versión), pintar los remolques, y el remolque no tiene colisión propia (en curvas muy cerradas puede atravesar una pared).
+
+PARCHE V7.8.0
+=============
+- CRUCES DE TREN (pestaña Parts): 5 piezas para armar un paso a nivel.
+  - Detector de trenes: va junto a la vía. Detecta trenes en movimiento a 18 bloques o más (un tren rápido se avisa antes, para que dé tiempo a bajar la barrera) y se queda encendido 3 segundos después de que pase. También da señal de redstone (15) mientras hay tren.
+  - Sostenedor: el poste base; se apilan los que se quiera para dar altura.
+  - Mecanismo de barrera: va sobre el sostenedor. Clic derecho con la barrera en un lado del mecanismo pone la barrera hacia ese lado (3 bloques de largo). Cuando hay tren espera 2 segundos y baja la barrera en 4 pasos; cuando el tren pasa la sube. Si un tren en movimiento choca con la barrera, la rompe.
+  - Semáforo de cruce: va sobre el mecanismo (o donde quieras). Con tren cerca alterna sus dos luces rojas cada medio segundo y suena el tin, tin, tin.
+  - Barrera: 3 bloques seguidos (rojo y blanco, luz roja en la punta). Cerrada bloquea vehículos y jugadores; se quita de un golpe (se van los 3 tramos).
+  - Los mecanismos y semáforos le hacen caso a los detectores que estén a menos de 8 bloques.
+
 PARCHE V7.7.1
 =============
 - HELICÓPTERO: ya vuelve a despegar y a volar. Era un error de la caja de colisión (V6.13.0): después de cada movimiento se corregía de más la posición y el helicóptero se empujaba hacia delante unos 1,6 bloques por tick en cuanto se movía (al subir salía disparado). Ahora la posición se corrige solo cuando hace falta. El mismo arreglo evita un empujoncito parecido en la camioneta, el camión, el superdeportivo, la moto y la bici. La física de vuelo no se tocó.
