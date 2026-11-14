@@ -1337,5 +1337,6 @@
   "hud.beautifuldecor.ramp_none": "Este remolque no tiene rampa",
   "hud.beautifuldecor.ramp_no_trailer": "No llevas ningún remolque enganchado",
   "hud.beautifuldecor.ramp_blocked": "Primero tiene que bajar el auto de atrás",
-  "hud.beautifuldecor.trailer_has_cars": "Baja los autos antes de recoger la niñera"
+  "hud.beautifuldecor.trailer_has_cars": "Baja los autos antes de recoger la niñera",
+  "hud.beautifuldecor.train_cargo_over": "Carga: %s / %s (¡desbordando!) · Peso total: %s t"
 }

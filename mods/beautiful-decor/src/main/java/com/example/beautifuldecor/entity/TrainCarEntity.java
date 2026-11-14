@@ -485,10 +485,19 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
         return this.entityData.get(FILL);
     }
 
-    /** Qué tan lleno está (0..1). */
+    /** V7.10.1: los vagones de carga se pueden sobrecargar hasta este múltiplo de su capacidad: el montón se desborda por arriba y sigue pesando más. */
+    public static final double OVERFILL = 2.0;
+
+    /** Tope real de carga (en unidades): el ténder de vapor no se sobrecarga; los vagones de carga sí. */
+    public int maxUnits() {
+        Variant v = this.variant();
+        return v.isSteam() ? v.capacity : (int) Math.round(v.capacity * OVERFILL);
+    }
+
+    /** Qué tan lleno está: 0..1 normal; pasa de 1 cuando la carga se desborda (hasta {@link #OVERFILL}). */
     public float fillFraction() {
         int cap = this.variant().capacity;
-        return cap <= 0 ? 0.0f : Mth.clamp((float) this.fillUnits() / (float) cap, 0.0f, 1.0f);
+        return cap <= 0 ? 0.0f : Mth.clamp((float) this.fillUnits() / (float) cap, 0.0f, (float) (this.variant().isSteam() ? 1.0 : OVERFILL));
     }
 
     // =====================================================================================================
@@ -537,7 +546,7 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
             return 0;
         }
         int per = unitsPer(stack);
-        int room = (this.variant().capacity - this.units) / per;
+        int room = (this.maxUnits() - this.units) / per;
         int n = Math.min(stack.getCount(), room);
         if (n <= 0) {
             return 0;
@@ -592,8 +601,8 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
             player.displayClientMessage(Component.translatable("hud.beautifuldecor.train_fuel", this.fillUnits(), v.capacity), true);
             return;
         }
-        player.displayClientMessage(Component.translatable("hud.beautifuldecor.train_cargo", this.fillUnits(), v.capacity,
-                String.format("%.1f", this.totalMassKg() / 1000.0)), true);
+        player.displayClientMessage(Component.translatable(this.fillUnits() > v.capacity ? "hud.beautifuldecor.train_cargo_over" : "hud.beautifuldecor.train_cargo",
+                this.fillUnits(), v.capacity, String.format("%.1f", this.totalMassKg() / 1000.0)), true);
     }
 
     // =====================================================================================================
@@ -746,7 +755,7 @@ public class TrainCarEntity extends Entity implements PaintableVehicle {
             int moved = this.addCargo(held);
             if (player.isSecondaryUseActive()) {
                 // agachado: también pasa del inventario todo lo que sea de la misma clase
-                for (int i = 0; i < player.getInventory().getContainerSize() && this.fillUnits() < v.capacity; i++) {
+                for (int i = 0; i < player.getInventory().getContainerSize() && this.fillUnits() < this.maxUnits(); i++) {
                     ItemStack slot = player.getInventory().getItem(i);
                     if (slot != held && ItemStack.isSameItemSameTags(slot, held)) {
                         moved += this.addCargo(slot);

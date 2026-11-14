@@ -123,17 +123,21 @@ public class TrainCarRenderer extends EntityRenderer<TrainCarEntity> {
 
     private static void drawCargo(PoseStack poseStack, VertexConsumer vc, int light, float fill, float maxHeight, float halfX, float halfZ, int seed) {
         PoseStack.Pose pose = poseStack.last();
-        float h = fill * maxHeight;
+        // V7.10.1: pasado el 100% el montón sigue subiendo (hasta 1,5 veces más alto), con los lados menos inclinados y rebasando un poco las paredes
+        float over = Math.max(0.0f, Math.min(1.0f, fill - 1.0f));
+        float h = fill <= 1.0f ? fill * maxHeight : maxHeight * (1.0f + 0.5f * over);
         float t = maxHeight / LAYERS;
-        for (int j = 0; j < LAYERS; j++) {
+        float widen = 1.0f + 0.1f * over;
+        for (int j = 0; j < LAYERS * 2; j++) {
             float y0 = j * t;
             if (h <= y0) {
                 break;
             }
             float y1 = Math.min(h, (j + 1) * t);
-            float shrink = 0.32f * (float) Math.pow(j / (float) (LAYERS - 1), 1.5);
-            float hx = halfX * (1.0f - shrink);
-            float hz = halfZ * (1.0f - shrink * 0.8f);
+            float frac = Math.min(1.0f, j / (float) (LAYERS - 1) * (1.0f - 0.5f * over));
+            float shrink = 0.32f * (float) Math.pow(frac, 1.5);
+            float hx = halfX * widen * (1.0f - shrink);
+            float hz = (halfZ + 0.4f * over) * (1.0f - shrink * 0.8f);
             box(pose, vc, light, -hx, FLOOR + y0, -hz, hx, FLOOR + y1, hz, seed + j * 31);
         }
     }

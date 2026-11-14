@@ -1,0 +1,4 @@
+-proc:none
+-d
+/tmp/jc2
+com/example/beautifuldecor/client/TrainCarRenderer.java

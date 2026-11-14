@@ -1337,5 +1337,6 @@
   "hud.beautifuldecor.ramp_none": "This trailer has no ramp",
   "hud.beautifuldecor.ramp_no_trailer": "You are not towing a trailer",
   "hud.beautifuldecor.ramp_blocked": "The car behind has to get off first",
-  "hud.beautifuldecor.trailer_has_cars": "Unload the cars before picking up the carrier"
+  "hud.beautifuldecor.trailer_has_cars": "Unload the cars before picking up the carrier",
+  "hud.beautifuldecor.train_cargo_over": "Cargo: %s / %s (overflowing!) · Total weight: %s t"
 }

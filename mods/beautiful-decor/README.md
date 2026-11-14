@@ -2,6 +2,9 @@
 
 Mod de decoración para **Minecraft 1.20.1** / **Forge 47.4.5**.
 
+## V7.10.1
+- Vagones de carga del tren (carbón, comida y minerales): ya se pueden sobrecargar hasta el doble de su capacidad. Pasado el 100% el montón sigue creciendo y se desborda por arriba y por los lados, y el peso sigue subiendo con cada objeto (más pesado = más difícil de arrancar y más carga sobre los puentes). El mensaje al hacer clic avisa "¡desbordando!". El ténder de las locomotoras de vapor mantiene su tope.
+
 ## V7.10.0
 - REMOLQUE NIÑERA DE DOS PISOS (pestaña de vehículos): 3 autos abajo y 3 autos arriba (camioneta y superdeportivo). Se engancha igual que los demás remolques.
   - Botón azul del tablero de la tractomula (el que está entre el naranja y el de la radio) o clic derecho en la niñera: cambia la rampa en este orden: cerradas, rampa baja abierta (piso de abajo), rampa alta abierta (piso de arriba), cerradas. Las rampas bajan y suben despacio.
