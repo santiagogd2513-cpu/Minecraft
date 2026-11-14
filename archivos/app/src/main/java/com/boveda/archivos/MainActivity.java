@@ -1160,6 +1160,9 @@ public class MainActivity extends Activity implements TransferEngine.Listener {
                     box.addView(netRow("🤝", 0xFF6D4C41, 0xFFA1887F, L.t("Modo prestado"),
                             L.t("Préstale el teléfono a alguien: solo ve una carpeta. Selecciona la carpeta, toca ⋮ y elige «Modo prestado»."),
                             v -> Toast.makeText(this, L.t("Selecciona una carpeta, toca ⋮ y elige «Modo prestado»."), Toast.LENGTH_LONG).show(), null));
+                    box.addView(netRow("📱", 0xFF3949AB, 0xFF5C6BC0, L.t("Celular a celular"),
+                            L.t("Conecta dos celulares con un cable USB: ver sus archivos, pasar fotos, música y los instaladores de las apps"),
+                            v -> startActivity(new Intent(this, LinkActivity.class)), null));
                     box.addView(section(L.t("Imágenes")));
                     box.addView(netRow("📐", 0xFF00897B, 0xFF4DB6AC, L.t("Cambiar tamaño o recortar"),
                             L.t("Medidas exactas (64×64, 512×720…), estirar, ajustar o recortar, y pixelado nítido para texturas"),

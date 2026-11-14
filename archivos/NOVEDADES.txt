@@ -1,3 +1,12 @@
+## 91
+📱↔📱 Celular a celular (por cable USB)
+- Herramientas → «Celular a celular». Conectas dos celulares con un cable USB (si hace falta, con un adaptador OTG en uno) y abres esa pantalla en los dos: uno elige «comparte» y el otro «mira».
+- El que comparte marca qué carpetas se ven (Descargas, Cámara, Imágenes, Documentos, Música, Videos), si deja ver los instaladores de sus apps (APK) y si deja que le envíen archivos. Lo demás no existe para el otro. Antes de entrar, el que comparte tiene que aceptar.
+- El que mira puede entrar a las carpetas, bajar un archivo o una carpeta entera (con cancelar) y subir archivos a «Recibidos».
+- Usa el modo accesorio USB de Android. El otro celular no puede borrar nada.
+- Lo que no se puede: pasar cuentas, contraseñas ni los datos de las apps; Android no deja a ninguna app copiarlos. Las apps van sin sus datos y las que vienen en varias partes pueden no instalarse solas.
+- Probado en el computador: el protocolo (archivos grandes idénticos bit a bit, rutas trampa bloqueadas, un byte dañado se detecta, cable cortado, cancelar). Sin probar con dos celulares todavía.
+
 ## 90
 🎨 El selector de archivos de Bóveda estrena el diseño nuevo
 - Cuando eliges un archivo (desde las herramientas o desde otra app), el inicio ahora tiene las tarjetas nuevas: almacenamientos arriba y cuadros de Accesos directos, Ancladas y Favoritas, en vez de la lista vieja.
