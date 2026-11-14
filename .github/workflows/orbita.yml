@@ -1,0 +1,73 @@
+name: Orbita
+
+on:
+  push:
+    branches: [ "**" ]
+    paths: [ "orbita/**", ".github/workflows/orbita.yml" ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: orbita-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  apk:
+    name: Compilar Órbita (APK)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: orbita
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Probar la física (gravedad, órbitas, choques)
+        run: bash test/probar.sh
+
+      - uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: "8.14.3"
+
+      - name: Compilar
+        run: gradle assembleRelease --stacktrace
+
+      - name: Preparar
+        env:
+          FIRMA_CLAVE: ${{ secrets.FIRMA_CLAVE }}
+        run: |
+          mkdir -p ../dist
+          if [ -z "${FIRMA_CLAVE:-}" ]; then echo "::error::Falta el secreto FIRMA_CLAVE (Settings → Secrets and variables → Actions)"; exit 1; fi
+          BT="$ANDROID_HOME/build-tools/$(ls "$ANDROID_HOME/build-tools" | sort -V | tail -1)"
+          UNSIGNED=$(ls app/build/outputs/apk/release/*.apk | head -1)
+          # alinear y firmar con la llave oficial de Forja Estudios
+          "$BT/zipalign" -f -p 4 "$UNSIGNED" alineado.apk
+          "$BT/apksigner" sign --ks app/firma-orbita.p12 --ks-key-alias arca --ks-pass env:FIRMA_CLAVE --key-pass env:FIRMA_CLAVE \
+            --out ../dist/Orbita.apk alineado.apk
+          "$BT/apksigner" verify --print-certs ../dist/Orbita.apk | head -2
+          cp NOVEDADES.txt ../dist/novedades.txt
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: Orbita-apk
+          path: dist/Orbita.apk
+
+      - name: Publicar
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: orbita-${{ github.run_number }}
+          name: "Órbita beta #${{ github.run_number }} (simulador del espacio para Android)"
+          target_commitish: ${{ github.sha }}
+          make_latest: false
+          body: |
+            **Órbita** (beta), de Forja Estudios: simulador del espacio con gravedad real. Sistema solar, órbitas, asteroides y choques.
+            Descarga `Orbita.apk` (con Chrome, no desde otra app) e instálalo.
+          files: |
+            dist/Orbita.apk
+            dist/novedades.txt

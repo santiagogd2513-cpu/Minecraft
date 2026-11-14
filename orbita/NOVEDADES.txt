@@ -1,0 +1,8 @@
+## Beta 1
+🪐 Órbita: primera versión
+- El sistema solar de verdad: el Sol, los ocho planetas y la Luna, con gravedad real. Las órbitas se mantienen estables (probado en el computador: 100 años sin que la Tierra se salga de su órbita).
+- Cámara: arrastra para mover, pellizca para acercar. Toca un cuerpo para seguirlo y ver su masa y velocidad; toca el vacío para soltar la cámara.
+- Velocidad del tiempo: de 1 día por segundo a 3 años por segundo, y pausa.
+- Objetos: asteroide, lluvia de asteroides, roca grande, planeta, gigante gaseoso, estrella roja y un cinturón de asteroides. Toca y arrastra para lanzar; sale una línea de puntos con el camino que seguirá.
+- Choques: un asteroide que cae en un planeta deja un destello. Dos cuerpos lentos se funden en uno solo; a gran velocidad el más pequeño se rompe en escombros.
+- Sin probar todavía en un celular.
