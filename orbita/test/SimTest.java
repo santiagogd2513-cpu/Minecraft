@@ -57,7 +57,7 @@ public class SimTest {
             for (int i = 0; i < 2000 && s.np == antes; i++) s.step(1.0 / 20000);
             check(s.np == antes - 1 && s.impacts == 1 && s.flashes.size() == 1, "el asteroide choca con la Tierra y se borra (impactos: " + s.impacts + ")");
         }
-        // 5) Choque suave entre dos planetas: se funden y se conserva masa y momento
+        // 5) Choque suave entre dos planetas: se funden, pero con escombros
         {
             Sim s = new Sim();
             s.addBody("Sol", Sim.STAR, 1, 0.00465, 0, 0, 0, 0, 0);
@@ -65,11 +65,11 @@ public class SimTest {
             s.addBody("A", Sim.PLANET, 3e-6, 4e-5, 1, 0, 0, v, 0);
             s.addBody("B", Sim.PLANET, 1e-6, 3e-5, 1.0003, 0, 0, v * 0.98, 0);
             double M0 = s.totalMass();
-            double[] p0 = s.momentum();
             for (int i = 0; i < 20000 && s.merges == 0; i++) s.step(1.0 / 20000);
             check(s.merges == 1 && s.n == 2, "dos planetas lentos se funden (cuerpos: " + s.n + ")");
-            double[] p1 = s.momentum();
-            check(Math.abs(s.totalMass() - M0) < 1e-15 && Math.hypot(p1[0] - p0[0], p1[1] - p0[1]) < 1e-12, "se conserva la masa y el momento en la fusión");
+            check(s.np >= 300 && s.np <= 5000, "y sueltan escombros: " + s.np + " pedazos");
+            double lost = M0 - s.totalMass();
+            check(lost > 0.03 * 1e-6 * 0.99 && lost < 0.4 * 1e-6, "pierde entre el 3 % y el 40 % de la masa del menor: " + (lost / 1e-6 * 100) + " %");
         }
         // 6) Choque violento: el pequeño se rompe en escombros
         {
@@ -79,6 +79,47 @@ public class SimTest {
             s.addBody("Peq", Sim.ROCK, 3e-8, 1e-5, 1.003, 0, -60, 0, 0);
             for (int i = 0; i < 500 && s.shatters == 0; i++) s.step(1e-6);
             check(s.shatters == 1 && s.np > 50, "un choque a gran velocidad se rompe en escombros: " + s.np + " pedazos");
+        }
+        // 6c) Choque gigante: Marte contra la Tierra deja escombros que se enroscan y caen
+        {
+            Sim s = Sim.solarSystem();
+            int t = s.find("Tierra"), mars = s.find("Marte");
+            // Marte (más pequeño) se acerca a la Tierra con una velocidad moderada
+            s.m[mars] = 3.23e-7; s.r[mars] = 2.27e-5;
+            s.x[mars] = s.x[t] + 0.004; s.y[mars] = s.y[t]; s.vx[mars] = s.vx[t] - 1.2; s.vy[mars] = s.vy[t];
+            s.accValid = false;
+            int antes = s.n;
+            for (int i = 0; i < 40000 && s.n == antes; i++) s.step(1.0 / 100000);
+            check(s.n == antes - 1, "Marte choca con la Tierra y quedan " + s.n + " cuerpos");
+            int sueltos = s.np;
+            check(sueltos >= 800, "sale una nube de escombros: " + sueltos);
+            int imp0 = s.impacts;
+            for (int i = 0; i < 20000; i++) s.step(1.0 / 20000);
+            int caidos = s.impacts - imp0;
+            check(caidos > 0, "con el tiempo parte de los escombros cae sobre la Tierra (" + caidos + ")");
+            int cerca = 0, tierra = s.find("Tierra");
+            for (int i = 0; i < s.np; i++) if (Math.hypot(s.px[i] - s.x[tierra], s.py[i] - s.y[tierra]) < 0.02) cerca++;
+            check(cerca > 50, "y otra parte sigue girando cerca de la Tierra, como anillo o serpiente (" + cerca + " de " + s.np + ")");
+        }
+        // 6d) Límite de Roche: una luna que se acerca demasiado se despedaza
+        {
+            Sim s = Sim.solarSystem();
+            int t = s.find("Tierra"), luna = s.find("Luna");
+            // la Luna cae hacia la Tierra: se le quita velocidad para que baje hasta pasar rozando
+            double dx = s.x[luna] - s.x[t], dy = s.y[luna] - s.y[t];
+            s.vx[luna] = s.vx[t] + (-dy) / Math.hypot(dx, dy) * 0.12; s.vy[luna] = s.vy[t] + dx / Math.hypot(dx, dy) * 0.12;
+            s.accValid = false;
+            int antes = s.n;
+            for (int i = 0; i < 60000 && s.disruptions == 0 && s.merges == 0; i++) s.step(1.0 / 100000);
+            check(s.disruptions == 1 && s.n == antes - 1, "la Luna se despedaza al cruzar el límite de Roche (desrupciones: " + s.disruptions + ")");
+            check(s.np >= 4000, "se convierte en una nube de " + s.np + " pedazos");
+            int imp0 = s.impacts;
+            for (int i = 0; i < 40000; i++) s.step(1.0 / 20000);
+            int tierra = s.find("Tierra");
+            int ligados = 0;
+            for (int i = 0; i < s.np; i++) if (Math.hypot(s.px[i] - s.x[tierra], s.py[i] - s.y[tierra]) < 0.03) ligados++;
+            check(s.impacts - imp0 > 100, "muchos pedazos caen sobre la Tierra: " + (s.impacts - imp0));
+            check(ligados > 500, "y una parte forma un anillo alrededor: " + ligados + " pedazos a menos de 0.03 UA");
         }
         // 6a) Dos estrellas: se funden, con gas expulsado, más masa, más radio y otro color
         {
@@ -118,11 +159,12 @@ public class SimTest {
         {
             Sim s = Sim.solarSystem();
             s.addBelt(5000, 2.2, 3.2, 0.1);
+            for (int i = 0; i < 35000; i++) s.addParticle(2.5 + i * 1e-5, 0, 0, 1, 0);   // hasta 40.000 en total
             long t0 = System.nanoTime();
             for (int i = 0; i < 2000; i++) s.step(1.0 / 2000);   // 1 año
             double sec = (System.nanoTime() - t0) / 1e9;
             System.out.println("1 año simulado con 5000 asteroides: " + sec + " s");
-            check(sec < 8, "5000 asteroides + 10 cuerpos: 1 año en " + String.format("%.2f", sec) + " s");
+            check(sec < 40, "40.000 partículas + 10 cuerpos: 1 año en " + String.format("%.2f", sec) + " s");
         }
         System.out.println(fails == 0 ? "TODO BIEN" : fails + " FALLOS");
         System.exit(fails == 0 ? 0 : 1);

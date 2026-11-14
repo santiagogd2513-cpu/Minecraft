@@ -304,7 +304,7 @@ final class SpaceView extends View implements Choreographer.FrameCallback {
         else if (dps < 365) speed = String.format("%d d/s", Math.round(dps));
         else speed = String.format("%.0f años/s", dps / 365.25);
         return (paused ? "⏸ " : "") + "Año " + years + ", día " + days + "  ·  " + speed + (slowed ? "  ⚠ ralentizado" : "")
-                + "\n" + sim.np + " asteroides  ·  " + sim.impacts + " impactos  ·  " + sim.merges + " fusiones";
+                + "\n" + sim.np + " partículas  ·  " + sim.impacts + " impactos  ·  " + sim.merges + " fusiones  ·  " + sim.disruptions + " desgarros";
     }
 
     // ------------------------------------------------------------------ dibujo

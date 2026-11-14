@@ -14,7 +14,7 @@ final class Sim {
     static final double G = 4 * Math.PI * Math.PI;
     static final double SOFT2 = 1e-12;          // suavizado para no dividir entre cero
     static final double ESCAPE = 400;           // lo que se va más allá de esta distancia (UA) se borra
-    static final int MAX_PARTICLES = 20000;
+    static final int MAX_PARTICLES = 40000;
     /** Para los choques, los radios reales (diminutos) se agrandan: si no, nada chocaría nunca. */
     static final double COLLISION_SCALE_PLANET = 10, COLLISION_SCALE_STAR = 4;
 
@@ -36,7 +36,7 @@ final class Sim {
     double time;                      // años desde el inicio
     boolean accValid;
     final Random rnd = new Random(42);
-    int impacts, merges, shatters;    // cuentas para mostrar
+    int impacts, merges, shatters, disruptions;    // cuentas para mostrar
 
     /** Un destello en pantalla (choque). */
     static final class Flash {
@@ -191,6 +191,8 @@ final class Sim {
             }
             if (gone) removeParticle(i);
         }
+        // mareas: lo que pasa muy cerca de algo enorme se despedaza
+        while (tidalDisruption()) { /* puede haber más de uno */ }
         // cuerpos contra cuerpos
         boolean again = true;
         while (again) {
@@ -221,28 +223,10 @@ final class Sim {
             return;
         }
         flashes.add(new Flash(x[small], y[small], 1.0, flashId++));
-        if (vrel > 2.5 * vesc && ms > 1e-3 * mb) {
-            shatters++;
-            // choque violento: el pequeño se hace pedazos. El grande se queda con parte de su masa; el resto sale como escombros.
-            int pieces = (int) Math.min(600, 80 + ms / mb * 4000);
-            double keep = 0.4;
-            double cx = x[small], cy = y[small], bvx = vx[big], bvy = vy[big], svx = vx[small], svy = vy[small];
-            double newM = mb + keep * ms;
-            vx[big] = (mb * vx[big] + keep * ms * svx) / newM;
-            vy[big] = (mb * vy[big] + keep * ms * svy) / newM;
-            m[big] = newM;
-            r[big] = Math.cbrt(Math.pow(r[big], 3) + keep * Math.pow(r[small], 3));
-            double mid = Math.hypot(svx - bvx, svy - bvy);
-            for (int k = 0; k < pieces; k++) {
-                double ang = rnd.nextDouble() * 2 * Math.PI;
-                double sp = vesc * (0.3 + rnd.nextDouble() * 1.2);
-                addParticle(cx, cy, svx + Math.cos(ang) * sp * 0.7 + (svx - bvx) * 0.15, svy + Math.sin(ang) * sp * 0.7 + (svy - bvy) * 0.15, 1);
-            }
-            if (small < big) big--;
-            removeBody(small);
-            // (la parte de masa que se pierde en escombros no se cuenta: las partículas no tienen masa)
-            if (mid < 0) throw new IllegalStateException();
+        if (ms >= 1e-4 * mb) {
+            giantImpact(big, small, vrel, vesc);
         } else {
+            // una roca contra un mundo enorme: se la traga, con un destello
             merges++;
             double newM = mb + ms;
             double nx = (x[big] * mb + x[small] * ms) / newM, ny = (y[big] * mb + y[small] * ms) / newM;
@@ -251,6 +235,85 @@ final class Sim {
             x[big] = nx; y[big] = ny; vx[big] = nvx; vy[big] = nvy; m[big] = newM;
             removeBody(small);
         }
+        accValid = false;
+    }
+
+    /**
+     * Choque entre dos mundos: se funden, pero no del todo en silencio. Una parte de la masa del menor (más cuanto más rápido
+     * choca) sale despedida como miles de escombros desde el punto del golpe, en abanico. Los lentos caen de vuelta o se estiran en
+     * una «serpiente» alrededor del planeta; los rápidos se van. Los escombros no tienen masa (por eso el momento solo se conserva
+     * aproximadamente).
+     */
+    private void giantImpact(int big, int small, double vrel, double vesc) {
+        merges++;
+        if (vrel > 2.5 * vesc) shatters++;
+        double mb = m[big], ms = m[small];
+        double frac = Math.max(0.03, Math.min(0.4, 0.03 + 0.12 * (vrel / vesc)));      // parte del menor que sale como escombros
+        double keep = 1 - frac;
+        double bx0 = x[big], by0 = y[big], bvx0 = vx[big], bvy0 = vy[big];
+        double sx0 = x[small], sy0 = y[small], svx0 = vx[small], svy0 = vy[small];
+        double rbig = collisionRadius(big);
+        double M = mb + keep * ms;
+        double nx = (bx0 * mb + sx0 * keep * ms) / M, ny = (by0 * mb + sy0 * keep * ms) / M;
+        double nvx = (bvx0 * mb + svx0 * keep * ms) / M, nvy = (bvy0 * mb + svy0 * keep * ms) / M;
+        double dxn = sx0 - bx0, dyn = sy0 - by0, dn = Math.hypot(dxn, dyn);
+        if (dn < 1e-15) { dxn = 1; dyn = 0; dn = 1; }
+        dxn /= dn; dyn /= dn;
+        r[big] = Math.cbrt(Math.pow(r[big], 3) + keep * Math.pow(r[small], 3));
+        x[big] = nx; y[big] = ny; vx[big] = nvx; vy[big] = nvy; m[big] = M;
+        double ve = Math.sqrt(2 * G * M / (rbig + collisionRadius(small)));
+        int pieces = (int) Math.max(300, Math.min(5000, 300 + 6000 * Math.sqrt(ms / mb)));
+        double ang0 = Math.atan2(dyn, dxn);
+        for (int k = 0; k < pieces; k++) {
+            // el material sale como una nube que se expande unos radios por encima del punto del golpe, en abanico
+            double a = ang0 + (rnd.nextDouble() - 0.5) * 2.4;
+            double startR = rbig * (1.2 + 1.8 * rnd.nextDouble());
+            double th = a + (rnd.nextDouble() - 0.5) * 2.8;                          // la velocidad mezcla subir y girar
+            double sp = ve * (0.15 + rnd.nextDouble() * 0.85);
+            addParticle(nx + Math.cos(a) * startR, ny + Math.sin(a) * startR,
+                    nvx + Math.cos(th) * sp + (svx0 - bvx0) * 0.25, nvy + Math.sin(th) * sp + (svy0 - bvy0) * 0.25, 1);
+        }
+        flashes.add(new Flash(sx0, sy0, 1.6 + Math.min(1.4, vrel / vesc), flashId++));
+        removeBody(small);
+    }
+
+    /**
+     * Límite de Roche: un cuerpo pequeño que pasa demasiado cerca de uno grande es desgarrado por la diferencia de gravedad entre
+     * su lado cercano y su lado lejano. Aquí se deshace en miles de escombros que siguen la órbita (se estiran en un anillo o caen).
+     */
+    private boolean tidalDisruption() {
+        for (int i = 0; i < n; i++) {
+            if (kind[i] == STAR) continue;
+            for (int j = 0; j < n; j++) {
+                if (j == i || m[j] < 20 * m[i]) continue;
+                double dx = x[i] - x[j], dy = y[i] - y[j];
+                double d2 = dx * dx + dy * dy;
+                double rho = (m[j] / Math.pow(r[j], 3)) / (m[i] / Math.pow(r[i], 3));
+                double roche = 1.7 * collisionRadius(j) * Math.cbrt(rho);
+                if (d2 > roche * roche) continue;
+                // solo si va ligado o casi: un golpe rápido de paso no tiene tiempo de partirse (choca antes)
+                double vr2 = Math.pow(vx[i] - vx[j], 2) + Math.pow(vy[i] - vy[j], 2);
+                if (vr2 > 1.44 * 2 * G * m[j] / Math.sqrt(d2 + SOFT2)) continue;
+                disrupt(i, j);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private void disrupt(int i, int j) {
+        disruptions++;
+        double mi = m[i];
+        double vesc = Math.sqrt(2 * G * mi / r[i]);
+        int pieces = (int) Math.max(2000, Math.min(30000, 6000 * Math.sqrt(mi / 3.69e-8)));
+        double cx = x[i], cy = y[i], cvx = vx[i], cvy = vy[i], rad = collisionRadius(i);
+        flashes.add(new Flash(cx, cy, 2.0, flashId++));
+        for (int k = 0; k < pieces; k++) {
+            double a = rnd.nextDouble() * 2 * Math.PI, rr = rad * Math.sqrt(rnd.nextDouble());
+            double b = rnd.nextDouble() * 2 * Math.PI, sp = vesc * (0.2 + 0.8 * rnd.nextDouble());
+            addParticle(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr, cvx + Math.cos(b) * sp, cvy + Math.sin(b) * sp, 1);
+        }
+        removeBody(i);
         accValid = false;
     }
 

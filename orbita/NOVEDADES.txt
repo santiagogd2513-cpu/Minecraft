@@ -1,3 +1,12 @@
+## Beta 3
+💥 Fase 2: choques de verdad y límite de Roche
+- Cuando dos planetas chocan ya no se funden en silencio: se funden, pero una parte del más pequeño (de un 3 % a un 40 %, más cuanto más rápido el golpe) sale como miles de escombros. Los lentos giran alrededor del planeta formando una serpiente o un anillo y, tarde o temprano, caen; los rápidos se van.
+- Límite de Roche: una luna que pasa demasiado cerca de un planeta es desgarrada por la gravedad y se convierte en miles de pedazos (hasta 30.000) que se estiran en un anillo y caen sobre el planeta. Solo ocurre con cuerpos ligados al planeta; un golpe rápido choca antes de poder partirse.
+- Hasta 40.000 partículas en pantalla a la vez.
+- Nuevos objetos: Luna y Planeta pequeño (como Marte), para probar los choques y el desgarro.
+- Probado en el computador: Marte contra la Tierra deja más de 2000 escombros que caen sobre la Tierra; una Luna que cruza el límite se vuelve 6000 pedazos de los que 3000 caen y más de 600 quedan girando alrededor.
+- Con muchísimas partículas, a velocidades muy altas el celular puede ir más lento de lo pedido; la pantalla lo avisa con «⚠ ralentizado».
+
 ## Beta 2
 🎨 Planetas con aspecto de verdad, y estrellas que chocan mejor
 - Cada planeta tiene ahora su propia textura, hecha por código: la Tierra con continentes, océanos, hielo en los polos y nubes; Júpiter con bandas y la Gran Mancha Roja; Saturno con sus anillos; Venus con nubes cremosas; Marte rojizo con casquetes; Mercurio y la Luna con cráteres (la Luna con mares oscuros); Urano y Neptuno azulados con bandas. El Sol tiene granulación y manchas.

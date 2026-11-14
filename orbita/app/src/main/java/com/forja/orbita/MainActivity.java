@@ -194,10 +194,12 @@ public class MainActivity extends Activity {
                 new SpaceView.Kind("Roca grande", 2, 1.0e-9, 3.0e-6, Sim.ROCK, 0xFF9A8F80),
                 new SpaceView.Kind("Planeta", 2, 3.003e-6, 4.26e-5, Sim.PLANET, 0xFF58D68D),
                 new SpaceView.Kind("Gigante gaseoso", 2, 9.55e-4, 4.78e-4, Sim.PLANET, 0xFFE59866),
-                new SpaceView.Kind("Estrella roja", 2, 0.3, 0.0016, Sim.STAR, 0xFFFF6B4A)};
-        String[] names = {"☄ Asteroide (uno)", "🌠 Lluvia de asteroides (200)", "🪨 Roca grande", "🌍 Planeta como la Tierra", "🪐 Gigante gaseoso", "⭐ Estrella roja", "💫 Cinturón de asteroides (2000)"};
+                new SpaceView.Kind("Estrella roja", 2, 0.3, 0.0016, Sim.STAR, 0xFFFF6B4A),
+                new SpaceView.Kind("Luna", 2, 3.69e-8, 1.16e-5, Sim.MOON, 0xFFCFCFCF),
+                new SpaceView.Kind("Planeta pequeño", 2, 3.23e-7, 2.27e-5, Sim.PLANET, 0xFFE0643C)};
+        String[] names = {"☄ Asteroide (uno)", "🌠 Lluvia de asteroides (200)", "🪨 Roca grande", "🌍 Planeta como la Tierra", "🪐 Gigante gaseoso", "⭐ Estrella roja", "🌙 Luna (se rompe si pasa muy cerca de un planeta)", "🔴 Planeta pequeño (como Marte)", "💫 Cinturón de asteroides (2000)"};
         new AlertDialog.Builder(this).setTitle("Objetos").setItems(names, (dd, w) -> {
-            if (w == 6) {
+            if (w == 8) {
                 space.addBelt();
                 return;
             }
