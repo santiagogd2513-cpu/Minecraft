@@ -35,12 +35,21 @@ public final class VehicleHull {
         e.setBoundingBox(box(e.position(), e.getYRot(), s));
     }
 
-    /** Después de moverla: la posición de la entidad es el punto del eje, no el centro de la caja. */
+    /**
+     * Después de moverla: la posición de la entidad es el punto del eje, no el centro de la caja.
+     * V7.7.1: {@code Entity.move} termina con {@code setPos}, que devuelve la caja a la normal (centrada en la posición); ahí la posición ya es la buena
+     * y corregirla otra vez la empujaba {@code front} hacia delante en cada tick que se movía (el helicóptero salía disparado). Solo se corrige cuando
+     * la caja sigue siendo la del casco (descentrada). Al final se vuelve a poner la caja del casco.
+     */
     public static void fixPosition(Entity e, Spec s) {
         AABB b = e.getBoundingBox();
         double yaw = Math.toRadians(e.getYRot());
         double cx = (b.minX + b.maxX) * 0.5;
         double cz = (b.minZ + b.maxZ) * 0.5;
-        e.setPosRaw(cx + Math.sin(yaw) * s.front(), b.minY, cz - Math.cos(yaw) * s.front());
+        boolean centered = Math.abs(cx - e.getX()) < 1.0e-7 && Math.abs(cz - e.getZ()) < 1.0e-7;
+        if (!centered) {
+            e.setPosRaw(cx + Math.sin(yaw) * s.front(), b.minY, cz - Math.cos(yaw) * s.front());
+        }
+        refresh(e, s);
     }
 }

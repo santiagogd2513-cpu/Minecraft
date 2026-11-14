@@ -2,6 +2,9 @@
 
 Mod de decoración para **Minecraft 1.20.1** / **Forge 47.4.5**.
 
+## V7.7.1
+- HELICÓPTERO: ya vuelve a despegar y a volar. Era un error de la caja de colisión (V6.13.0): después de cada movimiento se corregía de más la posición y el helicóptero se empujaba hacia delante unos 1,6 bloques por tick en cuanto se movía (al subir salía disparado). Ahora la posición se corrige solo cuando hace falta. El mismo arreglo evita un empujoncito parecido en la camioneta, el camión, el superdeportivo, la moto y la bici. La física de vuelo no se tocó.
+
 ## V7.7.0
 - SUBIR UN BLOQUE: la bici, la moto, la camioneta, el camión y el superdeportivo ahora sí suben un bloque entero (y la media losa). Era un error: al subir un escalón se le restaba la gravedad del suelo al empuje (1,02 quedaba en 0,98 y un bloque no se alcanzaba). El avión, con el tren de aterrizaje afuera y en tierra, también sube un bloque. La gravedad no se toca: después del escalón quedan a 0,02 del bloque y caen encima. Siguen sin subir dos bloques, vallas ni muros.
 
