@@ -1786,29 +1786,38 @@ public class MainActivity extends Activity {
         return c;
     }
 
-    /** Dice cuáles archivos son distintos entre A y B (lee los dos). */
+    private final java.util.concurrent.atomic.AtomicBoolean comparing = new java.util.concurrent.atomic.AtomicBoolean();
+
+    /**
+     * Dice cuáles archivos son distintos entre A y B (lee los dos). Solo hay una comparación a la vez, y la pantalla solo se vuelve a
+     * armar si de verdad se calculó algo nuevo: antes se rearmaba sin parar y se «comía» los toques de los botones.
+     */
     private void compareInBackground(List<String> paths) {
+        if (!comparing.compareAndSet(false, true)) return;
         final Slot a = slotA, b = slotB;
-        exec.execute(() -> {
-            int n = 0;
-            for (String p : paths) {
-                if (mode != Mode.EDITOR || slotA != a || slotB != b) return;
-                StfsPackage.Item ia = a.files.get(p), ib = b.files.get(p);
-                if (ia == null || ib == null || sameCache.containsKey(p)) continue;
-                boolean same = false;
-                try {
-                    if (ia.size == ib.size) same = Arrays.equals(digest(a.pkg, ia), digest(b.pkg, ib));
-                } catch (Exception ignored) {
+        // en su propio hilo: si no, hacía esperar a «Reemplazar» y «Guardar» detrás de la comparación
+        new Thread(() -> {
+            int computed = 0;
+            try {
+                for (String p : paths) {
+                    if (mode != Mode.EDITOR || slotA != a || slotB != b) return;
+                    StfsPackage.Item ia = a.files.get(p), ib = b.files.get(p);
+                    if (ia == null || ib == null || sameCache.containsKey(p)) continue;
+                    boolean same = false;
+                    try {
+                        if (ia.size == ib.size) same = Arrays.equals(digest(a.pkg, ia), digest(b.pkg, ib));
+                    } catch (Exception ignored) {
+                    }
+                    sameCache.put(p, same);
+                    computed++;
                 }
-                sameCache.put(p, same);
-                if (++n % 4 == 0) ui.post(() -> {
-                    if (mode == Mode.EDITOR) showEditor();
-                });
+            } finally {
+                comparing.set(false);
             }
-            ui.post(() -> {
+            if (computed > 0) ui.post(() -> {
                 if (mode == Mode.EDITOR) showEditor();
             });
-        });
+        }, "comparar").start();
     }
 
     private static byte[] digest(StfsPackage p, StfsPackage.Item it) throws Exception {

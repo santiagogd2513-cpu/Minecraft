@@ -1,3 +1,7 @@
+## 92
+🔧 Extraer un .7z ya no cierra la app
+- Al extraer un .7z que traía carpetas o archivos vacíos, la app se cerraba al revisar si tenía contraseña. Ya no: esos casos se saltan y, si algo raro pasa al revisar, sigue como si no hubiera contraseña y el error real sale al extraer.
+
 ## 91
 📱↔📱 Celular a celular (por cable USB)
 - Herramientas → «Celular a celular». Conectas dos celulares con un cable USB (si hace falta, con un adaptador OTG en uno) y abres esa pantalla en los dos: uno elige «comparte» y el otro «mira».

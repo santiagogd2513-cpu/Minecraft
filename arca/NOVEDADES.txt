@@ -1,3 +1,7 @@
+## 12
+🔧 Editor de partidas: los botones por fin responden
+- «Reemplazar todo» y «Guardar copia editada» parecían no hacer nada porque la pantalla del editor se volvía a armar sin parar mientras comparaba los archivos y se «comía» los toques. Ahora solo se rearma cuando de verdad hay algo nuevo y la comparación corre en su propio hilo, sin hacer esperar a los botones.
+
 ## 11
 ⬆️ Importar: la carpeta del perfil, a la vista
 - Antes de importar, Arca muestra de qué perfil es el paquete y si su carpeta ya existe en la memoria o se va a crear (con el mismo nombre que trae el paquete: Arca no se inventa nada).

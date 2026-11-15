@@ -76,7 +76,10 @@ final class Archive {
             } else if (t == Type.SEVEN_Z) {
                 try (Channel ch = new Channel(c, path); SevenZFile sz = new SevenZFile(ch.ch)) {
                     for (SevenZArchiveEntry e : sz.getEntries()) {
-                        for (org.apache.commons.compress.archivers.sevenz.SevenZMethodConfiguration m : e.getContentMethods()) {
+                        // las carpetas y los archivos vacíos no traen métodos de compresión (vienen en null)
+                        Iterable<? extends org.apache.commons.compress.archivers.sevenz.SevenZMethodConfiguration> methods = e.getContentMethods();
+                        if (methods == null) continue;
+                        for (org.apache.commons.compress.archivers.sevenz.SevenZMethodConfiguration m : methods) {
                             if (m.getMethod() == org.apache.commons.compress.archivers.sevenz.SevenZMethod.AES256SHA256) return true;
                         }
                     }
@@ -84,7 +87,8 @@ final class Archive {
                     return true;
                 }
             }
-        } catch (IOException ignored) {
+        } catch (IOException | RuntimeException ignored) {
+            // si no se puede saber, se sigue como si no tuviera contraseña: el error real saldrá al extraer
         }
         return false;
     }
