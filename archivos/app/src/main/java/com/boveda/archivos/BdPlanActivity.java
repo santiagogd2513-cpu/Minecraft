@@ -382,8 +382,9 @@ public class BdPlanActivity extends Activity {
     // ------------------------------------------------------------------ 3D
 
     // cámara libre
-    private TextView freeBtn;
-    private LinearLayout freePad, freeVert;
+    private TextView freeBtn, glHint;
+    private LinearLayout freePad, freeVert, glBar;
+    private FrameLayout.LayoutParams glBarLp;
     private float freeSpeed = 6f;            // bloques por segundo
     private float mFwd, mStrafe, mUp;         // lo que se está pulsando ahora
     private final Runnable mover = new Runnable() {
@@ -432,11 +433,22 @@ public class BdPlanActivity extends Activity {
         return t;
     }
 
+    private TextView bigButton(String s) {
+        TextView t = Ui.text(this, s, 15, Ui.TEXT, true);
+        t.setGravity(Gravity.CENTER);
+        t.setBackground(Ui.round(0xCC101A3A, dp(14)));
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dp(112), dp(52));
+        lp.setMargins(0, dp(4), 0, dp(4));
+        t.setLayoutParams(lp);
+        return t;
+    }
+
     private View glView() {
         FrameLayout f = new FrameLayout(this);
         gl = new PlanGlView(this, plan.sx, plan.sy, plan.sz);
         f.addView(gl, new FrameLayout.LayoutParams(-1, -1));
         LinearLayout bar = Ui.column(this);
+        glBar = bar;
         bar.setBackground(Ui.round(0xB3101A3A, dp(14)));
         bar.setPadding(dp(14), dp(8), dp(14), dp(6));
         glLabel = Ui.text(this, L.t("Preparando el 3D…"), 12.5f, Ui.TEXT, false);
@@ -459,9 +471,11 @@ public class BdPlanActivity extends Activity {
         });
         bar.addView(cut);
         TextView hint = Ui.text(this, L.t("Un dedo gira · dos dedos acercan y mueven · dos toques: volver"), 11.5f, Ui.SUB, false);
+        glHint = hint;
         bar.addView(hint);
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(-1, -2, Gravity.BOTTOM);
         lp.setMargins(dp(10), 0, dp(150), dp(10));
+        glBarLp = lp;
         f.addView(bar, lp);
 
         // botón de la esquina inferior derecha
@@ -495,9 +509,7 @@ public class BdPlanActivity extends Activity {
         f.addView(freePad, pl);
 
         freeVert = Ui.column(this);
-        TextView rise = padButton("⤒"), sink = padButton("⤓"), speed = padButton("🐢");
-        rise.setTextSize(18);
-        sink.setTextSize(18);
+        TextView rise = bigButton("⬆ " + L.t("Subir")), sink = bigButton("⬇ " + L.t("Bajar")), speed = bigButton("🐢");
         holdButton(rise, 0, 0, 1);
         holdButton(sink, 0, 0, -1);
         speed.setOnClickListener(v -> {
@@ -521,6 +533,19 @@ public class BdPlanActivity extends Activity {
         freeBtn.setBackground(Ui.round(on ? 0xE6C62828 : 0xE61E4FD6, dp(14)));
         freePad.setVisibility(on ? View.VISIBLE : View.GONE);
         freeVert.setVisibility(on ? View.VISIBLE : View.GONE);
+        // en cámara libre, el menú de la altura se va arriba a la derecha para no tapar nada
+        if (on) {
+            glBarLp.width = dp(230);
+            glBarLp.gravity = Gravity.TOP | Gravity.END;
+            glBarLp.setMargins(0, dp(10), dp(10), 0);
+            glHint.setVisibility(View.GONE);
+        } else {
+            glBarLp.width = -1;
+            glBarLp.gravity = Gravity.BOTTOM;
+            glBarLp.setMargins(dp(10), 0, dp(150), dp(10));
+            glHint.setVisibility(View.VISIBLE);
+        }
+        glBar.setLayoutParams(glBarLp);
         glLabel.setText(on ? L.t("Cámara libre: arrastra para mirar, las flechas te mueven; puedes entrar bajo tierra") : glLabel.getText());
         if (!on) {
             mFwd = 0;

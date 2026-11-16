@@ -1,3 +1,9 @@
+## 95
+🎥 Cámara libre: menú de altura arriba a la derecha y botones claros para subir y bajar
+- Al entrar a la cámara libre, el menú de «cortar a la altura» se pasa arriba a la derecha, más angosto, para que no tape los controles ni sea «trampa» tenerlo encima. Al salir vuelve abajo.
+- Los botones de subir y bajar ahora dicen «⬆ Subir» y «⬇ Bajar» (antes eran dos símbolos chicos que en algunos celulares no se veían), grandes, arriba del botón de salir. Al lado, el de la velocidad (🐢, 🚶, 🚀).
+- Sin probar todavía en un celular.
+
 ## 94
 🎥 Planos 3D: cámara más baja y «Cámara libre»
 - La cámara del 3D arranca más baja y más cerca, para ver los detalles de los edificios sin perderlos desde tan arriba.
