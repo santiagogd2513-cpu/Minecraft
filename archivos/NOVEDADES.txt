@@ -1,3 +1,14 @@
+## 93
+🏘️ Visor de planos de Beautiful Decor (.bdplan), en 2D y 3D
+- Toca un archivo .bdplan y se abre el visor, con cuatro pestañas:
+  - Ficha: nombre, autor, fecha, tamaño, cuántos bloques tiene, entidades (motos, trenes…) y posición original.
+  - Materiales: cuántos bloques de cada tipo lleva, con buscador.
+  - 2D: vista desde arriba, capa por capa (con la de abajo apagada) y cortes de frente y de lado; un dedo mueve, dos dedos acercan.
+  - 3D: el plano completo con OpenGL; un dedo lo gira, dos dedos acercan y mueven, y una barra «cortar a la altura» quita el techo para ver por dentro. Dos toques vuelven a la vista inicial.
+- Los colores son aproximados (Bóveda no tiene las texturas de Minecraft): los bloques comunes tienen su color y los demás se deducen por el nombre. Las plantas y cosas finas no se dibujan en 3D.
+- Solo para ver: no coloca nada en el juego ni edita el plano.
+- Probado en el computador con el plano «pueblo bd» (331 × 145 × 311, casi 15 millones de bloques): se lee completo y se convierte en unas 28.000 caras. No probado todavía en un celular: el 3D (OpenGL) y la memoria con planos grandes hay que mirarlos en el teléfono.
+
 ## 92
 🔧 Extraer un .7z ya no cierra la app
 - Al extraer un .7z que traía carpetas o archivos vacíos, la app se cerraba al revisar si tenía contraseña. Ya no: esos casos se saltan y, si algo raro pasa al revisar, sigue como si no hubiera contraseña y el error real sale al extraer.

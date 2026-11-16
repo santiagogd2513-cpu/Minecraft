@@ -64,6 +64,10 @@ final class Viewers {
         return IMAGE.contains(ext(name));
     }
 
+    static boolean isPlan(String name) {
+        return ext(name).equals("bdplan");
+    }
+
     static boolean isPdf(String name) {
         return ext(name).equals("pdf");
     }
@@ -108,6 +112,10 @@ final class Viewers {
         }
         if (isText(e.name)) {
             a.startActivity(new Intent(a, EditorActivity.class).putExtra("path", e.path));
+            return true;
+        }
+        if (isPlan(e.name)) {
+            a.startActivity(new Intent(a, BdPlanActivity.class).putExtra("path", e.path));
             return true;
         }
         if (isPdf(e.name)) {
