@@ -381,6 +381,57 @@ public class BdPlanActivity extends Activity {
 
     // ------------------------------------------------------------------ 3D
 
+    // cámara libre
+    private TextView freeBtn;
+    private LinearLayout freePad, freeVert;
+    private float freeSpeed = 6f;            // bloques por segundo
+    private float mFwd, mStrafe, mUp;         // lo que se está pulsando ahora
+    private final Runnable mover = new Runnable() {
+        long last;
+
+        @Override
+        public void run() {
+            if (gl == null || !gl.isFree()) return;
+            long now = System.nanoTime();
+            float dt = last == 0 ? 0.016f : Math.min(0.05f, (now - last) / 1e9f);
+            last = now;
+            if (mFwd != 0 || mStrafe != 0 || mUp != 0) {
+                gl.moveFree(mFwd * freeSpeed * dt, mStrafe * freeSpeed * dt, mUp * freeSpeed * dt);
+                main.postDelayed(this, 16);
+            } else last = 0;
+        }
+    };
+
+    private void holdButton(TextView b, float fwd, float strafe, float up) {
+        b.setOnTouchListener((v, e) -> {
+            int a = e.getActionMasked();
+            if (a == android.view.MotionEvent.ACTION_DOWN) {
+                mFwd = fwd;
+                mStrafe = strafe;
+                mUp = up;
+                v.setPressed(true);
+                main.removeCallbacks(mover);
+                main.post(mover);
+            } else if (a == android.view.MotionEvent.ACTION_UP || a == android.view.MotionEvent.ACTION_CANCEL) {
+                mFwd = 0;
+                mStrafe = 0;
+                mUp = 0;
+                v.setPressed(false);
+            }
+            return true;
+        });
+    }
+
+    private TextView padButton(String s) {
+        TextView t = Ui.text(this, s, 22, Ui.TEXT, true);
+        t.setGravity(Gravity.CENTER);
+        t.setBackground(Ui.round(0xB3101A3A, dp(14)));
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(dp(54), dp(54));
+        lp.setMargins(dp(3), dp(3), dp(3), dp(3));
+        t.setLayoutParams(lp);
+        return t;
+    }
+
     private View glView() {
         FrameLayout f = new FrameLayout(this);
         gl = new PlanGlView(this, plan.sx, plan.sy, plan.sz);
@@ -410,9 +461,72 @@ public class BdPlanActivity extends Activity {
         TextView hint = Ui.text(this, L.t("Un dedo gira · dos dedos acercan y mueven · dos toques: volver"), 11.5f, Ui.SUB, false);
         bar.addView(hint);
         FrameLayout.LayoutParams lp = new FrameLayout.LayoutParams(-1, -2, Gravity.BOTTOM);
-        lp.setMargins(dp(10), 0, dp(10), dp(10));
+        lp.setMargins(dp(10), 0, dp(150), dp(10));
         f.addView(bar, lp);
+
+        // botón de la esquina inferior derecha
+        freeBtn = Ui.text(this, "🎥 " + L.t("Cámara libre"), 13.5f, Ui.TEXT, true);
+        freeBtn.setGravity(Gravity.CENTER);
+        freeBtn.setPadding(dp(8), dp(8), dp(8), dp(8));
+        freeBtn.setBackground(Ui.round(0xE61E4FD6, dp(14)));
+        freeBtn.setOnClickListener(v -> toggleFree());
+        FrameLayout.LayoutParams bl = new FrameLayout.LayoutParams(dp(132), dp(64), Gravity.BOTTOM | Gravity.END);
+        bl.setMargins(0, 0, dp(10), dp(10));
+        f.addView(freeBtn, bl);
+
+        // flechas (a la izquierda) y subir/bajar (a la derecha), solo en cámara libre
+        freePad = Ui.column(this);
+        LinearLayout r1 = Ui.row(this), r2 = Ui.row(this);
+        TextView up = padButton("▲"), left = padButton("◀"), down = padButton("▼"), right = padButton("▶");
+        holdButton(up, 1, 0, 0);
+        holdButton(down, -1, 0, 0);
+        holdButton(left, 0, -1, 0);
+        holdButton(right, 0, 1, 0);
+        r1.setGravity(Gravity.CENTER);
+        r1.addView(up);
+        r2.addView(left);
+        r2.addView(down);
+        r2.addView(right);
+        freePad.addView(r1);
+        freePad.addView(r2);
+        freePad.setVisibility(View.GONE);
+        FrameLayout.LayoutParams pl = new FrameLayout.LayoutParams(-2, -2, Gravity.BOTTOM | Gravity.START);
+        pl.setMargins(dp(8), 0, 0, dp(110));
+        f.addView(freePad, pl);
+
+        freeVert = Ui.column(this);
+        TextView rise = padButton("⤒"), sink = padButton("⤓"), speed = padButton("🐢");
+        rise.setTextSize(18);
+        sink.setTextSize(18);
+        holdButton(rise, 0, 0, 1);
+        holdButton(sink, 0, 0, -1);
+        speed.setOnClickListener(v -> {
+            freeSpeed = freeSpeed < 10 ? 18f : freeSpeed < 30 ? 50f : 6f;
+            speed.setText(freeSpeed < 10 ? "🐢" : freeSpeed < 30 ? "🚶" : "🚀");
+        });
+        freeVert.addView(rise);
+        freeVert.addView(sink);
+        freeVert.addView(speed);
+        freeVert.setVisibility(View.GONE);
+        FrameLayout.LayoutParams vl = new FrameLayout.LayoutParams(-2, -2, Gravity.BOTTOM | Gravity.END);
+        vl.setMargins(0, 0, dp(10), dp(84));
+        f.addView(freeVert, vl);
         return f;
+    }
+
+    private void toggleFree() {
+        boolean on = !gl.isFree();
+        gl.setFree(on);
+        freeBtn.setText(on ? "✖ " + L.t("Salir") : "🎥 " + L.t("Cámara libre"));
+        freeBtn.setBackground(Ui.round(on ? 0xE6C62828 : 0xE61E4FD6, dp(14)));
+        freePad.setVisibility(on ? View.VISIBLE : View.GONE);
+        freeVert.setVisibility(on ? View.VISIBLE : View.GONE);
+        glLabel.setText(on ? L.t("Cámara libre: arrastra para mirar, las flechas te mueven; puedes entrar bajo tierra") : glLabel.getText());
+        if (!on) {
+            mFwd = 0;
+            mStrafe = 0;
+            mUp = 0;
+        }
     }
 
     private void requestMesh() {

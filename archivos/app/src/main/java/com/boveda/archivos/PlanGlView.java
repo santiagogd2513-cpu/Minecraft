@@ -32,17 +32,36 @@ final class PlanGlView extends GLSurfaceView {
         renderer.cy = sy / 3f;
         renderer.cz = sz / 2f;
         renderer.radius = (float) Math.sqrt(sx * (double) sx + sz * (double) sz) / 2f;
+        renderer.cy = sy / 4f;
         renderer.reset();
         setRenderer(renderer);
         setRenderMode(RENDERMODE_WHEN_DIRTY);
         scaler = new ScaleGestureDetector(c, new ScaleGestureDetector.SimpleOnScaleGestureListener() {
             @Override
             public boolean onScale(ScaleGestureDetector d) {
+                if (renderer.free) return true;
                 renderer.dist = Math.max(renderer.radius * 0.05f, Math.min(renderer.radius * 6f, renderer.dist / d.getScaleFactor()));
                 requestRender();
                 return true;
             }
         });
+    }
+
+    boolean isFree() {
+        return renderer.free;
+    }
+
+    void setFree(boolean on) {
+        if (on) renderer.enterFree();
+        else renderer.exitFree();
+        requestRender();
+    }
+
+    /** Mueve la cámara libre (en bloques). */
+    void moveFree(float fwd, float strafe, float up) {
+        if (!renderer.free) return;
+        renderer.move(fwd, strafe, up);
+        requestRender();
     }
 
     void setMesh(VoxelMesh mesh) {
@@ -79,7 +98,13 @@ final class PlanGlView extends GLSurfaceView {
             lastY = y;
             lastCount = n;
         } else if (a == MotionEvent.ACTION_MOVE && n == lastCount && !scaler.isInProgress()) {
-            if (n == 1) {
+            if (renderer.free) {
+                // cámara libre: un dedo mira alrededor (como girar la cabeza)
+                if (n == 1) {
+                    renderer.fyaw -= (x - lastX) * 0.3f;
+                    renderer.fpitch = Math.max(-89f, Math.min(89f, renderer.fpitch - (y - lastY) * 0.25f));
+                }
+            } else if (n == 1) {
                 renderer.yaw -= (x - lastX) * 0.45f;
                 renderer.pitch = Math.max(-89f, Math.min(89f, renderer.pitch + (y - lastY) * 0.35f));
             } else {
@@ -106,10 +131,53 @@ final class PlanGlView extends GLSurfaceView {
         private ShortBuffer indexPattern;
         private VoxelMesh pending;
 
+        // cámara libre (volar por dentro del plano)
+        volatile boolean free;
+        float fx, fy, fz, fyaw, fpitch;
+        float sx0, sy0, sz0, syaw0, spitch0;     // dónde empezó, para volver con dos toques
+
         void reset() {
+            if (free) {
+                fx = sx0;
+                fy = sy0;
+                fz = sz0;
+                fyaw = syaw0;
+                fpitch = spitch0;
+                return;
+            }
             yaw = 35;
-            pitch = 38;
-            dist = radius * 1.7f;
+            pitch = 20;                 // más baja que antes: se ven los detalles de los edificios
+            dist = radius * 1.35f;
+        }
+
+        /** Entra a la cámara libre desde donde está la cámara de órbita, sin saltos. */
+        void enterFree() {
+            double yr = Math.toRadians(yaw), pr = Math.toRadians(pitch);
+            fx = cx + (float) (dist * Math.cos(pr) * Math.sin(yr));
+            fy = cy + (float) (dist * Math.sin(pr));
+            fz = cz + (float) (dist * Math.cos(pr) * Math.cos(yr));
+            fyaw = yaw + 180f;
+            fpitch = -pitch;
+            sx0 = fx;
+            sy0 = fy;
+            sz0 = fz;
+            syaw0 = fyaw;
+            spitch0 = fpitch;
+            free = true;
+        }
+
+        void exitFree() {
+            free = false;
+        }
+
+        /** Mueve la cámara libre: adelante/atrás, a los lados y arriba/abajo, en bloques. */
+        void move(float fwd, float strafe, float up) {
+            double yr = Math.toRadians(fyaw), pr = Math.toRadians(fpitch);
+            float dx = (float) (Math.sin(yr) * Math.cos(pr)), dy = (float) Math.sin(pr), dz = (float) (Math.cos(yr) * Math.cos(pr));
+            float rx = (float) -Math.cos(yr), rz = (float) Math.sin(yr);
+            fx += dx * fwd + rx * strafe;
+            fy += dy * fwd + up;
+            fz += dz * fwd + rz * strafe;
         }
 
         void upload(VoxelMesh mesh) {
@@ -190,10 +258,17 @@ final class PlanGlView extends GLSurfaceView {
         public void onDrawFrame(GL10 gl) {
             GLES20.glClear(GLES20.GL_COLOR_BUFFER_BIT | GLES20.GL_DEPTH_BUFFER_BIT);
             if (bufs.isEmpty()) return;
-            Matrix.perspectiveM(proj, 0, 50f, w / (float) h, Math.max(0.05f, dist * 0.02f), dist * 20f + radius * 6f);
-            double yr = Math.toRadians(yaw), pr = Math.toRadians(pitch);
-            float ex = cx + (float) (dist * Math.cos(pr) * Math.sin(yr)), ey = cy + (float) (dist * Math.sin(pr)), ez = cz + (float) (dist * Math.cos(pr) * Math.cos(yr));
-            Matrix.setLookAtM(view, 0, ex, ey, ez, cx, cy, cz, 0f, 1f, 0f);
+            if (free) {
+                Matrix.perspectiveM(proj, 0, 70f, w / (float) h, 0.05f, radius * 12f + 400f);
+                double yr = Math.toRadians(fyaw), pr = Math.toRadians(fpitch);
+                float dx = (float) (Math.sin(yr) * Math.cos(pr)), dy = (float) Math.sin(pr), dz = (float) (Math.cos(yr) * Math.cos(pr));
+                Matrix.setLookAtM(view, 0, fx, fy, fz, fx + dx, fy + dy, fz + dz, 0f, 1f, 0f);
+            } else {
+                Matrix.perspectiveM(proj, 0, 50f, w / (float) h, Math.max(0.05f, dist * 0.02f), dist * 20f + radius * 6f);
+                double yr = Math.toRadians(yaw), pr = Math.toRadians(pitch);
+                float ex = cx + (float) (dist * Math.cos(pr) * Math.sin(yr)), ey = cy + (float) (dist * Math.sin(pr)), ez = cz + (float) (dist * Math.cos(pr) * Math.cos(yr));
+                Matrix.setLookAtM(view, 0, ex, ey, ez, cx, cy, cz, 0f, 1f, 0f);
+            }
             Matrix.multiplyMM(mvp, 0, proj, 0, view, 0);
             GLES20.glUseProgram(prog);
             GLES20.glUniformMatrix4fv(uMvp, 1, false, mvp, 0);

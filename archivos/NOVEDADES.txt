@@ -1,3 +1,11 @@
+## 94
+🎥 Planos 3D: cámara más baja y «Cámara libre»
+- La cámara del 3D arranca más baja y más cerca, para ver los detalles de los edificios sin perderlos desde tan arriba.
+- Botón «Cámara libre» en la esquina de abajo a la derecha: aparecen flechas (◀ ▲ ▼ ▶) para avanzar, retroceder e ir a los lados, botones para subir y bajar, y uno para elegir la velocidad (tortuga, caminar, cohete). Arrastras con un dedo para mirar alrededor.
+- Puedes entrar bajo tierra y recorrer cuevas, túneles y sótanos (la cámara no choca con nada). Dentro de roca maciza no se ve nada: solo se dibujan las paredes que dan al aire.
+- «Salir» te devuelve a la cámara de siempre; con dos toques en cámara libre vuelves al punto donde la empezaste.
+- Sin probar todavía en un celular.
+
 ## 93
 🏘️ Visor de planos de Beautiful Decor (.bdplan), en 2D y 3D
 - Toca un archivo .bdplan y se abre el visor, con cuatro pestañas:
