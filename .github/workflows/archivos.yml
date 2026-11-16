@@ -34,8 +34,8 @@ jobs:
 
       - name: Probar el protocolo celular a celular y el lector de planos
         run: |
-          bash test/probar-link.sh
-          bash test/probar-plan.sh
+          timeout 240 bash test/probar-link.sh
+          timeout 240 bash test/probar-plan.sh
 
       - name: Compilar
         run: gradle assembleRelease --stacktrace

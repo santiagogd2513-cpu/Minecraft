@@ -7,6 +7,7 @@
   - 3D: el plano completo con OpenGL; un dedo lo gira, dos dedos acercan y mueven, y una barra «cortar a la altura» quita el techo para ver por dentro. Dos toques vuelven a la vista inicial.
 - Los colores son aproximados (Bóveda no tiene las texturas de Minecraft): los bloques comunes tienen su color y los demás se deducen por el nombre. Las plantas y cosas finas no se dibujan en 3D.
 - Solo para ver: no coloca nada en el juego ni edita el plano.
+- Arreglo de paso en Celular a celular: si una conexión vieja se quedaba atorada, una nueva podía quedarse esperándola para siempre (compartían un mismo candado). Ahora cada cable tiene el suyo.
 - Probado en el computador con el plano «pueblo bd» (331 × 145 × 311, casi 15 millones de bloques): se lee completo y se convierte en unas 28.000 caras. No probado todavía en un celular: el 3D (OpenGL) y la memoria con planos grandes hay que mirarlos en el teléfono.
 
 ## 92

@@ -39,8 +39,15 @@ final class LinkWire {
     }
 
     /** Escribe un mensaje: magic, tipo, id, tamaño, datos y CRC32 de todo lo anterior. */
-    static synchronized void write(DataOutputStream o, int type, int id, byte[] payload) throws IOException {
+    static void write(DataOutputStream o, int type, int id, byte[] payload) throws IOException {
         if (payload.length > MAX_PAYLOAD) throw new IOException("mensaje demasiado grande");
+        // el candado es de ESTE cable, no de todos: si una conexión vieja se queda atorada, la nueva no debe esperarla
+        synchronized (o) {
+            writeLocked(o, type, id, payload);
+        }
+    }
+
+    private static void writeLocked(DataOutputStream o, int type, int id, byte[] payload) throws IOException {
         byte[] head = new byte[11];
         head[0] = (byte) (MAGIC >> 8);
         head[1] = (byte) MAGIC;
