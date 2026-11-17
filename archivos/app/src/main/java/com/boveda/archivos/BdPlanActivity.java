@@ -107,7 +107,7 @@ public class BdPlanActivity extends Activity {
         }
         io.execute(() -> {
             try (InputStream in = FsRouter.get(this, path).in(path)) {
-                BdPlan p = BdPlan.read(in, what -> main.post(() -> status.setText(L.t(what))));
+                BdPlan p = BdPlan.readAny(Paths.name(path), in, what -> main.post(() -> status.setText(L.t(what))));
                 main.post(() -> {
                     plan = p;
                     cutY = p.sy - 1;

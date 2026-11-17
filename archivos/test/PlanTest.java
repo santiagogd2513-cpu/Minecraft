@@ -5,6 +5,24 @@ import javax.imageio.ImageIO;
 public class PlanTest {
     static int fails;
     static void check(boolean c, String m) { if (!c) { fails++; System.out.println("FALLA: " + m); } else System.out.println("ok: " + m); }
+    /** Escribe una región de Litematica con los bloques empaquetados en bits, como lo hace el mod. */
+    static void writeRegion(DataOutputStream o, String name, int px, int py, int pz, int sx, int sy, int sz, String[] pal, int[] vals) throws IOException {
+        o.writeByte(10); o.writeUTF(name);
+        o.writeByte(10); o.writeUTF("Position"); o.writeByte(3); o.writeUTF("x"); o.writeInt(px); o.writeByte(3); o.writeUTF("y"); o.writeInt(py); o.writeByte(3); o.writeUTF("z"); o.writeInt(pz); o.writeByte(0);
+        o.writeByte(10); o.writeUTF("Size"); o.writeByte(3); o.writeUTF("x"); o.writeInt(sx); o.writeByte(3); o.writeUTF("y"); o.writeInt(sy); o.writeByte(3); o.writeUTF("z"); o.writeInt(sz); o.writeByte(0);
+        o.writeByte(9); o.writeUTF("BlockStatePalette"); o.writeByte(10); o.writeInt(pal.length);
+        for (String n : pal) { o.writeByte(8); o.writeUTF("Name"); o.writeUTF(n); o.writeByte(0); }
+        int bits = Math.max(2, 32 - Integer.numberOfLeadingZeros(Math.max(1, pal.length - 1)));
+        long[] arr = new long[(int) (((long) vals.length * bits + 63) / 64)];
+        for (int i = 0; i < vals.length; i++) {
+            long bit = (long) i * bits; int li = (int) (bit >>> 6), off = (int) (bit & 63);
+            arr[li] |= ((long) vals[i]) << off;
+            if (off + bits > 64) arr[li + 1] |= ((long) vals[i]) >>> (64 - off);
+        }
+        o.writeByte(12); o.writeUTF("BlockStates"); o.writeInt(arr.length); for (long v : arr) o.writeLong(v);
+        o.writeByte(0);
+    }
+
     static float[] extent(BdPlan.Ent e) {
         float[] mn = {1e9f, 1e9f, 1e9f}, mx = {-1e9f, -1e9f, -1e9f}, c = new float[24];
         for (EntityModels.Box b : EntityModels.of(e.id).boxes) {
@@ -43,6 +61,54 @@ public class PlanTest {
         try { BdPlan.read(new ByteArrayInputStream(java.util.Arrays.copyOf(bytes, bytes.length / 2)), null); check(false, "plano cortado no detectado"); } catch (IOException e) { check(true, "un plano cortado da un error claro: " + e.getMessage()); }
         try { BdPlan.read(new ByteArrayInputStream("hola, esto no es un plano".getBytes()), null); check(false, "archivo ajeno"); } catch (IOException e) { check(true, "un archivo que no es plano da un error claro"); }
 
+        // 1b) Litematica: se arma uno con dos regiones (una con tamaño negativo) y se lee
+        {
+            ByteArrayOutputStream bo = new ByteArrayOutputStream();
+            DataOutputStream o = new DataOutputStream(new java.util.zip.GZIPOutputStream(bo));
+            o.writeByte(10); o.writeShort(0);
+            o.writeByte(3); o.writeUTF("Version"); o.writeInt(6);
+            o.writeByte(10); o.writeUTF("Metadata"); o.writeByte(8); o.writeUTF("Name"); o.writeUTF("casita"); o.writeByte(8); o.writeUTF("Author"); o.writeUTF("Santi"); o.writeByte(0);
+            o.writeByte(10); o.writeUTF("Regions");
+            // región A: posición (0,0,0) tamaño 3x2x2, paleta [air, stone, oak_planks, glass, lava] -> 3 bits
+            int[] vals = new int[12]; for (int i = 0; i < 12; i++) vals[i] = i % 5;
+            writeRegion(o, "A", 0, 0, 0, 3, 2, 2, new String[]{"minecraft:air", "minecraft:stone", "minecraft:oak_planks", "minecraft:glass", "minecraft:lava"}, vals);
+            // región B: posición (5,1,1) tamaño NEGATIVO (-2,1,1): ocupa x 4..5, y 1, z 1
+            writeRegion(o, "B", 5, 1, 1, -2, 1, 1, new String[]{"minecraft:air", "minecraft:gold_block"}, new int[]{1, 1});
+            o.writeByte(0);
+            o.writeByte(0); o.close();
+            BdPlan l = BdPlan.readAny("casita.litematic", new ByteArrayInputStream(bo.toByteArray()), null);
+            check(l.name.equals("casita") && l.author.equals("Santi"), "litematic: nombre y autor");
+            check(l.sx == 6 && l.sy == 2 && l.sz == 2, "litematic: la caja junta las dos regiones: " + l.sx + "x" + l.sy + "x" + l.sz);
+            boolean ok = true;
+            for (int i = 0; i < 12; i++) {
+                int x = i % 3, z = (i / 3) % 2, y = i / 6;
+                String nm = l.palette[l.blocks[l.index(x, y, z)]];
+                String esp = new String[]{"minecraft:air", "minecraft:stone", "minecraft:oak_planks", "minecraft:glass", "minecraft:lava"}[i % 5];
+                if (!nm.equals(esp)) { ok = false; System.out.println("  distinto en " + x + "," + y + "," + z + ": " + nm + " (esperaba " + esp + ")"); }
+            }
+            check(ok, "litematic: los 12 bloques de la región A, empaquetados en 3 bits, salen en su sitio");
+            check(l.palette[l.blocks[l.index(4, 1, 1)]].equals("minecraft:gold_block") && l.palette[l.blocks[l.index(5, 1, 1)]].equals("minecraft:gold_block") && l.palette[l.blocks[l.index(3, 1, 1)]].equals("minecraft:air"), "litematic: la región de tamaño negativo queda en su lugar");
+        }
+        // 1c) Litematica con 20 tipos (5 bits por bloque): los valores cruzan de un long al siguiente
+        {
+            ByteArrayOutputStream bo = new ByteArrayOutputStream();
+            DataOutputStream o = new DataOutputStream(new java.util.zip.GZIPOutputStream(bo));
+            o.writeByte(10); o.writeShort(0);
+            o.writeByte(10); o.writeUTF("Regions");
+            String[] pal = new String[20]; pal[0] = "minecraft:air"; for (int i = 1; i < 20; i++) pal[i] = "minecraft:tipo_" + i;
+            int[] vals = new int[100]; for (int i = 0; i < 100; i++) vals[i] = (i * 7 + 3) % 20;
+            writeRegion(o, "grande", 0, 0, 0, 5, 4, 5, pal, vals);
+            o.writeByte(0); o.writeByte(0); o.close();
+            BdPlan l = BdPlan.readAny("x.litematic", new ByteArrayInputStream(bo.toByteArray()), null);
+            boolean ok = true;
+            for (int i = 0; i < 100; i++) { int x = i % 5, z = (i / 5) % 4, y = i / 20; }
+            // índice = y*az*ax + z*ax + x con ax=5, az=5, ay=4
+            for (int y = 0; y < 4; y++) for (int z = 0; z < 5; z++) for (int x = 0; x < 5; x++) {
+                int i = y * 25 + z * 5 + x;
+                if (!l.palette[l.blocks[l.index(x, y, z)]].equals(pal[vals[i]])) ok = false;
+            }
+            check(ok, "litematic: 100 bloques de 5 bits, cruzando entre longs, salen todos bien");
+        }
         // 2) el plano real, si lo dan
         if (a.length > 0) {
             long t0 = System.nanoTime();

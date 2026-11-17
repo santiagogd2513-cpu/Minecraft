@@ -65,7 +65,8 @@ final class Viewers {
     }
 
     static boolean isPlan(String name) {
-        return ext(name).equals("bdplan");
+        String e = ext(name);
+        return e.equals("bdplan") || e.equals("litematic");
     }
 
     static boolean isPdf(String name) {

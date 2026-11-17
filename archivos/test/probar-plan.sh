@@ -4,5 +4,5 @@ set -e
 cd "$(dirname "$0")"
 W=$(mktemp -d)
 S=../app/src/main/java/com/boveda/archivos
-javac -encoding UTF-8 -d $W $S/BdPlan.java $S/BlockColors.java $S/EntityModels.java $S/VoxelMesh.java PlanTest.java
+javac -encoding UTF-8 -d $W $S/Nbt.java $S/BdPlan.java $S/BlockColors.java $S/EntityModels.java $S/VoxelMesh.java PlanTest.java
 java -Xmx700m -cp $W com.boveda.archivos.PlanTest "$@"

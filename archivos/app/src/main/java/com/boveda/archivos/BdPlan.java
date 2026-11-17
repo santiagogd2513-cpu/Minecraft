@@ -41,6 +41,122 @@ final class BdPlan {
 
     static final long MAX_VOXELS = 150_000_000L;
 
+    /** Abre un plano de Beautiful Decor (.bdplan) o de Litematica (.litematic), según el nombre del archivo. */
+    static BdPlan readAny(String fileName, InputStream in, Progress p) throws IOException {
+        if (fileName.toLowerCase(java.util.Locale.ROOT).endsWith(".litematic")) return readLitematic(in, p);
+        return read(in, p);
+    }
+
+    /**
+     * Litematica: NBT comprimido con una o varias «regiones», cada una con su posición, su tamaño (puede ser negativo), su paleta y sus
+     * bloques empaquetados en bits dentro de un arreglo de longs. Todas las regiones se juntan en una sola caja.
+     */
+    static BdPlan readLitematic(InputStream raw, Progress p) throws IOException {
+        if (p != null) p.on("Descomprimiendo…");
+        java.io.BufferedInputStream b = new java.io.BufferedInputStream(raw, 1 << 16);
+        b.mark(4);
+        int b0 = b.read(), b1 = b.read();
+        b.reset();
+        InputStream in = (b0 == 0x1f && b1 == 0x8b) ? new GZIPInputStream(b, 1 << 16) : b;
+        if (p != null) p.on("Leyendo el esquema…");
+        Map<String, Object> root = Nbt.read(new DataInputStream(new java.io.BufferedInputStream(in, 1 << 16)));
+        Map<String, Object> meta = Nbt.map(root.get("Metadata")), regions = Nbt.map(root.get("Regions"));
+        if (regions.isEmpty()) throw new IOException("el esquema no trae regiones");
+        BdPlan plan = new BdPlan();
+        plan.name = Nbt.str(meta.get("Name"));
+        plan.author = Nbt.str(meta.get("Author"));
+        plan.description = Nbt.str(meta.get("Description"));
+        Object tc = meta.get("TimeCreated");
+        plan.created = tc instanceof Number ? ((Number) tc).longValue() : 0;
+        plan.format = Nbt.i(root.get("Version"), 0);
+        // la caja que contiene todas las regiones
+        int minX = Integer.MAX_VALUE, minY = Integer.MAX_VALUE, minZ = Integer.MAX_VALUE, maxX = Integer.MIN_VALUE, maxY = Integer.MIN_VALUE, maxZ = Integer.MIN_VALUE;
+        for (Object ro : regions.values()) {
+            Map<String, Object> r = Nbt.map(ro), pos = Nbt.map(r.get("Position")), size = Nbt.map(r.get("Size"));
+            int sx = Nbt.i(size.get("x"), 0), sy = Nbt.i(size.get("y"), 0), sz = Nbt.i(size.get("z"), 0);
+            if (sx == 0 || sy == 0 || sz == 0) continue;
+            int x0 = Nbt.i(pos.get("x"), 0) + (sx < 0 ? sx + 1 : 0), y0 = Nbt.i(pos.get("y"), 0) + (sy < 0 ? sy + 1 : 0), z0 = Nbt.i(pos.get("z"), 0) + (sz < 0 ? sz + 1 : 0);
+            minX = Math.min(minX, x0); minY = Math.min(minY, y0); minZ = Math.min(minZ, z0);
+            maxX = Math.max(maxX, x0 + Math.abs(sx)); maxY = Math.max(maxY, y0 + Math.abs(sy)); maxZ = Math.max(maxZ, z0 + Math.abs(sz));
+        }
+        if (minX == Integer.MAX_VALUE) throw new IOException("el esquema está vacío");
+        plan.sx = maxX - minX; plan.sy = maxY - minY; plan.sz = maxZ - minZ;
+        plan.ox = minX; plan.oy = minY; plan.oz = minZ;
+        long vol = plan.volume();
+        if (vol > MAX_VOXELS) throw new IOException("el esquema es demasiado grande para este celular (" + vol / 1_000_000 + " millones de bloques)");
+        // paleta global (un nombre = un tipo; las propiedades se ignoran)
+        List<String> pal = new ArrayList<>();
+        Map<String, Integer> palIdx = new LinkedHashMap<>();
+        pal.add("minecraft:air");
+        palIdx.put("minecraft:air", 0);
+        if (p != null) p.on("Ordenando los bloques…");
+        plan.blocks = new short[(int) vol];
+        for (Object ro : regions.values()) {
+            Map<String, Object> r = Nbt.map(ro), pos = Nbt.map(r.get("Position")), size = Nbt.map(r.get("Size"));
+            int sx = Nbt.i(size.get("x"), 0), sy = Nbt.i(size.get("y"), 0), sz = Nbt.i(size.get("z"), 0);
+            if (sx == 0 || sy == 0 || sz == 0) continue;
+            int ax = Math.abs(sx), ay = Math.abs(sy), az = Math.abs(sz);
+            int x0 = Nbt.i(pos.get("x"), 0) + (sx < 0 ? sx + 1 : 0) - minX, y0 = Nbt.i(pos.get("y"), 0) + (sy < 0 ? sy + 1 : 0) - minY, z0 = Nbt.i(pos.get("z"), 0) + (sz < 0 ? sz + 1 : 0) - minZ;
+            List<Object> rp = Nbt.list(r.get("BlockStatePalette"));
+            int[] map = new int[Math.max(1, rp.size())];
+            for (int i = 0; i < rp.size(); i++) {
+                String nm = Nbt.str(Nbt.map(rp.get(i)).get("Name"));
+                if (nm.isEmpty()) nm = "minecraft:air";
+                Integer ix = palIdx.get(nm);
+                if (ix == null) {
+                    if (pal.size() >= 32000) throw new IOException("el esquema trae demasiados tipos de bloque");
+                    ix = pal.size();
+                    pal.add(nm);
+                    palIdx.put(nm, ix);
+                }
+                map[i] = ix;
+            }
+            Object bs = r.get("BlockStates");
+            if (!(bs instanceof long[])) throw new IOException("a una región le faltan los bloques");
+            long[] arr = (long[]) bs;
+            int bits = Math.max(2, 32 - Integer.numberOfLeadingZeros(Math.max(1, rp.size() - 1)));
+            long total = (long) ax * ay * az;
+            if ((total * bits + 63) / 64 > arr.length) throw new IOException("a una región le faltan bloques");
+            long mask = (1L << bits) - 1;
+            for (int y = 0; y < ay; y++) {
+                for (int z = 0; z < az; z++) {
+                    for (int x = 0; x < ax; x++) {
+                        long bit = ((long) y * az * ax + (long) z * ax + x) * bits;
+                        int li = (int) (bit >>> 6), off = (int) (bit & 63);
+                        long v = (arr[li] >>> off) & mask;
+                        if (off + bits > 64) v |= (arr[li + 1] << (64 - off)) & mask;
+                        int id = map[(int) Math.min(v, map.length - 1)];
+                        plan.blocks[((y0 + y) * plan.sz + (z0 + z)) * plan.sx + (x0 + x)] = (short) id;
+                    }
+                }
+            }
+            // entidades y bloques con datos de la región (la posición de las entidades es relativa a la región)
+            plan.blockEntities += Nbt.list(r.get("TileEntities")).size();
+            for (Object eo : Nbt.list(r.get("Entities"))) {
+                Map<String, Object> em = Nbt.map(eo);
+                Ent en = new Ent();
+                en.id = Nbt.str(em.get("id"));
+                if (en.id.isEmpty()) en.id = "?";
+                List<Object> ep = Nbt.list(em.get("Pos"));
+                if (ep.size() >= 3) {
+                    en.x = Nbt.dbl(ep.get(0), 0) + x0;
+                    en.y = Nbt.dbl(ep.get(1), 0) + y0;
+                    en.z = Nbt.dbl(ep.get(2), 0) + z0;
+                }
+                List<Object> er = Nbt.list(em.get("Rotation"));
+                if (!er.isEmpty()) en.yaw = (float) Nbt.dbl(er.get(0), 0);
+                String cn = Nbt.str(em.get("CustomName"));
+                en.name = plainName(cn);
+                plan.entityList.add(en);
+                plan.entities.merge(en.id, 1, Integer::sum);
+            }
+        }
+        plan.palette = pal.toArray(new String[0]);
+        plan.counts = new long[plan.palette.length];
+        for (short v : plan.blocks) plan.counts[v]++;
+        return plan;
+    }
+
     int index(int x, int y, int z) {
         return (y * sz + z) * sx + x;
     }

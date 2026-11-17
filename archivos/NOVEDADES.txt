@@ -1,3 +1,10 @@
+## 97
+🧊 Esquemas de Litematica (.litematic) en el visor
+- El visor de planos ahora también abre archivos .litematic, con las mismas pestañas: ficha, materiales, 2D (arriba, capas y cortes) y 3D con cámara libre.
+- Si el esquema trae varias regiones (también las de tamaño negativo), se juntan en una sola caja. Las entidades y los nombres que traiga también se dibujan.
+- Las propiedades de los bloques (la dirección de unas escaleras, por ejemplo) se ignoran: cada nombre de bloque es un tipo.
+- Probado en el computador con esquemas armados a mano: bloques empaquetados en 3 y en 5 bits (cruzando entre un número de 64 bits y el siguiente), dos regiones y una de tamaño negativo. No hubo un esquema real de Litematica para probar: si alguno no abre, mándamelo.
+
 ## 96
 🧱🐺 Planos: materiales que se distinguen y entidades visibles
 - 3D: cada bloque se reconoce ahora por sus bordes y su tono propio, y cada material tiene su detalle: piedra con motas, tierra rugosa, tablones con vetas, troncos rayados, ladrillos con juntas, hojas ruidosas, metal cepillado, cristal con marco y agua con ondas. De lejos el detalle fino se apaga para que no parpadee.
