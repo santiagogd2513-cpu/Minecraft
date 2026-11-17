@@ -55,6 +55,25 @@ final class BlockColors {
         return SOLID;
     }
 
+    /** Qué tipo de superficie dibujar: 0 genérica, 1 piedra, 2 tierra y pasto, 3 tablones, 4 troncos, 5 ladrillo, 6 liso (concreto, lana), 7 cristal, 8 metal, 9 hojas, 10 arena, 11 agua. */
+    static int material(String name) {
+        String n = name.contains(":") ? name.substring(name.indexOf(':') + 1) : name;
+        boolean mc = name.startsWith("minecraft:");
+        if (n.equals("water")) return 11;
+        if (n.contains("glass") || n.equals("ice") || n.contains("stained")) return 7;
+        if (n.contains("leaves") || n.contains("moss") || n.contains("azalea")) return 9;
+        if (n.contains("planks") || (n.contains("oak") || n.contains("birch") || n.contains("spruce") || n.contains("jungle") || n.contains("acacia") || n.contains("cherry") || n.contains("mangrove")) && (n.contains("slab") || n.contains("stairs") || n.contains("fence") || n.contains("door"))) return 3;
+        if (n.endsWith("_log") || n.endsWith("_wood") || n.contains("stem") || n.contains("hyphae")) return 4;
+        if (n.contains("brick")) return 5;
+        if (n.contains("concrete") || n.contains("wool") || n.contains("terracotta") || n.contains("quartz") || n.contains("smooth") || n.contains("plaster")) return 6;
+        if (n.contains("iron") || n.contains("gold") || n.contains("copper") || n.contains("metal") || n.contains("steel") || n.contains("netherite") || n.contains("diamond_block") || n.contains("anvil")) return 8;
+        if (n.contains("sand") || n.contains("gravel")) return 10;
+        if (n.contains("dirt") || n.contains("grass") || n.contains("podzol") || n.contains("mycelium") || n.contains("clay") || n.contains("mud") || n.contains("farmland") || n.contains("path")) return 2;
+        if (n.contains("stone") || n.contains("cobble") || n.contains("andesite") || n.contains("granite") || n.contains("diorite") || n.contains("deepslate") || n.contains("tuff") || n.contains("ore")
+                || n.contains("bedrock") || n.contains("netherrack") || n.contains("obsidian") || n.contains("basalt") || n.contains("calcite") || n.contains("asphalt")) return 1;
+        return 0;
+    }
+
     /** Color ARGB del bloque. */
     static int color(String name) {
         Integer k = KNOWN.get(name.startsWith("minecraft:") || name.contains(":") ? name : "minecraft:" + name);

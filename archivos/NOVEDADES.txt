@@ -1,3 +1,11 @@
+## 96
+🧱🐺 Planos: materiales que se distinguen y entidades visibles
+- 3D: cada bloque se reconoce ahora por sus bordes y su tono propio, y cada material tiene su detalle: piedra con motas, tierra rugosa, tablones con vetas, troncos rayados, ladrillos con juntas, hojas ruidosas, metal cepillado, cristal con marco y agua con ondas. De lejos el detalle fino se apaga para que no parpadee.
+- Entidades en 3D: lobo, gato, cerdo, vaca, oveja, caballo, gallina, aldeano, jugador, zombi, esqueleto, creeper y gólem de hierro, y los de Beautiful Decor (moto, bicicleta, Bugatti Chiron y vagón de tren) se dibujan como figuras de cajas de colores con las medidas aproximadas de las de verdad, mirando hacia donde miran en el plano. Las que no conoce salen como una caja de un color propio.
+- Entidades en 2D: se ven encima del mapa con su huella real (girada, con un triángulo al frente) y su nombre; en los cortes se ven de frente o de lado. Toca una para ver su nombre y su posición.
+- La ficha lista cada entidad con su nombre (también el que le puso el jugador) y su posición.
+- Probado en el computador: las 13 entidades de «pueblo bd» se leen con su posición y giro; un vagón de tren mide 19,7 bloques de largo y gira bien al cambiar su dirección. Cómo se ven los materiales y las figuras en el celular solo lo ves tú.
+
 ## 95
 🎥 Cámara libre: menú de altura arriba a la derecha y botones claros para subir y bajar
 - Al entrar a la cámara libre, el menú de «cortar a la altura» se pasa arriba a la derecha, más angosto, para que no tape los controles ni sea «trampa» tenerlo encima. Al salir vuelve abajo.

@@ -5,6 +5,15 @@ import javax.imageio.ImageIO;
 public class PlanTest {
     static int fails;
     static void check(boolean c, String m) { if (!c) { fails++; System.out.println("FALLA: " + m); } else System.out.println("ok: " + m); }
+    static float[] extent(BdPlan.Ent e) {
+        float[] mn = {1e9f, 1e9f, 1e9f}, mx = {-1e9f, -1e9f, -1e9f}, c = new float[24];
+        for (EntityModels.Box b : EntityModels.of(e.id).boxes) {
+            EntityModels.corners(e, b, c);
+            for (int i = 0; i < 8; i++) for (int k = 0; k < 3; k++) { mn[k] = Math.min(mn[k], c[i * 3 + k]); mx[k] = Math.max(mx[k], c[i * 3 + k]); }
+        }
+        return new float[]{mn[0], mn[1], mn[2], mx[0], mx[1], mx[2]};
+    }
+
     public static void main(String[] a) throws Exception {
         // 1) plano sintético: ida y vuelta del formato
         BdPlan p = new BdPlan();
@@ -13,14 +22,23 @@ public class PlanTest {
         for (int z = 0; z < 6; z++) for (int x = 0; x < 5; x++) p.blocks[p.index(x, 0, z)] = 1;
         p.blocks[p.index(2, 1, 3)] = 2; p.blocks[p.index(2, 2, 3)] = 3;
         p.entities.put("beautifuldecor:motorcycle", 2); p.blockEntities = 3; p.created = 12345L;
+        BdPlan.Ent e1 = new BdPlan.Ent(); e1.id = "minecraft:wolf"; e1.name = "Rex"; e1.x = 1.5; e1.y = 1; e1.z = 2.5; e1.yaw = 90;
+        BdPlan.Ent e2 = new BdPlan.Ent(); e2.id = "beautifuldecor:train_car"; e2.x = 2.5; e2.y = 1; e2.z = 3; e2.yaw = 0;
+        p.entityList.add(e1); p.entityList.add(e2);
         byte[] bytes = BdPlan.write(p);
         BdPlan q = BdPlan.read(new ByteArrayInputStream(bytes), null);
         check(q.sx == 5 && q.sy == 4 && q.sz == 6 && q.name.equals("prueba") && q.author.equals("Yo"), "ida y vuelta: nombre, autor y tamaño");
         check(java.util.Arrays.equals(p.blocks, q.blocks) && q.counts[1] == 30 && q.counts[2] == 1, "ida y vuelta: los bloques son los mismos");
-        check(q.entities.get("beautifuldecor:motorcycle") == 2 && q.blockEntities == 3 && q.created == 12345L, "entidades, bloques con datos y fecha");
+        check(q.entities.get("minecraft:wolf") == 1 && q.entities.get("beautifuldecor:train_car") == 1 && q.blockEntities == 3 && q.created == 12345L, "entidades, bloques con datos y fecha");
+        check(q.entityList.size() == 2 && q.entityList.get(0).id.equals("minecraft:wolf") && q.entityList.get(0).name.equals("Rex") && Math.abs(q.entityList.get(0).x - 1.5) < 1e-9 && q.entityList.get(0).yaw == 90f, "las entidades conservan id, nombre, posición y giro");
+        check(EntityModels.label(q.entityList.get(0)).equals("Lobo «Rex»") && EntityModels.label(q.entityList.get(1)).equals("Vagón de tren"), "nombres para mostrar: " + EntityModels.label(q.entityList.get(0)));
+        // un vagón de tren (largo en Z) mide casi 20 bloques; girado 90° mide lo mismo pero a lo largo de X
+        float[] ext = extent(q.entityList.get(1)); check(Math.abs((ext[5] - ext[2]) - 19.7f) < 0.3f && (ext[3] - ext[0]) < 3.5f, "el vagón sin girar es largo en Z: " + (ext[5] - ext[2]));
+        q.entityList.get(1).yaw = 90; ext = extent(q.entityList.get(1)); check(Math.abs((ext[3] - ext[0]) - 19.7f) < 0.3f && (ext[5] - ext[2]) < 3.5f, "girado 90° es largo en X: " + (ext[3] - ext[0]));
+        q.entityList.get(1).yaw = 0;
         VoxelMesh m = VoxelMesh.build(q, null);
         // piso 5x6 (arriba+abajo+4 lados) + columna de 2 bloques: caras grandes juntas
-        check(m.quads > 0 && m.quads < 40, "malla chica: " + m.quads + " caras");
+        check(m.quads > 0 && m.quads < 120, "malla chica (con entidades): " + m.quads + " caras");
         // cortado / dañado: errores claros, no cierres
         try { BdPlan.read(new ByteArrayInputStream(java.util.Arrays.copyOf(bytes, bytes.length / 2)), null); check(false, "plano cortado no detectado"); } catch (IOException e) { check(true, "un plano cortado da un error claro: " + e.getMessage()); }
         try { BdPlan.read(new ByteArrayInputStream("hola, esto no es un plano".getBytes()), null); check(false, "archivo ajeno"); } catch (IOException e) { check(true, "un archivo que no es plano da un error claro"); }
@@ -33,6 +51,7 @@ public class PlanTest {
             long t1 = System.nanoTime();
             check(r.sx == 331 && r.sy == 145 && r.sz == 311 && r.palette.length == 596, "plano real: " + r.name + " de " + r.author + " (" + r.sx + "x" + r.sy + "x" + r.sz + ", " + r.palette.length + " tipos) leído en " + (t1 - t0) / 1_000_000 + " ms");
             long air = 0; for (int i = 0; i < r.palette.length; i++) if (BlockColors.kind(r.palette[i]) == BlockColors.AIR) air += r.counts[i];
+            for (BdPlan.Ent en : r.entityList) System.out.println("  entidad: " + EntityModels.label(en) + " en " + String.format("%.1f, %.1f, %.1f", en.x, en.y, en.z));
             System.out.println("aire: " + air + " de " + r.volume() + "; entidades " + r.entities + "; con datos " + r.blockEntities);
             VoxelMesh mm = VoxelMesh.build(r, null);
             long t2 = System.nanoTime();
@@ -42,12 +61,13 @@ public class PlanTest {
             int W = r.sx, H = r.sz;
             int[] hgt = new int[W * H]; java.util.Arrays.fill(hgt, -1); int[] col = new int[W * H];
             for (VoxelMesh.Chunk c : mm.chunks) for (int k = 0; k < c.quads; k++) {
-                int y0 = c.pos[k * 12 + 1], y1 = c.pos[k * 12 + 4], y2 = c.pos[k * 12 + 7];
+                if ((c.col[k * 4] >>> 24) == 255) continue;     // las entidades no
+                int y0 = Math.round(c.pos[k * 12 + 1]), y1 = Math.round(c.pos[k * 12 + 4]), y2 = Math.round(c.pos[k * 12 + 7]);
                 if (!(y0 == y1 && y1 == y2)) continue;                      // solo caras horizontales
-                int cc = c.col[k * 4];
+                int cc = c.col[k * 4] | 0xFF000000;
                 // arriba: el brillo es 1.0 (las de abajo son 0.5): se distingue porque su normal apunta a +y; aquí se usa el orden de los vértices
-                int xa = Math.min(Math.min(c.pos[k * 12], c.pos[k * 12 + 3]), Math.min(c.pos[k * 12 + 6], c.pos[k * 12 + 9])), xb = Math.max(Math.max(c.pos[k * 12], c.pos[k * 12 + 3]), Math.max(c.pos[k * 12 + 6], c.pos[k * 12 + 9]));
-                int za = Math.min(Math.min(c.pos[k * 12 + 2], c.pos[k * 12 + 5]), Math.min(c.pos[k * 12 + 8], c.pos[k * 12 + 11])), zb = Math.max(Math.max(c.pos[k * 12 + 2], c.pos[k * 12 + 5]), Math.max(c.pos[k * 12 + 8], c.pos[k * 12 + 11]));
+                int xa = Math.round(Math.min(Math.min(c.pos[k * 12], c.pos[k * 12 + 3]), Math.min(c.pos[k * 12 + 6], c.pos[k * 12 + 9]))), xb = Math.round(Math.max(Math.max(c.pos[k * 12], c.pos[k * 12 + 3]), Math.max(c.pos[k * 12 + 6], c.pos[k * 12 + 9])));
+                int za = Math.round(Math.min(Math.min(c.pos[k * 12 + 2], c.pos[k * 12 + 5]), Math.min(c.pos[k * 12 + 8], c.pos[k * 12 + 11]))), zb = Math.round(Math.max(Math.max(c.pos[k * 12 + 2], c.pos[k * 12 + 5]), Math.max(c.pos[k * 12 + 8], c.pos[k * 12 + 11])));
                 for (int z = za; z < zb; z++) for (int x = xa; x < xb; x++) if (y0 >= hgt[z * W + x]) { hgt[z * W + x] = y0; col[z * W + x] = cc; }
             }
             BufferedImage img = new BufferedImage(W, H, BufferedImage.TYPE_INT_RGB);

@@ -19,6 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ScrollView;
 import android.widget.SeekBar;
+import android.widget.Toast;
 import android.widget.TextView;
 
 import java.io.InputStream;
@@ -182,7 +183,17 @@ public class BdPlanActivity extends Activity {
             TextView h = Ui.text(this, L.t("Entidades"), 12, Ui.SUB, false);
             h.setPadding(0, dp(16), 0, dp(4));
             box.addView(h);
-            for (Map.Entry<String, Integer> e : plan.entities.entrySet()) box.addView(Ui.text(this, e.getValue() + " × " + e.getKey(), 14.5f, Ui.TEXT, false));
+            int shown = 0;
+            for (BdPlan.Ent e : plan.entityList) {
+                if (shown++ >= 80) {
+                    box.addView(Ui.text(this, L.t("…y ") + (plan.entityList.size() - 80) + L.t(" más"), 13, Ui.SUB, false));
+                    break;
+                }
+                box.addView(Ui.text(this, EntityModels.label(e) + String.format("  ·  %.0f, %.0f, %.0f", e.x, e.y, e.z), 14, Ui.TEXT, false));
+            }
+            TextView tip = Ui.text(this, L.t("En 2D y 3D se dibujan como cajas de colores. En el mapa 2D, toca una para ver su nombre y su posición."), 12.5f, Ui.SUB, false);
+            tip.setPadding(0, dp(10), 0, 0);
+            box.addView(tip);
         }
         return sc;
     }
@@ -284,6 +295,7 @@ public class BdPlanActivity extends Activity {
     private View mapView() {
         LinearLayout col = Ui.column(this);
         map = new PlanMapView(this, plan);
+        map.onEntity = (label, x, y, z) -> Toast.makeText(this, label + String.format("\n%.1f, %.1f, %.1f", x, y, z), Toast.LENGTH_LONG).show();
         col.addView(map, new LinearLayout.LayoutParams(-1, 0, 1f));
         LinearLayout modes = Ui.row(this);
         modes.setPadding(dp(8), dp(6), dp(8), dp(2));
@@ -369,7 +381,7 @@ public class BdPlanActivity extends Activity {
             }
             final Bitmap fb = b;
             main.post(() -> {
-                if (fb != null) map.show(fb);
+                if (fb != null) map.show(fb, mode, level);
                 mapBusy.set(false);
                 if (mapDirty) {
                     mapDirty = false;

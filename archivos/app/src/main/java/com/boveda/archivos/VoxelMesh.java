@@ -11,8 +11,9 @@ import java.util.List;
 final class VoxelMesh {
     /** Un trozo de la malla: hasta 16.000 rectángulos (para que los índices quepan en 16 bits). */
     static final class Chunk {
-        short[] pos;      // x,y,z por vértice
-        int[] col;        // ARGB por vértice
+        float[] pos;      // x,y,z por vértice
+        int[] col;        // RGB por vértice; el byte de arriba dice qué material es (para el dibujo de la superficie)
+        byte[] nrm;       // la normal de la cara (x,y,z) por vértice
         int quads;
     }
 
@@ -21,8 +22,9 @@ final class VoxelMesh {
     final int sx, sy, sz;
 
     private static final int MAXQ = 16000;
-    private short[] cp = new short[MAXQ * 12];
+    private float[] cp = new float[MAXQ * 12];
     private int[] cc = new int[MAXQ * 4];
+    private byte[] cn = new byte[MAXQ * 12];
     private int cq;
 
     private VoxelMesh(int sx, int sy, int sz) {
@@ -31,16 +33,29 @@ final class VoxelMesh {
         this.sz = sz;
     }
 
-    private void addQuad(int x0, int y0, int z0, int x1, int y1, int z1, int x2, int y2, int z2, int x3, int y3, int z3, int color) {
+    /** Agrega un rectángulo (4 esquinas), de un color, un material y con su normal. */
+    private void addQuad(float[] q, int color, int mat, float nx, float ny, float nz) {
         if (cq == MAXQ) flush();
         int p = cq * 12, c = cq * 4;
-        cp[p] = (short) x0; cp[p + 1] = (short) y0; cp[p + 2] = (short) z0;
-        cp[p + 3] = (short) x1; cp[p + 4] = (short) y1; cp[p + 5] = (short) z1;
-        cp[p + 6] = (short) x2; cp[p + 7] = (short) y2; cp[p + 8] = (short) z2;
-        cp[p + 9] = (short) x3; cp[p + 10] = (short) y3; cp[p + 11] = (short) z3;
-        cc[c] = cc[c + 1] = cc[c + 2] = cc[c + 3] = color;
+        System.arraycopy(q, 0, cp, p, 12);
+        int col = (color & 0x00FFFFFF) | (mat << 24);
+        cc[c] = cc[c + 1] = cc[c + 2] = cc[c + 3] = col;
+        for (int v = 0; v < 4; v++) {
+            cn[p + v * 3] = (byte) Math.round(nx * 127);
+            cn[p + v * 3 + 1] = (byte) Math.round(ny * 127);
+            cn[p + v * 3 + 2] = (byte) Math.round(nz * 127);
+        }
         cq++;
         quads++;
+    }
+
+    private final float[] qtmp = new float[12];
+
+    private void addQuad(int x0, int y0, int z0, int x1, int y1, int z1, int x2, int y2, int z2, int x3, int y3, int z3, int color, int mat, int axis, boolean pos) {
+        qtmp[0] = x0; qtmp[1] = y0; qtmp[2] = z0; qtmp[3] = x1; qtmp[4] = y1; qtmp[5] = z1;
+        qtmp[6] = x2; qtmp[7] = y2; qtmp[8] = z2; qtmp[9] = x3; qtmp[10] = y3; qtmp[11] = z3;
+        float s = pos ? 1 : -1;
+        addQuad(qtmp, color, mat, axis == 0 ? s : 0, axis == 1 ? s : 0, axis == 2 ? s : 0);
     }
 
     private void flush() {
@@ -48,6 +63,7 @@ final class VoxelMesh {
         Chunk k = new Chunk();
         k.pos = java.util.Arrays.copyOf(cp, cq * 12);
         k.col = java.util.Arrays.copyOf(cc, cq * 4);
+        k.nrm = java.util.Arrays.copyOf(cn, cq * 12);
         k.quads = cq;
         chunks.add(k);
         cq = 0;
@@ -75,9 +91,11 @@ final class VoxelMesh {
         int np = plan.palette.length;
         byte[] kind = new byte[np];
         int[] color = new int[np];
+        byte[] mat = new byte[np];
         for (int i = 0; i < np; i++) {
             kind[i] = (byte) BlockColors.kind(plan.palette[i]);
             color[i] = BlockColors.color(plan.palette[i]);
+            mat[i] = (byte) BlockColors.material(plan.palette[i]);
         }
         short[] b = plan.blocks;
         // 6 direcciones: ±X, ±Y, ±Z
@@ -108,7 +126,7 @@ final class VoxelMesh {
                                 // lo tapa un bloque sólido; el cristal solo lo tapa otro cristal igual
                                 hidden = kind[nid] == BlockColors.SOLID || (kind[id] == BlockColors.GLASS && nid == id);
                             }
-                            if (!hidden) c = shade(color[id], f);
+                            if (!hidden) c = (shade(color[id], f) & 0x00FFFFFF) | ((mat[id] + 1) << 24);
                         }
                         mask[v * du + u] = c;
                         if (c != 0) any = true;
@@ -118,8 +136,39 @@ final class VoxelMesh {
             }
             if (prog != null) prog.on((dir + 1) * 100 / 6);
         }
+        m.addEntities(plan, top);
         m.flush();
         return m;
+    }
+
+    /** Las entidades (un lobo, un tren…) se agregan como cajas de colores, giradas según hacia dónde miran. */
+    private void addEntities(BdPlan plan, int top) {
+        float[] c8 = new float[24];
+        int[][] faces = {{0, 1, 3, 2}, {4, 6, 7, 5}, {0, 4, 5, 1}, {2, 3, 7, 6}, {0, 2, 6, 4}, {1, 5, 7, 3}};   // esquinas de cada cara (índices 0..7)
+        for (BdPlan.Ent e : plan.entityList) {
+            if (e.y > top + 1.5) continue;
+            EntityModels.Model md = EntityModels.of(e.id);
+            for (EntityModels.Box b : md.boxes) {
+                EntityModels.corners(e, b, c8);
+                for (int[] f : faces) {
+                    for (int k = 0; k < 4; k++) System.arraycopy(c8, f[k] * 3, qtmp, k * 3, 3);
+                    // normal de la cara y brillo según hacia dónde mira
+                    float ax = qtmp[3] - qtmp[0], ay = qtmp[4] - qtmp[1], az = qtmp[5] - qtmp[2], bx = qtmp[9] - qtmp[0], by = qtmp[10] - qtmp[1], bz = qtmp[11] - qtmp[2];
+                    float nx = ay * bz - az * by, ny = az * bx - ax * bz, nz = ax * by - ay * bx;
+                    float len = (float) Math.sqrt(nx * nx + ny * ny + nz * nz);
+                    if (len < 1e-6f) continue;
+                    nx /= len; ny /= len; nz /= len;
+                    // la normal debe apuntar hacia afuera de la caja: se compara con el centro de la caja
+                    float cxm = 0, cym = 0, czm = 0;
+                    for (int k = 0; k < 8; k++) { cxm += c8[k * 3] / 8; cym += c8[k * 3 + 1] / 8; czm += c8[k * 3 + 2] / 8; }
+                    float dx = qtmp[0] - cxm, dy = qtmp[1] - cym, dz = qtmp[2] - czm;
+                    if (nx * dx + ny * dy + nz * dz < 0) { nx = -nx; ny = -ny; nz = -nz; }
+                    float light = Math.max(0, nx * 0.35f + ny * 0.85f + nz * 0.4f);
+                    int col = shade(b.color, 0.55 + 0.5 * light);
+                    addQuad(qtmp, col, 255, nx, ny, nz);
+                }
+            }
+        }
     }
 
     /** Junta las celdas vecinas del mismo color en rectángulos. */
@@ -146,20 +195,21 @@ final class VoxelMesh {
         }
     }
 
-    private void emit(int axis, boolean pos, int s, int u, int v, int w, int h, int c) {
+    private void emit(int axis, boolean pos, int s, int u, int v, int w, int h, int cm) {
+        int c = cm & 0x00FFFFFF, mt = (cm >>> 24) - 1;
         int p = s + (pos ? 1 : 0);        // el plano de la cara
         switch (axis) {
             case 0 -> {   // X: u = z, v = y
-                if (pos) addQuad(p, v, u, p, v + h, u, p, v + h, u + w, p, v, u + w, c);
-                else addQuad(p, v, u, p, v, u + w, p, v + h, u + w, p, v + h, u, c);
+                if (pos) addQuad(p, v, u, p, v + h, u, p, v + h, u + w, p, v, u + w, c, mt, axis, pos);
+                else addQuad(p, v, u, p, v, u + w, p, v + h, u + w, p, v + h, u, c, mt, axis, pos);
             }
             case 1 -> {   // Y: u = x, v = z
-                if (pos) addQuad(u, p, v, u, p, v + h, u + w, p, v + h, u + w, p, v, c);
-                else addQuad(u, p, v, u + w, p, v, u + w, p, v + h, u, p, v + h, c);
+                if (pos) addQuad(u, p, v, u, p, v + h, u + w, p, v + h, u + w, p, v, c, mt, axis, pos);
+                else addQuad(u, p, v, u + w, p, v, u + w, p, v + h, u, p, v + h, c, mt, axis, pos);
             }
             default -> {  // Z: u = x, v = y
-                if (pos) addQuad(u, v, p, u + w, v, p, u + w, v + h, p, u, v + h, p, c);
-                else addQuad(u, v, p, u, v + h, p, u + w, v + h, p, u + w, v, p, c);
+                if (pos) addQuad(u, v, p, u + w, v, p, u + w, v + h, p, u, v + h, p, c, mt, axis, pos);
+                else addQuad(u, v, p, u, v + h, p, u + w, v + h, p, u + w, v, p, c, mt, axis, pos);
             }
         }
     }

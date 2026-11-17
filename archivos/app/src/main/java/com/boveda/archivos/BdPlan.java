@@ -24,6 +24,15 @@ final class BdPlan {
     short[] blocks = new short[0];
     long[] counts = new long[0];
     final Map<String, Integer> entities = new LinkedHashMap<>();
+
+    /** Una entidad del plano (un lobo, un tren, una moto…): su posición está en bloques del plano. */
+    static final class Ent {
+        String id = "?", name = "";
+        double x, y, z;
+        float yaw;
+    }
+
+    final List<Ent> entityList = new ArrayList<>();
     int blockEntities;
 
     interface Progress {
@@ -92,8 +101,9 @@ final class BdPlan {
                             skipPayload(d, et);
                             continue;
                         }
-                        String id = readEntityId(d);
-                        plan.entities.merge(id == null ? "?" : id, 1, Integer::sum);
+                        Ent en = readEntity(d);
+                        plan.entityList.add(en);
+                        plan.entities.merge(en.id, 1, Integer::sum);
                     }
                 }
                 case "BlockEntities" -> {
@@ -162,16 +172,60 @@ final class BdPlan {
         return name;
     }
 
-    private static String readEntityId(DataInputStream d) throws IOException {
-        String id = null;
+    private static Ent readEntity(DataInputStream d) throws IOException {
+        Ent e = new Ent();
         while (true) {
             int tag = d.readUnsignedByte();
             if (tag == 0) break;
             String key = d.readUTF();
-            if (key.equals("id") && tag == 8) id = d.readUTF();
-            else skipPayload(d, tag);
+            switch (key) {
+                case "id" -> {
+                    if (tag == 8) e.id = d.readUTF();
+                    else skipPayload(d, tag);
+                }
+                case "CustomName" -> {
+                    if (tag == 8) e.name = plainName(d.readUTF());
+                    else skipPayload(d, tag);
+                }
+                case "Pos" -> {
+                    if (tag == 9) {
+                        int et = d.readUnsignedByte(), n = d.readInt();
+                        double[] v = new double[Math.max(0, n)];
+                        for (int i = 0; i < n; i++) {
+                            if (et == 6) v[i] = d.readDouble();
+                            else if (et == 5) v[i] = d.readFloat();
+                            else skipPayload(d, et);
+                        }
+                        if (n >= 3 && (et == 6 || et == 5)) {
+                            e.x = v[0];
+                            e.y = v[1];
+                            e.z = v[2];
+                        }
+                    } else skipPayload(d, tag);
+                }
+                case "Rotation" -> {
+                    if (tag == 9) {
+                        int et = d.readUnsignedByte(), n = d.readInt();
+                        for (int i = 0; i < n; i++) {
+                            if (et == 5) {
+                                float f = d.readFloat();
+                                if (i == 0) e.yaw = f;
+                            } else skipPayload(d, et);
+                        }
+                    } else skipPayload(d, tag);
+                }
+                default -> skipPayload(d, tag);
+            }
         }
-        return id;
+        return e;
+    }
+
+    /** De un nombre en JSON de Minecraft ({"text":"papá"}) saca solo el texto. */
+    private static String plainName(String s) {
+        int i = s.indexOf("\"text\":\"");
+        if (i < 0) return s.startsWith("{") ? "" : s;
+        int j = s.indexOf('"', i + 8);
+        return j < 0 ? "" : s.substring(i + 8, j);
     }
 
     private static void skipPayload(DataInputStream d, int tag) throws IOException {
@@ -234,9 +288,14 @@ final class BdPlan {
         o.writeByte(3); o.writeUTF("OffsetY"); o.writeInt(p.oy);
         o.writeByte(8); o.writeUTF("Name"); o.writeUTF(p.name);
         o.writeByte(4); o.writeUTF("Created"); o.writeLong(p.created);
-        o.writeByte(9); o.writeUTF("Entities"); o.writeByte(10); o.writeInt(p.entities.values().stream().mapToInt(i -> i).sum());
-        for (Map.Entry<String, Integer> e : p.entities.entrySet())
-            for (int i = 0; i < e.getValue(); i++) { o.writeByte(8); o.writeUTF("id"); o.writeUTF(e.getKey()); o.writeByte(1); o.writeUTF("Air"); o.writeByte(3); o.writeByte(0); }
+        o.writeByte(9); o.writeUTF("Entities"); o.writeByte(10); o.writeInt(p.entityList.size());
+        for (Ent e : p.entityList) {
+            o.writeByte(8); o.writeUTF("id"); o.writeUTF(e.id);
+            if (!e.name.isEmpty()) { o.writeByte(8); o.writeUTF("CustomName"); o.writeUTF("{\"text\":\"" + e.name + "\"}"); }
+            o.writeByte(9); o.writeUTF("Pos"); o.writeByte(6); o.writeInt(3); o.writeDouble(e.x); o.writeDouble(e.y); o.writeDouble(e.z);
+            o.writeByte(9); o.writeUTF("Rotation"); o.writeByte(5); o.writeInt(2); o.writeFloat(e.yaw); o.writeFloat(0f);
+            o.writeByte(0);
+        }
         o.writeByte(3); o.writeUTF("Format"); o.writeInt(1);
         o.writeByte(3); o.writeUTF("SizeX"); o.writeInt(p.sx);
         o.writeByte(8); o.writeUTF("Author"); o.writeUTF(p.author);
